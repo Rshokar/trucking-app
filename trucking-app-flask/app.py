@@ -29,7 +29,6 @@ app.register_blueprint(company, url_prefix="/company")
 # Create DB Tables
 try:
     print("--|--CREATING TABLES--|--")
-    Base.metadata.create_all(engine, checkfirst=True)
 except Exception as e:
     print("Error:", e)
 
