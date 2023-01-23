@@ -1,8 +1,6 @@
 from sqlalchemy import Column, Integer, String
 from models.model import Base
 
-print("USERS USERS USERS")
-
 
 class User(Base):
     __tablename__ = 'users'
@@ -19,6 +17,3 @@ class User(Base):
 
     def __repr__(self):
         return f"({self.id}) {self.type} {self.email} {self.password}"
-
-
-print("Meta data", Base.metadata)

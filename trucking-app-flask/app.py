@@ -28,7 +28,7 @@ app.register_blueprint(company, url_prefix="/company")
 
 # Create DB Tables
 try:
-    print("CREATING TABLES")
+    print("--|--CREATING TABLES--|--")
     Base.metadata.create_all(engine, checkfirst=True)
 except Exception as e:
     print("Error:", e)
@@ -36,7 +36,7 @@ except Exception as e:
 try:
     # Connect to the database
     connection = engine.connect()
-    print("Connection to the database is successful.")
+    print("--|--Connection to the database is successful--|--")
 except Exception as e:
     print("Error:", e)
 
