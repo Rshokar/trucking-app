@@ -2,17 +2,17 @@ from sqlalchemy import Column, Integer, String, ForeignKey, CHAR
 from models.model import Base
 
 class Operator(Base):
-    __tablename__ = 'users'
-    id = Column("id", Integer, primary_key=True)
-    type = Column("type", String(5))
-    password = Column("password", String(100))
-    email = Column("email", String(100))
+    __tablename__ = 'operators'
+    operator_id = Column("operator_id", Integer, primary_key=True)
+    company_id = Column("company_id", Integer, ForeignKey(companies.company_id))
+    operator_name = Column("operator_name", String(100))
+    operator_email = Column("operator_email", String(200))
 
-    def __init__(self, id, type, email, password) -> None:
-        self.id = id
-        self.type = type
-        self.email = email
-        self.password = password
+    def __init__(self, id, company, name, email) -> None:
+        self.operator_id = id
+        self.company_id = company
+        self.operator_name = name
+        self.operator_email = email
 
     def __repr__(self):
-        return f"({self.id}) {self.type} {self.email} {self.password}"
+        return f"({self.operator_id}) {self.company_id} {self.operator_name} {self.operator_name}"
