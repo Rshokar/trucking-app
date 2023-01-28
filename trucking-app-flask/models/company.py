@@ -11,3 +11,8 @@ class Company(Base):
         self.company_id = id
         self.owner = 0 # placeholder value
         self.company_name = name
+
+        
+    def __repr__(self):
+        return f"({self.company_id}) {self.owner} {self.company_name}"
+
