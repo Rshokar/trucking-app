@@ -15,4 +15,4 @@ class Operator(Base):
         self.operator_email = email
 
     def __repr__(self):
-        return f"({self.operator_id}) {self.company_id} {self.operator_name} {self.operator_name}"
+        return f"({self.operator_id}) {self.company_id} {self.operator_name} {self.operator_email}"
