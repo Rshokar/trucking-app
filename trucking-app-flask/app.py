@@ -15,7 +15,8 @@ from routes.user import user
 # Load env variables
 from dotenv import load_dotenv
 
-def create_app(): 
+
+def create_app():
     load_dotenv()
 
     app = Flask(__name__)
