@@ -1,7 +1,7 @@
 import pytest
 import json
 from config_test import app, client
-END_POINT = "user"
+END_POINT = "rfo"
 
 
 @pytest.mark.usefixtures("client")
@@ -13,7 +13,7 @@ def test_user_get(client):
     data = json.loads(data)
 
     # assertions
-    assert "USER_GET" == data["data"]
+    assert "RFO_GET" == data["data"]
     assert 200 == response.status_code
 
 
@@ -26,7 +26,7 @@ def test_user_post(client):
     data = json.loads(data)
 
     # assertions
-    assert "USER_POST" == data["data"]
+    assert "RFO_POST" == data["data"]
     assert 200 == response.status_code
 
 
@@ -39,7 +39,7 @@ def test_user_put(client):
     data = json.loads(data)
 
     # assertions
-    assert "USER_PUT" == data["data"]
+    assert "RFO_PUT" == data["data"]
     assert 200 == response.status_code
 
 

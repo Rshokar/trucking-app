@@ -1,6 +1,5 @@
 from flask import Flask
 
-
 # DB
 from config.db import engine
 from models.model import Base
