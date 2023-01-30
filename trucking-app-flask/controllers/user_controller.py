@@ -1,4 +1,5 @@
 from flask import Response
+from models.user import User
 import json
 
 

@@ -1,4 +1,5 @@
 from flask import Response
+from models.company import Company
 import json
 
 

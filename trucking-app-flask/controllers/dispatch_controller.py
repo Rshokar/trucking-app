@@ -1,4 +1,5 @@
 from flask import Response
+from models.dispatch import Dispatch
 import json
 
 
