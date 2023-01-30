@@ -14,31 +14,33 @@ from routes.user import user
 
 # Load env variables
 from dotenv import load_dotenv
-load_dotenv()
 
-app = Flask(__name__)
 
-# Register all endpoints
-app.register_blueprint(user, url_prefix="/user")
-app.register_blueprint(auth, url_prefix="/auth")
-app.register_blueprint(billing_ticket, url_prefix="/billing_ticket")
-app.register_blueprint(rfo, url_prefix="/rfo")
-app.register_blueprint(dispatch, url_prefix="/dispatch")
-app.register_blueprint(company, url_prefix="/company")
+def create_app():
+    load_dotenv()
 
-# Create DB Tables
-try:
-    print("--|--CREATING TABLES--|--")
-    Base.metadata.create_all(engine)
-except Exception as e:
-    print("Error:", e)
+    app = Flask(__name__)
 
-try:
-    # Connect to the database
-    connection = engine.connect()
-    print("--|--Connection to the database is successful--|--")
-except Exception as e:
-    print("Error:", e)
+    # Register all endpoints
+    app.register_blueprint(user, url_prefix="/user")
+    app.register_blueprint(auth, url_prefix="/auth")
+    app.register_blueprint(billing_ticket, url_prefix="/billing_ticket")
+    app.register_blueprint(rfo, url_prefix="/rfo")
+    app.register_blueprint(dispatch, url_prefix="/dispatch")
+    app.register_blueprint(company, url_prefix="/company")
 
-if __name__ == "__main__":
-    app.run(debug=True)
+    # Create DB Tables
+    try:
+        print("--|--CREATING TABLES--|--")
+        Base.metadata.create_all(engine)
+    except Exception as e:
+        print("Error:", e)
+
+    try:
+        # Connect to the database
+        connection = engine.connect()
+        print("--|--Connection to the database is successful--|--")
+    except Exception as e:
+        print("Error:", e)
+
+    return app
