@@ -1,11 +1,13 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, CHAR, Date
+from sqlalchemy import Column, Integer, String, ForeignKey, CHAR, DateTime
 from models.model import Base
+
 
 class Dispatch(Base):
     __tablename__ = 'dispatches'
     dispatch_id = Column("dispatch_id", Integer, primary_key=True)
-    company_id = Column("company_id", Integer, ForeignKey("companies.company_id"))
-    #customer_id = Column("customer_id", Integer, ForeignKey("customers.customer_id")) #customers_id doesn't exist yet. Only fields in Customer entity are company_id and company_name
+    company_id = Column("company_id", Integer,
+                        ForeignKey("companies.company_id"))
+    # customer_id = Column("customer_id", Integer, ForeignKey("customers.customer_id")) #customers_id doesn't exist yet. Only fields in Customer entity are company_id and company_name
     notes = Column("notes", String(1000))
     date = Column("date", DateTime)
 

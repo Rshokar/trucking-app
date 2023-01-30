@@ -1,10 +1,12 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, CHAR
 from models.model import Base
+from models.company import Company
+
 
 class Operator(Base):
     __tablename__ = 'operators'
     operator_id = Column("operator_id", Integer, primary_key=True)
-    company_id = Column("company_id", Integer, ForeignKey(companies.company_id))
+    company_id = Column("company_id", Integer, ForeignKey(Company.company_id))
     operator_name = Column("operator_name", String(100))
     operator_email = Column("operator_email", String(200))
 
