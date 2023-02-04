@@ -1,0 +1,62 @@
+{
+    "User": {
+        "type": "dispatcher",
+        "password": "Testing1",
+        "email": "test@demo.com"
+    },
+    "DuplicateUser": {
+        "type": "dispatcher",
+        "password": "Testing1",
+        "email": "duplicate@demo.com"
+    },
+    "InValidUsers": [
+        {
+            "type": "",
+            "password": "Testing1",
+            "email": "duplicate@demo.com",
+            "error": "Invalid Type"
+        },
+        {
+            "type": "dispatcher",
+            "password": "Testing",
+            "email": "duplicate@demo.com",
+            "error": "Invalid password"
+        },
+        {
+            "type": "dispatcher",
+            "password": "testing1",
+            "email": "duplicate@demo.com",
+            "error": "Invalid password"
+        },
+        {
+            "type": "dispatcher",
+            "password": "Test1",
+            "email": "duplicate@demo.com",
+            "error": "Invalid password"
+        },
+        {
+            "type": "dispatcher",
+            "password": "Testing1",
+            "email": "duplicatedemo.com",
+            "error": "Invalid email address: duplicatedemo.com"
+        },
+        {
+            "type": "dispatcher",
+            "password": "Testing1",
+            "email": "duplicate@democom",
+            "error": "Invalid email address: duplicate@democom"
+        },
+        {
+            "type": "dispatcher",
+            "password": "Testing1",
+            "email": "duplicate@demo.",
+            "error": "Invalid email address: duplicate@demo."
+        },
+        {
+            "type": "dispatcher",
+            "password": "Testing1",
+            "email": "@demo.com",
+            "error": "Invalid email address: @demo.com"
+        }
+    ]
+}

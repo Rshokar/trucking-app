@@ -1,7 +1,8 @@
 from flask import Flask
-
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 # DB
-from config.db import engine
+from config.db import engine, session
 from models.model import Base
 
 # End points
@@ -43,4 +44,7 @@ def create_app():
     except Exception as e:
         print("Error:", e)
 
+    app.session = session
+
     return app
+

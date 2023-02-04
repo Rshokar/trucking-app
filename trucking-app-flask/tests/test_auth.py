@@ -5,7 +5,7 @@ END_POINT = "auth"
 
 
 @pytest.mark.usefixtures("client")
-def test_user_get(client):
+def test_auth_login(client):
     response = client.post("/{}/login".format(END_POINT))
 
     # convert response to dicitionary
@@ -18,7 +18,7 @@ def test_user_get(client):
 
 
 @pytest.mark.usefixtures("client")
-def test_user_post(client):
+def test_auth_logout(client):
     response = client.delete("/{}/logout".format(END_POINT))
 
     # No content. We are deleting users token fron db
