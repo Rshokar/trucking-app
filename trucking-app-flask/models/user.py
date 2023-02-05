@@ -1,5 +1,5 @@
 import re
-from sqlalchemy import Column, Integer, String, ForeignKey, CHAR
+from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import validates
 from models.model import Base
 from enum import Enum
@@ -12,7 +12,7 @@ class UserTypes(str, Enum):
 class User(Base):
     __tablename__ = 'users'
     id = Column("id", Integer, primary_key=True, autoincrement=True)
-    type = Column("type", String(500))
+    type = Column("type", String(20))
     password = Column("password", String(100))
     email = Column("email", String(100), unique=True)
 
@@ -30,15 +30,11 @@ class User(Base):
 
     @validates("type")
     def validate_type(self, key, type):
-        # if (type == "dispatcher"):
-        #     print("VALID TYPE")
-        #     return type
-        if (type == UserTypes.DISPATCHER):
-            print("VALID ENUM TYPE")
-            return type
-        raise ValueError("Invalid Type")
+        if type != UserTypes.DISPATCHER.value:
+            raise ValueError("Invalid Type")
+        return type
 
-    def __init__(self, type, email, password) -> None:
+    def __init__(self, type, email, password):
         self.type = type
         self.email = email
         self.password = password

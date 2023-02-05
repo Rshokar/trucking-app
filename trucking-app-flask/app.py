@@ -1,9 +1,7 @@
+from dotenv import load_dotenv
+load_dotenv()
 from flask import Flask
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-# DB
-from config.db import engine, session
-from models.model import Base
+
 
 # End points
 from routes.company import company
@@ -13,12 +11,12 @@ from routes.billing_ticket import billing_ticket
 from routes.auth import auth
 from routes.user import user
 
+import config.db
+
 # Load env variables
-from dotenv import load_dotenv
 
 
 def create_app():
-    load_dotenv()
 
     app = Flask(__name__)
 
@@ -30,21 +28,6 @@ def create_app():
     app.register_blueprint(dispatch, url_prefix="/dispatch")
     app.register_blueprint(company, url_prefix="/company")
 
-    # Create DB Tables
-    try:
-        print("--|--CREATING TABLES--|--")
-        Base.metadata.create_all(engine)
-    except Exception as e:
-        print("Error:", e)
-
-    try:
-        # Connect to the database
-        connection = engine.connect()
-        print("--|--Connection to the database is successful--|--")
-    except Exception as e:
-        print("Error:", e)
-
-    app.session = session
 
     return app
 

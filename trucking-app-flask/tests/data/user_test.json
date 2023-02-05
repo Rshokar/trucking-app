@@ -9,6 +9,11 @@
         "password": "Testing1",
         "email": "duplicate@demo.com"
     },
+    "UpdateUser": {
+        "type": "dispatcher",
+        "password": "Testing1",
+        "email": "putdemo@putdemo.com"
+    },
     "InValidUsers": [
         {
             "type": "",
