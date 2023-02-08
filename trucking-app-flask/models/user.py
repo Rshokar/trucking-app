@@ -40,7 +40,7 @@ class User(Base):
         self.password = password
 
     def __repr__(self):
-        return f"({self.id}) {self.type} {self.email} {self.password}"
+        return f"USER: ({self.id}) {self.type} {self.email} {self.password}"
 
     def to_dict(self):
         return {

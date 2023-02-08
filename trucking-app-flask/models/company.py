@@ -13,5 +13,11 @@ class Company(Base):
 
         
     def __repr__(self):
-        return f"({self.company_id}) {self.owner} {self.company_name}"
+        return f"COMPANY: ({self.company_id}) {self.owner_id} {self.company_name}"
 
+    def to_dict(self):
+        return {
+            "company_id": self.company_id,
+            "owner_id": self.owner_id,
+            "company_name": self.company_name,
+        }

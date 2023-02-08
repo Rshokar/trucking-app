@@ -4,9 +4,9 @@ from controllers.company_controller import CompanyController
 company = Blueprint("company", __name__)
 
 
-@company.route("/<int:id>", methods=["GET"])
-def GET(id):
-    return CompanyController.GET(id)
+@company.route("/<int:company_id>", methods=["GET"])
+def GET(company_id):
+    return CompanyController.get_company(company_id)
 
 
 @company.route("/", methods=["POST"])
