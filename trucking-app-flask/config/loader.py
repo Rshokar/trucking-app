@@ -1,22 +1,25 @@
 from models.user import User
+from models.company import Company
 from faker import Faker
 
 fake = Faker() 
 
-def loadDB(session, numUsers):
+def loadDB(session, num_users):
     ## iterate for numUsers
-    users = generateUser(numUsers);
-    for user in users:
-        session.add(user)
+    users = generateUser(num_users);
+    for i in range(len(users)):
+        session.add(users[i])
+        session.add(Company(i + 1, fake.name() + " Ltd"))
+        
 
     # Before leaving commint everything to db
     session.commit()
     session.close()
 
-def generateUser(numUsers):
+def generateUser(num_users):
     ## Create Users
     results = []
-    for i in range(numUsers): 
+    for i in range(num_users): 
         results.append(User(
             email= fake.email(), 
             password=generate_password(),

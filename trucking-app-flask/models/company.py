@@ -7,9 +7,8 @@ class Company(Base):
     owner_id=Column('owner_id', Integer, ForeignKey("users.id")) #our MVP currently doesn't have an "owner" entity. We should discuss this if the solution isn't obvious to you
     company_name = Column("company_name", String(200))
 
-    def __init__(self, id, owner, name) -> None:
-        self.company_id = id
-        self.owner = 0 # placeholder value
+    def __init__(self, owner_id, name) -> None:
+        self.owner_id = owner_id # placeholder value
         self.company_name = name
 
         

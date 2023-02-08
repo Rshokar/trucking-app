@@ -3,7 +3,6 @@ from controllers.user_controller import UserController
 user = Blueprint("user", __name__)
 
 
-
 @user.route("/<int:id>", methods=["GET"])
 def GET(id):
     return UserController.GET(request, id)
