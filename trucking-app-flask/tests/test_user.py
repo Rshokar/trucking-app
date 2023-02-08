@@ -159,7 +159,9 @@ def test_user_put(client):
     # assertions
     assert 200 == response.status_code
     assert "email" in data.keys()
+    assert payload["email"] == data["email"]
     assert "type" in data.keys()
+    assert payload["type"] == data["type"]
     assert "id" in data.keys()
 
 

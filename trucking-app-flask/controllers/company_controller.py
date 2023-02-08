@@ -7,7 +7,7 @@ import json
 
 class CompanyController:
 
-    def get_company(company_id):
+    def get(company_id):
         """_summary_
 
         Args:
@@ -20,24 +20,31 @@ class CompanyController:
         session = Session()
         company = session.query(Company).filter_by(company_id=company_id).first()
         session.close()
-        print("HELLO")
         if not session:
             return make_response("No company found", 404, 'text/plain')
         return make_response(company.to_dict(), status=200)
 
-    def POST():
-        return Response(
-            response=json.dumps({"data": "COMPANY_POST"}),
-            status=200,
-            mimetype='application/json'
-        )
+    def update(request, company_id):
+        """_summary_
 
-    def PUT():
-        return Response(
-            response=json.dumps({"data": "COMPANY_PUT"}),
-            status=200,
-            mimetype='application/json'
-        )
+        Args:
+            request (Request): Request
+            company_id (int): copmany_id
 
-    def DELETE():
-        return Response(status=204)
+        Returns:
+            _type_: Response
+        """
+        data = request.get_json()
+        session = Session()
+        print(f'DATA ON SERVER: {data}')
+        company = session.query(Company).filter_by(company_id=company_id).first()
+        company.company_name = data['company_name']
+        
+        try:
+            session.commit()
+            return make_response(company.to_dict(), 200)
+        except ValueError as e:
+            return make_response(str(e), 400, 'text/plain')
+        except Exception as e:
+            return make_response(str(e), 500, 'text/plain')
+        
