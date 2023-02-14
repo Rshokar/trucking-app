@@ -2,6 +2,7 @@ import re
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import validates
 from models.model import Base
+from config import db
 from enum import Enum
 
 

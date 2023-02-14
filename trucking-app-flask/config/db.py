@@ -20,7 +20,7 @@ if (IS_PRODUCTION == "production"):
     # Create a connection string
     connection_string = "mysql+pymysql://{}:{}@{}/{}".format(
         user, password, url, dbName)
-else: 
+else:
     connection_string = "sqlite:///data.db"
 
 # Create the database engine
@@ -33,7 +33,7 @@ print("--|--Connection to the database is successful--|--")
 # If development clear all database
 if (IS_PRODUCTION == "development"):
     print("--|--Drop all tables--|--")
-    Base.metadata.drop_all(engine)                        
+    Base.metadata.drop_all(engine)
 
 print("--|--Creating Tables--|--")
 # Create all tables if not already there
@@ -46,5 +46,3 @@ Session = sessionmaker(bind=engine)
 if IS_PRODUCTION == "development":
     loadDB(Session(), int(TEST_DATA_NUM_USERS))
     # Call loader function
-
-
