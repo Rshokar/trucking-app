@@ -1,8 +1,8 @@
 import sys
 sys.path.append('../')
-
-from app import create_app
 import pytest
+from config.db import Session
+from app import create_app
 
 
 @pytest.fixture()
@@ -11,6 +11,14 @@ def app():
     print("NEW APP")
     yield app
 
+
+@pytest.fixture
+def session():
+    print("NEW SESSION")
+    session = Session()
+    yield session
+    session.rollback()
+    session.close()
 
 @pytest.fixture()
 def client(app):

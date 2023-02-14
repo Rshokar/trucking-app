@@ -1,22 +1,20 @@
 import pytest
 import json
-from config_test import app, client
+from config_test import app, client, session
+from models.company import Company
 END_POINT = "company"
 
 
-@pytest.mark.usefixtures("client")
-def test_user_get(client):
-    """
-    Test a valid get request
-    """
-    response = client.get("/{}/1".format(END_POINT))
 
-    # convert response to dicitionary
-    data = response.data.decode("utf-8")
-    data = json.loads(data)['data']
-    
-    # assertions
-    assert 200 == response.status_code
+
+def test_company_get(client, session):
+    company = session.query(Company).first()
+
+    response = client.get(f"/{END_POINT}/{company.company_id}")
+
+    data = json.loads(response.data)
+
+    assert response.status_code == 200
     assert "company_id" in data.keys()
     assert type(data["company_id"]) == int
     assert "owner_id" in data.keys()
@@ -24,28 +22,62 @@ def test_user_get(client):
     assert "company_name" in data.keys()
 
 
-@pytest.mark.usefixtures("client")
-def test_user_put(client):
+def test_company_get_nonexistent(session, client):
+    response = client.get(f"/{END_POINT}/1000")
+
+    assert response.status_code == 404
+
+
+def test_company_put(session, client):
+    company = session.query(Company).first()
     headers = {"Content-Type": "application/json"}
-    paylod = { "company_name": "AKS Trucking Ltd"}
+    payload = {"company_name": "AKS Trucking Ltd"}
     response = client.put(
-        f"/{END_POINT}/1",
-        headers=headers, 
-        json=paylod
+        f"/{END_POINT}/{company.company_id}",
+        headers=headers,
+        json=payload
     )
 
-    # convert response to dicitionary
-    data = response.data.decode("utf-8")
-    print(f"PREPROCESSED DATA: {data}")
-    data = json.loads(data)['data']
-    print(f"PROCESSED DATA: {data}")
+    data = json.loads(response.data)
 
-    # assertions
-    assert 200 == response.status_code
+    assert response.status_code == 200
     assert "company_id" in data.keys()
     assert type(data["company_id"]) == int
     assert "owner_id" in data.keys()
     assert type(data["owner_id"]) == int
     assert "company_name" in data.keys()
-    assert "AKS Trucking Ltd" == data['company_name']
+    assert payload["company_name"] == data["company_name"]
 
+
+def test_company_put_nonexistent(session, client):
+    headers = {"Content-Type": "application/json"}
+    payload = {"company_name": "AKS Trucking Ltd"}
+    response = client.put(
+        f"/{END_POINT}/1000",
+        headers=headers,
+        json=payload
+    )
+    data = json.loads(response.data)
+    
+    assert response.status_code == 404
+    assert "error" in data.keys()
+    assert data["error"] == "Company not found."
+
+
+def test_company_delete(session, client):
+    company = session.query(Company).first()
+
+    response = client.delete(f"/{END_POINT}/{company.company_id}")
+
+    assert response.status_code == 204
+
+
+def test_company_delete_nonexistent(session, client):
+    response = client.delete(f"/{END_POINT}/1000")
+
+    data = json.loads(response.data)
+    
+    
+    assert response.status_code == 404
+    assert "error" in data.keys()
+    assert data["error"] == "Company not found."
