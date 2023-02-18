@@ -1,15 +1,23 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, CHAR, DateTime
 from models.model import Base
+from sqlalchemy.orm import relationship
 
 
 class Dispatch(Base):
-    __tablename__ = 'dispatches'
+    __tablename__ = 'dispatch'
     dispatch_id = Column("dispatch_id", Integer, primary_key=True)
     company_id = Column("company_id", Integer,
                         ForeignKey("companies.company_id"))
-    # customer_id = Column("customer_id", Integer, ForeignKey("customers.customer_id")) #customers_id doesn't exist yet. Only fields in Customer entity are company_id and company_name
+    customer_id = Column("customer_id", Integer,
+                         ForeignKey("customer.customer_id"))
     notes = Column("notes", String(1000))
     date = Column("date", DateTime)
+
+    # One-to-Many relationship with Dispatch model
+    company = relationship("Company", back_populates="dispatch")
+
+    # One-to-Many relationship with Customer model
+    customer = relationship("Customer", back_populates="dispatch")
 
     def __init__(self, id, company, customer, notes, date):
         self.dispatch_id = id

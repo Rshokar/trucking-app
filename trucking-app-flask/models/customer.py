@@ -4,11 +4,17 @@ from models.model import Base
 
 
 class Customer(Base):
-    __tablename__ = 'customers'
+    __tablename__ = 'customer'
     customer_id = Column('customer_id', Integer, primary_key=True)
-    company_id = Column('company_id', Integer, ForeignKey('companies.company_id'))
+    company_id = Column('company_id', Integer,
+                        ForeignKey('companies.company_id'))
     customer_name = Column('customer_name', String(200))
+
+    # Many-to-One relationship with Company model
     company = relationship("Company", back_populates="customers")
+
+    # One-to-Many relationship with Dispatch Model
+    dispatch = relationship("Dispatch", back_populates="customer")
 
     def __init__(self, company_id, name):
         self.company_id = company_id
