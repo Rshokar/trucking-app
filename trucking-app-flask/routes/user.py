@@ -12,6 +12,7 @@ user = Blueprint('user', __name__)
 def get_user(user_id):
     session = g.session
     user = session.query(User).filter_by(id=user_id).first()
+    print(f"USER: {user_id} {user}")
     if not user:
         return jsonify({"error": "User not found."}), 404
     return jsonify(user.to_dict()), 200

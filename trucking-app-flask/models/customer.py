@@ -15,17 +15,18 @@ class Customer(Base):
     company = relationship("Company", back_populates="customers")
 
     # One-to-Many relationship with Dispatch Model
-    dispatch = relationship("Dispatch", back_populates="customer")
+    dispatches = relationship("Dispatch", back_populates="customer")
 
     def __init__(self, company_id, customer_name):
         self.company_id = company_id
         self.customer_name = customer_name
 
     def __repr__(self):
-        return f"CUSTOMER: ({self.customer_id}) {self.customer_name}"
+        return f"CUSTOMER: ({self.customer_id}) {self.customer_name} {self.company_id}"
 
     def to_dict(self):
         return {
             "customer_id": self.customer_id,
-            "customer_name": self.customer_name
+            "customer_name": self.customer_name, 
+            "company_id": self.company_id
         }

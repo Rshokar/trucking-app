@@ -1,8 +1,8 @@
 import sys
 sys.path.append('../')
-import pytest
-from config.db import Session
 from app import create_app
+from config.db import Session
+import pytest
 
 
 @pytest.fixture()
@@ -19,6 +19,7 @@ def session():
     yield session
     session.rollback()
     session.close()
+
 
 @pytest.fixture()
 def client(app):

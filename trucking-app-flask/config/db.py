@@ -32,9 +32,7 @@ connection = engine.connect()
 print("--|--Connection to the database is successful--|--")
 
 # If development clear all database
-if (IS_PRODUCTION == "development"):
-    print("--|--Drop all tables--|--")
-    Base.metadata.drop_all(engine)
+Base.metadata.drop_all(engine)
 
 print("--|--Creating Tables--|--")
 # Create all tables if not already there
@@ -43,7 +41,4 @@ Base.metadata.create_all(engine)
 # Create a session
 Session = sessionmaker(bind=engine)
 
-# Add data if in development
-if IS_PRODUCTION == "development":
-    loadDB(Session(), int(TEST_DATA_NUM_USERS))
-    # Call loader function
+loadDB(Session(), 50)

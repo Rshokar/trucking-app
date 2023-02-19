@@ -1,5 +1,6 @@
 from flask import jsonify, request, Blueprint, abort
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy import and_
 from config.db import Session
 from models.company import Company
 from models.customer import Customer
@@ -68,7 +69,7 @@ def delete_company(company_id):
 @company.route('/<int:company_id>/customers', methods=['POST'])
 def add_customer(company_id):
     session = Session()
-    company = session.query(Company).get(company_id)
+    company = session.query(Company).filter_by(company_id=company_id)
 
     if not company:
         return jsonify({'error': 'Company not found'}), 404
@@ -89,12 +90,16 @@ def add_customer(company_id):
 def delete_customer(company_id, customer_id):
     session = Session()
     # get the company
-    company = session.query(Company).get(company_id)
+    company = session.query(Company).filter_by(company_id=company_id)
     if not company:
         abort(404, description="Company not found")
 
     # get the customer
-    customer = session.query(Customer).get(customer_id)
+    customer = session.query(Customer).filter(and_(
+        Customer.company_id.like(company_id),
+        Customer.customer_id.like(customer_id)
+        )).first()
+    
     if not customer:
         abort(404, description="Customer not found")
 
@@ -107,7 +112,6 @@ def delete_customer(company_id, customer_id):
     # delete the customer
     session.delete(customer)
     session.commit()
-    session.cloes()
 
     return jsonify({"message": f"Customer {customer_id} deleted from company {company_id}"}), 200
 
@@ -115,21 +119,21 @@ def delete_customer(company_id, customer_id):
 @company.route('<int:company_id>/customers/<int:customer_id>', methods=['PUT'])
 def update_customer(company_id, customer_id):
     session = Session()
-    company = session.query(Company).get(company_id)
+    company = session.query(Company).filter_by(company_id=company_id)
     if company is None:
         return jsonify({'error': 'Company not found'}), 404
 
-    customer = session.query(Customer).get(customer_id)
+    customer = session.query(Customer).filter(and_(
+        Customer.company_id.like(company_id),
+        Customer.customer_id.like(customer_id)
+        )).first()
+    
     if customer is None:
         return jsonify({'error': 'Customer not found'}), 404
-
-    if customer not in company.customers:
-        return jsonify({'error': 'Customer is not associated with the company'}), 400
 
     request_data = request.get_json()
     if 'customer_name' in request_data:
         customer.customer_name = request_data['customer_name']
         session.commit()
 
-    session.close()
     return jsonify({'message': 'Customer updated successfully', 'customer': customer.to_dict()})

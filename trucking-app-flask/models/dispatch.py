@@ -14,10 +14,10 @@ class Dispatch(Base):
     date = Column("date", DateTime)
 
     # One-to-Many relationship with Dispatch model
-    company = relationship("Company", back_populates="dispatch")
+    company = relationship("Company", back_populates="dispatches")
 
     # One-to-Many relationship with Customer model
-    customer = relationship("Customer", back_populates="dispatch")
+    customer = relationship("Customer", back_populates="dispatches")
 
     def __init__(self, id, company, customer, notes, date):
         self.dispatch_id = id

@@ -14,7 +14,7 @@ class Company(Base):
         "Customer", back_populates="company", cascade="all, delete-orphan")
 
     # One-to-Many relationship with Dispatch Model
-    dispatch = relationship(
+    dispatches = relationship(
         "Dispatch", back_populates="company", cascade="all, delete-orphan")
 
     def __init__(self, owner_id, name):
