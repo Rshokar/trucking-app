@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, CHAR, DateTime
+from sqlalchemy import Column, Integer, String, ForeignKey, CHAR, DateTime, ForeignKeyConstraint
 from models.model import Base
 from sqlalchemy.orm import relationship
 
@@ -18,6 +18,9 @@ class Dispatch(Base):
 
     # One-to-Many relationship with Customer model
     customer = relationship("Customer", back_populates="dispatches")
+    
+        # Define foreign key constraint with ON DELETE RESTRICT
+    __table_args__ = (ForeignKeyConstraint(['customer_id'], ['dispatch.customer_id'], ondelete='RESTRICT'), )
 
     def __init__(self, id, company, customer, notes, date):
         self.dispatch_id = id

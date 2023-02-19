@@ -1,4 +1,4 @@
-from flask import jsonify, request, Blueprint, abort
+from flask import jsonify, request, Blueprint, abort, g
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy import and_
 from config.db import Session
@@ -12,9 +12,8 @@ company = Blueprint('company', __name__)
 
 @company.route('/<int:company_id>', methods=['GET'])
 def get_company(company_id):
-    session = Session()
+    session = g.session
     company = session.query(Company).filter_by(company_id=company_id).first()
-    session.close()
     if not company:
         return jsonify({"error": "Company not found."}), 404
     return jsonify(company.to_dict()), 200
@@ -23,7 +22,7 @@ def get_company(company_id):
 # POST operation (create a new company)
 @company.route('/', methods=['POST'])
 def create_company():
-    session = Session()
+    session = g.session
     company = Company(owner_id=request.json.get('owner_id'),
                       company_name=request.json.get('company_name'))
     session.add(company)
@@ -32,15 +31,14 @@ def create_company():
     except IntegrityError:
         session.rollback()
         return jsonify({"error": "Company already exists."}), 409
-    finally:
-        session.close()
+
     return jsonify(company.to_dict()), 201
 
 
 # PUT operation (update an existing company)
 @company.route('/<int:company_id>', methods=['PUT'])
 def update_company(company_id):
-    session = Session()
+    session = g.session
     company = session.query(Company).filter_by(company_id=company_id).first()
     if not company:
         return jsonify({"error": "Company not found."}), 404
@@ -49,26 +47,24 @@ def update_company(company_id):
         'company_name', company.company_name)
     session.add(company)
     session.commit()
-    session.close()
     return jsonify(company.to_dict()), 200
 
 
 # DELETE operation (delete an existing company)
 @company.route('/<int:company_id>', methods=['DELETE'])
 def delete_company(company_id):
-    session = Session()
+    session = g.session
     company = session.query(Company).filter_by(company_id=company_id).first()
     if not company:
         return jsonify({"error": "Company not found."}), 404
     session.delete(company)
     session.commit()
-    session.close()
     return '', 204
 
 
 @company.route('/<int:company_id>/customers', methods=['POST'])
 def add_customer(company_id):
-    session = Session()
+    session = g.session
     company = session.query(Company).filter_by(company_id=company_id)
 
     if not company:
@@ -88,7 +84,7 @@ def add_customer(company_id):
 
 @company.route('/<int:company_id>/customers/<int:customer_id>', methods=['DELETE'])
 def delete_customer(company_id, customer_id):
-    session = Session()
+    session = g.session
     # get the company
     company = session.query(Company).filter_by(company_id=company_id)
     if not company:
@@ -118,7 +114,7 @@ def delete_customer(company_id, customer_id):
 
 @company.route('<int:company_id>/customers/<int:customer_id>', methods=['PUT'])
 def update_customer(company_id, customer_id):
-    session = Session()
+    session = g.session
     company = session.query(Company).filter_by(company_id=company_id)
     if company is None:
         return jsonify({'error': 'Company not found'}), 404

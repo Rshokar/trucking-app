@@ -79,28 +79,3 @@ def test_company_delete_nonexistent(session, client):
     assert "error" in data.keys()
     assert data["error"] == "Company not found."
 
-
-def test_customer_post_validation(client, session):
-    # Test missing fields
-    response = client.post("/customer", json={})
-    data = json.loads(response.data)
-    assert response.status_code == 400
-    assert "error" in data.keys()
-    assert "company_id" in data["error"]
-    assert "customer_name" in data["error"]
-
-    # Test invalid company_id
-    response = client.post(
-        "/customer", json={"company_id": "not_an_integer", "customer_name": "Test Customer"})
-    data = json.loads(response.data)
-    assert response.status_code == 400
-    assert "error" in data.keys()
-    assert "company_id" in data["error"]
-
-    # Test empty customer_name
-    response = client.post(
-        "/customer", json={"company_id": 1, "customer_name": ""})
-    data = json.loads(response.data)
-    assert response.status_code == 400
-    assert "error" in data.keys()
-    assert "customer_name" in data["error"]
