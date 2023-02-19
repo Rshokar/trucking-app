@@ -1,5 +1,5 @@
 from config.db import Session
-from routes import user, auth, billing_ticket, rfo, dispatch, company
+from routes import v1
 from flask import Flask, g
 from dotenv import load_dotenv
 load_dotenv()
@@ -15,12 +15,7 @@ def create_app():
     app = Flask(__name__)
 
     # Register all endpoints
-    app.register_blueprint(user, url_prefix="/user")
-    app.register_blueprint(auth, url_prefix="/auth")
-    app.register_blueprint(billing_ticket, url_prefix="/billing_ticket")
-    app.register_blueprint(rfo, url_prefix="/rfo")
-    app.register_blueprint(dispatch, url_prefix="/dispatch")
-    app.register_blueprint(company, url_prefix="/company")
+    app.register_blueprint(v1, url_prefix="/v1")
 
     # Function to create a session for each request
     @app.before_request

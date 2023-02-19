@@ -1,7 +1,7 @@
 import pytest
 import json
 from config_test import app, client
-END_POINT = "auth"
+END_POINT = "v1/auth"
 
 
 @pytest.mark.usefixtures("client")

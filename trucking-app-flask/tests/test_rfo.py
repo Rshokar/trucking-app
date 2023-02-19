@@ -1,7 +1,7 @@
 import pytest
 import json
 from config_test import app, client
-END_POINT = "rfo"
+END_POINT = "v1/rfo"
 
 
 @pytest.mark.usefixtures("client")

@@ -2,7 +2,7 @@ import pytest
 import json
 from config_test import app, client, session
 from models.company import Company
-END_POINT = "company"
+END_POINT = "v1/company"
 
 
 def test_company_get(client, session):

@@ -2,7 +2,7 @@ import pytest
 import json
 from config_test import app, client, session
 from models.customer import Customer
-END_POINT = "company/customers"
+END_POINT = "v1/company/customers"
 
 
 def test_customer_post(client, session):
@@ -17,7 +17,7 @@ def test_customer_post(client, session):
         data=json.dumps({"name": customer_name}),
         content_type="application/json"
     )
-
+    print(f"DATA: {response.data}" )
     data = json.loads(response.data)
     
     assert response.status_code == 201

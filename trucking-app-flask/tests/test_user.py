@@ -3,7 +3,7 @@ import json
 from config_test import app, client
 import os
 
-END_POINT = "/user"
+END_POINT = "v1/user"
 
 # Get test data
 with open('./data/user_test.json') as json_file:

@@ -5,11 +5,10 @@ from models import Company, Customer
 
 customers = Blueprint("customers", __name__)
 
-@customers.route('/<int:company_id>/', methods=['POST'])
+@customers.route('/<int:company_id>', methods=['POST'])
 def add_customer(company_id):
     session = g.session
     company = session.query(Company).filter_by(company_id=company_id)
-
     if not company:
         return jsonify({'error': 'Company not found'}), 404
 

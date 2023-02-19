@@ -1,7 +1,7 @@
 import pytest
 import json
 from config_test import app, client
-END_POINT = "billing_ticket"
+END_POINT = "v1/billing_ticket"
 
 
 @pytest.mark.usefixtures("client")

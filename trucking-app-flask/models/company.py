@@ -9,8 +9,8 @@ class Company(Base):
     owner_id = Column('owner_id', Integer, ForeignKey("users.id"))
     company_name = Column("company_name", String(200))
     
-    customers = relationship("Customer", backref="customers", lazy=True)
-    dispatches = relationship("Dispatch", backref="dispatches", lazy=True)
+    customers = relationship("Customer", backref="company", lazy=True, cascade="delete")
+    dispatches = relationship("Dispatch", backref="company", lazy=True, cascade="delete")
 
     def __init__(self, owner_id, name):
         self.owner_id = owner_id
