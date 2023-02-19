@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, CHAR
+from sqlalchemy import Column, Integer, String, ForeignKey, CHAR, Boolean
 from sqlalchemy.orm import relationship
 from models.model import Base
 
@@ -9,6 +9,7 @@ class Customer(Base):
     company_id = Column('company_id', Integer,
                         ForeignKey('companies.company_id'))
     customer_name = Column('customer_name', String(200))
+    deletes = Column('deleted', Boolean(), default=False)
 
     # Many-to-One relationship with Company model
     company = relationship("Company", back_populates="customers")
@@ -16,9 +17,9 @@ class Customer(Base):
     # One-to-Many relationship with Dispatch Model
     dispatch = relationship("Dispatch", back_populates="customer")
 
-    def __init__(self, company_id, name):
+    def __init__(self, company_id, customer_name):
         self.company_id = company_id
-        self.customer_name = name
+        self.customer_name = customer_name
 
     def __repr__(self):
         return f"CUSTOMER: ({self.customer_id}) {self.customer_name}"

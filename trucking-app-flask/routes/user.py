@@ -7,29 +7,10 @@ user = Blueprint('user', __name__)
 # GET operation (get user by ID)
 
 
-def get_session():
-    if 'session' not in g:
-        g.session = Session()
-    return g.session
-
-
-@user.before_request
-def before_request():
-    get_session()
-
-
-@user.teardown_request
-def teardown_request(exception=None):
-    session = g.pop('session', None)
-    if session is not None:
-        session.close()
-
 # GET operation (get user by ID)
-
-
 @user.route('/<int:user_id>', methods=['GET'])
 def get_user(user_id):
-    session = get_session()
+    session = g.session
     user = session.query(User).filter_by(id=user_id).first()
     if not user:
         return jsonify({"error": "User not found."}), 404
@@ -41,7 +22,7 @@ def get_user(user_id):
 @user.route('/', methods=['POST'])
 def create_user():
     data = request.get_json()
-    session = get_session()
+    session = g.session
     try:
         user = User(type=data['type'], email=data['email'],
                     password=data['password'])
@@ -58,7 +39,7 @@ def create_user():
 
 @user.route('/<int:user_id>', methods=['PUT'])
 def update_user(user_id):
-    session = get_session()
+    session = g.session
     user = session.query(User).filter_by(id=user_id).first()
     if not user:
         return jsonify({"error": "User not found."}), 404
@@ -80,7 +61,7 @@ def update_user(user_id):
 
 @user.route('/<int:user_id>', methods=['DELETE'])
 def delete_user(user_id):
-    session = get_session()
+    session = g.session
     user = session.query(User).filter_by(id=user_id).first()
     if not user:
         return jsonify({"error": "User not found."}), 404

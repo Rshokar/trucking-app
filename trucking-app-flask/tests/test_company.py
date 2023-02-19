@@ -5,8 +5,6 @@ from models.company import Company
 END_POINT = "company"
 
 
-
-
 def test_company_get(client, session):
     company = session.query(Company).first()
 
@@ -58,7 +56,7 @@ def test_company_put_nonexistent(session, client):
         json=payload
     )
     data = json.loads(response.data)
-    
+
     assert response.status_code == 404
     assert "error" in data.keys()
     assert data["error"] == "Company not found."
@@ -76,8 +74,33 @@ def test_company_delete_nonexistent(session, client):
     response = client.delete(f"/{END_POINT}/1000")
 
     data = json.loads(response.data)
-    
-    
+
     assert response.status_code == 404
     assert "error" in data.keys()
     assert data["error"] == "Company not found."
+
+
+def test_customer_post_validation(client, session):
+    # Test missing fields
+    response = client.post("/customer", json={})
+    data = json.loads(response.data)
+    assert response.status_code == 400
+    assert "error" in data.keys()
+    assert "company_id" in data["error"]
+    assert "customer_name" in data["error"]
+
+    # Test invalid company_id
+    response = client.post(
+        "/customer", json={"company_id": "not_an_integer", "customer_name": "Test Customer"})
+    data = json.loads(response.data)
+    assert response.status_code == 400
+    assert "error" in data.keys()
+    assert "company_id" in data["error"]
+
+    # Test empty customer_name
+    response = client.post(
+        "/customer", json={"company_id": 1, "customer_name": ""})
+    data = json.loads(response.data)
+    assert response.status_code == 400
+    assert "error" in data.keys()
+    assert "customer_name" in data["error"]

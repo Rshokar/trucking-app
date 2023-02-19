@@ -1,7 +1,8 @@
-from flask import jsonify, request, Blueprint
+from flask import jsonify, request, Blueprint, abort
 from sqlalchemy.exc import IntegrityError
 from config.db import Session
 from models.company import Company
+from models.customer import Customer
 
 company = Blueprint('company', __name__)
 
@@ -30,6 +31,8 @@ def create_company():
     except IntegrityError:
         session.rollback()
         return jsonify({"error": "Company already exists."}), 409
+    finally:
+        session.close()
     return jsonify(company.to_dict()), 201
 
 
@@ -45,6 +48,7 @@ def update_company(company_id):
         'company_name', company.company_name)
     session.add(company)
     session.commit()
+    session.close()
     return jsonify(company.to_dict()), 200
 
 
@@ -57,4 +61,75 @@ def delete_company(company_id):
         return jsonify({"error": "Company not found."}), 404
     session.delete(company)
     session.commit()
+    session.close()
     return '', 204
+
+
+@company.route('/<int:company_id>/customers', methods=['POST'])
+def add_customer(company_id):
+    session = Session()
+    company = session.query(Company).get(company_id)
+
+    if not company:
+        return jsonify({'error': 'Company not found'}), 404
+
+    data = request.get_json()
+
+    if 'name' not in data:
+        return jsonify({'error': 'Name is required'}), 400
+
+    customer = Customer(company_id=company_id, customer_name=data['name'])
+
+    session.add(customer)
+    session.commit()
+    return jsonify(customer.to_dict()), 201
+
+
+@company.route('/<int:company_id>/customers/<int:customer_id>', methods=['DELETE'])
+def delete_customer(company_id, customer_id):
+    session = Session()
+    # get the company
+    company = session.query(Company).get(company_id)
+    if not company:
+        abort(404, description="Company not found")
+
+    # get the customer
+    customer = session.query(Customer).get(customer_id)
+    if not customer:
+        abort(404, description="Customer not found")
+
+    # check if the customer has any dispatches
+    if customer.dispatches:
+        customer.deleted = True
+        session.commit()
+        return jsonify({"message": f"Customer {customer_id} deleted (marked as deleted due to dependent dispatches)"}), 200
+
+    # delete the customer
+    session.delete(customer)
+    session.commit()
+    session.cloes()
+
+    return jsonify({"message": f"Customer {customer_id} deleted from company {company_id}"}), 200
+
+
+@company.route('<int:company_id>/customers/<int:customer_id>', methods=['PUT'])
+def update_customer(company_id, customer_id):
+    session = Session()
+    company = session.query(Company).get(company_id)
+    if company is None:
+        return jsonify({'error': 'Company not found'}), 404
+
+    customer = session.query(Customer).get(customer_id)
+    if customer is None:
+        return jsonify({'error': 'Customer not found'}), 404
+
+    if customer not in company.customers:
+        return jsonify({'error': 'Customer is not associated with the company'}), 400
+
+    request_data = request.get_json()
+    if 'customer_name' in request_data:
+        customer.customer_name = request_data['customer_name']
+        session.commit()
+
+    session.close()
+    return jsonify({'message': 'Customer updated successfully', 'customer': customer.to_dict()})
