@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, CHAR, DateTime, ForeignKeyConstraint
+from sqlalchemy import Column, Integer, String, ForeignKey, CHAR, DateTime
 from models.model import Base
 from sqlalchemy.orm import relationship
 
@@ -6,21 +6,13 @@ from sqlalchemy.orm import relationship
 class Dispatch(Base):
     __tablename__ = 'dispatch'
     dispatch_id = Column("dispatch_id", Integer, primary_key=True)
-    company_id = Column("company_id", Integer,
-                        ForeignKey("companies.company_id"))
-    customer_id = Column("customer_id", Integer,
-                         ForeignKey("customer.customer_id"))
+    company_id = Column("company_id", Integer, ForeignKey("company.company_id"), nullable=False)
+    customer_id = Column("customer_id", Integer, ForeignKey("customer.customer_id"), nullable=False)
     notes = Column("notes", String(1000))
     date = Column("date", DateTime)
-
-    # One-to-Many relationship with Dispatch model
-    company = relationship("Company", back_populates="dispatches")
-
-    # One-to-Many relationship with Customer model
-    customer = relationship("Customer", back_populates="dispatches")
     
-        # Define foreign key constraint with ON DELETE RESTRICT
-    __table_args__ = (ForeignKeyConstraint(['customer_id'], ['dispatch.customer_id'], ondelete='RESTRICT'), )
+    customer = relationship("Customer", back_populates="dispatches", )
+    company = relationship("Company", back_populates="dispatches")
 
     def __init__(self, id, company, customer, notes, date):
         self.dispatch_id = id
