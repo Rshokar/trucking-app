@@ -11,7 +11,6 @@ def loadDB(session, num_users):
         session.add(users[i])
         session.add(Company(i + 1, fake.name() + " Ltd"))
         generateCustomers(session, 5, i + 1)
-
     # Before leaving commint everything to db
     session.commit()
     session.close()

@@ -1,10 +1,5 @@
 from config.db import Session
-from routes.rfo import rfo
-from routes.billing_ticket import billing_ticket
-from routes.auth import auth
-from routes.dispatch import dispatch
-from routes.company import company
-from routes.user import user
+from routes import user, auth, billing_ticket, rfo, dispatch, company
 from flask import Flask, g
 from dotenv import load_dotenv
 load_dotenv()

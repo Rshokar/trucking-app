@@ -2,7 +2,7 @@ import pytest
 import json
 from config_test import app, client, session
 from models.customer import Customer
-END_POINT = "customers"
+END_POINT = "company/customers"
 
 
 def test_customer_post(client, session):
@@ -13,7 +13,7 @@ def test_customer_post(client, session):
     customer_name = "Test Customer"
 
     response = client.post(
-        f"/company/{company_id}/{END_POINT}",
+        f"/{END_POINT}/{company_id}",
         data=json.dumps({"name": customer_name}),
         content_type="application/json"
     )
@@ -34,7 +34,7 @@ def test_customer_post_validation(client, session):
         Test customer post validation
     """
     # Test missing fields
-    response = client.post(f"/company/1/{END_POINT}", json={})
+    response = client.post(f"/{END_POINT}/1", json={})
     data = json.loads(response.data)
     
     assert response.status_code == 400
@@ -43,12 +43,12 @@ def test_customer_post_validation(client, session):
 
     # Test invalid company_id
     response = client.post(
-       f"/company/ABC/{END_POINT}", json={"customer_name": "Test Customer"})
+       f"/{END_POINT}/ABC", json={"customer_name": "Test Customer"})
     assert response.status_code == 404
 
     # Test empty customer_name
     response = client.post(
-        f"/company/1/{END_POINT}", json={"customer_name": ""})
+        f"{END_POINT}/1", json={"customer_name": ""})
     data = json.loads(response.data)
     assert response.status_code == 400
     assert "error" in data.keys()
@@ -77,7 +77,7 @@ def test_delete_customer(client, session):
     session.add(customer2)
     session.commit()
 
-    response = client.delete(f"/company/1/{END_POINT}/{customer2.customer_id}")
+    response = client.delete(f"{END_POINT}/1/{customer2.customer_id}")
     assert response.status_code == 200
 
     data = json.loads(response.data)
@@ -101,7 +101,7 @@ def test_update_customer(client, session):
     session.add(customer)
     session.commit()
 
-    response = client.put(f'/company/1/customers/{customer.customer_id}', json={'customer_name': 'New Name'})
+    response = client.put(f'/{END_POINT}/1/{customer.customer_id}', json={'customer_name': 'New Name'})
     data = json.loads(response.data)
     assert response.status_code == 200
     assert "message" in data.keys()
@@ -112,7 +112,7 @@ def test_update_customer(client, session):
     assert data["customer"]["customer_name"] == "New Name"
 
     # Test updating with missing data
-    response = client.put(f'/company/1/customers/{customer.customer_id}', json={'invalid_key': 'Invalid Value'})
+    response = client.put(f'/{END_POINT}/1/{customer.customer_id}', json={'invalid_key': 'Invalid Value'})
     
     assert response.status_code == 200
     data = json.loads(response.data)
@@ -128,7 +128,7 @@ def test_update_customer_not_found(client):
     """
         Updating a non existant customer
     """
-    response = client.put('/company/1/customers/999', json={'customer_name': 'New Customer Name'})
+    response = client.put(f'{END_POINT}/1/999', json={'customer_name': 'New Customer Name'})
     assert response.status_code == 404
     assert response.json == {'error': 'Customer not found'}
     
@@ -139,7 +139,7 @@ def test_update_customer_not_associated_with_company(client, session):
 
     """
     # send a request to update the customer
-    response = client.put(f'/company/1/customers/200', json={'customer_name': 'New Name'})
+    response = client.put(f'/{END_POINT}/1/200', json={'customer_name': 'New Name'})
 
     # check the response
     print(response.data)
