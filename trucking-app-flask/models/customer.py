@@ -19,7 +19,7 @@ class Customer(Base):
         self.customer_name = customer_name
 
     def __repr__(self):
-        return f"CUSTOMER: ({self.customer_id}) {self.customer_name} {self.company_id}"
+        return f"CUSTOMER: ({self.customer_id}) {self.company_id} {self.customer_name}"
 
     def to_dict(self):
         return {

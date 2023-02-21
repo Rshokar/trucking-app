@@ -1,4 +1,4 @@
-from .user import User
+from .user import User, UserTypes
 from .company import Company
 from .dispatch import Dispatch
 from .customer import Customer

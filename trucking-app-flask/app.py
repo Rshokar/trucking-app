@@ -1,13 +1,26 @@
-from config.db import Session
+import os 
+from config.db import Session, Base, engine
+from utils import loadDB
 from routes import v1
 from flask import Flask, g
 from dotenv import load_dotenv
-load_dotenv()
+
 
 # Load env variables
+load_dotenv()
 
+IS_PRODUCTION = os.environ.get("STATE")
 
-# End points
+if (IS_PRODUCTION != "production"):
+    NUM_USERS = os.environ.get("TEST_DATA_NUM_USERS")
+    # # If development clear all database
+    Base.metadata.drop_all(engine)
+
+    print("--|--Creating Tables--|--")
+    # Create all tables if not already there
+    Base.metadata.create_all(engine)
+
+    loadDB(int(NUM_USERS))
 
 
 def create_app():

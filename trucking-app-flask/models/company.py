@@ -12,7 +12,8 @@ class Company(Base):
     customers = relationship("Customer", backref="company", lazy=True, cascade="delete")
     dispatches = relationship("Dispatch", backref="company", lazy=True, cascade="delete")
 
-    def __init__(self, owner_id, name):
+    def __init__(self, owner_id, name, company_id=0):
+        self.company_id = company_id
         self.owner_id = owner_id
         self.company_name = name
 

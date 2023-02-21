@@ -9,12 +9,11 @@ class Dispatch(Base):
     notes = Column("notes", String(1000))
     date = Column("date", DateTime)
 
-    def __init__(self, id, company, customer, notes, date):
-        self.dispatch_id = id
-        self.company_id = company
-        self.customer = customer
+    def __init__(self, company_id, customer_id, notes, date):
+        self.company_id = company_id
+        self.customer_id = customer_id
         self.notes = notes
         self.date = date
 
     def __repr__(self):
-        return f"({self.dispatch_id}) {self.company_id} {self.customer} {self.notes} {self.date}"
+        return f"DISPATCH: ({self.dispatch_id}) {self.company_id} {self.customer_id} {self.date}"

@@ -10,11 +10,11 @@ class Operator(Base):
     operator_name = Column("operator_name", String(100))
     operator_email = Column("operator_email", String(200))
 
-    def __init__(self, id, company, name, email) -> None:
-        self.operator_id = id
-        self.company_id = company
-        self.operator_name = name
-        self.operator_email = email
+    def __init__(self, company_id, operator_name, operator_email, operator_id=0) -> None:
+        self.operator_id = operator_id
+        self.company_id = company_id
+        self.operator_name = operator_name
+        self.operator_email = operator_email
 
     def __repr__(self):
-        return f"({self.operator_id}) {self.company_id} {self.operator_name} {self.operator_email}"
+        return f"OPERATOR: ({self.operator_id}) {self.company_id} {self.operator_name} {self.operator_email}"

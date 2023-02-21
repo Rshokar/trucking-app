@@ -2,7 +2,6 @@ import models
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from models.model import Base
-from .loader import loadDB
 import os
 
 IS_PRODUCTION = os.environ.get("STATE")
@@ -25,20 +24,13 @@ else:
     connection_string = "sqlite:///data.db"
 
 # Create the database engine
-engine = create_engine(connection_string, echo=True)
+engine = create_engine(connection_string)
 
 # Connect to database
 connection = engine.connect()
 print("--|--Connection to the database is successful--|--")
 
-# If development clear all database
-Base.metadata.drop_all(engine)
-
-print("--|--Creating Tables--|--")
-# Create all tables if not already there
-Base.metadata.create_all(engine)
 
 # Create a session
 Session = sessionmaker(bind=engine)
 
-loadDB(Session(), 50)
