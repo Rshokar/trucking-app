@@ -1,15 +1,9 @@
 import pytest
 import json
-from config_test import app, client, session
+from config_test import app, client, session, user
 from models import User
 from utils.loader import UserFactory 
 END_POINT = "v1/user"
-
-    
-@pytest.fixture
-def user():
-    user = UserFactory.create()
-    return user
 
 
 @pytest.mark.usefixtures("client")

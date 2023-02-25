@@ -1,16 +1,12 @@
 import pytest
 import json
-from config_test import app, client, session
+from config_test import app, client, session, company
 from models import Company, User
 from utils.loader import UserFactory, CompanyFactory
 END_POINT = "v1/company"
 
 
-@pytest.fixture
-def company(session): 
-    user = UserFactory.create()
-    company = CompanyFactory.create(owner_id=user.id)
-    return company
+
 
 
 def test_company_get(client, company):

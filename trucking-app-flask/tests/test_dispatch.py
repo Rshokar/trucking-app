@@ -1,16 +1,15 @@
 import pytest
 import json
 from config_test import app, client, session
-from models import User, Company, Dispatch
 from datetime import datetime
 END_POINT = "v1/dispatch"
 
 @pytest.fixture
 def company(session): 
-    user = session.query(User).filter_by(id=1)
+    user = session.query()
 
 
-def test_get_dispatch_success(client):
+def test_get_dispatch_success(client, session):
     """
         Test valid get request
     """
