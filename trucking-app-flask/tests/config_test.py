@@ -1,6 +1,11 @@
 import sys
 import os
 sys.path.append('../')
+
+# Switch State to test so that app does not create default data
+os.environ.setdefault("STATE", 'test')
+
+
 from app import create_app
 from config.db import Session
 from utils.loader import UserFactory, CompanyFactory, CustomerFactory
