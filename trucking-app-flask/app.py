@@ -12,6 +12,7 @@ load_dotenv()
 IS_PRODUCTION = os.environ.get("STATE")
 
 if (IS_PRODUCTION != "production"):
+    print("FUCK MY ASS")
     NUM_USERS = os.environ.get("TEST_DATA_NUM_USERS")
     # # If development clear all database
     Base.metadata.drop_all(engine)

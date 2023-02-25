@@ -12,6 +12,7 @@ session = Session()
 fake = F()
 
 def loadDB(num_users):
+    print("LOADING DATABSE WITH RANDOM DATA")
     
     for index in range(num_users): 
         user = UserFactory.create()
