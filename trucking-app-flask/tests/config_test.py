@@ -17,6 +17,7 @@ def session():
     print("NEW SESSION")
     session = Session()
     yield session
+    print("CLOSE SESSION")
     session.rollback()
     session.close()
 
