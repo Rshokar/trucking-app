@@ -44,3 +44,15 @@ class UserController:
             return make_response({"error": "Email already used."}, 409)
         except OperationalError as e:
             print(f"ERROR: {e}")
+            
+    def delete_user(session, user_id):
+        user = session.query(User).filter_by(id=user_id).first()
+        if not user:
+            return make_response({"error": "User not found."}, 404)
+
+        # remove the user object from the database
+        session.delete(user)
+        session.commit()
+
+        # return a success message
+        return make_response({"message": "User deleted successfully."}, 200)

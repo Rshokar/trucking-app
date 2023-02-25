@@ -33,13 +33,5 @@ def update_user(user_id):
 @user.route('/<int:user_id>', methods=['DELETE'])
 def delete_user(user_id):
     session = g.session
-    user = session.query(User).filter_by(id=user_id).first()
-    if not user:
-        return jsonify({"error": "User not found."}), 404
+    return UserController.delete_user(session=session, user_id=user_id)
 
-    # remove the user object from the database
-    session.delete(user)
-    session.commit()
-
-    # return a success message
-    return jsonify({"message": "User deleted successfully."}), 200
