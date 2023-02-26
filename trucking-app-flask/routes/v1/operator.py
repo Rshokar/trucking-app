@@ -4,6 +4,8 @@ from controllers.operator_controller import OperatorController
 operator = Blueprint("operator", __name__)
 
 @operator.route("/", methods=["GET"])
+
+
 def GET():
     return operatorController.GET()
 
