@@ -10,7 +10,7 @@ class OperatorController:
 
         #logic if successful, logic if not
 
-    def add_operator(session, request):
+    def create_operator(session, request):
         #Succesful creation of operator
 
 
