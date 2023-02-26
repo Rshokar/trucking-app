@@ -18,3 +18,12 @@ class Operator(Base):
 
     def __repr__(self):
         return f"OPERATOR: ({self.operator_id}) {self.company_id} {self.operator_name} {self.operator_email}"
+    
+    
+    def to_dict(self): 
+        return {
+            "operator_id": self.operator_id,  
+            "company_id": self.company_id,
+            "operator_name": self.operator_name, 
+            "operator_email" : self.operator_email
+        }

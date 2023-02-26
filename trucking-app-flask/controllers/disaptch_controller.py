@@ -32,7 +32,7 @@ class DispatchController:
         notes = request_data.get('notes')
         date = request_data.get('date')
 
-        company = session.query(Company).filter_by(company_id=company_id)
+        company = session.query(Company).filter_by(company_id=company_id).first()
         if company is None:
             return make_response({'error': 'Company not found'}, 404)
         customer = session.query(Customer).filter_by(customer_id=customer_id, company_id=company_id).first()
