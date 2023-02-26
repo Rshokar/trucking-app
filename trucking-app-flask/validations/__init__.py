@@ -1,1 +1,1 @@
-from .dispatch_validations import disptch_validation
+from .dispatch_validations import dispatch_validation

@@ -1,5 +1,6 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, CHAR, DateTime
 from models.model import Base
+
 class Dispatch(Base):
     __tablename__ = 'dispatch'
     dispatch_id = Column("dispatch_id", Integer, primary_key=True)

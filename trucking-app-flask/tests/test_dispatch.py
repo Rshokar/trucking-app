@@ -58,7 +58,7 @@ def test_create_dispatch(client, customer):
     assert datetime.strptime(dispatch_data['date'], '%a, %d %b %Y %H:%M:%S GMT') == datetime.strptime(
         data['date'], '%Y-%m-%d %H:%M:%S')
 
-def test_create_invalid_dispatch(client, customer):
+def test_create_dispatch_missing_attributes(client, customer):
     """_summary_
 
         Create a valid dispatch with missing parameters
@@ -100,4 +100,55 @@ def test_create_invalid_dispatch(client, customer):
         'notes': 'Test dispatch',
     }
     response = client.post(f'/{END_POINT}/', json=payload)
+    assert response.status_code == 400
+    
+def test_create_dispatch_invalid_attributes(client, customer):
+    """_summary_
+
+    Passes invalid attributes to endpoint
+    
+    Args:
+        clinet (_type_): _description_
+        customer (_type_): _description_
+    """
+    
+    # Alphanumeric company_id
+    payload = {
+        'company_id': "ABC1",
+        'customer_id':  customer.customer_id,
+        'notes': 'Test dispatch',
+        'date': '2022-02-21 10:00:00'
+    }
+    response = client.post(f"/{END_POINT}/", json=payload)
+    assert response.status_code == 400
+    
+    # Alphanumeric customer_id
+    payload = {
+        'company_id': customer.company.company_id,
+        'customer_id':  "ABC1",
+        'notes': 'Test dispatch',
+        'date': '2022-02-21 10:00:00'
+    }
+    response = client.post(f"/{END_POINT}/", json=payload)
+    assert response.status_code == 400
+    
+    
+    # Invalid Date
+    payload = {
+        'company_id': customer.company.company_id,
+        'customer_id':  customer.customer_id,
+        'notes': 'Test dispatch',
+        'date': '10:00:00'
+    }
+    response = client.post(f"/{END_POINT}/", json=payload)
+    assert response.status_code == 400
+    
+    # Invalid Date
+    payload = {
+        'company_id': customer.company.company_id,
+        'customer_id':  customer.customer_id,
+        'notes': 'Test dispatch',
+        'date': '2022-02-21'
+    }
+    response = client.post(f"/{END_POINT}/", json=payload)
     assert response.status_code == 400
