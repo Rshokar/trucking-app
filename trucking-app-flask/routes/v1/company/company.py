@@ -3,7 +3,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy import and_
 from config.db import Session
 from models.company import Company
-from models.customer import Customer
+from controllers import CompanyController
 
 company = Blueprint('company', __name__)
 
@@ -13,10 +13,7 @@ company = Blueprint('company', __name__)
 @company.route('/<int:company_id>', methods=['GET'])
 def get_company(company_id):
     session = g.session
-    company = session.query(Company).filter_by(company_id=company_id).first()
-    if not company:
-        return jsonify({"error": "Company not found."}), 404
-    return jsonify(company.to_dict()), 200
+    return CompanyController.get_copmany(session=session, company_id=company_id)
 
 
 # POST operation (create a new company)
