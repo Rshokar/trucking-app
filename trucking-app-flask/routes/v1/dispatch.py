@@ -2,6 +2,9 @@ from flask import Blueprint, g, jsonify, request
 from models import Dispatch, Company, Customer
 from datetime import datetime
 from controllers import DispatchController
+from validations import disptch_validation
+from utils import make_response
+import jsonschema
 
 dispatch = Blueprint("dispatch", __name__)
 
@@ -16,25 +19,11 @@ def get_dispatch(dispatch_id):
 @dispatch.route('/', methods=['POST'])
 def create_dispatch():
     session = g.session
-    request_data = request.get_json()
-    company_id = request_data.get('company_id')
-    customer_id = request_data.get('customer_id')
-    notes = request_data.get('notes')
-    date = request_data.get('date')
-
-    company = session.query(Company).filter_by(company_id=company_id)
-    if company is None:
-        return jsonify({'error': 'Company not found'}), 404
-    customer = session.query(Customer).filter_by(
-        customer_id=customer_id).first()
-    if customer is None:
-        return jsonify({'error': 'Customer not found'}), 404
-    dispatch = Dispatch(company_id, customer_id, notes,
-                        datetime.strptime(date, '%Y-%m-%d %H:%M:%S'))
-    session.add(dispatch)
-    session.commit()
-    return jsonify({'message': 'Dispatch created successfully', 'dispatch': dispatch.to_dict()}), 201
-
+    try:
+        jsonschema.validate(request.json, disptch_validation)
+    except jsonschema.ValidationError:
+        return make_response({"error": "Invalid Request Data"}, 400)
+    return DispatchController.create_dispatch(session=session, request=request)
 
 @dispatch.route('/<int:dispatch_id>', methods=['PUT'])
 def update_dispatch(dispatch_id):

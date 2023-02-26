@@ -8,7 +8,7 @@ os.environ.setdefault("STATE", 'test')
 
 from app import create_app
 from config.db import Session
-from utils.loader import UserFactory, CompanyFactory, CustomerFactory
+from utils.loader import UserFactory, CompanyFactory, CustomerFactory, DispatchFactory
 import pytest
 
 
@@ -51,3 +51,14 @@ def customer():
     company = CompanyFactory.create(owner_id=user.id)
     customer = CustomerFactory.create(company_id=company.company_id)
     return customer
+
+@pytest.fixture
+def dispatch():
+    user = UserFactory.create()
+    company = CompanyFactory.create(owner_id=user.id)
+    customer = CustomerFactory.create(company_id=company.company_id)
+    dispatch = DispatchFactory(
+        company_id=company.company_id,
+        customer_id=customer.customer_id
+        )
+    return dispatch
