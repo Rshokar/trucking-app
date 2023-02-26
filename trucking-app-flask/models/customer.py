@@ -10,7 +10,6 @@ class Customer(Base):
     customer_name = Column('customer_name', String(200), nullable=False)
     deletes = Column('deleted', Boolean(), default=False, nullable=False)
 
-
     dispatches = relationship("Dispatch", backref="customer", lazy=True)
 
 

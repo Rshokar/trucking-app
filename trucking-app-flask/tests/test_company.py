@@ -1,13 +1,15 @@
 import pytest
 import json
-from config_test import app, client, session
-from models.company import Company
+from config_test import app, client, session, company
+from models import Company, User
+from utils.loader import UserFactory, CompanyFactory
 END_POINT = "v1/company"
 
 
-def test_company_get(client, session):
-    company = session.query(Company).first()
 
+
+
+def test_company_get(client, company):
     response = client.get(f"/{END_POINT}/{company.company_id}")
 
     data = json.loads(response.data)
@@ -20,14 +22,12 @@ def test_company_get(client, session):
     assert "company_name" in data.keys()
 
 
-def test_company_get_nonexistent(session, client):
+def test_company_get_nonexistent(client):
     response = client.get(f"/{END_POINT}/1000")
-
     assert response.status_code == 404
 
 
-def test_company_put(session, client):
-    company = session.query(Company).first()
+def test_company_put(client, company):
     headers = {"Content-Type": "application/json"}
     payload = {"company_name": "AKS Trucking Ltd"}
     response = client.put(
@@ -47,7 +47,7 @@ def test_company_put(session, client):
     assert payload["company_name"] == data["company_name"]
 
 
-def test_company_put_nonexistent(session, client):
+def test_company_put_nonexistent(client):
     headers = {"Content-Type": "application/json"}
     payload = {"company_name": "AKS Trucking Ltd"}
     response = client.put(
@@ -62,15 +62,12 @@ def test_company_put_nonexistent(session, client):
     assert data["error"] == "Company not found."
 
 
-def test_company_delete(session, client):
-    company = session.query(Company).first()
-
+def test_company_delete(client, company):
     response = client.delete(f"/{END_POINT}/{company.company_id}")
-
     assert response.status_code == 204
 
 
-def test_company_delete_nonexistent(session, client):
+def test_company_delete_nonexistent(client):
     response = client.delete(f"/{END_POINT}/1000")
 
     data = json.loads(response.data)

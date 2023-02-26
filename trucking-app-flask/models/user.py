@@ -1,6 +1,6 @@
 import re
 from sqlalchemy import Column, Integer, String
-from sqlalchemy.orm import validates
+from sqlalchemy.orm import validates, relationship
 from models.model import Base
 from config import db
 from enum import Enum
@@ -34,6 +34,8 @@ class User(Base):
         if type != UserTypes.DISPATCHER.value:
             raise ValueError("Invalid Type")
         return type
+    
+    company = relationship("Company", backref="owner", lazy=True, cascade="delete", uselist=False)
 
     def __init__(self, type, email, password):
         self.type = type

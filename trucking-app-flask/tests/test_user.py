@@ -1,21 +1,17 @@
 import pytest
 import json
-from config_test import app, client
-import os
-
+from config_test import app, client, session, user
+from models import User
+from utils.loader import UserFactory 
 END_POINT = "v1/user"
-
-# Get test data
-with open('./data/user_test.json') as json_file:
-    test_data = json.load(json_file)
 
 
 @pytest.mark.usefixtures("client")
-def test_user_get(client):
+def test_user_get(client, user):
     """
     See if we can successfully perform GET requests on existing users and return their information
     """
-    response = client.get(f"{END_POINT}/1")
+    response = client.get(f"{END_POINT}/{user.id}")
 
     # convert response to dictionary
     data = response.data.decode("utf-8")
@@ -32,7 +28,9 @@ def test_user_get(client):
 
 def test_user_get_nonexistant_user(client):
     """
-    Verify that we can perform GET requests with user IDs that don't exist in DB without crashing the app or returning valid users
+        Verify that we can perform GET requests with user IDs
+        that don't exist in DB without crashing the app or returning
+        valid users
     """
     response = client.get(f"{END_POINT}/1000")
 
@@ -60,8 +58,13 @@ def test_user_post(client):
     """
         Create a valid user
     """
+    payload = {
+        "type": "dispatcher",
+        "password": "Testing1", 
+        "email": "test@demo.com"
+        
+    }
     headers = {"Content-Type": "application/json"}
-    payload = test_data['User']
     response = client.post(
         f"{END_POINT}/",
         headers=headers,
@@ -79,43 +82,111 @@ def test_user_post(client):
 
 
 @pytest.mark.usefixtures("client")
-def test_user_post_invalid_data(client):
+def test_user_post_invalid_type(client):
     """
-    See if errors are returned for invalid user data
+    See if errors are returned for invalid type user data
     """
 
+    # Invaid Type
     headers = {"Content-Type": "application/json"}
-    for user in test_data['InValidUsers']:
-        payload = {
-            "type": user['type'],
-            "password": user['password'],
-            "email": user['email'],
-        }
-        response = client.post(
-            f"{END_POINT}/",
-            headers=headers,
-            json=payload
-        )
+    payload = {
+        "type": "None",
+        "password": "Testing1",
+        "email": "test@demo.com",
+    }
+    response = client.post(f"{END_POINT}/", headers=headers, json=payload)
 
-        # convert response to dictionary
-        data = json.loads(response.data.decode("utf-8"))
-        print(data)
+    # convert response to dictionary
+    data = json.loads(response.data.decode("utf-8"))
 
-        # assertions
-        assert 400 == response.status_code
-        assert user['error'] == data['error']
+    # assertions
+    assert 400 == response.status_code
+    assert "error" in data.keys()
+    
+    
+    # Invaid Emails
+    headers = {"Content-Type": "application/json"}
+    payload = {
+        "type": "None",
+        "password": "Testing",
+        "email": "testdemo.com",
+    }
+    response = client.post(f"{END_POINT}/", headers=headers, json=payload)
 
+    # convert response to dictionary
+    data = json.loads(response.data.decode("utf-8"))
+
+    # assertions
+    assert 400 == response.status_code
+    assert "error" in data.keys()
+    
 
 @pytest.mark.usefixtures("client")
-def test_user_post_duplicate(client):
+def test_user_post_invalid_password(client):
+    """_summary_
+    
+    See if error is returned when a in invalid password is entered
+    """
+    # No Number
+    headers = {"Content-Type": "application/json"}
+    payload = {
+        "type": "None",
+        "password": "Testing",
+        "email": "test@demo.com",
+    }
+    response = client.post(f"{END_POINT}/", headers=headers, json=payload)
+    data = json.loads(response.data.decode("utf-8"))
+    assert 400 == response.status_code
+    assert "error" in data.keys()
+    
+    # No uppercase
+    headers = {"Content-Type": "application/json"}
+    payload = {
+        "type": "None",
+        "password": "testing1",
+        "email": "test@demo.com",
+    }
+    response = client.post(f"{END_POINT}/", headers=headers, json=payload)
+    data = json.loads(response.data.decode("utf-8"))
+    assert 400 == response.status_code
+    assert "error" in data.keys()
+    
+    
+    # No lowercase 
+    headers = {"Content-Type": "application/json"}
+    payload = {
+        "type": "None",
+        "password": "TESTING1",
+        "email": "test@demo.com",
+    }
+    response = client.post(f"{END_POINT}/", headers=headers, json=payload)
+    data = json.loads(response.data.decode("utf-8"))
+    assert 400 == response.status_code
+    assert "error" in data.keys()
+    
+    # Less than 8 charactesr 
+    headers = {"Content-Type": "application/json"}
+    payload = {
+        "type": "None",
+        "password": "Test1",
+        "email": "test@demo.com",
+    }
+    response = client.post(f"{END_POINT}/", headers=headers, json=payload)
+    data = json.loads(response.data.decode("utf-8"))
+    assert 400 == response.status_code
+    assert "error" in data.keys()
+    
+
+@pytest.mark.usefixtures("client")
+def test_user_post_duplicate(client, user):
     """
         Checks to see if an error is returned when creating a
         duplicate user
     """
-
+    payload = user.to_dict()
+    payload["password"] = "Testing1"
     # Create user
     headers = {"Content-Type": "application/json"}
-    payload = test_data['DuplicateUser']
     response = client.post(
         f"{END_POINT}/",
         headers=headers,
@@ -127,26 +198,31 @@ def test_user_post_duplicate(client):
     data = json.loads(data)
 
     # assertions
-    assert payload['type'] == data["type"]
-    assert payload['email'] == data["email"]
-
-    print("User created successfully!")
+    assert response.status == '409 CONFLICT'
+    assert "error" in data.keys()
 
 
 @pytest.mark.usefixtures("client")
-def test_user_put(client):
-    payload = test_data['UpdateUser']
+def test_user_put(client, user):
+    """_summary_
+        Test a valid post request
+    """
     headers = {"Content-Type": "application/json"}
+    payload = user.to_dict()
+    payload["email"] = "update@update.com"
+    payload["type"] = "dispatcher"
+    print(user.to_dict())
+    print(payload)
     response = client.put(
-        f"{END_POINT}/1",
+        f"{END_POINT}/{user.id}",
         headers=headers,
         json=payload
     )
 
     # convert response to dictionary
     data = response.data.decode("utf-8")
-    print(f"DATA: {data}")
     data = json.loads(data)
+    print(f"DATA: {data}")
 
     # assertions
     assert 200 == response.status_code
@@ -158,11 +234,11 @@ def test_user_put(client):
 
 
 @pytest.mark.usefixtures("client")
-def test_user_delete(client):
+def test_user_delete(client, user):
     """
     Deletes an existing user
     """
-    res = client.delete(f"{END_POINT}/1")
+    res = client.delete(f"{END_POINT}/{user.id}")
     # Delete returns a 204 which is no content
 
     data = json.loads(res.data.decode("utf-8"))
