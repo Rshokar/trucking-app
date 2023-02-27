@@ -367,7 +367,7 @@ def test_delete_an_operator(client, operator):
 
 def test_delete_an_non_existant_operator(client, company): 
     """_summary_
-        Try to update an non existant operator
+        Try to delete non existant operator
     Args:
         client (app): _description_
         operator (Operator): Operator Object
@@ -375,6 +375,24 @@ def test_delete_an_non_existant_operator(client, company):
     
     res = client.delete(f"/{END_POINT}/{company.company_id}/999999")
     data = res.json
+    
+    assert res.status_code == 404
+    assert "error" in data.keys()
+    
+    
+
+def test_delete_an_operator_with_non_existant_company(client, operator): 
+    """_summary_
+        Try to delete an operator from a company that does not own it.
+    Args:
+        client (app): _description_
+        operator (Operator): Operator Object
+    """
+    
+    res = client.delete(f"/{END_POINT}/9999999/{operator.operator_id}")
+    data = res.json
+    
+    print(data)
     
     assert res.status_code == 404
     assert "error" in data.keys()

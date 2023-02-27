@@ -72,7 +72,7 @@ class OperatorController:
             Responses: 201 Created
         '''
         operator = session.query(Operator).filter_by(operator_id=operator_id).first()
-        print(f"OPERATOR: {operator is None}")
+        
         if operator is None:
             return make_response({"error": "Operator not found"}, 404)
         if operator.company_id != company_id:
