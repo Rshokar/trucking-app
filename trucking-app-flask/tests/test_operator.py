@@ -317,3 +317,51 @@ def test_update_non_existant_operator(client, company):
     
     assert res.status_code == 404
     assert "error" in data.keys()
+
+def test_update_a_operator_with_duplicate_email(client, operator):
+    """_summary_
+        Try to update an operator with a duplicate email
+    Args:
+        client (_type_): _description_
+        operator (_type_): _description_
+    """
+    # Create operator
+    payload = {
+        "company_id":operator.company_id, 
+        "operator_name": "Keving Gates", 
+        "operator_email": "gator@gatertown.us"
+    }
+    
+    res = client.post(f"/{END_POINT}/", json=payload)
+    data = res.json
+    
+    assert res.status_code == 201
+    
+    payload = {
+        "company_id":operator.company_id, 
+        "operator_name": "Keving Gates", 
+        "operator_email": operator.operator_email
+    }   
+    
+    operator_id = data["operator_id"]
+    
+    res = client.put(f"/{END_POINT}/{operator_id}", json=payload)
+    data = res.json
+
+    assert res.status_code == 400
+    assert "error" in data.keys()
+    
+def test_delete_an_operator(client, operator): 
+    """_summary_
+        Try to update an operator with a duplicate email
+    Args:
+        client (): _description_
+        operator (Operator): Operator Object
+    """
+    
+    res = client.delete(f"/{END_POINT}/{operator.company_id}/{operator.operator_id}")
+    data = res.json
+    
+    assert res.status_code == "200"
+    assert "message" in data.keys()
+    
