@@ -353,7 +353,7 @@ def test_update_a_operator_with_duplicate_email(client, operator):
     
 def test_delete_an_operator(client, operator): 
     """_summary_
-        Try to update an operator with a duplicate email
+        Try to delete an valid operator
     Args:
         client (): _description_
         operator (Operator): Operator Object
@@ -362,6 +362,19 @@ def test_delete_an_operator(client, operator):
     res = client.delete(f"/{END_POINT}/{operator.company_id}/{operator.operator_id}")
     data = res.json
     
-    assert res.status_code == "200"
+    assert res.status_code == 200
     assert "message" in data.keys()
+
+def test_delete_an_non_existant_operator(client, company): 
+    """_summary_
+        Try to update an non existant operator
+    Args:
+        client (app): _description_
+        operator (Operator): Operator Object
+    """
     
+    res = client.delete(f"/{END_POINT}/{company.company_id}/999999")
+    data = res.json
+    
+    assert res.status_code == 404
+    assert "error" in data.keys()

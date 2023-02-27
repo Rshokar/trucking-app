@@ -71,11 +71,12 @@ class OperatorController:
         Returns:
             Responses: 201 Created
         '''
-        operator = Operator.query.get(operator_id)
-        if not operator:
-            make_response(404, f"Operator not found")
+        operator = session.query(Operator).filter_by(operator_id=operator_id).first()
+        print(f"OPERATOR: {operator is None}")
+        if operator is None:
+            return make_response({"error": "Operator not found"}, 404)
         if operator.company_id != company_id:
-            make_response({"error" : "Company not found"}, 400)
+            return make_response({"error" : "Company not found"}, 404)
 
         session.delete(operator)
         session.commit()
