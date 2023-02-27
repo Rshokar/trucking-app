@@ -25,6 +25,7 @@ class OperatorController:
             print(f"Operator: {operator}")
             return make_response({'error': 'Operator not found.'}, 404) # HTTP code 404 Not Found
         return make_response(operator.to_dict(), 200) # 200 OK
+    
 
     def create_operator(session, request):
         '''
