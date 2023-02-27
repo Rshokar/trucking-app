@@ -7,13 +7,13 @@ import jsonschema
 operators = Blueprint("operators", __name__)
 
 @operators.route("/<int:operator_id>", methods=["GET"])
-def create_operator(operator_id):
+def get_operator(operator_id):
     session = g.session
     return OperatorController.get_operator(session, operator_id=operator_id)
 
 
 @operators.route("/", methods=["POST"])
-def POST():
+def create_operator():
     session = g.session
     try: 
         print(f"BODY: {request.json}")
@@ -23,7 +23,7 @@ def POST():
         return make_response({"error": "Invalid Request Data"}, 400)
 
 @operators.route("/<int:operator_id>", methods=["PUT"])
-def PUT(operator_id):
+def update_operator(operator_id):
     session = g.session
     try: 
         jsonschema.validate(request.json, operator_validation)
@@ -33,6 +33,6 @@ def PUT(operator_id):
 
 
 @operators.route("/<int:operator_id>/<int:company_id>", methods=["DELETE"])
-def DELETE(operator_id, company_id):
+def delete_operator(operator_id, company_id):
     session = g.session
     return OperatorController.delete_operator(session=session, operator_id=operator_id, company_id=company_id)

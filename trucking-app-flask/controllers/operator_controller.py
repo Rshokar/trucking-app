@@ -40,14 +40,19 @@ class OperatorController:
         '''
         req = request.get_json()
         company_id = req.get('company_id')
+        name = req.get('operator_name')
+        email = req.get('operator_email')
+        
         company = session.query(Company).filter_by(company_id=company_id).first()
         if not company:
             make_response({"error": "Company with ID {company_id} not found"}, 400)
+            
+        operator_email = session.query(Operator).filter_by(operator_email=email, company_id=company_id).first()
+        if operator_email is not None:
+            return make_response({'error': 'Operator email already used'}, 400)
 
-        operator_name = req.get('operator_name')
-        operator_email = req.get('operator_email')
 
-        new_operator = Operator(company_id=company_id, operator_name=operator_name, operator_email=operator_email)
+        new_operator = Operator(company_id=company_id, operator_name=name, operator_email=email)
         session.add(new_operator)
         session.commit()
 
@@ -90,29 +95,34 @@ class OperatorController:
             Return:
                 Responses: 200 OK if successful, 404 if operator not found
             """
+            request_data = request.get_json()
+            company_id = request_data['company_id']
+            email = request_data['operator_email']
+            name = request_data["operator_name"]
 
-            operator = session.query(Operator).get(operator_id)
+            operator = session.query(Operator).filter_by(operator_id=operator_id, company_id=company_id).first()
 
             # Return early if invalid operator id provided
             if operator is None:
                 return make_response({'error': "Operator not found"}, 404)
             
             # Otherwise, continue
-            request_data = request.get_json()
-            company_id = request_data['company_id']
             company = session.query(Company).filter_by(company_id=company_id).first()
             if company is None:
                 return make_response({'error': 'Company not found'}, 404)
-            print(company)
-            operator.company_id = company
             
-            operator_email = request_data['operator_email']
-            email = session.query(Operator).filter_by(operator_email=operator_email).first()
-            if operator_email:
+            operator_email = session.query(Operator).filter_by(operator_email=email, company_id=company_id).first()
+            if operator_email and operator.operator_id != operator_email.operator_id:
                 return make_response({'error': 'Operator email already used'}, 400)
+            
+            operator.company_id = company_id
             operator.operator_email = email
-
+            operator.operator_name = name
+            print(f"HELLO: {operator}\n{company}")
+            session.merge(company)
             session.commit()
+            
+            return make_response(operator.to_dict(), 200)
 
 
 
