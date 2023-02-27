@@ -16,7 +16,6 @@ def get_operator(operator_id):
 def create_operator():
     session = g.session
     try: 
-        print(f"BODY: {request.json}")
         jsonschema.validate(request.json, operator_validation)
         return OperatorController.create_operator(session, request=request)
     except jsonschema.ValidationError:

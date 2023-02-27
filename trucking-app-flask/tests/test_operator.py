@@ -4,8 +4,6 @@ from config_test import app, client, session, user, company, customer, dispatch,
 
 END_POINT = "v1/company/operators"
 
-
-
 def test_get_operator(client, operator):
     """_summary_
         
@@ -24,7 +22,6 @@ def test_get_operator(client, operator):
     assert "operator_name" in data.keys()
     assert "operator_email" in data.keys()
 
-
 def test_get_non_existant_user(client):
     """_summary_
         
@@ -38,7 +35,6 @@ def test_get_non_existant_user(client):
 
     assert res.status_code == 404
     assert "error" in data.keys()
-
 
 def test_create_a_operator(client, company):
     """_summary_
@@ -63,8 +59,6 @@ def test_create_a_operator(client, company):
     assert "operator_name" in data.keys()
     assert "operator_email" in data.keys()
     
-    
-
 def test_create_operator_missing_attribute(client, company):
     """_summary_
         Try's to create a operator with missing attributes
@@ -96,8 +90,7 @@ def test_create_operator_missing_attribute(client, company):
     
     res = client.post(f"/{END_POINT}/", json=payload)
     assert res.status_code == 400
-    
-    
+        
 def test_create_operator_invalid_attributes(client, company): 
     """_summary_
         Trying to create operators with invalid attributes
@@ -161,7 +154,27 @@ def test_create_operator_invalid_attributes(client, company):
     
     res = client.post(f"/{END_POINT}/", json=payload)
     assert res.status_code == 400
+
+def test_create_operator_with_email_already_taken(client, operator): 
+    """_summary_
+        Trie to create an operator with an email already take
+    Args:
+        client (_type_): _description_
+        operator (_type_): _description_
+    """
     
+    
+    payload = {
+        "company_id":operator.company_id, 
+        "operator_name": "Keving Gates", 
+        "operator_email": operator.operator_email
+    }
+    
+    res = client.post(f"/{END_POINT}/", json=payload)
+    data = res.json
+
+    assert res.status_code == 400
+    assert "error" in data.keys()
     
 def test_update_a_operator(client, operator):
     """_summary_
