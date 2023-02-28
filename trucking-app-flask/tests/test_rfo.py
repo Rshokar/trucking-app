@@ -5,7 +5,6 @@ from config_test import app, client, session, user, company, customer, dispatch,
 END_POINT = "v1/rfo"
 
 
-@pytest.mark.usefixtures("client")
 def test_user_post(client, operator_dispatch):
     dispatch = operator_dispatch[1]
     operator = operator_dispatch[0]
@@ -45,3 +44,144 @@ def test_user_post(client, operator_dispatch):
     assert data["operator_id"] == payload["operator_id"]
     assert "load_location" in data.keys()
     assert data["load_location"] == payload["load_location"]
+
+
+def test_user_post_missing_attributes(client, operator_dispatch):
+    dispatch = operator_dispatch[1]
+    operator = operator_dispatch[0]
+
+    # Missing dispatch_id
+    payload = {
+        "operator_id": operator.operator_id,
+        "trailer": "trailer",
+        "truck": "truck",
+        "start_location": "start_location",
+        "start_time": "2022-02-02 02:02:02",
+        "dump_location": "dump_location",
+        "load_location": "load_location",
+    }
+
+    res = client.post(f"/{END_POINT}/", json=payload)
+    data = res.json
+
+    assert res.status_code == 400
+    assert "error" in data.keys()
+
+    # Missing operator_id
+    payload = {
+        "dispatch_id": dispatch.dispatch_id,
+        "trailer": "trailer",
+        "truck": "truck",
+        "start_location": "start_location",
+        "start_time": "2022-02-02 02:02:02",
+        "dump_location": "dump_location",
+        "load_location": "load_location",
+    }
+
+    res = client.post(f"/{END_POINT}/", json=payload)
+    data = res.json
+
+    assert res.status_code == 400
+    assert "error" in data.keys()
+
+    # Missing trailer
+    payload = {
+        "dispatch_id": dispatch.dispatch_id,
+        "operator_id": operator.operator_id,
+        "truck": "truck",
+        "start_location": "start_location",
+        "start_time": "2022-02-02 02:02:02",
+        "dump_location": "dump_location",
+        "load_location": "load_location",
+    }
+
+    res = client.post(f"/{END_POINT}/", json=payload)
+    data = res.json
+
+    assert res.status_code == 400
+    assert "error" in data.keys()
+
+    # Missing truck
+    payload = {
+        "dispatch_id": dispatch.dispatch_id,
+        "operator_id": operator.operator_id,
+        "trailer": "trailer",
+        "start_location": "start_location",
+        "start_time": "2022-02-02 02:02:02",
+        "dump_location": "dump_location",
+        "load_location": "load_location",
+    }
+
+    res = client.post(f"/{END_POINT}/", json=payload)
+    data = res.json
+
+    assert res.status_code == 400
+    assert "error" in data.keys()
+
+    # Missing start_location
+    payload = {
+        "dispatch_id": dispatch.dispatch_id,
+        "operator_id": operator.operator_id,
+        "trailer": "trailer",
+        "truck": "truck",
+        "start_time": "2022-02-02 02:02:02",
+        "dump_location": "dump_location",
+        "load_location": "load_location",
+    }
+
+    res = client.post(f"/{END_POINT}/", json=payload)
+    data = res.json
+
+    assert res.status_code == 400
+    assert "error" in data.keys()
+
+    # Missing start_time
+    payload = {
+        "dispatch_id": dispatch.dispatch_id,
+        "operator_id": operator.operator_id,
+        "trailer": "trailer",
+        "truck": "truck",
+        "start_location": "start_location",
+        "dump_location": "dump_location",
+        "load_location": "load_location",
+    }
+
+    res = client.post(f"/{END_POINT}/", json=payload)
+    data = res.json
+
+    assert res.status_code == 400
+    assert "error" in data.keys()
+
+    # Missing dump_location
+    payload = {
+        "dispatch_id": dispatch.dispatch_id,
+        "operator_id": operator.operator_id,
+        "trailer": "trailer",
+        "truck": "truck",
+        "start_location": "start_location",
+        "start_time": "2022-02-02 02:02:02",
+        "load_location": "load_location",
+    }
+
+    res = client.post(f"/{END_POINT}/", json=payload)
+    data = res.json
+
+    assert res.status_code == 400
+    assert "error" in data.keys()
+
+    # Missing load_location
+    payload = {
+        "dispatch_id": dispatch.dispatch_id,
+        "operator_id": operator.operator_id,
+        "trailer": "trailer",
+        "truck": "truck",
+        "start_location": "start_location",
+        "start_time": "2022-02-02 02:02:02",
+        "dump_location": "dump_location",
+    }
+
+    res = client.post(f"/{END_POINT}/", json=payload)
+    data = res.json
+
+    assert res.status_code == 400
+    assert "error" in data.keys()
