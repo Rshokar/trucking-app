@@ -15,6 +15,7 @@ def GET(rfo_id):
 @rfo.route("/", methods=["POST"])
 def create_rfo():
     session = g.session
+    print(f"RFO: {request.json}")
     try:
         jsonschema.validate(request.json, rfo_validation)
         return RfoController.create_rfo(request=request, session=session)

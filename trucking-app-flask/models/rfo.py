@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, CHAR, DateTime
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
+from sqlalchemy.orm import validates
 from models.model import Base
 from models.dispatch import Dispatch
 from models.operator import Operator
@@ -19,6 +20,14 @@ class RFO(Base):
     start_time = Column("start_time", DateTime)
     dump_location = Column("dump_location", String(500))
     load_location = Column("load_location", String(500))
+
+    @validates("start_location", "end_location", "load_location")
+    def validate_location(self, key, location):
+        if len(location) < 2:
+            raise AssertionError("Location must be at least 2 characters.")
+        if len(location) > 500:
+            raise AssertionError("Location must be less than 500 characters.")
+        return location
 
     def __init__(self, dispatch_id, operator_id, trailer, truck, start_location, start_time, dump_location, load_location) -> None:
         self.dispatch_id = dispatch_id

@@ -185,3 +185,152 @@ def test_user_post_missing_attributes(client, operator_dispatch):
 
     assert res.status_code == 400
     assert "error" in data.keys()
+
+
+def test_user_post_invalid_attributes(client, operator_dispatch):
+    dispatch = operator_dispatch[1]
+    operator = operator_dispatch[0]
+
+    # Invalid dispatch_id
+    payload = {
+        "dispatch_id": "ABC",
+        "operator_id": operator.operator_id,
+        "trailer": "trailer",
+        "truck": "truck",
+        "start_location": "start_location",
+        "start_time": "2022-02-02 02:02:02",
+        "dump_location": "dump_location",
+        "load_location": "load_location",
+    }
+
+    res = client.post(f"/{END_POINT}/", json=payload)
+    data = res.json
+
+    assert res.status_code == 400
+    assert "error" in data.keys()
+
+    # Invalid operator_id
+    payload = {
+        "dispatch_id": dispatch.dispatch_id,
+        "operator_id": "ABC",
+        "trailer": "trailer",
+        "truck": "truck",
+        "start_location": "start_location",
+        "start_time": "2022-02-02 02:02:02",
+        "dump_location": "dump_location",
+        "load_location": "load_location",
+    }
+
+    res = client.post(f"/{END_POINT}/", json=payload)
+    data = res.json
+
+    assert res.status_code == 400
+    assert "error" in data.keys()
+
+    # Invalid start_location
+    payload = {
+        "dispatch_id": dispatch.dispatch_id,
+        "operator_id": operator.operator_id,
+        "truck": "truck",
+        "trailer": "trailer",
+        "start_location": "",
+        "start_time": "2022-02-02 02:02:02",
+        "dump_location": "dump_location",
+        "load_location": "load_location",
+    }
+
+    res = client.post(f"/{END_POINT}/", json=payload)
+    data = res.json
+
+    assert res.status_code == 400
+    assert "error" in data.keys()
+
+    # Invalid start_time
+    payload = {
+        "dispatch_id": dispatch.dispatch_id,
+        "operator_id": operator.operator_id,
+        "trailer": "trailer",
+        "truck": "truck",
+        "start_location": "start_location",
+        "start_time": "2022-02-02",
+        "dump_location": "dump_location",
+        "load_location": "load_location",
+    }
+
+    res = client.post(f"/{END_POINT}/", json=payload)
+    data = res.json
+
+    assert res.status_code == 400
+    assert "error" in data.keys()
+
+    # Invalid Start Time
+    payload = {
+        "dispatch_id": dispatch.dispatch_id,
+        "operator_id": operator.operator_id,
+        "trailer": "trailer",
+        "truck": "truck",
+        "start_location": "start_location",
+        "start_time": "02:02:02",
+        "dump_location": "dump_location",
+        "load_location": "load_location",
+    }
+
+    res = client.post(f"/{END_POINT}/", json=payload)
+    data = res.json
+
+    assert res.status_code == 400
+    assert "error" in data.keys()
+
+    # Invalid Start Time
+    payload = {
+        "dispatch_id": dispatch.dispatch_id,
+        "operator_id": operator.operator_id,
+        "trailer": "trailer",
+        "truck": "truck",
+        "start_time": "2022-02-0202:02:02",
+        "start_location": "start_location",
+        "dump_location": "dump_location",
+        "load_location": "load_location",
+    }
+
+    res = client.post(f"/{END_POINT}/", json=payload)
+    data = res.json
+
+    assert res.status_code == 400
+    assert "error" in data.keys()
+
+    # Invalid dump_location
+    payload = {
+        "dispatch_id": dispatch.dispatch_id,
+        "operator_id": operator.operator_id,
+        "trailer": "trailer",
+        "truck": "truck",
+        "dump_location": "",
+        "start_location": "start_location",
+        "start_time": "2022-02-02 02:02:02",
+        "load_location": "load_location",
+    }
+
+    res = client.post(f"/{END_POINT}/", json=payload)
+    data = res.json
+
+    assert res.status_code == 400
+    assert "error" in data.keys()
+
+    # Invalid load_location
+    payload = {
+        "dispatch_id": dispatch.dispatch_id,
+        "operator_id": operator.operator_id,
+        "trailer": "trailer",
+        "truck": "truck",
+        "start_location": "start_location",
+        "start_time": "2022-02-02 02:02:02",
+        "dump_location": "dump_location",
+        "load_location": "",
+    }
+
+    res = client.post(f"/{END_POINT}/", json=payload)
+    data = res.json
+
+    assert res.status_code == 400
+    assert "error" in data.keys()

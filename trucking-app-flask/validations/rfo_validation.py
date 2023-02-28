@@ -19,7 +19,8 @@ rfo_validation = {
         },
         "start_location": {
             "type": "string",
-            "maxLength": 300
+            "maxLength": 300,
+            "minLength": 2
         },
         "start_time": {
             "type": "string",
@@ -28,11 +29,13 @@ rfo_validation = {
         },
         "dump_location": {
             "type": "string",
-            "maxLength": 500
+            "maxLength": 500,
+            "minLength": 2,
         },
         "load_location": {
             "type": "string",
-            "maxLength": 500
+            "maxLength": 500,
+            "minLength": 2,
         }
     },
     "required": ["dispatch_id", "operator_id", "trailer", "truck", "start_location", "start_time", "dump_location", "load_location"],
