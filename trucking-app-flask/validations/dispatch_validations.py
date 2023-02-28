@@ -1,5 +1,4 @@
 from datetime import datetime
-import jsonschema
 
 def validate_datetime(value):
     print("VALIDATE-DATE TIME")

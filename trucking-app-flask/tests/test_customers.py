@@ -1,7 +1,6 @@
 import pytest
 import json
 from config_test import app, client, session, customer, company
-from models.customer import Customer
 END_POINT = "v1/company/customers"
 
 def test_customer_post(client, company):

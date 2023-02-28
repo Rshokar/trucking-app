@@ -5,7 +5,6 @@ from routes import v1
 from flask import Flask, g
 from dotenv import load_dotenv
 
-
 # Load env variables
 load_dotenv()
 
