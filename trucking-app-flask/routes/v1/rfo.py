@@ -1,25 +1,32 @@
-from flask import Blueprint
+from flask import Blueprint, request, g
 from controllers.rfo_controller import RfoController
+from validations import rfo_validation
+from utils import make_response
+import jsonschema
 
 rfo = Blueprint("rfo", __name__)
 
 
-
-@rfo.route("/", methods=["GET"])
-def GET():
+@rfo.route("/<int:rfo_id>", methods=["GET"])
+def GET(rfo_id):
     return RfoController.GET()
 
 
 @rfo.route("/", methods=["POST"])
-def POST():
-    return RfoController.POST()
+def create_rfo():
+    session = g.session
+    try:
+        jsonschema.validate(request.json, rfo_validation)
+        return RfoController.create_rfo(request=request, session=session)
+    except jsonschema.ValidationError:
+        return make_response({"error": "Invalid Request Data"}, 400)
 
 
-@rfo.route("/", methods=["PUT"])
-def PUT():
+@rfo.route("/<int:rfo_id>", methods=["PUT"])
+def edit_rfo():
     return RfoController.PUT()
 
 
-@rfo.route("/", methods=["DELETE"])
+@rfo.route("/<int:rfo_id>", methods=["DELETE"])
 def DELETE():
     return RfoController.DELETE()
