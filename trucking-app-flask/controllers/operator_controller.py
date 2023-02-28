@@ -8,7 +8,7 @@ from utils import make_response
 
 class OperatorController:
 
-    def get_operator(session, operator_id, ):
+    def get_operator(session, operator_id):
         '''
         Search for an Operator using their uniquely identifying ID
 

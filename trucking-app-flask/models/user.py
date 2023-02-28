@@ -12,7 +12,7 @@ class UserTypes(str, Enum):
 
 class User(Base):
     __tablename__ = 'users'
-    id = Column("id", Integer, primary_key=True, autoincrement=True)
+    id = Column("id", Integer, primary_key=True)
     type = Column("type", String(20))
     password = Column("password", String(100))
     email = Column("email", String(100), unique=True)
@@ -34,8 +34,9 @@ class User(Base):
         if type != UserTypes.DISPATCHER.value:
             raise ValueError("Invalid Type")
         return type
-    
-    company = relationship("Company", backref="owner", lazy=True, cascade="delete", uselist=False)
+
+    company = relationship("Company", backref="owner",
+                           lazy=True, cascade="delete", uselist=False)
 
     def __init__(self, type, email, password):
         self.type = type
