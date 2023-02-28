@@ -1,6 +1,7 @@
 from flask import Response
 from models import RFO, Dispatch, Operator
 from utils import make_response
+from datetime import datetime
 import json
 
 
@@ -35,13 +36,14 @@ class RfoController:
             trailer=data['trailer'],
             truck=data['truck'],
             start_location=data['start_location'],
-            start_time=data['start_time'],
+            start_time=datetime.strptime(
+                data['start_time'], "%Y-%m-%d %H:%M:%S"),
             dump_location=data['dump_location'],
             load_location=data['load_location']
         )
         session.add(rfo)
         session.commit()
-        return make_response({'message': 'RFO created successfully'}), 201
+        return make_response(rfo.to_dict(), 201)
 
     def PUT():
         return Response(

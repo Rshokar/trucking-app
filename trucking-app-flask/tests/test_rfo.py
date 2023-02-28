@@ -1,51 +1,47 @@
 import pytest
 import json
-from config_test import app, client
+from datetime import datetime
+from config_test import app, client, session, user, company, customer, dispatch, operator, operator_dispatch
 END_POINT = "v1/rfo"
 
 
 @pytest.mark.usefixtures("client")
-def test_user_get(client):
-    response = client.get("/{}/".format(END_POINT))
+def test_user_post(client, operator_dispatch):
+    dispatch = operator_dispatch[1]
+    operator = operator_dispatch[0]
+
+    payload = {
+        "dispatch_id": dispatch.dispatch_id,
+        "operator_id": operator.operator_id,
+        "trailer": "trailer",
+        "truck": "truck",
+        "start_location": "start_location",
+        "start_time": "2022-02-02 02:02:02",
+        "dump_location": "dump_location",
+        "load_location": "load_location",
+    }
+    res = client.post(f"/{END_POINT}/", json=payload)
 
     # convert response to dicitionary
-    data = response.data.decode("utf-8")
-    data = json.loads(data)
+    data = res.json
+    print(f"DATA: {data}")
 
     # assertions
-    assert "RFO_GET" == data["data"]
-    assert 200 == response.status_code
-
-
-@pytest.mark.usefixtures("client")
-def test_user_post(client):
-    response = client.post("/{}/".format(END_POINT))
-
-    # convert response to dicitionary
-    data = response.data.decode("utf-8")
-    data = json.loads(data)
-
-    # assertions
-    assert "RFO_POST" == data["data"]
-    assert 200 == response.status_code
-
-
-@pytest.mark.usefixtures("client")
-def test_user_put(client):
-    response = client.put("/{}/".format(END_POINT))
-
-    # convert response to dicitionary
-    data = response.data.decode("utf-8")
-    data = json.loads(data)
-
-    # assertions
-    assert "RFO_PUT" == data["data"]
-    assert 200 == response.status_code
-
-
-@pytest.mark.usefixtures("client")
-def test_user_delete(client):
-    response = client.delete("/{}/".format(END_POINT))
-
-    # Delete returns a 204 which is no content
-    assert 204 == response.status_code
+    assert res.status_code == 201
+    assert "trailer" in data.keys()
+    assert data["trailer"] == payload["trailer"]
+    assert "truck" in data.keys()
+    assert data["truck"] == payload["truck"]
+    assert "start_location" in data.keys()
+    assert data["start_location"] == payload["start_location"]
+    assert "start_time" in data.keys()
+    assert datetime.strptime(data["start_time"], '%a, %d %b %Y %H:%M:%S %Z') == datetime.strptime(
+        payload["start_time"], "%Y-%m-%d %H:%M:%S")
+    assert "dump_location" in data.keys()
+    assert data["dump_location"] == payload["dump_location"]
+    assert "dispatch_id" in data.keys()
+    assert data["dispatch_id"] == payload["dispatch_id"]
+    assert "operator_id" in data.keys()
+    assert data["operator_id"] == payload["operator_id"]
+    assert "load_location" in data.keys()
+    assert data["load_location"] == payload["load_location"]

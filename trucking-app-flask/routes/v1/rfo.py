@@ -18,7 +18,8 @@ def create_rfo():
     try:
         jsonschema.validate(request.json, rfo_validation)
         return RfoController.create_rfo(request=request, session=session)
-    except jsonschema.ValidationError:
+    except jsonschema.ValidationError as e:
+        print(e)
         return make_response({"error": "Invalid Request Data"}, 400)
 
 

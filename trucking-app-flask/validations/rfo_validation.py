@@ -23,7 +23,8 @@ rfo_validation = {
         },
         "start_time": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}",
         },
         "dump_location": {
             "type": "string",

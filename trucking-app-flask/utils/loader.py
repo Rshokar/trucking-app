@@ -18,21 +18,21 @@ def loadDB(num_users):
     for index in range(num_users):
         user = UserFactory.create()
 
-        print(f"USER --|--: \n: {user}")
+        # print(f"USER --|--: \n: {user}")
 
         company = CompanyFactory(owner_id=user.id)
 
-        print(f"COMPANY --|--: \n {company}")
+        # print(f"COMPANY --|--: \n {company}")
 
         customers = CustomerFactory.create_batch(
             5, company_id=company.company_id)
 
-        print(f"CUSTOMERS --|--: \n {customers}")
+        # print(f"CUSTOMERS --|--: \n {customers}")
 
         operators = OperatorFactory.create_batch(
             5, company_id=company.company_id)
 
-        print(f"OPERATORS --|--: \n {operators}")
+        # print(f"OPERATORS --|--: \n {operators}")
         dispatches = []
         rfos = []
         billing_tickets = []
@@ -52,9 +52,9 @@ def loadDB(num_users):
 
             dispatches.append(d)
 
-        print(f"DISPATCHES --|--: \n {dispatches}")
-        print(f"RFO --|--: \n {rfos}")
-        print(f"BILLING TICETS --|--: \n {billing_tickets}")
+        # print(f"DISPATCHES --|--: \n {dispatches}")
+        # print(f"RFO --|--: \n {rfos}")
+        # print(f"BILLING TICETS --|--: \n {billing_tickets}")
 
 
 class UserFactory(SQLAlchemyModelFactory):

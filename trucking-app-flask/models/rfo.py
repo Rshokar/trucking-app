@@ -9,8 +9,10 @@ class RFO(Base):
     rfo_id = Column("rfo_id", Integer, primary_key=True)
     # Dispatch has dispatch ID but the ERD on diagram.io is dispatcher ID. Is the Dispatch entity a dispatcher or the dispatch itself?
     # The entity looks like it's the dispatch itself.
-    dispatch_id = Column("dispatch_id", Integer, ForeignKey(Dispatch.dispatch_id))
-    operator_id = Column("operator_id", Integer, ForeignKey(Operator.operator_id))
+    dispatch_id = Column("dispatch_id", Integer,
+                         ForeignKey(Dispatch.dispatch_id))
+    operator_id = Column("operator_id", Integer,
+                         ForeignKey(Operator.operator_id))
     trailer = Column("trailer", String(100))
     truck = Column("truck", String(100))
     start_location = Column("start_location", String(300))
@@ -30,3 +32,15 @@ class RFO(Base):
 
     def __repr__(self):
         return f"RFO: ({self.dispatch_id}) {self.operator_id} {self.truck} {self.trailer} Start: {self.start_location} Load: {self.load_location} Dump: {self.dump_location} {self.start_time}"
+
+    def to_dict(self):
+        return {
+            "dispatch_id": self.dispatch_id,
+            "operator_id": self.operator_id,
+            "trailer": self.trailer,
+            "truck": self.truck,
+            "load_location": self.load_location,
+            "start_location": self.start_location,
+            "dump_location": self.dump_location,
+            "start_time": self.start_time,
+        }
