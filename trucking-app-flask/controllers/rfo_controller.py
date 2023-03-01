@@ -7,12 +7,17 @@ import json
 
 class RfoController:
 
-    def GET():
-        return Response(
-            response=json.dumps({"data": "RFO_GET"}),
-            status=200,
-            mimetype='application/json'
-        )
+    def get_rfo(session, rfo_id):
+        try:
+            rfo = session.query(RFO).filter_by(rfo_id=rfo_id).first()
+            if rfo is None:
+                return make_response({'error': 'RFO not found'}, 404)
+            return make_response(rfo.to_dict(), 200)
+        except Exception as e:
+            print(e)
+
+    def get_all_rfo(request, session):
+        query = request.json
 
     def create_rfo(request, session):
         data = request.json

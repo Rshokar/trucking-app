@@ -9,7 +9,7 @@ rfo = Blueprint("rfo", __name__)
 
 @rfo.route("/<int:rfo_id>", methods=["GET"])
 def GET(rfo_id):
-    return RfoController.GET()
+    return RfoController.get_rfo(g.session, rfo_id)
 
 
 @rfo.route("/", methods=["POST"])

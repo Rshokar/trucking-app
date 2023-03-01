@@ -1,5 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
-from sqlalchemy.orm import validates
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, CheckConstraint
 from models.model import Base
 from models.dispatch import Dispatch
 from models.operator import Operator
@@ -16,18 +15,13 @@ class RFO(Base):
                          ForeignKey(Operator.operator_id))
     trailer = Column("trailer", String(100))
     truck = Column("truck", String(100))
-    start_location = Column("start_location", String(300))
+    start_location = Column("start_location", String(
+        300), CheckConstraint('LENGTH(start_location) >= 3'))
     start_time = Column("start_time", DateTime)
-    dump_location = Column("dump_location", String(500))
-    load_location = Column("load_location", String(500))
-
-    @validates("start_location", "end_location", "load_location")
-    def validate_location(self, key, location):
-        if len(location) < 2:
-            raise AssertionError("Location must be at least 2 characters.")
-        if len(location) > 500:
-            raise AssertionError("Location must be less than 500 characters.")
-        return location
+    dump_location = Column("dump_location", String(
+        500), CheckConstraint('LENGTH(start_location) >= 3'))
+    load_location = Column("load_location", String(
+        500), CheckConstraint('LENGTH(start_location) >= 3'))
 
     def __init__(self, dispatch_id, operator_id, trailer, truck, start_location, start_time, dump_location, load_location) -> None:
         self.dispatch_id = dispatch_id
@@ -40,10 +34,11 @@ class RFO(Base):
         self.load_location = load_location
 
     def __repr__(self):
-        return f"RFO: ({self.dispatch_id}) {self.operator_id} {self.truck} {self.trailer} Start: {self.start_location} Load: {self.load_location} Dump: {self.dump_location} {self.start_time}"
+        return f"RFO: ({self.dispatch_id}) {self.truck} {self.trailer} Start: {self.start_location} Load: {self.load_location} Dump: {self.dump_location} {self.start_time}"
 
     def to_dict(self):
         return {
+            "rfo_id": self.rfo_id,
             "dispatch_id": self.dispatch_id,
             "operator_id": self.operator_id,
             "trailer": self.trailer,

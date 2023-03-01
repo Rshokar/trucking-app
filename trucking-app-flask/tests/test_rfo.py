@@ -1,11 +1,11 @@
 import pytest
 import json
 from datetime import datetime
-from config_test import app, client, session, user, company, customer, dispatch, operator, operator_dispatch
+from config_test import app, client, session, user, company, customer, dispatch, operator, operator_dispatch, rfo
 END_POINT = "v1/rfo"
 
 
-def test_user_post(client, operator_dispatch):
+def test_rfo_post(client, operator_dispatch):
     dispatch = operator_dispatch[1]
     operator = operator_dispatch[0]
 
@@ -46,7 +46,7 @@ def test_user_post(client, operator_dispatch):
     assert data["load_location"] == payload["load_location"]
 
 
-def test_user_post_missing_attributes(client, operator_dispatch):
+def test_rfo_post_missing_attributes(client, operator_dispatch):
     dispatch = operator_dispatch[1]
     operator = operator_dispatch[0]
 
@@ -187,7 +187,7 @@ def test_user_post_missing_attributes(client, operator_dispatch):
     assert "error" in data.keys()
 
 
-def test_user_post_invalid_attributes(client, operator_dispatch):
+def test_rfo_post_invalid_attributes(client, operator_dispatch):
     dispatch = operator_dispatch[1]
     operator = operator_dispatch[0]
 
@@ -333,4 +333,20 @@ def test_user_post_invalid_attributes(client, operator_dispatch):
     data = res.json
 
     assert res.status_code == 400
+    assert "error" in data.keys()
+
+
+def test_rfo_get(client, rfo):
+    res = client.get(f"/{END_POINT}/{rfo.rfo_id}")
+    data = res.json
+
+    assert res.status_code == 200
+    assert data["rfo_id"] == rfo.rfo_id
+
+
+def test_non_existing_rfo_get(client):
+    res = client.get(f"/{END_POINT}/999999")
+    data = res.json
+
+    assert res.status_code == 404
     assert "error" in data.keys()

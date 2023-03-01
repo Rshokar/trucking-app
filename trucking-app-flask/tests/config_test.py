@@ -6,7 +6,7 @@ if True:
     os.environ.setdefault("STATE", 'test')
 
 import pytest
-from utils.loader import UserFactory, CompanyFactory, CustomerFactory, DispatchFactory, OperatorFactory
+from utils.loader import UserFactory, CompanyFactory, CustomerFactory, DispatchFactory, OperatorFactory, RFOFactory
 from config.db import Session
 from app import create_app
 
@@ -81,3 +81,17 @@ def operator_dispatch():
     )
     operator = OperatorFactory.create(company_id=company.company_id)
     return operator, dispatch
+
+
+@pytest.fixture
+def rfo():
+    user = UserFactory.create()
+    company = CompanyFactory.create(owner_id=user.id)
+    customer = CustomerFactory.create(company_id=company.company_id)
+    dispatch = DispatchFactory(
+        company_id=company.company_id, customer_id=customer.customer_id)
+    operator = OperatorFactory.create(company_id=company.company_id)
+    rfo = RFOFactory.create(dispatch_id=dispatch.dispatch_id,
+                            operator_id=operator.operator_id)
+    print("FUCK YOU GET")
+    return rfo

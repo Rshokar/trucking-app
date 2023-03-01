@@ -1,4 +1,4 @@
-import os 
+import os
 from config.db import Session, Base, engine
 from utils import loadDB
 from routes import v1
@@ -10,7 +10,7 @@ load_dotenv()
 
 IS_PRODUCTION = os.environ.get("STATE")
 
-if (IS_PRODUCTION != "production"):
+if (IS_PRODUCTION == "development"):
     NUM_USERS = os.environ.get("TEST_DATA_NUM_USERS")
     # # If development clear all database
     Base.metadata.drop_all(engine)

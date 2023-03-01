@@ -33,4 +33,3 @@ print("--|--Connection to the database is successful--|--")
 
 # Create a session
 Session = sessionmaker(bind=engine)
-
