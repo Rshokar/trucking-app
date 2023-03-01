@@ -666,6 +666,33 @@ def test_rfo_put_invalid_attributes(client, rfo):
     assert "error" in data.keys()
 
 
+def test_rfo_put_update_invalid_operator(client, rfo, operator):
+    """_summary_
+        Tries to update an RFO with an operator that is not owned by 
+        the same company that owns the dispatch.
+    Args:
+        client (_type_): _description_
+        rfo (_type_): _description_
+        operator (_type_): _description_
+    """
+    # Invalid operator_id
+    payload = {
+        "operator_id": operator.operator_id,
+        "load_location": "Updated load_location",
+        "dump_location": "Updated dump_location",
+        "start_location": "Updated start_location",
+        "start_time": "2022-02-02 02:02:02",
+        "truck": "Updated truck",
+        "trailer": "Updated trailer",
+    }
+
+    res = client.put(f"/{END_POINT}/{rfo.rfo_id}", json=payload)
+    data = res.json
+
+    assert res.status_code == 400
+    assert "error" in data.keys()
+
+
 def test_rfo_get(client, rfo):
     res = client.get(f"/{END_POINT}/{rfo.rfo_id}")
     data = res.json

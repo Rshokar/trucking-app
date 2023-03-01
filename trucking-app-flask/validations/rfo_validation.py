@@ -52,11 +52,13 @@ rfo_update = {
         },
         "trailer": {
             "type": "string",
-            "maxLength": 100
+            "maxLength": 100,
+            "minLength": 2
         },
         "truck": {
             "type": "string",
-            "maxLength": 100
+            "maxLength": 100,
+            "minLength": 2
         },
         "start_location": {
             "type": "string",
