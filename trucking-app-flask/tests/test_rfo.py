@@ -693,6 +693,32 @@ def test_rfo_put_update_invalid_operator(client, rfo, operator):
     assert "error" in data.keys()
 
 
+def test_rfo_put_update_non_existing_operator(client, rfo):
+    """_summary_
+        Tries to update an RFO with an operator that does not exist.
+    Args:
+        client (_type_): _description_
+        rfo (_type_): _description_
+    """
+
+    payload = {
+        "operator_id": 9999999,
+        "load_location": "Updated load_location",
+        "dump_location": "Updated dump_location",
+        "start_location": "Updated start_location",
+        "start_time": "2022-02-02 02:02:02",
+        "truck": "Updated truck",
+        "trailer": "Updated trailer",
+    }
+
+    res = client.put(f"/{END_POINT}/{rfo.rfo_id}", json=payload)
+    data = res.json
+
+    assert res.status_code == 404
+    assert "error" in data.keys()
+    assert "Operator not found" in data["error"]
+
+
 def test_rfo_get(client, rfo):
     res = client.get(f"/{END_POINT}/{rfo.rfo_id}")
     data = res.json
