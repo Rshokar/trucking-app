@@ -1,7 +1,8 @@
 import pytest
 import json
-from datetime import datetime
-from config_test import app, client, session, user, company, customer, dispatch, operator, operator_dispatch, rfo
+import random
+from datetime import datetime, timedelta
+from config_test import app, client, session, user, company, customer, dispatch, operator, operator_dispatch, rfo, multiple_operator_dispatch, RFOFactory
 END_POINT = "v1/rfo"
 
 
@@ -344,8 +345,60 @@ def test_rfo_get(client, rfo):
     assert data["rfo_id"] == rfo.rfo_id
 
 
-def test_non_existing_rfo_get(client):
+def test_rfo_get_non_existing(client):
     res = client.get(f"/{END_POINT}/999999")
+    data = res.json
+
+    assert res.status_code == 404
+    assert "error" in data.keys()
+
+
+# def test_rfo_get_all(client, session, multiple_operator_dispatch):
+#     NUM_RFOS = 1
+#     one = multiple_operator_dispatch[0]
+#     two = multiple_operator_dispatch[1]
+
+#     print(one)
+#     print(two)
+
+#     rfos = []
+
+#     # We need to create some data
+#     for i in range(NUM_RFOS):
+#         choice = random.choice([one, two])
+#         rfos.append(RFOFactory.create(
+#             operator_id=choice[1].operator_id,
+#             dispatch_id=choice[0].dispatch_id,
+#             load_location=f"load_location-{i}",
+#             dump_location=f"dump_location-{i}",
+#             start_location=f"start_location-{i}",
+#             start_time=datetime.now() + timedelta(days=i),
+#         ))
+
+#     print(rfos)
+
+#     # Look for all RFO with operator one id
+#     query = {
+#         "operator_id": one[1].operator_id,
+#     }
+
+#     res = client.get(f"/{END_POINT}/", query_string=query)
+#     data = res.json
+
+#     print(data)
+#     assert res.status_code == 200
+
+
+def test_rfo_delete(client, rfo):
+    res = client.delete(f"/{END_POINT}/{rfo.rfo_id}")
+    data = res.json
+
+    assert res.status_code == 200
+    assert "message" in data.keys()
+
+
+def test_rfo_delete_non_existant(client):
+    res = client.delete(f"/{END_POINT}/999999")
     data = res.json
 
     assert res.status_code == 404

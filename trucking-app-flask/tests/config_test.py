@@ -6,7 +6,7 @@ if True:
     os.environ.setdefault("STATE", 'test')
 
 import pytest
-from utils.loader import UserFactory, CompanyFactory, CustomerFactory, DispatchFactory, OperatorFactory, RFOFactory
+from utils.loader import UserFactory, CompanyFactory, CustomerFactory, DispatchFactory, BillingTicketFactory, OperatorFactory, RFOFactory
 from config.db import Session
 from app import create_app
 
@@ -84,6 +84,23 @@ def operator_dispatch():
 
 
 @pytest.fixture
+def multiple_operator_dispatch():
+    user = UserFactory.create()
+    company = CompanyFactory.create(owner_id=user.id)
+    customer_one = CustomerFactory.create(company_id=company.company_id)
+    customer_two = CustomerFactory.create(company_id=company.company_id)
+    operator_one = OperatorFactory.create(company_id=company.company_id)
+    operator_two = OperatorFactory.create(company_id=company.company_id)
+
+    dispatch_one = DispatchFactory(
+        company_id=company.company_id, customer_id=customer_one.customer_id)
+    dispatch_two = DispatchFactory(
+        company_id=company.company_id, customer_id=customer_two.customer_id)
+
+    return [[dispatch_one, operator_one], [dispatch_two, operator_two]]
+
+
+@pytest.fixture
 def rfo():
     user = UserFactory.create()
     company = CompanyFactory.create(owner_id=user.id)
@@ -93,5 +110,18 @@ def rfo():
     operator = OperatorFactory.create(company_id=company.company_id)
     rfo = RFOFactory.create(dispatch_id=dispatch.dispatch_id,
                             operator_id=operator.operator_id)
-    print("FUCK YOU GET")
     return rfo
+
+
+@pytest.fixture
+def billing_ticket():
+    user = UserFactory.create()
+    company = CompanyFactory.create(owner_id=user.id)
+    customer = CustomerFactory.create(company_id=company.company_id)
+    dispatch = DispatchFactory(
+        company_id=company.company_id, customer_id=customer.customer_id)
+    operator = OperatorFactory.create(company_id=company.company_id)
+    rfo = RFOFactory.create(dispatch_id=dispatch.dispatch_id,
+                            operator_id=operator.operator_id)
+    billing_ticket = BillingTicketFactory.create(rfo_id=rfo.rfo_id)
+    return billing_ticket

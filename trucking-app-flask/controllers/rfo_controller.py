@@ -16,8 +16,7 @@ class RfoController:
         except Exception as e:
             print(e)
 
-    def get_all_rfo(request, session):
-        query = request.json
+    # def get_all_rfo(request, disaptch_id=None, operator_id=None, ):
 
     def create_rfo(request, session):
         data = request.json
@@ -57,5 +56,11 @@ class RfoController:
             mimetype='application/json'
         )
 
-    def DELETE():
-        return Response(status=204)
+    def delete_rfo(session, rfo_id):
+        # Check if rfo exist
+        rfo = session.query(RFO).filter_by(rfo_id=rfo_id).first()
+        if rfo is None:
+            return make_response({'error': 'RFO not found'}, 404)
+        session.delete(rfo)
+        session.commit()
+        return make_response({'message': 'RFO deleted'}, 200)

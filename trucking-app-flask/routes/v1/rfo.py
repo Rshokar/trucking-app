@@ -30,5 +30,5 @@ def edit_rfo():
 
 
 @rfo.route("/<int:rfo_id>", methods=["DELETE"])
-def DELETE():
-    return RfoController.DELETE()
+def delete_rfo(rfo_id):
+    return RfoController.delete_rfo(g.session, rfo_id)
