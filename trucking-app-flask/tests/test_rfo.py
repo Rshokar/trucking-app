@@ -337,6 +337,41 @@ def test_rfo_post_invalid_attributes(client, operator_dispatch):
     assert "error" in data.keys()
 
 
+def test_rfo_put(client, rfo):
+    """_summary_
+        This tell will update an RFO
+    Args:
+        client (_type_): _description_
+        rfo (_type_): _description_
+    """
+
+    payload = {
+        "operator_id": rfo.operator_id,
+        "load_location": "Updated load_location",
+        "dump_location": "Updated dump_location",
+        "start_location": "Updated start_location",
+        "start_time": "2022-02-02 02:02:02",
+        "truck": "Updated truck",
+        "trailer": "Updated trailer",
+    }
+
+    res = client.put(f"/{END_POINT}/{rfo.rfo_id}", json=payload)
+    data = res.json
+
+    print(f"DATA: {data}")
+
+    assert res.status_code == 200
+    assert data["rfo_id"] == rfo.rfo_id
+    assert data["dispatch_id"] == rfo.dispatch_id
+    assert data["load_location"] == payload["load_location"]
+    assert data["dump_location"] == payload["dump_location"]
+    x = datetime.strptime(data["start_time"], '%a, %d %b %Y %H:%M:%S %Z')
+    y = datetime.strptime(payload["start_time"], "%Y-%m-%d %H:%M:%S")
+    assert x == y
+    assert data["truck"] == payload["truck"]
+    assert data["trailer"] == payload["trailer"]
+
+
 def test_rfo_get(client, rfo):
     res = client.get(f"/{END_POINT}/{rfo.rfo_id}")
     data = res.json

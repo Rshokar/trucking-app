@@ -49,12 +49,43 @@ class RfoController:
         session.commit()
         return make_response(rfo.to_dict(), 201)
 
-    def PUT():
-        return Response(
-            response=json.dumps({"data": "RFO_PUT"}),
-            status=200,
-            mimetype='application/json'
-        )
+    def update_rfo(session, request, rfo_id):
+        request_json = request.json
+
+        operator_id = request_json['operator_id']
+        load_location = request_json['load_location']
+        dump_location = request_json['dump_location']
+        start_location = request_json['start_location']
+        strart_time = request_json['start_time']
+        truck = request_json['truck']
+        trailer = request_json['trailer']
+
+        rfo = session.query(RFO).filter_by(rfo_id=rfo_id).first()
+        if rfo is None:
+            return make_response({'error': 'RFO not found'}, 404)
+
+        oper = session.query(Operator).filter_by(
+            operator_id=operator_id).first()
+        if oper is None:
+            return make_response({"error": "Operator not found"}, 404)
+
+        disp = session.query(Dispatch).filter_by(
+            dispatch_id=rfo.dispatch_id).first()
+
+        if disp.company_id != oper.company_id:
+            return make_response({"error": "Dispatch and Operator are not from the same company"}, 400)
+
+        rfo.operator_id = operator_id
+        rfo.load_location = load_location
+        rfo.dump_location = dump_location
+        rfo.start_location = start_location
+        rfo.start_time = datetime.strptime(strart_time, "%Y-%m-%d %H:%M:%S")
+        rfo.trailer = trailer
+        rfo.truck = truck
+
+        session.commit()
+
+        return make_response(rfo.to_dict(), 200)
 
     def delete_rfo(session, rfo_id):
         # Check if rfo exist
