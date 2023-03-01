@@ -372,6 +372,300 @@ def test_rfo_put(client, rfo):
     assert data["trailer"] == payload["trailer"]
 
 
+def test_rfo_put_non_existing(client, rfo):
+    """_summary_
+        This test will update an RFO that does not exist
+
+    Args:
+        client (_type_): _description_
+    """
+    payload = {
+        "operator_id": 999999,
+        "load_location": "Updated load_location",
+        "dump_location": "Updated dump_location",
+        "start_location": "Updated start_location",
+        "start_time": "2022-02-02 02:02:02",
+        "truck": "Updated truck",
+        "trailer": "Updated trailer",
+    }
+
+    res = client.put(f"/{END_POINT}/999999", json=payload)
+    data = res.json
+
+    assert res.status_code == 404
+    assert "error" in data.keys()
+    assert data["error"] == "RFO not found"
+
+
+def test_rfo_put_missing_attributes(client, rfo):
+    """_summary_
+        This test will update an RFO with missing attributes
+
+    Args:
+        client (_type_): _description_
+        rfo (_type_): _description_
+    """
+
+    payload = {
+        "load_location": "Updated load_location",
+        "dump_location": "Updated dump_location",
+        "start_location": "Updated start_location",
+        "start_time": "2022-02-02 02:02:02",
+        "truck": "Updated truck",
+        "trailer": "Updated trailer",
+    }
+
+    res = client.put(f"/{END_POINT}/{rfo.rfo_id}", json=payload)
+    data = res.json
+
+    assert res.status_code == 400
+    assert "error" in data.keys()
+
+    payload = {
+        "operator_id": rfo.operator_id,
+        "dump_location": "Updated dump_location",
+        "start_location": "Updated start_location",
+        "start_time": "2022-02-02 02:02:02",
+        "truck": "Updated truck",
+        "trailer": "Updated trailer",
+    }
+
+    res = client.put(f"/{END_POINT}/{rfo.rfo_id}", json=payload)
+    data = res.json
+
+    assert res.status_code == 400
+    assert "error" in data.keys()
+
+    payload = {
+        "operator_id": rfo.operator_id,
+        "load_location": "Updated load_location",
+        "start_location": "Updated start_location",
+        "start_time": "2022-02-02 02:02:02",
+        "truck": "Updated truck",
+        "trailer": "Updated trailer",
+    }
+
+    res = client.put(f"/{END_POINT}/{rfo.rfo_id}", json=payload)
+    data = res.json
+
+    assert res.status_code == 400
+    assert "error" in data.keys()
+
+    payload = {
+        "operator_id": rfo.operator_id,
+        "load_location": "Updated load_location",
+        "dump_location": "Updated dump_location",
+        "start_location": "Updated start_location",
+        "truck": "Updated truck",
+        "trailer": "Updated trailer",
+    }
+
+    res = client.put(f"/{END_POINT}/{rfo.rfo_id}", json=payload)
+    data = res.json
+
+    assert res.status_code == 400
+    assert "error" in data.keys()
+
+    payload = {
+        "operator_id": rfo.operator_id,
+        "load_location": "Updated load_location",
+        "dump_location": "Updated dump_location",
+        "start_location": "Updated start_location",
+        "start_time": "2022-02-02 02:02:02",
+        "trailer": "Updated trailer",
+    }
+
+    res = client.put(f"/{END_POINT}/{rfo.rfo_id}", json=payload)
+    data = res.json
+
+    assert res.status_code == 400
+    assert "error" in data.keys()
+
+    payload = {
+        "operator_id": rfo.operator_id,
+        "load_location": "Updated load_location",
+        "dump_location": "Updated dump_location",
+        "start_location": "Updated start_location",
+        "start_time": "2022-02-02 02:02:02",
+        "truck": "Updated truck",
+    }
+
+    res = client.put(f"/{END_POINT}/{rfo.rfo_id}", json=payload)
+    data = res.json
+
+    assert res.status_code == 400
+    assert "error" in data.keys()
+
+
+def test_rfo_put_invalid_attributes(client, rfo):
+    """_summary_
+        This test will update an RFO with invalid attributes
+
+    Args:
+        client (_type_): _description_
+        rfo (_type_): _description_
+    """
+
+    # Invalid operator_id
+    payload = {
+        "operator_id": "ABC",
+        "load_location": "Updated load_location",
+        "dump_location": "Updated dump_location",
+        "start_location": "Updated start_location",
+        "start_time": "2022-02-02 02:02:02",
+        "truck": "Updated truck",
+        "trailer": "Updated trailer",
+    }
+
+    res = client.put(f"/{END_POINT}/{rfo.rfo_id}", json=payload)
+    data = res.json
+
+    assert res.status_code == 400
+    assert "error" in data.keys()
+
+    # Invalid load_location
+    payload = {
+        "operator_id": rfo.operator_id,
+        "load_location": "",
+        "dump_location": "Updated dump_location",
+        "start_location": "Updated start_location",
+        "start_time": "2022-02-02 02:02:02",
+        "truck": "Updated truck",
+        "trailer": "Updated trailer",
+    }
+
+    res = client.put(f"/{END_POINT}/{rfo.rfo_id}", json=payload)
+    data = res.json
+
+    assert res.status_code == 400
+    assert "error" in data.keys()
+
+    # Invalid dump_location
+    payload = {
+        "operator_id": rfo.operator_id,
+        "load_location": "Updated load_location",
+        "dump_location": "",
+        "start_location": "Updated start_location",
+        "start_time": "2022-02-02 02:02:02",
+        "truck": "Updated truck",
+        "trailer": "Updated trailer",
+    }
+
+    res = client.put(f"/{END_POINT}/{rfo.rfo_id}", json=payload)
+    data = res.json
+
+    assert res.status_code == 400
+    assert "error" in data.keys()
+
+    # Invalid start_location
+    payload = {
+        "operator_id": rfo.operator_id,
+        "load_location": "Updated load_location",
+        "dump_location": "Updated dump_location",
+        "start_location": "",
+        "start_time": "2022-02-02 02:02:02",
+        "truck": "Updated truck",
+        "trailer": "Updated trailer",
+    }
+
+    res = client.put(f"/{END_POINT}/{rfo.rfo_id}", json=payload)
+    data = res.json
+
+    assert res.status_code == 400
+    assert "error" in data.keys()
+
+    # Invalid start_time missing time
+    payload = {
+        "operator_id": rfo.operator_id,
+        "load_location": "Updated load_location",
+        "dump_location": "Updated dump_location",
+        "start_location": "Updated start_location",
+        "start_time": "2022-02-02",
+        "truck": "Updated truck",
+        "trailer": "Updated trailer",
+    }
+
+    res = client.put(f"/{END_POINT}/{rfo.rfo_id}", json=payload)
+    data = res.json
+
+    assert res.status_code == 400
+    assert "error" in data.keys()
+
+    res = client.put(f"/{END_POINT}/{rfo.rfo_id}", json=payload)
+    data = res.json
+
+    assert res.status_code == 400
+    assert "error" in data.keys()
+
+    # Invalid start_time missing date
+    payload = {
+        "operator_id": rfo.operator_id,
+        "load_location": "Updated load_location",
+        "dump_location": "Updated dump_location",
+        "start_location": "Updated start_location",
+        "start_time": "02:02:02",
+        "truck": "Updated truck",
+        "trailer": "Updated trailer",
+    }
+
+    res = client.put(f"/{END_POINT}/{rfo.rfo_id}", json=payload)
+    data = res.json
+
+    assert res.status_code == 400
+    assert "error" in data.keys()
+
+    # Invalid start_time emty string
+    payload = {
+        "operator_id": rfo.operator_id,
+        "load_location": "Updated load_location",
+        "dump_location": "Updated dump_location",
+        "start_location": "Updated start_location",
+        "start_time": "",
+        "truck": "Updated truck",
+        "trailer": "Updated trailer",
+    }
+
+    res = client.put(f"/{END_POINT}/{rfo.rfo_id}", json=payload)
+    data = res.json
+
+    assert res.status_code == 400
+    assert "error" in data.keys()
+
+    # Invalid truck
+    payload = {
+        "operator_id": rfo.operator_id,
+        "load_location": "Updated load_location",
+        "dump_location": "Updated dump_location",
+        "start_location": "Updated start_location",
+        "start_time": "",
+        "truck": "",
+        "trailer": "Updated trailer",
+    }
+
+    res = client.put(f"/{END_POINT}/{rfo.rfo_id}", json=payload)
+    data = res.json
+
+    assert res.status_code == 400
+    assert "error" in data.keys()
+
+    # Invalid trailer
+    payload = {
+        "operator_id": rfo.operator_id,
+        "load_location": "Updated load_location",
+        "dump_location": "Updated dump_location",
+        "start_location": "Updated start_location",
+        "start_time": "",
+        "truck": "Updated truck",
+        "trailer": "",
+    }
+
+    res = client.put(f"/{END_POINT}/{rfo.rfo_id}", json=payload)
+    data = res.json
+
+    assert res.status_code == 400
+    assert "error" in data.keys()
+
+
 def test_rfo_get(client, rfo):
     res = client.get(f"/{END_POINT}/{rfo.rfo_id}")
     data = res.json
