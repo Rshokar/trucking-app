@@ -34,3 +34,17 @@ def test_billing_ticket_get_non_existant(client):
 
     assert res.status_code == 404
     assert "error" in data.keys()
+
+
+def test_billing_ticket_get_invalid(client):
+    """_summary_
+        Test geting a billing ticket with invalid id
+    Args:
+        client (_type_): _description_
+    """
+
+    res = client.get(f"/{END_POINT}/{'invalid'}")
+    data = res.json
+
+    print("DATA", data)
+    assert res.status_code == 404
