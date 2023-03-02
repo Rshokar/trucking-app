@@ -73,3 +73,23 @@ def test_billing_ticket_post(client, rfo):
     assert data["ticket_number"] == payload["ticket_number"]
     assert "image_id" in data.keys()
     assert data["image_id"] == payload["image_id"]
+
+
+def test_billing_ticket_post_non_existant_rfo(client):
+    """_summary_
+        Test creating a billing ticket with non existant rfo
+    Args:
+        client (_type_): _description_
+    """
+
+    payload = {
+        "rfo_id": 123456789,
+        "ticket_number": 123456789,
+        "image_id": 123456789
+    }
+
+    res = client.post(f"/{END_POINT}/", json=payload)
+    data = res.json
+
+    assert res.status_code == 404
+    assert "error" in data.keys()
