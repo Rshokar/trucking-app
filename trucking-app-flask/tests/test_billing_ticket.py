@@ -93,3 +93,44 @@ def test_billing_ticket_post_non_existant_rfo(client):
 
     assert res.status_code == 404
     assert "error" in data.keys()
+
+
+def test_billing_ticket_post_missing_attributes(client, rfo):
+    """_summary_
+        Test creating a billing ticket with missing attributes
+    Args:
+        client (_type_): _description_
+    """
+
+    payload = {
+        "ticket_number": 123456789,
+        "image_id": 123456789
+    }
+
+    res = client.post(f"/{END_POINT}/", json=payload)
+    data = res.json
+
+    assert res.status_code == 400
+    assert "error" in data.keys()
+
+    payload = {
+        "rfo_id": rfo.rfo_id,
+        "image_id": 123456789
+    }
+
+    res = client.post(f"/{END_POINT}/", json=payload)
+    data = res.json
+
+    assert res.status_code == 400
+    assert "error" in data.keys()
+
+    payload = {
+        "rfp_id": rfo.rfo_id,
+        "ticket_number": 123456789
+    }
+
+    res = client.post(f"/{END_POINT}/", json=payload)
+    data = res.json
+
+    assert res.status_code == 400
+    assert "error" in data.keys()
