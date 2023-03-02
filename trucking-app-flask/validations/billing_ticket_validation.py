@@ -8,3 +8,14 @@ billing_ticket_validation = {
     "required": ["rfo_id", "ticket_number", "image_id"],
     "additionalProperties": False
 }
+
+
+billing_ticket_upate = {
+    "type": "object",
+    "properties": {
+        "ticket_number": {"type": "integer"},
+        "image_id": {"type": "integer"}
+    },
+    "required": ["ticket_number", "image_id"],
+    "additionalProperties": False
+}
