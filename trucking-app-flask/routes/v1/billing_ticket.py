@@ -8,8 +8,8 @@ billing_ticket = Blueprint("billing_ticket", __name__)
 
 
 @billing_ticket.route("/<int:bill_id>", methods=["GET"])
-def get_billing_ticket(bill_id):
-    return BillingTicketController.get_billing_ticket(session=g.session, bill_id=bill_id)
+def get_bill(bill_id):
+    return BillingTicketController.get_bill(session=g.session, bill_id=bill_id)
 
 
 @billing_ticket.route("/", methods=["POST"])
@@ -26,6 +26,6 @@ def PUT():
     return BillingTicketController.PUT()
 
 
-@billing_ticket.route("/", methods=["DELETE"])
-def DELETE():
-    return BillingTicketController.DELETE()
+@billing_ticket.route("/<int:bill_id>", methods=["DELETE"])
+def delete_bill(bill_id):
+    return BillingTicketController.delete_bill(g.session, bill_id)

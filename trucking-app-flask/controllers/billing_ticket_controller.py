@@ -7,7 +7,7 @@ import json
 
 class BillingTicketController:
 
-    def get_billing_ticket(session, bill_id):
+    def get_bill(session, bill_id):
         """_summary_
             Gets a single billing ticket from the database
         Args:
@@ -53,5 +53,20 @@ class BillingTicketController:
             mimetype='application/json'
         )
 
-    def DELETE():
-        return Response(status=204)
+    def delete_bill(session, bill_id):
+        """_summary_
+            Deletes a billing ticket from the database
+        Args:
+            session (_type_): _description_
+            bill_id (_type_): _description_
+
+        Returns:
+            _type_: _description_
+        """
+
+        bill = session.query(BillingTickets).filter_by(bill_id=bill_id).first()
+        if bill is None:
+            return make_response({"error": "Billing ticket not found"}, 404)
+        session.delete(bill)
+        session.commit()
+        return make_response({"message": "Billing ticket deleted"}, 200)
