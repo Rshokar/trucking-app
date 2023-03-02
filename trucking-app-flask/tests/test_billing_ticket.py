@@ -180,3 +180,32 @@ def test_billing_ticket_post_invalid_attributes(client, rfo):
 
     assert res.status_code == 400
     assert "error" in data.keys()
+
+
+def test_billing_ticket_delete(client, billing_ticket):
+    """_summary_
+        Test deleting a billing ticket
+    Args:
+        client (_type_): _description_
+        billing_ticket (_type_): _description_
+    """
+
+    res = client.delete(f"/{END_POINT}/{billing_ticket.bill_id}")
+    data = res.json
+
+    assert res.status_code == 200
+    assert "message" in data.keys()
+
+
+def test_billing_ticket_delete_non_existant(client):
+    """_summary_
+        Test deleting a billing ticket that does not exist
+    Args:
+        client (_type_): _description_
+    """
+
+    res = client.delete(f"/{END_POINT}/{123456789}")
+    data = res.json
+
+    assert res.status_code == 404
+    assert "error" in data.keys()
