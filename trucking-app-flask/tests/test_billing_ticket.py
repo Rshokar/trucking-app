@@ -134,3 +134,49 @@ def test_billing_ticket_post_missing_attributes(client, rfo):
 
     assert res.status_code == 400
     assert "error" in data.keys()
+
+
+def test_billing_ticket_post_invalid_attributes(client, rfo):
+    """_summary_
+        Test creating a billing ticket with invalid attributes
+    Args:
+        client (_type_): _description_
+    """
+    # Invalid rfo_id
+    payload = {
+        "rfo_id": "invalid",
+        "ticket_number": 123456789,
+        "image_id": 123456789
+    }
+
+    res = client.post(f"/{END_POINT}/", json=payload)
+    data = res.json
+
+    assert res.status_code == 400
+    assert "error" in data.keys()
+
+    # Invalid ticket_number
+    payload = {
+        "rfo_id": rfo.rfo_id,
+        "ticket_number": "invalid",
+        "image_id": 123456789
+    }
+
+    res = client.post(f"/{END_POINT}/", json=payload)
+    data = res.json
+
+    assert res.status_code == 400
+    assert "error" in data.keys()
+
+    # Invalid image_id
+    payload = {
+        "rfo_id": rfo.rfo_id,
+        "ticket_number": 123456789,
+        "image_id": "invalid"
+    }
+
+    res = client.post(f"/{END_POINT}/", json=payload)
+    data = res.json
+
+    assert res.status_code == 400
+    assert "error" in data.keys()
