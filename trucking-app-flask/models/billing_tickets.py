@@ -18,3 +18,11 @@ class BillingTickets(Base):
 
     def __repr__(self):
         return f"BILLING TICKET: ({self.bill_id}) {self.rfo_id} {self.ticket_number} {self.image_id}"
+
+    def to_dict(self):
+        return {
+            "bill_id": self.bill_id,
+            "rfo_id": self.rfo_id,
+            "ticket_number": self.ticket_number,
+            "image_id": self.image_id
+        }

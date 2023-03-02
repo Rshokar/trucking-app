@@ -1,51 +1,24 @@
 import pytest
 import json
-from config_test import app, client
+from config_test import app, client, billing_ticket
 END_POINT = "v1/billing_ticket"
 
 
 @pytest.mark.usefixtures("client")
-def test_user_get(client):
-    response = client.get("/{}/".format(END_POINT))
+def test_user_get(client, billing_ticket):
+    """_summary_
+        Test geting a billing ticket
+    Args:
+        client (_type_): _description_
+        billing_ticket (_type_): _description_
+    """
+    res = client.get(f"/{END_POINT}/{billing_ticket.bill_id}")
+    data = res.json
 
-    # convert response to dicitionary
-    data = response.data.decode("utf-8")
-    data = json.loads(data)
-
-    # assertions
-    assert "BILLING_TICKET_GET" == data["data"]
-    assert 200 == response.status_code
-
-
-@pytest.mark.usefixtures("client")
-def test_user_post(client):
-    response = client.post("/{}/".format(END_POINT))
-
-    # convert response to dicitionary
-    data = response.data.decode("utf-8")
-    data = json.loads(data)
-
-    # assertions
-    assert "BILLING_TICKET_POST" == data["data"]
-    assert 200 == response.status_code
-
-
-@pytest.mark.usefixtures("client")
-def test_user_put(client):
-    response = client.put("/{}/".format(END_POINT))
-
-    # convert response to dicitionary
-    data = response.data.decode("utf-8")
-    data = json.loads(data)
-
-    # assertions
-    assert "BILLING_TICKET_PUT" == data["data"]
-    assert 200 == response.status_code
-
-
-@pytest.mark.usefixtures("client")
-def test_user_delete(client):
-    response = client.delete("/{}/".format(END_POINT))
-
-    # Delete returns a 204 which is no content
-    assert 204 == response.status_code
+    assert res.status_code == 200
+    assert "bill_id" in data.keys()
+    assert data["bill_id"] == billing_ticket.bill_id
+    assert "rfo_id" in data.keys()
+    assert data["rfo_id"] == billing_ticket.rfo_id
+    assert "ticket_number" in data.keys()
+    assert data["ticket_number"] == billing_ticket.ticket_number
