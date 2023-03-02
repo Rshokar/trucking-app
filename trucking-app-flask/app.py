@@ -1,4 +1,4 @@
-import os 
+import os
 from config.db import Session, Base, engine
 from utils import loadDB
 from routes import v1
@@ -10,7 +10,7 @@ load_dotenv()
 
 IS_PRODUCTION = os.environ.get("STATE")
 
-if (IS_PRODUCTION != "production"):
+if (IS_PRODUCTION == "development" or IS_PRODUCTION == "test"):
     NUM_USERS = os.environ.get("TEST_DATA_NUM_USERS")
     # # If development clear all database
     Base.metadata.drop_all(engine)
@@ -19,7 +19,9 @@ if (IS_PRODUCTION != "production"):
     # Create all tables if not already there
     Base.metadata.create_all(engine)
 
-    loadDB(int(NUM_USERS))
+    if (IS_PRODUCTION == "development"):
+        print("--|--Loading Test Data--|--")
+        loadDB(int(NUM_USERS))
 
 
 def create_app():
