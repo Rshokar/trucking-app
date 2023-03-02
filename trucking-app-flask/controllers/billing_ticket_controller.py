@@ -42,8 +42,8 @@ class BillingTicketController:
             request.json["ticket_number"],
             request.json["image_id"]
         )
-        request.session.add(bill)
-        request.session.commit()
+        session.add(bill)
+        session.commit()
         return make_response(bill.to_dict(), 201)
 
     def PUT():
