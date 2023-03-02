@@ -2,7 +2,7 @@ from flask import Blueprint, g, request
 from controllers.billing_ticket_controller import BillingTicketController
 import jsonschema
 from utils import make_response
-from validations import billing_ticket_validation
+from validations import billing_ticket_validation, billing_ticket_upate
 
 billing_ticket = Blueprint("billing_ticket", __name__)
 
@@ -21,9 +21,13 @@ def create_bill():
         return make_response({"error": e.message}, 400)
 
 
-@billing_ticket.route("/", methods=["PUT"])
-def PUT():
-    return BillingTicketController.PUT()
+@billing_ticket.route("/<int:bill_id>", methods=["PUT"])
+def update_bill(bill_id):
+    try:
+        jsonschema.validate(request.json, billing_ticket_upate)
+        return BillingTicketController.update_bill(g.session, request, bill_id)
+    except jsonschema.ValidationError as e:
+        return make_response({"error": e.message}, 400)
 
 
 @billing_ticket.route("/<int:bill_id>", methods=["DELETE"])

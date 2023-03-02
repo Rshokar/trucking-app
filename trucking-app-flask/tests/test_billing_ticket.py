@@ -182,6 +182,115 @@ def test_billing_ticket_post_invalid_attributes(client, rfo):
     assert "error" in data.keys()
 
 
+def test_billing_ticket_put(client, billing_ticket):
+    """_summary_
+        Test updating a billing ticket
+    Args:
+        client (_type_): _description_
+        billing_ticket (_type_): _description_
+    """
+
+    payload = {
+        "ticket_number": 123456789,
+        "image_id": 123456789
+    }
+
+    res = client.put(f"/{END_POINT}/{billing_ticket.bill_id}", json=payload)
+    data = res.json
+
+    assert res.status_code == 200
+    assert "bill_id" in data.keys()
+    assert data["bill_id"] == billing_ticket.bill_id
+    assert "rfo_id" in data.keys()
+    assert data["rfo_id"] == billing_ticket.rfo_id
+    assert "ticket_number" in data.keys()
+    assert data["ticket_number"] == payload["ticket_number"]
+    assert "image_id" in data.keys()
+    assert data["image_id"] == payload["image_id"]
+
+
+def test_billing_ticket_put_non_existant(client):
+    """_summary_
+        Test updating a billing ticket that does not exist
+    Args:
+        client (_type_): _description_
+    """
+
+    payload = {
+        "ticket_number": 123456789,
+        "image_id": 123456789
+    }
+
+    res = client.put(f"/{END_POINT}/{123456789}", json=payload)
+    data = res.json
+
+    assert res.status_code == 404
+    assert "error" in data.keys()
+
+
+def test_billing_ticket_put_invalid_attributes(client, billing_ticket):
+    """_summary_
+        Test updating a billing ticket with invalid attributes
+    Args:
+        client (_type_): _description_
+        billing_ticket (_type_): _description_
+    """
+
+    # Invalid ticket_number
+    payload = {
+        "ticket_number": "invalid",
+        "image_id": 123456789
+    }
+
+    res = client.put(f"/{END_POINT}/{billing_ticket.bill_id}", json=payload)
+    data = res.json
+
+    assert res.status_code == 400
+    assert "error" in data.keys()
+
+    # Invalid image_id
+    payload = {
+        "ticket_number": 123456789,
+        "image_id": "invalid"
+    }
+
+    res = client.put(f"/{END_POINT}/{billing_ticket.bill_id}", json=payload)
+    data = res.json
+
+    assert res.status_code == 400
+    assert "error" in data.keys()
+
+
+def test_billing_ticket_put_missing_attributes(client, billing_ticket):
+    """_summary_
+        Test updating a billing ticket with missing attributes
+
+    Args:
+        client (_type_): _description_
+        billing_ticket (_type_): _description_
+    """
+
+    payload = {
+        "ticket_number": 123456789,
+    }
+
+    res = client.put(f"/{END_POINT}/{billing_ticket.bill_id}", json=payload)
+    data = res.json
+
+    assert res.status_code == 400
+    assert "error" in data.keys()
+
+    payload = {
+        "image_id": 123456789,
+    }
+
+    res = client.put(f"/{END_POINT}/{billing_ticket.bill_id}", json=payload)
+    data = res.json
+
+    assert res.status_code == 400
+    assert "error" in data.keys()
+
+
 def test_billing_ticket_delete(client, billing_ticket):
     """_summary_
         Test deleting a billing ticket

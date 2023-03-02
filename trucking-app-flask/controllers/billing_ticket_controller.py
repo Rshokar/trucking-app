@@ -46,12 +46,31 @@ class BillingTicketController:
         session.commit()
         return make_response(bill.to_dict(), 201)
 
-    def PUT():
-        return Response(
-            response=json.dumps({"data": "BILLING_TICKET_PUT"}),
-            status=200,
-            mimetype='application/json'
-        )
+    def update_bill(session, request, bill_id):
+        """_summary_
+            Updates a billing ticket in the database
+        Args:
+            session (_type_): _description_
+            request (_type_): _description_
+            bill_id (int): Billing ticket id
+
+        Returns:
+            _type_: _description_
+        """
+
+        json = request.json
+        ticket_number = json["ticket_number"]
+        image_id = json["image_id"]
+
+        bill = session.query(BillingTickets).filter_by(bill_id=bill_id).first()
+        if bill is None:
+            return make_response({"error": "Billing ticket not found"}, 404)
+
+        bill.ticket_number = ticket_number
+        bill.image_id = image_id
+        session.commit()
+
+        return make_response(bill.to_dict(), 200)
 
     def delete_bill(session, bill_id):
         """_summary_
