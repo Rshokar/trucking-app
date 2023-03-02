@@ -1,6 +1,6 @@
 
 from flask import Response
-from models.billing_tickets import BillingTickets
+from models.billing_tickets import BillingTickets, RFO
 from utils import make_response
 import json
 
@@ -21,12 +21,30 @@ class BillingTicketController:
             return make_response({"error": "Billing ticket not found"}, 404)
         return make_response(bill.to_dict(), 200)
 
-    def POST():
-        return Response(
-            response=json.dumps({"data": "BILLING_TICKET_POST"}),
-            status=200,
-            mimetype='application/json'
+    def create_bill(session, request):
+        """_summary_
+            Creates a billing ticket in the database
+        Args:
+            request (_type_): _description_
+        Returns:
+            Response: 201, 400
+        """
+        rfo_id = request.json["rfo_id"]
+        ticket_number = request.json["ticket_number"]
+        image_id = request.json["image_id"]
+
+        rfo = session.query(RFO).filter_by(rfo_id=rfo_id).first()
+        if rfo is None:
+            return make_response({"error": "RFO not found"}, 404)
+
+        bill = BillingTickets(
+            request.json["rfo_id"],
+            request.json["ticket_number"],
+            request.json["image_id"]
         )
+        request.session.add(bill)
+        request.session.commit()
+        return make_response(bill.to_dict(), 201)
 
     def PUT():
         return Response(
