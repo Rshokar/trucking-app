@@ -2,7 +2,7 @@ import pytest
 import json
 from config_test import app, client, session, user
 from models import User
-from utils.loader import UserFactory 
+from utils.loader import UserFactory
 END_POINT = "v1/user"
 
 
@@ -60,9 +60,9 @@ def test_user_post(client):
     """
     payload = {
         "type": "dispatcher",
-        "password": "Testing1", 
+        "password": "Testing1",
         "email": "test@demo.com"
-        
+
     }
     headers = {"Content-Type": "application/json"}
     response = client.post(
@@ -95,36 +95,57 @@ def test_user_post_invalid_type(client):
         "email": "test@demo.com",
     }
     response = client.post(f"{END_POINT}/", headers=headers, json=payload)
-
-    # convert response to dictionary
     data = json.loads(response.data.decode("utf-8"))
-
-    # assertions
     assert 400 == response.status_code
     assert "error" in data.keys()
-    
-    
-    # Invaid Emails
+
+    # Invaid Email
     headers = {"Content-Type": "application/json"}
     payload = {
-        "type": "None",
-        "password": "Testing",
+        "type": "dispatcher",
+        "password": "Testing1",
         "email": "testdemo.com",
     }
     response = client.post(f"{END_POINT}/", headers=headers, json=payload)
-
-    # convert response to dictionary
     data = json.loads(response.data.decode("utf-8"))
-
-    # assertions
     assert 400 == response.status_code
     assert "error" in data.keys()
-    
+
+    payload = {
+        "type": "dispatcher",
+        "password": "Testing1",
+        "email": "test@democom",
+    }
+    response = client.post(f"{END_POINT}/", headers=headers, json=payload)
+    data = json.loads(response.data.decode("utf-8"))
+    assert 400 == response.status_code
+    assert "error" in data.keys()
+
+    payload = {
+        "type": "dispatcher",
+        "password": "Testing1",
+        "email": "@demo.com",
+    }
+    response = client.post(f"{END_POINT}/", headers=headers, json=payload)
+    data = json.loads(response.data.decode("utf-8"))
+    assert 400 == response.status_code
+    assert "error" in data.keys()
+
+    payload = {
+        "type": "dispatcher",
+        "password": "Testing1",
+        "email": "test@demo.",
+    }
+    response = client.post(f"{END_POINT}/", headers=headers, json=payload)
+    data = json.loads(response.data.decode("utf-8"))
+    assert 400 == response.status_code
+    assert "error" in data.keys()
+
 
 @pytest.mark.usefixtures("client")
 def test_user_post_invalid_password(client):
     """_summary_
-    
+
     See if error is returned when a in invalid password is entered
     """
     # No Number
@@ -138,7 +159,7 @@ def test_user_post_invalid_password(client):
     data = json.loads(response.data.decode("utf-8"))
     assert 400 == response.status_code
     assert "error" in data.keys()
-    
+
     # No uppercase
     headers = {"Content-Type": "application/json"}
     payload = {
@@ -150,9 +171,8 @@ def test_user_post_invalid_password(client):
     data = json.loads(response.data.decode("utf-8"))
     assert 400 == response.status_code
     assert "error" in data.keys()
-    
-    
-    # No lowercase 
+
+    # No lowercase
     headers = {"Content-Type": "application/json"}
     payload = {
         "type": "None",
@@ -163,8 +183,8 @@ def test_user_post_invalid_password(client):
     data = json.loads(response.data.decode("utf-8"))
     assert 400 == response.status_code
     assert "error" in data.keys()
-    
-    # Less than 8 charactesr 
+
+    # Less than 8 charactesr
     headers = {"Content-Type": "application/json"}
     payload = {
         "type": "None",
@@ -175,7 +195,7 @@ def test_user_post_invalid_password(client):
     data = json.loads(response.data.decode("utf-8"))
     assert 400 == response.status_code
     assert "error" in data.keys()
-    
+
 
 @pytest.mark.usefixtures("client")
 def test_user_post_duplicate(client, user):
