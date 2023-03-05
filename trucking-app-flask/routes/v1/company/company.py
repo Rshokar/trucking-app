@@ -1,9 +1,9 @@
-from flask import jsonify, request, Blueprint, abort, g
-from sqlalchemy.exc import IntegrityError
-from sqlalchemy import and_
-from config.db import Session
+from flask import jsonify, request, Blueprint, g
 from models.company import Company
 from controllers import CompanyController
+from validations import new_company_schema
+from utils import make_response
+import jsonschema
 
 company = Blueprint('company', __name__)
 
@@ -20,16 +20,11 @@ def get_company(company_id):
 @company.route('/', methods=['POST'])
 def create_company():
     session = g.session
-    company = Company(owner_id=request.json.get('owner_id'),
-                      company_name=request.json.get('company_name'))
-    session.add(company)
     try:
-        session.commit()
-    except IntegrityError:
-        session.rollback()
-        return jsonify({"error": "Company already exists."}), 409
-
-    return jsonify(company.to_dict()), 201
+        jsonschema.validate(request.json, new_company_schema)
+        return CompanyController.create_company(session=session, request=request)
+    except jsonschema.exceptions.ValidationError as e:
+        return make_response({"error": str(e)}, 400)
 
 
 # PUT operation (update an existing company)
@@ -57,4 +52,3 @@ def delete_company(company_id):
     session.delete(company)
     session.commit()
     return '', 204
-

@@ -7,7 +7,7 @@ class Company(Base):
     __tablename__ = 'company'
     company_id = Column('company_id', Integer,
                         primary_key=True)
-    owner_id = Column('owner_id', Integer, ForeignKey("users.id"))
+    owner_id = Column('owner_id', Integer, ForeignKey("users.id"), unique=True)
     company_name = Column("company_name", String(200))
 
     customers = relationship(
