@@ -298,30 +298,35 @@ def test_user_put_another_user(client_authed):
     assert 409 == response.status_code
 
 
-# def test_user_delete(client, user):
-#     """
-#     Deletes an existing user
-#     """
-#     res = client.delete(f"{END_POINT}/{user.id}")
-#     # Delete returns a 204 which is no content
+def test_user_delete(client_authed):
+    """
+    Deletes an existing user
+    """
+    # Arrange
+    client, user = client_authed
 
-#     data = json.loads(res.data.decode("utf-8"))
+    # Act
+    res = client.delete(f"{END_POINT}/{user.id}")
 
-#     assert 200 == res.status_code
-#     assert "message" in data.keys()
-#     assert data["message"] == "User deleted successfully."
+    # assert
+    assert 200 == res.status_code
+    data = json.loads(res.data.decode("utf-8"))
+    assert "message" in data.keys()
+    assert data["message"] == "User deleted successfully."
 
 
-# @pytest.mark.usefixtures("client")
-# def test_user_delete_noneistant(client):
-#     """
-#     Deletes a non-existent user
-#     """
-#     res = client.delete(f"{END_POINT}/1000")
+def test_user_delete_another_user(client_authed):
+    """
+    Attemps to delete another user
+    """
+    # Arrange
+    client, user = client_authed
 
-#     data = json.loads(res.data.decode("utf-8"))
+    # act
+    res = client.delete(f"{END_POINT}/1000")
 
-#     # Delete returns a 204 which is no content
-#     assert 404 == res.status_code
-#     assert "error" in data.keys()
-#     assert data['error'] == "User not found."
+    data = json.loads(res.data.decode("utf-8"))
+
+    # Assert
+    assert 403 == res.status_code
+    assert "error" in data.keys()
