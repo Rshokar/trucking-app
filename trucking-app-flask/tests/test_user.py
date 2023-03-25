@@ -281,7 +281,6 @@ def test_user_put_another_user(client_authed):
     """
     # Arrange
     client, user = client_authed
-    client, user = client_authed
     headers = {"Content-Type": "application/json"}
     payload = user.to_dict()
     payload["email"] = "update@update.com"
@@ -296,6 +295,31 @@ def test_user_put_another_user(client_authed):
 
     # assertions
     assert 409 == response.status_code
+
+# test user put with unauthenticated user
+
+
+def test_user_put_unauthenticated(client, user):
+    """Try to update when unauthenticated
+
+    Args:
+        client (_type_): _description_
+    """
+    # Arrange
+    headers = {"Content-Type": "application/json"}
+    payload = user.to_dict()
+    payload["email"] = "update@update.com"
+    payload["role"] = "dispatcher"
+
+    # Act
+    response = client.put(
+        f"{END_POINT}/{user.id}",
+        headers=headers,
+        json=payload
+    )
+
+    # assertions
+    assert 401 == response.status_code
 
 
 def test_user_delete(client_authed):
@@ -330,3 +354,20 @@ def test_user_delete_another_user(client_authed):
     # Assert
     assert 403 == res.status_code
     assert "error" in data.keys()
+
+
+def test_user_delete_unauthed(client, user):
+    """Attempt to delete a user without auth
+
+    Args:
+        client (_type_): _description_
+        user (_type_): _description_
+    """
+
+    # Arrange
+
+    # Act
+    res = client.delete(f"{END_POINT}/{user.id}")
+
+    # Assert
+    assert 401 == res.status_code
