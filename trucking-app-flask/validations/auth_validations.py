@@ -1,9 +1,9 @@
 auth_validation = {
     "type": "object",
     "properties": {
-        "email": {"type": "integer"},
-        "password": {"type": "integer"},
+        "email": {"type": "string"},
+        "password": {"type": "string"},
     },
-    "required": ["email" "password"],
+    "required": ["email", "password"],
     "additionalProperties": False
 }

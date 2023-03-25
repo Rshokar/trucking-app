@@ -5,6 +5,7 @@ from models.model import Base
 from config import db
 from enum import Enum
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask import session
 
 
 class UserRole(str, Enum):
@@ -56,3 +57,12 @@ class User(Base):
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
+
+    def is_active(self):
+        return self.active
+
+    def get_id(self):
+        return self.id
+
+    def is_authenticated(self):
+        return self.id in session

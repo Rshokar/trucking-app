@@ -4,6 +4,8 @@ from utils import loadDB
 from routes import v1
 from flask import Flask, g
 from dotenv import load_dotenv
+from flask_login import LoginManager
+from models import User
 
 # Load env variables
 load_dotenv()
@@ -27,6 +29,18 @@ if (IS_PRODUCTION == "development" or IS_PRODUCTION == "test"):
 def create_app():
 
     app = Flask(__name__)
+
+    # Set secret key for auth session
+    app.secret_key = 'fzV2T57K8JmQJ@C'
+
+    # Initialize login manager
+    login_manager = LoginManager(app)
+    login_manager.init_app(app)
+
+    @login_manager.user_loader
+    def load_user(user_id, callback=None):
+        session = Session()
+        return session.query(User).get(user_id)
 
     # Register all endpoints
     app.register_blueprint(v1, url_prefix="/v1")

@@ -12,9 +12,10 @@ def login():
     session = g.session
     try:
         jsonschema.validate(request.json, auth_validation)
+        print("request: ", request.json)
         return AuthController.LOGIN(session=session, request=request)
-    except jsonschema.ValidationError:
-        return make_response({"error": "Invalid Request Data"}, 400)
+    except jsonschema.ValidationError as e:
+        return make_response({"error": e.message}, 400)
 
 
 @auth.route("/logout", methods=["DELETE"])
