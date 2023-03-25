@@ -7,8 +7,6 @@ import os
 IS_PRODUCTION = os.environ.get("STATE")
 TEST_DATA_NUM_USERS = os.environ.get("TEST_DATA_NUM_USERS")
 
-print("HELLO DATABASE--|-- HELLO DATABASE")
-
 
 connection_string = ""
 if (IS_PRODUCTION == "production"):

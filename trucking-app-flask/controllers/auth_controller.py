@@ -23,8 +23,6 @@ class AuthController:
 
         user = session.query(User).filter_by(email=email).first()
 
-        print("USER: ", user)
-
         if not user or not user.check_password(password):
             return make_response('Invalid username or password', 401)
 

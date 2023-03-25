@@ -6,52 +6,72 @@ from utils.loader import UserFactory
 END_POINT = "v1/user"
 
 
-@pytest.mark.usefixtures("client")
-def test_user_get(client_authed):
+def test_user_get_authed(client_authed):
     """
     See if we can successfully perform GET requests on existing users and return their information
     """
+    # arrange
     client, user = client_authed
 
+    # act``
     response = client.get(f"{END_POINT}/{user.id}")
 
-    # convert response to dictionary
+    # assertions
+    assert 200 == response.status_code
     data = response.data.decode("utf-8")
     data = json.loads(data)
-
-    # assertions
-    assert 200 != response.status_code
     assert "id" in data.keys()
     assert type(data["id"]) == int
     assert "role" in data.keys()
     assert "email" in data.keys()
 
 
-# def test_user_get_nonexistant_user(client):
-#     """
-#         Verify that we can perform GET requests with user IDs
-#         that don't exist in DB without crashing the app or returning
-#         valid users
-#     """
-#     response = client.get(f"{END_POINT}/1000")
+def test_user_get_unauthed(client, user):
+    """Try to get a user without being authed
 
-#     # convert response to dictionary
-#     data = json.loads(response.data.decode("utf-8"))
+    Args:
+        client (_type_): _description_
+    """
+    # arrange
 
-#     # assertions
-#     assert 404 == response.status_code
-#     assert "error" in data.keys()
-#     assert data["error"] == "User not found."
+    # act
+    res = client.get(f"{END_POINT}/{user.id}")
+
+    print(res)
+    # assert
+    assert 401 == res.status_code
 
 
-# def test_user_invalid_id_format(client):
-#     """
-#     Verify that passing an invalid ID format will not work
-#     """
-#     response = client.get(f"{END_POINT}/ABCD")
+def test_user_get_another_user(client_authed):
+    """
+        Verify that we can perform GET requests with user IDs
+        that don't exist in DB without crashing the app or returning
+        valid users
+    """
+    # arrange
+    client, user = client_authed
 
-#     # assertions. Not found
-#     assert 404 == response.status_code
+    response = client.get(f"{END_POINT}/1000")
+
+    # convert response to dictionary
+    data = json.loads(response.data.decode("utf-8"))
+
+    # assertions
+    assert 403 == response.status_code
+
+
+def test_user_invalid_id_format(client_authed):
+    """
+    Verify that passing an invalid ID format will not work
+    """
+    # arrange
+    client, user = client_authed
+
+    # act
+    response = client.get(f"{END_POINT}/ABCD")
+
+    # assertions. Not found
+    assert 404 == response.status_code
 
 
 # @pytest.mark.usefixtures("client")

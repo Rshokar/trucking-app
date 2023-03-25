@@ -41,10 +41,14 @@ def user():
 
 @pytest.fixture
 def client_authed(client, user):
-    client.post('/login', data=dict(
+    print(user)
+    res = client.post('/v1/auth/login', json=dict(
         email=user.email,
-        password="Testing"  # UserFactory.DEFAULT_PASSWORD
+        password="Testing1"  # UserFactory.DEFAULT_PASSWORD
     ), follow_redirects=True)
+
+    assert 200 == res.status_code
+
     return client, user
 
 
