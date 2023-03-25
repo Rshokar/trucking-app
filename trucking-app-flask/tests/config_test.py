@@ -40,6 +40,15 @@ def user():
 
 
 @pytest.fixture
+def client_authed(client, user):
+    client.post('/login', data=dict(
+        email=user.email,
+        password="Testing"  # UserFactory.DEFAULT_PASSWORD
+    ), follow_redirects=True)
+    return client, user
+
+
+@pytest.fixture
 def company():
     user = UserFactory.create()
     return CompanyFactory.create(owner_id=user.id)

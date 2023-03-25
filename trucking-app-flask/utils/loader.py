@@ -18,7 +18,7 @@ def loadDB(num_users):
     for index in range(num_users):
         user = UserFactory.create()
 
-        # print(f"USER --|--: \n: {user}")
+        print(f"USER --|--: \n: {user}")
 
         company = CompanyFactory(owner_id=user.id)
 
@@ -64,19 +64,9 @@ class UserFactory(SQLAlchemyModelFactory):
         sqlalchemy_session = session
         sqlalchemy_session_persistence = 'commit'
 
-    @staticmethod
-    def generate_password():
-        # generate random password of length 8
-        password = fake.password(
-            length=8, special_chars=False, digits=True, upper_case=True, lower_case=True)
-        while not (any(c.isdigit() for c in password) and any(c.isupper() for c in password) and any(c.islower() for c in password)):
-            password = fake.pa('passwor', length=8, special_chars=False,
-                               digits=True, upper_case=True, lower_case=True)
-        return password
-
     role = FuzzyChoice([UserRole.DISPATCHER.value])
     email = Faker('email')
-    password = LazyAttribute(lambda obj: UserFactory.generate_password())
+    password = "Testing1"
 
 
 class CompanyFactory(SQLAlchemyModelFactory):
