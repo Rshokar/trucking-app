@@ -60,7 +60,7 @@ def test_user_get_another_user(client_authed):
     assert 403 == response.status_code
 
 
-def test_user_invalid_id_format(client_authed):
+def test_user_get_invalid_id_format(client_authed):
     """
     Verify that passing an invalid ID format will not work
     """
@@ -243,7 +243,6 @@ def test_user_post_duplicate(client, user):
     assert "error" in data.keys()
 
 
-@pytest.mark.usefixtures("client")
 def test_user_put(client_authed):
     """_summary_
         Test a valid post request
@@ -254,8 +253,6 @@ def test_user_put(client_authed):
     payload = user.to_dict()
     payload["email"] = "update@update.com"
     payload["role"] = "dispatcher"
-    print(user.to_dict())
-    print(payload)
 
     # Act
     response = client.put(
@@ -276,7 +273,31 @@ def test_user_put(client_authed):
     assert "id" in data.keys()
 
 
-# @pytest.mark.usefixtures("client")
+def test_user_put_another_user(client_authed):
+    """Try to update another user
+
+    Args:
+        client_authed (_type_): _description_
+    """
+    # Arrange
+    client, user = client_authed
+    client, user = client_authed
+    headers = {"Content-Type": "application/json"}
+    payload = user.to_dict()
+    payload["email"] = "update@update.com"
+    payload["role"] = "dispatcher"
+
+    # Act
+    response = client.put(
+        f"{END_POINT}/{user.id}",
+        headers=headers,
+        json=payload
+    )
+
+    # assertions
+    assert 409 == response.status_code
+
+
 # def test_user_delete(client, user):
 #     """
 #     Deletes an existing user
