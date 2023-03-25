@@ -1,51 +1,326 @@
 import pytest
 import json
-from config_test import app, client
-END_POINT = "dispatch"
+from config_test import app, client, session, user, company, customer, dispatch
+from datetime import datetime
+END_POINT = "v1/dispatch"
 
 
-@pytest.mark.usefixtures("client")
-def test_user_get(client):
-    response = client.get("/{}/".format(END_POINT))
+def test_get_dispatch_success(client, dispatch):
+    """
+        Test valid get request
+    """
+    
+    # make a GET request to the route
+    response = client.get(f'/{END_POINT}/{dispatch.dispatch_id}')
+    data = json.loads(response.data)
 
-    # convert response to dicitionary
-    data = response.data.decode("utf-8")
-    data = json.loads(data)
-
-    # assertions
-    assert "DISPATCH_GET" == data["data"]
-    assert 200 == response.status_code
-
-
-@pytest.mark.usefixtures("client")
-def test_user_post(client):
-    response = client.post("/{}/".format(END_POINT))
-
-    # convert response to dicitionary
-    data = response.data.decode("utf-8")
-    data = json.loads(data)
-
-    # assertions
-    assert "DISPATCH_POST" == data["data"]
-    assert 200 == response.status_code
+    # assert that the response is successful and contains the dispatch data
+    assert response.status_code == 200
+    assert data['dispatch_id'] == dispatch.dispatch_id
 
 
-@pytest.mark.usefixtures("client")
-def test_user_put(client):
-    response = client.put("/{}/".format(END_POINT))
+def test_get_dispatch_not_found(client):
+    """
+        Test valid get request with non existant dispatch
+    """
+    dispatch_id = 999
+    # make a GET request to the route with an invalid dispatch ID
+    response = client.get(f'/{END_POINT}/{dispatch_id}')
+    data = json.loads(response.data)
 
-    # convert response to dicitionary
-    data = response.data.decode("utf-8")
-    data = json.loads(data)
+    # assert that the response returns an error and status code 404
+    assert response.status_code == 404
+    assert data['error'] == 'Dispatch not found'
 
-    # assertions
-    assert "DISPATCH_PUT" == data["data"]
-    assert 200 == response.status_code
+def test_create_dispatch(client, customer):
+    """_summary_
 
+        Create a valid dispatch
+    """
 
-@pytest.mark.usefixtures("client")
-def test_user_delete(client):
-    response = client.delete("/{}/".format(END_POINT))
+    # Make a POST request to create a new dispatch
+    data = {
+        'company_id': customer.company.company_id,
+        'customer_id':  customer.customer_id,
+        'notes': 'Test dispatch',
+        'date': '2022-02-21 10:00:00'
+    }
+    response = client.post(f'/{END_POINT}/', json=data)
+    print(f"RETURNED DATA: {response.data}")
+    assert response.status_code == 201
 
-    # Delete returns a 204 which is no content
-    assert 204 == response.status_code
+    # Check that the dispatch was created and returned in the response
+    dispatch_data = response.json['dispatch']
+    assert dispatch_data['company_id'] == data['company_id']
+    assert dispatch_data['customer_id'] == data['customer_id']
+    assert dispatch_data['notes'] == 'Test dispatch'
+    assert datetime.strptime(dispatch_data['date'], '%a, %d %b %Y %H:%M:%S GMT') == datetime.strptime(
+        data['date'], '%Y-%m-%d %H:%M:%S')
+
+def test_create_dispatch_missing_attributes(client, customer):
+    """_summary_
+
+        Create a valid dispatch with missing parameters
+    """
+
+    # Make a POST request with missing company_id
+    payload = {
+        'customer_id':  customer.customer_id,
+        'notes': 'Test dispatch',
+        'date': '2022-02-21 10:00:00'
+    }
+    response = client.post(f'/{END_POINT}/', json=payload)
+    assert response.status_code == 400
+    
+    # Make a POST request with missing customer_id
+    payload = {
+        'company_id':  customer.company.company_id,
+        'notes': 'Test dispatch',
+        'date': '2022-02-21 10:00:00'
+    }
+    response = client.post(f'/{END_POINT}/', json=payload)
+    assert response.status_code == 400
+    
+    
+    # Make a POST request with missing notes
+    payload = {
+        'customer_id':  customer.customer_id,
+        'company_id':  customer.company.company_id,
+        'date': '2022-02-21 10:00:00'
+    }
+    response = client.post(f'/{END_POINT}/', json=payload)
+    assert response.status_code == 400
+    
+    
+    # Make a POST request with missing date
+    payload = {
+        'customer_id':  customer.customer_id,
+        'company_id':  customer.company.company_id,
+        'notes': 'Test dispatch',
+    }
+    response = client.post(f'/{END_POINT}/', json=payload)
+    assert response.status_code == 400
+    
+def test_create_dispatch_invalid_attributes(client, customer):
+    """_summary_
+
+    Passes invalid attributes to endpoint
+    
+    Args:
+        clinet (_type_): _description_
+        customer (_type_): _description_
+    """
+    
+    # Alphanumeric company_id
+    payload = {
+        'company_id': "ABC1",
+        'customer_id':  customer.customer_id,
+        'notes': 'Test dispatch',
+        'date': '2022-02-21 10:00:00'
+    }
+    response = client.post(f"/{END_POINT}/", json=payload)
+    assert response.status_code == 400
+    
+    # Alphanumeric customer_id
+    payload = {
+        'company_id': customer.company.company_id,
+        'customer_id':  "ABC1",
+        'notes': 'Test dispatch',
+        'date': '2022-02-21 10:00:00'
+    }
+    response = client.post(f"/{END_POINT}/", json=payload)
+    assert response.status_code == 400
+    
+    
+    # Invalid Date
+    payload = {
+        'company_id': customer.company.company_id,
+        'customer_id':  customer.customer_id,
+        'notes': 'Test dispatch',
+        'date': '10:00:00'
+    }
+    response = client.post(f"/{END_POINT}/", json=payload)
+    assert response.status_code == 400
+    
+    # Invalid Date
+    payload = {
+        'company_id': customer.company.company_id,
+        'customer_id':  customer.customer_id,
+        'notes': 'Test dispatch',
+        'date': '2022-02-21'
+    }
+    response = client.post(f"/{END_POINT}/", json=payload)
+    assert response.status_code == 400
+    
+def test_update_dispatch_missing_attributes(client, dispatch):
+    """_summary_
+
+        Create a valid dispatch with missing parameters
+    """
+
+    # Make a POST request with missing company_id
+    payload = {
+        'customer_id':  dispatch.customer.customer_id,
+        'notes': 'Test dispatch',
+        'date': '2022-02-21 10:00:00'
+    }
+    response = client.put(f'/{END_POINT}/{dispatch.company.company_id}', json=payload)
+    assert response.status_code == 400
+    
+    # Make a POST request with missing customer_id
+    payload = {
+        'company_id':  dispatch.company.company_id,
+        'notes': 'Test dispatch',
+        'date': '2022-02-21 10:00:00'
+    }
+    response = client.put(f'/{END_POINT}/{dispatch.company.company_id}', json=payload)
+    assert response.status_code == 400
+    
+    
+    # Make a POST request with missing notes
+    payload = {
+        'customer_id':  dispatch.customer.customer_id,
+        'company_id':  dispatch.company.company_id,
+        'date': '2022-02-21 10:00:00'
+    }
+    response = client.put(f'/{END_POINT}/{dispatch.company.company_id}', json=payload)
+    assert response.status_code == 400
+    
+    
+    # Make a POST request with missing date
+    payload = {
+        'customer_id':  dispatch.customer.customer_id,
+        'company_id':  dispatch.company.company_id,
+        'notes': 'Test dispatch',
+    }
+    response = client.put(f'/{END_POINT}/{dispatch.company.company_id}', json=payload)
+    assert response.status_code == 400
+    
+def test_update_dispatch_invalid_attributes(client, dispatch):
+    """_summary_
+
+    Passes invalid attributes to endpoint
+    
+    Args:
+        clinet (_type_): _description_
+        customer (_type_): _description_
+    """
+    
+    # Alphanumeric company_id
+    payload = {
+        'company_id': "ABC1",
+        'customer_id':  dispatch.customer.customer_id,
+        'notes': 'Test dispatch',
+        'date': '2022-02-21 10:00:00'
+    }
+    response = client.put(f"/{END_POINT}/{dispatch.dispatch_id}", json=payload)
+    assert response.status_code == 400
+    
+    # Alphanumeric customer_id
+    payload = {
+        'company_id': dispatch.company.company_id,
+        'customer_id':  "ABC1",
+        'notes': 'Test dispatch',
+        'date': '2022-02-21 10:00:00'
+    }
+    response = client.put(f"/{END_POINT}/{dispatch.dispatch_id}", json=payload)
+    assert response.status_code == 400
+    
+    
+    # Invalid Date
+    payload = {
+        'company_id': dispatch.company.company_id,
+        'customer_id':  dispatch.customer.customer_id,
+        'notes': 'Test dispatch',
+        'date': '10:00:00'
+    }
+    response = client.put(f"/{END_POINT}/{dispatch.dispatch_id}", json=payload)
+    assert response.status_code == 400
+    
+    # Invalid Date
+    payload = {
+        'company_id': dispatch.company.company_id,
+        'customer_id':  dispatch.customer. customer_id,
+        'notes': 'Test dispatch',
+        'date': '2022-02-21'
+    }
+    response = client.put(f"/{END_POINT}/{dispatch.dispatch_id}", json=payload)
+    assert response.status_code == 400
+    
+def test_update_non_existant_dispatch(client, customer):
+    """_summary_
+        Tries to update a non existant dispatch
+    Args:
+        client (_type_): _description_
+        dispatch (_type_): _description_
+    """
+    
+    payload = {
+        "customer_id": customer.customer_id, 
+        "company_id": customer.company.company_id,
+        'notes': 'Test dispatch',
+        'date': '2022-02-21 10:00:00'
+    }
+    
+    respond = client.put(f"/{END_POINT}/9999", json=payload)
+    assert respond.status_code == 404
+    
+def test_update_dispatch_with_non_existant_customer(client, dispatch):
+    """_summary_
+        Tries to update a disaptch with a non existant customer
+    Args:
+        client (_type_): _description_
+        dispatch (_type_): _description_
+    """
+    
+    payload = {
+        "customer_id": 99999, 
+        "company_id": dispatch.company_id,
+        'notes': 'Test dispatch',
+        'date': '2022-02-21 10:00:00'
+    }
+    
+    respond = client.put(f"/{END_POINT}/{dispatch.dispatch_id}", json=payload)
+    assert respond.status_code == 404
+    
+def test_update_dispatch_with_customer_not_associated_to_company(client, dispatch, customer):
+    """_summary_
+        Tries to update a disaptch with a customer that is not associated with dispatch.company
+    Args:
+        client (_type_): _description_
+        dispatch (_type_): _description_
+    """
+    
+    payload = {
+        "customer_id": customer.customer_id, 
+        "company_id": dispatch.company_id,
+        'notes': 'Test dispatch',
+        'date': '2022-02-21 10:00:00'
+    }
+    
+    respond = client.put(f"/{END_POINT}/{dispatch.dispatch_id}", json=payload)
+    assert respond.status_code == 404
+        
+def test_delete_dispatch(client, dispatch): 
+    """_summary_
+        Delete a dispatch
+    Args:
+        client (_type_): _description_
+        dispatch (_type_): _description_
+    """
+    
+    response = client.delete(f"/{END_POINT}/{dispatch.dispatch_id}")
+    data = response.json
+    
+    assert response.status_code == 200
+    assert "message" in data.keys()
+
+def test_delete_non_existant_dispatch(client):
+    """_summary_
+        Attempts to delete a non existant dispatch
+    Args:
+        client (_type_): _description_
+    """
+    
+    response = client.delete(f"/{END_POINT}/99999")
+    assert response.status_code == 404
