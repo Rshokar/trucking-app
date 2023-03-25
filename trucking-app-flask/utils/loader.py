@@ -1,4 +1,4 @@
-from models import Company, User, Customer, Dispatch, RFO, BillingTickets, Operator, UserTypes
+from models import Company, User, Customer, Dispatch, RFO, BillingTickets, Operator, UserRole
 from config.db import Session
 from factory import Sequence, SubFactory, Faker, LazyAttribute
 from faker import Faker as F
@@ -74,7 +74,7 @@ class UserFactory(SQLAlchemyModelFactory):
                                digits=True, upper_case=True, lower_case=True)
         return password
 
-    type = FuzzyChoice([UserTypes.DISPATCHER.value])
+    role = FuzzyChoice([UserRole.DISPATCHER.value])
     email = Faker('email')
     password = LazyAttribute(lambda obj: UserFactory.generate_password())
 

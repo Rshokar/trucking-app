@@ -13,7 +13,7 @@ class UserController:
     def create_user(session, request):
         data = request.get_json()
         try:
-            user = User(type=data['type'], email=data['email'],
+            user = User(role=data['role'], email=data['email'],
                         password=data['password'])
             session.add(user)
             session.commit()
@@ -31,7 +31,7 @@ class UserController:
 
         data = request.get_json()
         try:
-            user.type = data.get('type', user.type)
+            user.role = data.get('role', user.role)
             user.email = data.get('email', user.email)
             print(f"AFTER: {user}")
             session.commit()

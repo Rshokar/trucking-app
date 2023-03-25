@@ -22,7 +22,7 @@ def test_user_get(client, user):
     assert 200 == response.status_code
     assert "id" in data.keys()
     assert type(data["id"]) == int
-    assert "type" in data.keys()
+    assert "role" in data.keys()
     assert "email" in data.keys()
 
 
@@ -59,7 +59,7 @@ def test_user_post(client):
         Create a valid user
     """
     payload = {
-        "type": "dispatcher",
+        "role": "dispatcher",
         "password": "Testing1",
         "email": "test@demo.com"
 
@@ -77,20 +77,20 @@ def test_user_post(client):
     data = json.loads(data)
     # assertions
     assert 200 == response.status_code
-    assert payload['type'] == data["type"]
+    assert payload['role'] == data["role"]
     assert payload['email'] == data["email"]
 
 
 @pytest.mark.usefixtures("client")
-def test_user_post_invalid_type(client):
+def test_user_post_invalid_role(client):
     """
-    See if errors are returned for invalid type user data
+    See if errors are returned for invalid role user data
     """
 
-    # Invaid Type
+    # Invaid Role
     headers = {"Content-Type": "application/json"}
     payload = {
-        "type": "None",
+        "role": "None",
         "password": "Testing1",
         "email": "test@demo.com",
     }
@@ -102,7 +102,7 @@ def test_user_post_invalid_type(client):
     # Invaid Email
     headers = {"Content-Type": "application/json"}
     payload = {
-        "type": "dispatcher",
+        "role": "dispatcher",
         "password": "Testing1",
         "email": "testdemo.com",
     }
@@ -112,7 +112,7 @@ def test_user_post_invalid_type(client):
     assert "error" in data.keys()
 
     payload = {
-        "type": "dispatcher",
+        "role": "dispatcher",
         "password": "Testing1",
         "email": "test@democom",
     }
@@ -122,7 +122,7 @@ def test_user_post_invalid_type(client):
     assert "error" in data.keys()
 
     payload = {
-        "type": "dispatcher",
+        "role": "dispatcher",
         "password": "Testing1",
         "email": "@demo.com",
     }
@@ -132,7 +132,7 @@ def test_user_post_invalid_type(client):
     assert "error" in data.keys()
 
     payload = {
-        "type": "dispatcher",
+        "role": "dispatcher",
         "password": "Testing1",
         "email": "test@demo.",
     }
@@ -151,7 +151,7 @@ def test_user_post_invalid_password(client):
     # No Number
     headers = {"Content-Type": "application/json"}
     payload = {
-        "type": "None",
+        "role": "None",
         "password": "Testing",
         "email": "test@demo.com",
     }
@@ -163,7 +163,7 @@ def test_user_post_invalid_password(client):
     # No uppercase
     headers = {"Content-Type": "application/json"}
     payload = {
-        "type": "None",
+        "role": "None",
         "password": "testing1",
         "email": "test@demo.com",
     }
@@ -175,7 +175,7 @@ def test_user_post_invalid_password(client):
     # No lowercase
     headers = {"Content-Type": "application/json"}
     payload = {
-        "type": "None",
+        "role": "None",
         "password": "TESTING1",
         "email": "test@demo.com",
     }
@@ -187,7 +187,7 @@ def test_user_post_invalid_password(client):
     # Less than 8 charactesr
     headers = {"Content-Type": "application/json"}
     payload = {
-        "type": "None",
+        "role": "None",
         "password": "Test1",
         "email": "test@demo.com",
     }
@@ -230,7 +230,7 @@ def test_user_put(client, user):
     headers = {"Content-Type": "application/json"}
     payload = user.to_dict()
     payload["email"] = "update@update.com"
-    payload["type"] = "dispatcher"
+    payload["role"] = "dispatcher"
     print(user.to_dict())
     print(payload)
     response = client.put(
@@ -248,8 +248,8 @@ def test_user_put(client, user):
     assert 200 == response.status_code
     assert "email" in data.keys()
     assert payload["email"] == data["email"]
-    assert "type" in data.keys()
-    assert payload["type"] == data["type"]
+    assert "role" in data.keys()
+    assert payload["role"] == data["role"]
     assert "id" in data.keys()
 
 

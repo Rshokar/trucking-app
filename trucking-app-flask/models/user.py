@@ -6,14 +6,14 @@ from config import db
 from enum import Enum
 
 
-class UserTypes(str, Enum):
+class UserRole(str, Enum):
     DISPATCHER = "dispatcher"
 
 
 class User(Base):
     __tablename__ = 'users'
     id = Column("id", Integer, primary_key=True)
-    type = Column("type", String(20))
+    role = Column("role", String(20))
     password = Column("password", String(100))
     email = Column("email", String(100), unique=True)
 
@@ -29,26 +29,29 @@ class User(Base):
             raise ValueError(f"Invalid password")
         return password
 
-    @validates("type")
-    def validate_type(self, key, type):
-        if type != UserTypes.DISPATCHER.value:
-            raise ValueError("Invalid Type")
-        return type
+    @validates("role")
+    def validate_role(self, key, role):
+        if role != UserRole.DISPATCHER.value:
+            raise ValueError("Invalid Role")
+        return role
 
     company = relationship("Company", backref="owner",
                            lazy=True, cascade="delete", uselist=False)
 
-    def __init__(self, type, email, password):
-        self.type = type
+    def __init__(self, role, email, password):
+        self.role = role
         self.email = email
         self.password = password
 
     def __repr__(self):
-        return f"USER: ({self.id}) {self.type} {self.email} {self.password}"
+        return f"USER: ({self.id}) {self.role} {self.email} {self.password}"
 
     def to_dict(self):
         return {
             "id": self.id,
-            "type": self.type,
+            "role": self.role,
             "email": self.email,
         }
+
+    def has_role(self, role):
+        return self.role == role
