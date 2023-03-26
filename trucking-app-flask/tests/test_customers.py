@@ -255,6 +255,28 @@ def test_customer_post_another_users_company(client_authed, customer):
     assert response.status_code == 404
 
 
+def test_customer_post_ducplicate_customer(client_authed):
+    """_summary_
+    Test customer post with duplicate customer name
+    Args:
+        client_authed ([client, user]): an array containing the authenticated client and user
+    """
+    # Arrange
+    client, user = client_authed
+    comp = CompanyFactory.create(owner_id=user.id)
+    customer = CustomerFactory.create(company_id=comp.company_id)
+    payload = {
+        "customer_name": customer.customer_name,
+        "company_id": comp.company_id
+    }
+
+    # Act
+    res = client.post(f"/{END_POINT}/", json=payload)
+
+    # Assert
+    assert res.status_code == 400
+
+
 def test_customer_delete(client_authed):
     """_summary_
     Test customer delete
@@ -352,111 +374,196 @@ def test_customer_delete_customer_with_dispatches(client_authed):
     assert data["deleted"] == True
 
 
-# def test_customer_post_validation(client, company):
-#     """
-#         Test customer post validation
-#     """
-#     # Test missing fields
-#     response = client.post(f"/{END_POINT}/{company.company_id}", json={})
-#     data = json.loads(response.data)
+def test_customer_put(client_authed):
+    """_summary_
+    Test customer post
+    Args:
+        client_authed ([client, user]): an array containing the authenticated client and user
+        company (Company): a company object
+    """
+    # Arrange
+    client, user = client_authed
+    comp = CompanyFactory.create(owner_id=user.id)
+    cus = CustomerFactory.create(company_id=comp.company_id)
+    payload = {
+        "customer_name": "updated customer",
+        "company_id": comp.company_id,
+        "deleted": True
+    }
 
-#     assert response.status_code == 400
-#     assert "error" in data.keys()
-#     assert data['error'] == "Name is required"
-
-#     # Test invalid company_id
-#     response = client.post(
-#        f"/{END_POINT}/ABC", json={"customer_name": "Test Customer"})
-#     assert response.status_code == 404
-
-#     # Test empty customer_name
-#     response = client.post(
-#         f"{END_POINT}/{company.company_id}", json={"customer_name": ""})
-#     data = json.loads(response.data)
-#     assert response.status_code == 400
-#     assert "error" in data.keys()
-#     assert data['error'] == "Name is required"
-
-
-# def test_delete_customer(client, session, customer):
-#     """
-#         Test deleting a customer that does not have any disaptches
-#     """
-#     # # test deleting a customer that has dispatches
-#     # dispatch = Dispatch(customer_id=customer.customer_id, dispatch_date="2022-01-01", amount=100)
-#     # session.add(dispatch)
-#     # session.commit()
-
-#     # response = client.delete(f"/{END_POINT}/{company.company_id}/customers/{customer.customer_id}")
-#     # assert response.status_code == 200
-
-#     # data = json.loads(response.data)
-#     # assert "message" in data
-#     # assert "deleted" in customer.__dict__
-#     # assert customer.deleted is True
-
-#     # test deleting a customer that doesn't have dispatches
-#     response = client.delete(f"{END_POINT}/{customer.company.company_id}/{customer.customer_id}")
-#     assert response.status_code == 200
-
-#     data = json.loads(response.data)
-#     assert "message" in data
+    response = client.put(f"/{END_POINT}/{cus.customer_id}", json=payload)
+    print(response.data)
+    assert response.status_code == 201
+    data = json.loads(response.data)
+    assert data["customer_name"] == payload["customer_name"]
+    assert data["deleted"] == payload["deleted"]
+    assert data["company_id"] == comp.company_id
 
 
-# def test_delete_customer_nonexistant(client):
-#     """
-#     Test deleting a customer that does not exist
-#     """
-#     # test deleting a customer that doesn't exist
-#     response = client.delete(f"/company/1/{END_POINT}/1000")
-#     assert response.status_code == 404
+def test_customer_post_invalid_attributes(client_authed):
+    """_summary_
+    Test customer post validation with invalid attributes
+    Args:
+        client_authed ([client, user]): an array containing the authenticated client and user
+        company (Company): a company object
+    """
+    # Arrange (Invalid deleted value)
+    client, user = client_authed
+    comp = CompanyFactory.create(owner_id=user.id)
+    cus = CustomerFactory.create(company_id=comp.company_id)
+    payload = {
+        "customer_name": "updated customer",
+        "deleted": "never"
+    }
+
+    # Act
+    response = client.put(f"/{END_POINT}/{cus.customer_id}", json=payload)
+
+    # Assert
+    assert response.status_code == 400
+
+    # Arrange (Invalid customer name)
+    payload = {
+        "customer_name": "a" * 60,
+        "deleted": False
+    }
+
+    # Act
+    res = client.put(f"/{END_POINT}/{cus.customer_id}", json=payload)
+
+    # Assert
+    assert res.status_code == 400
+
+    # Arrange (Invalid empty customer name)
+    payload = {
+        "customer_name": "",
+        "deleted": False
+    }
+
+    # Act
+    res = client.put(f"/{END_POINT}/{cus.customer_id}", json=payload)
+
+    # Assert
+    assert res.status_code == 400
+
+    # Arrange (Invalid missing deleted
+    payload = {
+        "customer_name": "updated customer",
+        "deleted": False
+    }
+
+    # Act
+    res = client.put(f"/{END_POINT}/{cus.customer_id}", json=payload)
+
+    # Assert
+    assert res.status_code == 400
 
 
-# def test_update_customer(client, customer):
-#     """
-#         Test updating a user
-#     """
+def test_customer_put_missing_attributes(client_authed):
+    """_summary_
+    Test customer put validation with missing attributes
+    Args:
+        client_authed ([client, user]): an array containing the authenticated client and user
+    """
 
-#     response = client.put(f'/{END_POINT}/{customer.company.company_id}/{customer.customer_id}', json={'customer_name': 'New Name'})
-#     data = json.loads(response.data)
-#     assert response.status_code == 200
-#     assert "message" in data.keys()
-#     assert "customer" in data.keys()
-#     assert "company_id" in data["customer"].keys()
-#     assert "customer_id" in data["customer"].keys()
-#     assert "customer_name" in data["customer"].keys()
-#     assert data["customer"]["customer_name"] == "New Name"
+    # Arrange (missing customer name)
+    client, user = client_authed
+    comp = CompanyFactory.create(owner_id=user.id)
+    cus = CustomerFactory.create(company_id=comp.company_id)
 
-#     # Test updating with missing data
-#     response = client.put(f'/{END_POINT}/{customer.company.company_id}/{customer.customer_id}', json={'invalid_key': 'Invalid Value'})
+    payload = {
+        "deleted": False,
+    }
 
-#     assert response.status_code == 200
-#     data = json.loads(response.data)
-#     assert response.status_code == 200
-#     assert "message" in data.keys()
-#     assert "customer" in data.keys()
-#     assert "company_id" in data["customer"].keys()
-#     assert "customer_id" in data["customer"].keys()
-#     assert "customer_name" in data["customer"].keys()
+    # Act
+    res = client.put(f"/{END_POINT}/{cus.customer_id}", json=payload)
+
+    # Assert
+    assert res.status_code == 400
 
 
-# def test_update_customer_not_found(client):
-#     """
-#         Updating a non existant customer
-#     """
-#     response = client.put(f'{END_POINT}/1/999', json={'customer_name': 'New Customer Name'})
-#     assert response.status_code == 404
-#     assert response.json == {'error': 'Customer not found'}
+def test_customer_put_invalid_id(client_authed):
+    """_summary_
+    Test customer put with invalid id
+    Args:
+        client_authed ([client, user]): an array containing the authenticated client and user
+    """
+    # Arrange
+    client, user = client_authed
+    comp = CompanyFactory.create(owner_id=user.id)
+    cus = CustomerFactory.create(company_id=comp.company_id)
+    payload = {
+        "customer_name": "updated customer",
+        "deleted": False
+    }
+
+    # Act
+    response = client.put(f"/{END_POINT}/abc", json=payload)
+
+    # Assert
+    assert response.status_code == 404
 
 
-# def test_update_customer_not_associated_with_company(client, customer, company):
-#     """
-#         Try updating a customer not associated to the company.
-#     """
-#     # send a request to update the customer
-#     response = client.put(f'/{END_POINT}/{company.company_id}/{customer.customer_id}', json={'customer_name': 'New Name'})
+def test_customer_put_missing_id(client_authed):
+    """_summary_
+    Test customer put with missing id
+    Args:
+        client_authed ([client, user]): an array containing the authenticated client and user
+    """
+    # Arrange
+    client, user = client_authed
+    comp = CompanyFactory.create(owner_id=user.id)
+    cus = CustomerFactory.create(company_id=comp.company_id)
+    payload = {
+        "customer_name": "updated customer",
+        "deleted": False
+    }
 
-#     # check the response
-#     print(response.data)
-#     assert response.status_code == 404
-#     assert response.json == {'error': 'Customer not found'}
+    # Act
+    res = client.put(f"/{END_POINT}/", json=payload)
+
+    # Assert
+    assert res.status_code == 405
+
+
+def test_customer_put_unauthorized(client, customer):
+    """_summary_
+    Test customer put with an unauthorized user
+    Args:
+        client (app): the app client
+        customer (Customer): a customer object
+    """
+    # Arrange
+    payload = {
+        "customer_name": "updated customer",
+        "deleted": False
+    }
+
+    # Act
+    response = client.put(f"/{END_POINT}/{customer.customer_id}", json=payload)
+
+    # Assert
+    assert response.status_code == 401
+
+
+def test_customer_put_another_users_customer(client_authed, customer):
+    """_summary_
+    Test customer put with another users customer
+    Args:
+        client_authed ([client, user]): an array containing the authenticated client and user
+        customer (Customer): a customer object
+    """
+    # Arrange
+    client, user = client_authed
+    comp = CompanyFactory.create(owner_id=user.id)
+    cus = CustomerFactory.create(company_id=comp.company_id)
+    payload = {
+        "customer_name": "updated customer",
+        "deleted": False
+    }
+
+    # Act
+    response = client.put(f"/{END_POINT}/{customer.customer_id}", json=payload)
+
+    # Assert
+    assert response.status_code == 400
