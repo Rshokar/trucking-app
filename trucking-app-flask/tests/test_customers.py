@@ -63,7 +63,7 @@ def test_customer_get_missing_attributes(client_authed):
     res = client.get(f"/{END_POINT}/")
 
     # Assert
-    assert res.status_code == 404
+    assert res.status_code == 405
 
 
 def test_customer_get_unauthorized_user(client, customer):
@@ -101,30 +101,158 @@ def test_customer_get_another_users_customer(client_authed, customer):
     assert res.status_code == 404
 
 
-# def test_customer_post(client_authed):
-#     """
-#     Test valid customer post
-#     """
-#     client, user = client_authed
-#     payload = {
-#         "customer_name":"Test Customer"
-#     }
-#     headers = {
+def test_customer_post(client_authed):
+    """
+    Test valid customer post
+    """
+    # Arrange
+    client, user = client_authed
+    comp = CompanyFactory.create(owner_id=user.id)
 
-#     response = client.post(
-#         f"/{END_POINT}/{company.company_id}",
-#     )
-#     print(f"DATA: {response.data}" )
-#     data = json.loads(response.data)
+    payload = {
+        "customer_name": "Test Customer",
+        "company_id": comp.company_id
+    }
 
-#     assert response.status_code == 201
-#     assert "customer_id" in data.keys()
-#     assert type(data["customer_id"]) == int
-#     assert "company_id" in data.keys()
-#     assert data["company_id"] == company.company_id
-#     assert "customer_name" in data.keys()
-#     assert data["customer_name"] == customer_name
+    # Act
+    response = client.post(f"/{END_POINT}/", json=payload)
 
+    # Assert
+    assert response.status_code == 201
+    data = json.loads(response.data)
+    print(data)
+    assert "customer_id" in data.keys()
+    assert type(data["customer_id"]) == int
+    assert "company_id" in data.keys()
+    assert data["company_id"] == comp.company_id
+    assert "customer_name" in data.keys()
+    assert data["customer_name"] == "Test Customer"
+
+
+def test_customer_post_invalid_attributes(client_authed):
+    """
+    Test invalid customer post
+    """
+    # Arrange (empty customer_name)
+    client, user = client_authed
+    comp = CompanyFactory.create(owner_id=user.id)
+
+    payload = {
+        "customer_name": "",
+        "company_id": comp.company_id
+    }
+
+    # Act
+    response = client.post(f"/{END_POINT}/abc", json=payload)
+
+    # Assert
+    assert response.status_code == 404
+
+    # Arrange (empty company_id)
+    payload = {
+        "customer_name": "Test Customer",
+        "company_id": ""
+    }
+
+    # Act
+    res = client.post(f"/{END_POINT}/", json=payload)
+
+    # Assert
+
+    # Arrange (invalid company_id)
+    payload = {
+        "customer_name": "Test Customer",
+        "company_id": "abc"
+    }
+
+    # Act
+    res = client.post(f"/{END_POINT}/", json=payload)
+
+    # Assert
+    assert res.status_code == 400
+
+    # Arrange (too long customer_name)
+    payload = {
+        "customer_name": "a" * 100,
+        "company_id": comp.company_id
+    }
+
+    # Act
+    res = client.post(f"/{END_POINT}/", json=payload)
+
+    # Assert
+    assert res.status_code == 400
+
+
+def test_customer_post_missing_attributes(client_authed):
+    """
+    Test missing customer post attributes
+    """
+    # Arrange (missing company_id)
+    client, user = client_authed
+    comp = CompanyFactory.create(owner_id=user.id)
+
+    payload = {
+        "customer_name": "Test Customer",
+    }
+
+    # Act
+    response = client.post(f"/{END_POINT}/", json=payload)
+
+    # Assert
+    assert response.status_code == 400
+    data = json.loads(response.data)
+    assert "error" in data.keys()
+
+    # Arrange (missing customer_name)
+    payload = {
+        "company_id": comp.company_id
+    }
+
+    # Act
+    response = client.post(f"/{END_POINT}/", json=payload)
+
+    # Assert
+    assert response.status_code == 400
+    data = json.loads(response.data)
+    assert "error" in data.keys()
+
+
+def test_customer_post_unauthorized_user(client, customer):
+    """
+    Test customer post with an unauthorized user
+    """
+    # Arrange
+    payload = {
+        "customer_name": "Test Customer",
+        "company_id": customer.company_id
+    }
+
+    # Act
+    response = client.post(f"/{END_POINT}/", json=payload)
+
+    # Assert
+    assert response.status_code == 401
+
+
+def test_customer_post_another_users_company(client_authed, customer):
+    """
+    Test customer post with an unauthorized company
+    """
+    # Arrange
+    client, user = client_authed
+    comp = CompanyFactory.create(owner_id=user.id)
+
+    payload = {
+        "customer_name": "Test Customer",
+        "company_id": customer.company_id
+    }
+
+    # Act
+    response = client.post(f"/{END_POINT}/", json=payload)
+
+    # Assert
+    assert response.status_code == 404
 
 # def test_customer_post_validation(client, company):
 #     """

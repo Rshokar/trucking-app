@@ -462,12 +462,3 @@ def test_company_delete_another_user_company(client_authed, company):
 
     # Assert
     assert res.status_code == 403
-
-# def test_company_delete_nonexistent(client):
-#     response = client.delete(f"/{END_POINT}/1000")
-
-#     data = json.loads(response.data)
-
-#     assert response.status_code == 404
-#     assert "error" in data.keys()
-#     assert data["error"] == "Company not found."
