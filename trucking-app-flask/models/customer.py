@@ -1,7 +1,7 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Boolean, UniqueConstraint
-from sqlalchemy.orm import relationship
-from models.model import Base
 from models.company import Company
+from models.model import Base
+from sqlalchemy import Column, Integer, String, ForeignKey, Boolean, UniqueConstraint
+from sqlalchemy.orm import relationship, validates
 
 
 class Customer(Base):
@@ -10,8 +10,15 @@ class Customer(Base):
     company_id = Column('company_id', Integer, ForeignKey(
         'company.company_id'), nullable=False)
     customer_name = Column('customer_name', String(
-        200), nullable=False)
+        50), nullable=False)
     deleted = Column('deleted', Boolean(), default=False, nullable=False)
+
+    @validates("customer_name")
+    def validate_customer_name(self, key, customer_name):
+        if len(customer_name) < 3:
+            raise ValueError(
+                "Customer name must be between 3 and 50 characters")
+        return customer_name
 
     # Define unique constraint
     __table_args__ = (

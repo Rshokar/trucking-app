@@ -1,4 +1,4 @@
-from sqlite3 import IntegrityError
+from sqlalchemy.exc import IntegrityError, StatementError
 from utils import make_response
 from flask_login import current_user
 from sqlalchemy import and_
@@ -36,25 +36,24 @@ class CustomerController:
         # create the customer
         customer = Customer(company_id=comp.company_id,
                             customer_name=customer_name)
-        session.add(customer)
-        session.commit()
-        return make_response(customer.to_dict(), 201)
 
-    def update_customer(session, request, customer_id):
-        return make_response({"message": "Updated successfully"}, 201)
+        try:
+            session.add(customer)
+            session.commit()
+            return make_response(customer.to_dict(), 201)
+        except IntegrityError as e:
+            print("Exception tyoe: ", type(e))
+            return make_response({"message": "Customer already exists"}, 400)
 
     def delete_customer(session, customer_id):
 
         # get the customer
-        customer = session.query(Customer).filter_by(
-            customer_id=customer_id).first()
+        customer = Customer.get_customer_by_id_and_owner(
+            session, customer_id, current_user.id)
 
-        # make sure currently logged in user owns the company
-        company = session.query(Company).filter_by(
-            owner_id=current_user.id).first()
-
-        if not company or company.company_id != customer.company_id:
-            return make_response({"error": "Customer not found"}, 404)
+        # See if the customer exists
+        if not customer:
+            return make_response({"message": "Customer not found"}, 404)
 
         # check if the customer has any dispatches
         if customer.dispatches:
@@ -71,3 +70,26 @@ class CustomerController:
         except IntegrityError:
             session.rollback()
             return make_response({"error": "Cannot delete customer because of dependent records"}, 400)
+
+    def update_customer(session, request, customer_id):
+
+        # Get the customer
+        customer = Customer.get_customer_by_id_and_owner(
+            session, customer_id, current_user.id)
+
+        if not customer:
+            return make_response({"message": "Customer not found"}, 404)
+
+        # Get the attributes from the request
+        data = request.get_json()
+        customer.customer_name = data.get(
+            "customer_name", customer.customer_name)
+        customer.deleted = data.get("deleted", customer.deleted)
+
+        # Update the customer
+        try:
+            session.commit()
+            return make_response(customer.to_dict(), 201)
+        except IntegrityError as e:
+            session.rollback()
+            return make_response({"error", "Customer name already exist"}, 400)
