@@ -29,3 +29,6 @@ class Company(Base):
             "company_name": self.company_name,
             "customers": [customer.to_dict() for customer in self.customers]
         }
+
+    def get_company_by_id(session, company_id):
+        return session.query(Company).filter_by(company_id=company_id).first()
