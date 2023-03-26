@@ -22,32 +22,15 @@ def create_customer():
         jsonschema.validate(request.get_json(), customer_validation)
         return CustomerController.create_customer(session, request)
     except jsonschema.exceptions.ValidationError as e:
-        return jsonify({"message": e.message}), 400
+        return jsonify({"error": e.message}), 400
 
 
-# @customers.route('/<int:company_id>/<int:customer_id>', methods=['DELETE'])
-# def delete_customer(company_id, customer_id):
-#     session = g.session
-#     # get the company
-#     company = session.query(Company).filter_by(company_id=company_id)
-#     if not company:
-#         abort(404, description="Company not found")
-#     # get the customer
-#     customer = session.query(Customer).filter(and_(
-#         Customer.company_id.like(company_id),
-#         Customer.customer_id.like(customer_id)
-#     )).first()
-#     if not customer:
-#         abort(404, description="Customer not found")
-#     # check if the customer has any dispatches
-#     if customer.dispatches:
-#         customer.deleted = True
-#         session.commit()
-#         return jsonify({"message": f"Customer {customer_id} deleted (marked as deleted due to dependent dispatches)"}), 200
-#     # delete the customer
-#     session.delete(customer)
-#     session.commit()
-#     return jsonify({"message": f"Customer {customer_id} deleted from company {company_id}"}), 200
+@customers.route('/<int:company_id>/<int:customer_id>', methods=['DELETE'])
+@login_required
+def delete_customer(company_id, customer_id):
+    session = g.session
+    return CustomerController.delete_customer(session, company_id, customer_id)
+
 # @customers.route('<int:company_id>/<int:customer_id>', methods=['PUT'])
 # def update_customer(company_id, customer_id):
 #     session = g.session

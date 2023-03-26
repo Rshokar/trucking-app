@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Boolean
+from sqlalchemy import Column, Integer, String, ForeignKey, Boolean, UniqueConstraint
 from sqlalchemy.orm import relationship
 from models.model import Base
 from models.company import Company
@@ -12,6 +12,12 @@ class Customer(Base):
     customer_name = Column('customer_name', String(
         200), nullable=False)
     deleted = Column('deleted', Boolean(), default=False, nullable=False)
+
+    # Define unique constraint
+    __table_args__ = (
+        UniqueConstraint('company_id', 'customer_name',
+                         name='_company_customer_uc'),
+    )
 
     dispatches = relationship("Dispatch", backref="customer", lazy=True)
 
