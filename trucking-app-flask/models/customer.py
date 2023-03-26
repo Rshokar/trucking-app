@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, Boolean
 from sqlalchemy.orm import relationship
 from models.model import Base
+from models.company import Company
 
 
 class Customer(Base):
@@ -8,7 +9,8 @@ class Customer(Base):
     customer_id = Column('customer_id', Integer, primary_key=True)
     company_id = Column('company_id', Integer, ForeignKey(
         'company.company_id'), nullable=False)
-    customer_name = Column('customer_name', String(200), nullable=False)
+    customer_name = Column('customer_name', String(
+        200), nullable=False)
     deleted = Column('deleted', Boolean(), default=False, nullable=False)
 
     dispatches = relationship("Dispatch", backref="customer", lazy=True)
@@ -29,3 +31,10 @@ class Customer(Base):
 
     def get_customer_by_id(session, customer_id):
         return session.query(Customer).filter_by(customer_id=customer_id).first()
+
+    def get_customer_by_id_and_owner(session, customer_id, owner_id):
+        return session.query(Customer)\
+            .join(Company, Customer.company_id == Company.company_id)\
+            .filter(Customer.customer_id == customer_id)\
+            .filter(Company.owner_id == owner_id)\
+            .first()

@@ -4,3 +4,4 @@ from .rfo_validation import rfo_validation, rfo_update
 from .billing_ticket_validation import billing_ticket_validation, billing_ticket_upate
 from .company_validations import company_validation, company_update
 from .auth_validations import auth_validation
+from .customer_validations import customer_validation
