@@ -1,13 +1,13 @@
 from flask import Response, g, request
 from models import User
 from utils import make_response
-from flask_login import login_user
+from flask_login import login_user, logout_user
 import jsonschema
 
 
 class AuthController:
 
-    def LOGIN(session, request):
+    def login(session, request):
         """Authenticates a user
 
         Args:
@@ -30,5 +30,6 @@ class AuthController:
 
         return make_response('Login successful', 200)
 
-    def LOGOUT():
-        return Response(status=204)
+    def logout():
+        logout_user()
+        return make_response("Logout successful", 200)
