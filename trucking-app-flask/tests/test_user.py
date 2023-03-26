@@ -74,7 +74,6 @@ def test_user_get_invalid_id_format(client_authed):
     assert 404 == response.status_code
 
 
-@pytest.mark.usefixtures("client")
 def test_user_post(client):
     """
         Create a valid user
@@ -102,7 +101,6 @@ def test_user_post(client):
     assert payload['email'] == data["email"]
 
 
-@pytest.mark.usefixtures("client")
 def test_user_post_invalid_role(client):
     """
     See if errors are returned for invalid role user data
@@ -163,7 +161,6 @@ def test_user_post_invalid_role(client):
     assert "error" in data.keys()
 
 
-@pytest.mark.usefixtures("client")
 def test_user_post_invalid_password(client):
     """_summary_
 
@@ -218,7 +215,6 @@ def test_user_post_invalid_password(client):
     assert "error" in data.keys()
 
 
-@pytest.mark.usefixtures("client")
 def test_user_post_duplicate(client, user):
     """
         Checks to see if an error is returned when creating a
@@ -295,8 +291,6 @@ def test_user_put_another_user(client_authed):
 
     # assertions
     assert 409 == response.status_code
-
-# test user put with unauthenticated user
 
 
 def test_user_put_unauthenticated(client, user):
