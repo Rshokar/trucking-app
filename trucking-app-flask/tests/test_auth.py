@@ -1,6 +1,4 @@
-import pytest
-import requests
-import json
+
 from config_test import app, client, user, client_authed
 END_POINT = "v1/auth"
 
