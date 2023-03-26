@@ -25,3 +25,10 @@ class Operator(Base):
             "operator_name": self.operator_name,
             "operator_email": self.operator_email
         }
+
+    def get_operator_by_id_and_owner(session, operator_id, owner_id):
+        return session.query(Operator)\
+            .join(Company, Operator.company_id == Company.company_id)\
+            .filter(Operator.operator_id == operator_id)\
+            .filter(Company.owner_id == owner_id)\
+            .first()
