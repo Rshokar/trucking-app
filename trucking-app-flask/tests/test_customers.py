@@ -1,7 +1,7 @@
 import pytest
 import json
-from config_test import app, client, session, customer, company, client_authed, user
-from utils.loader import CompanyFactory, CustomerFactory
+from config_test import app, client, session, customer, company, client_authed, user, dispatch
+from utils.loader import CompanyFactory, CustomerFactory, DispatchFactory, OperatorFactory
 END_POINT = "v1/company/customers"
 
 
@@ -253,6 +253,104 @@ def test_customer_post_another_users_company(client_authed, customer):
 
     # Assert
     assert response.status_code == 404
+
+
+def test_customer_delete(client_authed):
+    """_summary_
+    Test customer delete
+    Args:
+        client_authed ([client, user]): an array containing the authenticated client and user
+    """
+    # Arrange
+    client, user = client_authed
+    comp = CompanyFactory.create(owner_id=user.id)
+    cust = CustomerFactory.create(company_id=comp.company_id)
+
+    # Act
+    response = client.delete(f"/{END_POINT}/{cust.customer_id}")
+
+    # Assert
+    assert response.status_code == 200
+
+
+def test_customer_delete_invalid_id(client_authed):
+    """_summary_
+    Test customer delete with invalid id
+    Args:
+        client_authed ([client, user]): an array containing the authenticated client and user
+    """
+    # Arrange
+    client, user = client_authed
+    comp = CompanyFactory.create(owner_id=user.id)
+    cust = CustomerFactory.create(company_id=comp.company_id)
+
+    # Act
+    response = client.delete(f"/{END_POINT}/abc")
+
+    # Assert
+    assert response.status_code == 404
+
+
+def test_customer_delete_missing_id(client_authed):
+    """_summary_
+    Test customer delete with missing id
+    Args:
+        client_authed ([client, user]): an array containing the authenticated client and user
+    """
+    # Arrange
+    client, user = client_authed
+    comp = CompanyFactory.create(owner_id=user.id)
+    cust = CustomerFactory.create(company_id=comp.company_id)
+
+    # Act
+    res = client.delete(f"/{END_POINT}/")
+
+    # Assert
+    assert res.status_code == 405
+
+
+def test_customer_delete_unauthorized_user(client, customer):
+    """_summary_
+    Test customer delete with an unauthorized user
+    Args:
+        client (app): the app client
+        customer (Customer): a customer object
+    """
+    # Arrange
+
+    # Act
+    response = client.delete(f"/{END_POINT}/{customer.customer_id}")
+
+    # Assert
+    assert response.status_code == 401
+
+
+def test_customer_delete_customer_with_dispatches(client_authed):
+    """_summary_
+    Test customer delete with dispatches
+    Args:
+        client_authed ([client, user]): an array containing the authenticated client and user
+    """
+    # Arrange
+    client, user = client_authed
+    comp = CompanyFactory.create(owner_id=user.id)
+    cust = CustomerFactory.create(company_id=comp.company_id)
+    DispatchFactory.create(customer_id=cust.customer_id,
+                           company_id=comp.company_id)
+
+    # Act
+    response = client.delete(f"/{END_POINT}/{cust.customer_id}")
+    res = client.get(f"/{END_POINT}/{cust.customer_id}")
+
+    # Assert
+    assert response.status_code == 200
+    assert res.status_code == 200
+
+    data = json.loads(res.data)
+    print(data)
+    assert data["customer_id"] == cust.customer_id
+    assert data["deleted"] == True
+
 
 # def test_customer_post_validation(client, company):
 #     """

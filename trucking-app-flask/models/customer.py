@@ -32,7 +32,8 @@ class Customer(Base):
         return {
             "customer_id": self.customer_id,
             "customer_name": self.customer_name,
-            "company_id": self.company_id
+            "company_id": self.company_id,
+            "deleted": self.deleted,
         }
 
     def get_customer_by_id(session, customer_id):

@@ -25,11 +25,11 @@ def create_customer():
         return jsonify({"error": e.message}), 400
 
 
-@customers.route('/<int:company_id>/<int:customer_id>', methods=['DELETE'])
+@customers.route('/<int:customer_id>', methods=['DELETE'])
 @login_required
-def delete_customer(company_id, customer_id):
+def delete_customer(customer_id):
     session = g.session
-    return CustomerController.delete_customer(session, company_id, customer_id)
+    return CustomerController.delete_customer(session, customer_id)
 
 # @customers.route('<int:company_id>/<int:customer_id>', methods=['PUT'])
 # def update_customer(company_id, customer_id):
