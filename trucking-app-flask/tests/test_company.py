@@ -378,10 +378,90 @@ def test_company_put_another_user_company(client_authed, company):
     # Assert
     assert res.status_code == 403
 
-# def test_company_delete(client, company):
-#     response = client.delete(f"/{END_POINT}/{company.company_id}")
-#     assert response.status_code == 204
 
+def test_company_delete(client_authed):
+    """_summary_
+        Attempts to delete a company
+    Args:
+        client_authed (Array): an array containing the authenticated client and user
+    """
+
+    # Arrange
+    client, user = client_authed
+    comp = CompanyFactory.create(owner_id=user.id)
+
+    # Act
+    res = client.delete(f"/{END_POINT}/{comp.company_id}")
+
+    # Assert
+    assert res.status_code == 200
+
+
+def test_company_delete_invalid_attributes(client_authed):
+    """_summary_
+        Attempts to delete a company with invalid attributes
+    Args:
+        client_authed (Array): an array containing the authenticated client and user
+    """
+    # Arrange
+    client, user = client_authed
+    comp = CompanyFactory.create(owner_id=user.id)
+
+    # Act
+    res = client.delete(f"/{END_POINT}/a")
+
+    # Assert
+    assert res.status_code == 404
+
+
+def test_company_delete_missing_attributes(client_authed):
+    """_summary_
+        Attempts to delete a company with missing attributes
+    Args:
+        client_authed (Array): an array containing the authenticated client and user
+    """
+    # Arrange
+    client, user = client_authed
+    comp = CompanyFactory.create(owner_id=user.id)
+
+    # Act
+    res = client.delete(f"/{END_POINT}/")
+
+    # Assert
+    assert res.status_code == 405
+
+
+def test_company_delete_unauthorized_user(client, company):
+    """_summary_
+        Attempts to delete a company when un authorized
+    Args:
+        client (Flask App): the flask app
+    """
+    # Arrange
+
+    # Act
+    res = client.delete(f"/{END_POINT}/{company.company_id}")
+
+    # Assert
+    assert res.status_code == 401
+
+
+def test_company_delete_another_user_company(client_authed, company):
+    """_summary_
+        Attempts to delete a company that does not belong to the user
+    Args:
+        client_authed (Array): an array containing the authenticated client and user
+    """
+
+    # Arrange
+    client, user = client_authed
+    CompanyFactory.create(owner_id=user.id)
+
+    # Act
+    res = client.delete(f"/{END_POINT}/{company.company_id}")
+
+    # Assert
+    assert res.status_code == 403
 
 # def test_company_delete_nonexistent(client):
 #     response = client.delete(f"/{END_POINT}/1000")
