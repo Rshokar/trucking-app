@@ -18,6 +18,7 @@ def get_dispatch(dispatch_id):
 
 
 @dispatch.route('/', methods=['POST'])
+@login_required
 def create_dispatch():
     session = g.session
     try:
@@ -28,6 +29,7 @@ def create_dispatch():
 
 
 @dispatch.route('/<int:dispatch_id>', methods=['PUT'])
+@login_required
 def update_dispatch(dispatch_id):
     session = g.session
     try:
@@ -38,6 +40,7 @@ def update_dispatch(dispatch_id):
 
 
 @dispatch.route('/<int:dispatch_id>', methods=['DELETE'])
+@login_required
 def delete_dispatch(dispatch_id):
     session = g.session
     return DispatchController.delete_dispatch(session, dispatch_id=dispatch_id)

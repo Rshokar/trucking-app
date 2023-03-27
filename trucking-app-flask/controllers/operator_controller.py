@@ -2,9 +2,6 @@ from models import Operator, Company
 from utils import make_response
 from flask_login import current_user
 from sqlalchemy import and_
-# Limited validation done in controllers. Only validation is making sure operator exists.
-# Full validation is done on the database side.
-
 # Operator always accessed through company
 
 

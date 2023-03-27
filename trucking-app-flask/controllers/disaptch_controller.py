@@ -2,16 +2,25 @@ from models import Dispatch, Company, Customer
 from flask import jsonify
 from datetime import datetime
 from utils import make_response
+from flask_login import current_user
 
 
 class DispatchController:
 
     def get_dispatch(session, dispatch_id):
-        dispatch = session.query(Dispatch).filter_by(
-            dispatch_id=dispatch_id).first()
-        print(f"DISPATCH: {dispatch}")
+        """_summary_
+
+        Args:
+            session (_type_): SQL Alchemy Session
+            dispatch_id (int): Dispatch ID
+
+        Returns:
+            Response: 200 success 404 not found
+        """
+        dispatch = Dispatch.get_dispatch_by_id_and_owner(
+            session, dispatch_id, current_user.id)
+
         if dispatch is None:
-            print(f"DISPATCH: {dispatch}")
             return make_response({'error': 'Dispatch not found'}, 404)
         return make_response(dispatch.to_dict(), 200)
 

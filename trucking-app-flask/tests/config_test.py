@@ -66,13 +66,13 @@ def customer():
 
 
 @pytest.fixture
-def dispatch():
-    user = UserFactory.create()
-    company = CompanyFactory.create(owner_id=user.id)
-    customer = CustomerFactory.create(company_id=company.company_id)
-    return DispatchFactory(
-        company_id=company.company_id,
-        customer_id=customer.customer_id
+def dispatch(client_authed):
+    client, user = client_authed
+    comp = CompanyFactory.create(owner_id=user.id)
+    cust = CustomerFactory.create(company_id=comp.company_id)
+    return client, DispatchFactory(
+        company_id=comp.company_id,
+        customer_id=cust.customer_id
     )
 
 

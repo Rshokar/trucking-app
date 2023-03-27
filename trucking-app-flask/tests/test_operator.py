@@ -500,6 +500,7 @@ def test_delete_operator_unauthed(client, operator):
         client (flask app): Flask application
     """
     # Arrange
+
     # Act
     res = client.delete(f"/{END_POINT}/{operator.operator_id}")
 
