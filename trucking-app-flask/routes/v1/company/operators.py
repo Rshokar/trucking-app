@@ -37,8 +37,8 @@ def update_operator(operator_id):
         return make_response({"error": "Invalid Request Data"}, 400)
 
 
-@operators.route("/<int:company_id>/<int:operator_id>", methods=["DELETE"])
+@operators.route("/<int:operator_id>", methods=["DELETE"])
 @login_required
-def delete_operator(company_id, operator_id):
+def delete_operator(operator_id):
     session = g.session
-    return OperatorController.delete_operator(session=session, operator_id=operator_id, company_id=company_id)
+    return OperatorController.delete_operator(session=session, operator_id=operator_id)

@@ -63,25 +63,22 @@ class OperatorController:
         return make_response(new_operator.to_dict(), 201)
 
     # Delete an operator
-    def delete_operator(session, operator_id, company_id):
+    def delete_operator(session, operator_id):
         '''
         Delete an operator (if successful)
 
         Parameters:
             Session (session): SQLAlchemy db session
             operator_id (int) : operator_id
-            company_id (int): company_id
 
         Returns:
             Responses: 201 Created
         '''
-        operator = session.query(Operator).filter_by(
-            operator_id=operator_id).first()
+        operator = Operator.get_operator_by_id_and_owner(
+            session, operator_id, current_user.id)
 
         if operator is None:
             return make_response({"error": "Operator not found"}, 404)
-        if operator.company_id != company_id:
-            return make_response({"error": "Company not found"}, 404)
 
         session.delete(operator)
         session.commit()
