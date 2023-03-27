@@ -1,19 +1,19 @@
 import pytest
 import json
-from config_test import app, client, session, user, company, customer, dispatch, client_authed
+from config_test import app, client, session, user, company, customer, dispatch, client_authed, company_authed, customer_authed, dispatch_authed
 from utils.loader import UserFactory, CompanyFactory, CustomerFactory, DispatchFactory, OperatorFactory
 from datetime import datetime
 END_POINT = "v1/dispatch"
 
 
-def test_get_dispatch(dispatch):
+def test_get_dispatch(dispatch_authed):
     """_summary_
         Get a dispatch
     Args:
         dispatch (array): contains client and dispatch object
     """
     # Arrange
-    client, dispatch = dispatch
+    client, dispatch = dispatch_authed
 
     # Act
     res = client.get(f'/{END_POINT}/{dispatch.dispatch_id}')
@@ -24,12 +24,14 @@ def test_get_dispatch(dispatch):
     assert data['dispatch_id'] == dispatch.dispatch_id
 
 
-def test_get_dispatch_not_found(dispatch):
+def test_get_dispatch_not_found(dispatch_authed):
     """_summary_
         Get a dispatch that does not exist
+    Args:
+        dispatch_authed (array): contains client and dispatch object
     """
     # Arrange
-    client = dispatch[0]
+    client = dispatch_authed[0]
     dispatch_id = 999999
 
     # Act
@@ -39,12 +41,12 @@ def test_get_dispatch_not_found(dispatch):
     assert res.status_code == 404
 
 
-def test_get_dispatch_another_users_company(dispatch):
+def test_get_dispatch_another_users_company(dispatch_authed):
     """_summary_
         Get a dispatch that does not exist
     """
     # Arrange
-    client = dispatch[0]
+    client = dispatch_authed[0]
     user = UserFactory.create()
     company = CompanyFactory.create(owner_id=user.id)
     customer = CustomerFactory.create(company_id=company.company_id)
@@ -58,27 +60,22 @@ def test_get_dispatch_another_users_company(dispatch):
     assert res.status_code == 404
 
 
-def test_get_dispatch_unauthed(client):
+def test_get_dispatch_unauthed(client, dispatch):
     """_summary_
         Get a dispatch when unauthenticated
     Args:
         client (object): client object
     """
     # Arrange
-    user = UserFactory.create()
-    comp = CompanyFactory.create(owner_id=user.id)
-    cust = CustomerFactory.create(company_id=comp.company_id)
-    disp = DispatchFactory.create(
-        customer_id=cust.customer_id, company_id=comp.company_id)
 
     # Act
-    res = client.get(f'/{END_POINT}/{disp.dispatch_id}')
+    res = client.get(f'/{END_POINT}/{dispatch.dispatch_id}')
 
     # Assert
     assert res.status_code == 401
 
 
-def test_get_dispatch_invalid_param(dispatch):
+def test_get_dispatch_invalid_param(dispatch_authed):
     """_summary_
         Get a dispatch with invalid param
     Args:
@@ -86,7 +83,7 @@ def test_get_dispatch_invalid_param(dispatch):
     """
 
     # Arrange
-    client, dispatch = dispatch
+    client, dispatch = dispatch_authed
 
     # Act
     res = client.get(f'/{END_POINT}/abc')
@@ -95,32 +92,71 @@ def test_get_dispatch_invalid_param(dispatch):
     assert res.status_code == 404
 
 
-# def test_create_dispatch(client, customer):
-#     """_summary_
+def test_create_dispatch(customer_authed):
+    """_summary_
+        Create a valid dispatch
+    Args:
+        customer_authed (_type_): _description_
+    """
+    # Arrange
+    client, customer = customer_authed
+    company = customer.company
 
-#         Create a valid dispatch
-#     """
+    payload = {
+        "company_id": company.company_id,
+        "customer_id": customer.customer_id,
+        "notes": "Test dispatch",
+        "date": "2022-02-21 10:00:00",
+    }
 
-#     # Make a POST request to create a new dispatch
-#     data = {
-#         'company_id': customer.company.company_id,
-#         'customer_id':  customer.customer_id,
-#         'notes': 'Test dispatch',
-#         'date': '2022-02-21 10:00:00'
-#     }
-#     response = client.post(f'/{END_POINT}/', json=data)
-#     print(f"RETURNED DATA: {response.data}")
-#     assert response.status_code == 201
+    # Act
+    res = client.post(f'/{END_POINT}/', json=payload)
 
-#     # Check that the dispatch was created and returned in the response
-#     dispatch_data = response.json['dispatch']
-#     assert dispatch_data['company_id'] == data['company_id']
-#     assert dispatch_data['customer_id'] == data['customer_id']
-#     assert dispatch_data['notes'] == 'Test dispatch'
-#     assert datetime.strptime(dispatch_data['date'], '%a, %d %b %Y %H:%M:%S GMT') == datetime.strptime(
-#         data['date'], '%Y-%m-%d %H:%M:%S')
+    # Assert
+    assert res.status_code == 201
+    data = res.json
 
-# def test_create_dispatch_missing_attributes(client, customer):
+    assert data['company_id'] == company.company_id
+    assert data['customer_id'] == customer.customer_id
+    assert data['notes'] == payload['notes']
+    date_value = datetime.strptime(
+        data['date'], '%a, %d %b %Y %H:%M:%S %Z')
+    date_string = date_value.strftime('%Y-%m-%d %H:%M:%S')
+    assert date_string == payload['date']
+
+
+def test_create_dispatch_missing_attributes(customer_authed):
+    """_summary_
+        Create a dispatch with missing attributes
+    Args:
+        customer_authed (array): contains client and customer object 
+    """
+    # Arrange
+    client, customer = customer_authed
+    payloads = [
+        {
+            "customer_id": customer.customer_id,
+            "notes": "Test dispatch",
+            "date": "2022-02-21 10:00:00",
+        }, {
+            "company_id": customer.company.company_id,
+            "notes": "Test dispatch",
+            "date": "2022-02-21 10:00:00",
+        }, {
+            "company_id": customer.company.company_id,
+            "customer_id": customer.customer_id,
+            "date": "2022-02-21 10:00:00",
+        }, {
+            "company_id": customer.company.company_id,
+            "customer_id": customer.customer_id,
+            "notes": "Test dispatch",
+        }]
+
+    # Act
+    for payload in payloads:
+        res = client.post(f'/{END_POINT}/', json=payload)
+        assert res.status_code == 400
+
 #     """_summary_
 
 #         Create a valid dispatch with missing parameters
@@ -144,7 +180,6 @@ def test_get_dispatch_invalid_param(dispatch):
 #     response = client.post(f'/{END_POINT}/', json=payload)
 #     assert response.status_code == 400
 
-
 #     # Make a POST request with missing notes
 #     payload = {
 #         'customer_id':  customer.customer_id,
@@ -153,7 +188,6 @@ def test_get_dispatch_invalid_param(dispatch):
 #     }
 #     response = client.post(f'/{END_POINT}/', json=payload)
 #     assert response.status_code == 400
-
 
 #     # Make a POST request with missing date
 #     payload = {
@@ -193,7 +227,6 @@ def test_get_dispatch_invalid_param(dispatch):
 #     }
 #     response = client.post(f"/{END_POINT}/", json=payload)
 #     assert response.status_code == 400
-
 
 #     # Invalid Date
 #     payload = {
@@ -239,7 +272,6 @@ def test_get_dispatch_invalid_param(dispatch):
 #     response = client.put(f'/{END_POINT}/{dispatch.company.company_id}', json=payload)
 #     assert response.status_code == 400
 
-
 #     # Make a POST request with missing notes
 #     payload = {
 #         'customer_id':  dispatch.customer.customer_id,
@@ -248,7 +280,6 @@ def test_get_dispatch_invalid_param(dispatch):
 #     }
 #     response = client.put(f'/{END_POINT}/{dispatch.company.company_id}', json=payload)
 #     assert response.status_code == 400
-
 
 #     # Make a POST request with missing date
 #     payload = {
@@ -288,7 +319,6 @@ def test_get_dispatch_invalid_param(dispatch):
 #     }
 #     response = client.put(f"/{END_POINT}/{dispatch.dispatch_id}", json=payload)
 #     assert response.status_code == 400
-
 
 #     # Invalid Date
 #     payload = {

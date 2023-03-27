@@ -52,7 +52,7 @@ class DispatchController:
                             datetime.strptime(date, '%Y-%m-%d %H:%M:%S'))
         session.add(dispatch)
         session.commit()
-        return make_response({'message': 'Dispatch created successfully', 'dispatch': dispatch.to_dict()}, 201)
+        return make_response(dispatch.to_dict(), 201)
 
     def update_dispatch(session, request, dispatch_id):
         """_summary_

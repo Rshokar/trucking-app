@@ -59,6 +59,12 @@ def company():
 
 
 @pytest.fixture
+def company_authed(client_authed):
+    client, user = client_authed
+    return client, CompanyFactory.create(owner_id=user.id)
+
+
+@pytest.fixture
 def customer():
     user = UserFactory.create()
     company = CompanyFactory.create(owner_id=user.id)
@@ -66,7 +72,25 @@ def customer():
 
 
 @pytest.fixture
-def dispatch(client_authed):
+def customer_authed(client_authed):
+    client, user = client_authed
+    company = CompanyFactory.create(owner_id=user.id)
+    return client, CustomerFactory.create(company_id=company.company_id)
+
+
+@pytest.fixture
+def dispatch():
+    user = UserFactory.create()
+    company = CompanyFactory.create(owner_id=user.id)
+    customer = CustomerFactory.create(company_id=company.company_id)
+    return DispatchFactory(
+        company_id=company.company_id,
+        customer_id=customer.customer_id
+    )
+
+
+@pytest.fixture
+def dispatch_authed(client_authed):
     client, user = client_authed
     comp = CompanyFactory.create(owner_id=user.id)
     cust = CustomerFactory.create(company_id=comp.company_id)
