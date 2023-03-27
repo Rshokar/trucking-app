@@ -1,7 +1,7 @@
 from flask import Blueprint, g, request
 from controllers.operator_controller import OperatorController
 from utils import make_response
-from validations import operator_validation
+from validations import operator_validation, operator_update
 from flask_login import login_required
 import jsonschema
 
@@ -31,7 +31,7 @@ def create_operator():
 def update_operator(operator_id):
     session = g.session
     try:
-        jsonschema.validate(request.json, operator_validation)
+        jsonschema.validate(request.json, operator_update)
         return OperatorController.update_operator(session, request=request, operator_id=operator_id)
     except jsonschema.ValidationError:
         return make_response({"error": "Invalid Request Data"}, 400)

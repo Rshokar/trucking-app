@@ -1,7 +1,7 @@
 from models import Operator, Company
 from utils import make_response
 from flask_login import current_user
-
+from sqlalchemy import and_
 # Limited validation done in controllers. Only validation is making sure operator exists.
 # Full validation is done on the database side.
 
@@ -46,8 +46,6 @@ class OperatorController:
         company = session.query(Company).filter_by(
             company_id=company_id, owner_id=current_user.id).first()
 
-        print(request.get_json())
-        print("QUERIED_COMPANY", company)
         if company is None:
             return make_response(
                 {"error": f"Company with ID {company_id} not found"}, 404)
@@ -103,34 +101,29 @@ class OperatorController:
         Return:
             Responses: 200 OK if successful, 404 if operator not found
         """
-        request_data = request.get_json()
-        company_id = request_data['company_id']
-        email = request_data['operator_email']
-        name = request_data["operator_name"]
+        req = request.get_json()
+        email = req.get('operator_email')
+        name = req.get("operator_name")
 
-        operator = session.query(Operator).filter_by(
-            operator_id=operator_id, company_id=company_id).first()
+        operator = Operator.get_operator_by_id_and_owner(
+            session, operator_id, current_user.id)
 
         # Return early if invalid operator id provided
         if operator is None:
             return make_response({'error': "Operator not found"}, 404)
 
-        # Otherwise, continue
-        company = session.query(Company).filter_by(
-            company_id=company_id).first()
-        if company is None:
-            return make_response({'error': 'Company not found'}, 404)
+        operator_email = session.query(Operator).filter(
+            and_(
+                Operator.operator_email == email,
+                Operator.company_id == operator.company_id,
+                Operator.operator_id != operator.operator_id
+            )).first()
 
-        operator_email = session.query(Operator).filter_by(
-            operator_email=email, company_id=company_id).first()
-        if operator_email and operator.operator_id != operator_email.operator_id:
+        if operator_email is not None:
             return make_response({'error': 'Operator email already used'}, 400)
 
-        operator.company_id = company_id
         operator.operator_email = email
         operator.operator_name = name
-        print(f"HELLO: {operator}\n{company}")
-        session.merge(company)
         session.commit()
 
         return make_response(operator.to_dict(), 200)

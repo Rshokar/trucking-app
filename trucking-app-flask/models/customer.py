@@ -46,7 +46,7 @@ class Customer(Base):
     def get_customer_by_id(session, customer_id):
         return session.query(Customer).filter_by(customer_id=customer_id).first()
 
-    def get_customer_by_id_and_owner(self, session, customer_id, owner_id):
+    def get_customer_by_id_and_owner(session, customer_id, owner_id):
         return session.query(Customer)\
             .join(Company, Customer.company_id == Company.company_id)\
             .filter(Customer.customer_id == customer_id)\
