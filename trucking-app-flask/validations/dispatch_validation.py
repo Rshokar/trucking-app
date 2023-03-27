@@ -2,8 +2,8 @@
 dispatch_validation = {
     "type": "object",
     "properties": {
-        "company_id": {"type": "integer"},
-        "customer_id": {"type": "integer"},
+        "company_id": {"type": "integer", "minimum": 1},
+        "customer_id": {"type": "integer", "minimum": 1},
         "notes": {"type": "string", "maxLength": 1000},
         "date": {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}$"},
     },

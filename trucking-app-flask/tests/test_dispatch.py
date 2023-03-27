@@ -157,110 +157,118 @@ def test_create_dispatch_missing_attributes(customer_authed):
         res = client.post(f'/{END_POINT}/', json=payload)
         assert res.status_code == 400
 
-#     """_summary_
 
-#         Create a valid dispatch with missing parameters
+def test_create_dispatch_invalid_attributes(customer_authed):
+    """_summary_
+
+    Passes invalid attributes to endpoint
+
+    Args:
+        customer_authed (array): contains client and customer object
+    """
+
+    # Arrange
+    client, customer = customer_authed
+    company = customer.company
+
+    print(customer)
+
+    payloads = [{
+        "company_id": "abc",
+        'customer_id':  customer.customer_id,
+        'notes': 'Test dispatch',
+        'date': '2022-02-21 10:00:00'
+    }, {
+        "company_id": -1,
+        'customer_id':  customer.customer_id,
+        'notes': 'Test dispatch',
+        'date': '2022-02-21 10:00:00'
+    }, {
+        'company_id': customer.company.company_id,
+        'customer_id':  "ABC1",
+        'notes': 'Test dispatch',
+        'date': '2022-02-21 10:00:00'
+    }, {
+        'company_id': customer.company_id,
+        'customer_id':  customer.customer_id,
+        'notes': 'Test dispatch',
+        'date': '10:00:00'
+    }, {
+        'company_id': customer.company_id,
+        'customer_id':  customer.customer_id,
+        'notes': 'Test dispatch',
+        'date': '2022-02-21'
+    }]
+
+    for payload in payloads:
+        res = client.post(f'/{END_POINT}/', json=payload)
+        assert res.status_code == 400
+
+
+def test_create_dispatch_unauthed(client, customer):
+    """_summary_
+        Create a dispatch when unauthenticated
+    Args:
+        client (object): client object
+    """
+    # Arrange
+    company = customer.company
+
+    payload = {
+        "company_id": company.company_id,
+        "customer_id": customer.customer_id,
+        "notes": "Test dispatch",
+        "date": "2022-02-21 10:00:00",
+    }
+
+    # Act
+    res = client.post(f'/{END_POINT}/', json=payload)
+
+    # Assert
+    assert res.status_code == 401
+
+
+def test_create_dispatch_another_users_customer(customer_authed, customer):
+    """_summary_
+        Create a dispatch with another users customer
+    Args:
+        customer_authed (array): contains client and customer object
+    """
+    # Arrange
+    client, cus = customer_authed
+    company = cus.company
+
+    payload = {
+        "company_id": company.company_id,
+        "customer_id": customer.customer_id,
+        "notes": "Test dispatch",
+        "date": "2022-02-21 10:00:00",
+    }
+
+    # Act
+    res = client.post(f'/{END_POINT}/', json=payload)
+
+    # Assert
+    assert res.status_code == 404
+
+# def test_update_dispatch_missing_attributes(dispatch_authed):
 #     """
-
-#     # Make a POST request with missing company_id
-#     payload = {
-#         'customer_id':  customer.customer_id,
-#         'notes': 'Test dispatch',
-#         'date': '2022-02-21 10:00:00'
-#     }
-#     response = client.post(f'/{END_POINT}/', json=payload)
-#     assert response.status_code == 400
-
-#     # Make a POST request with missing customer_id
-#     payload = {
-#         'company_id':  customer.company.company_id,
-#         'notes': 'Test dispatch',
-#         'date': '2022-02-21 10:00:00'
-#     }
-#     response = client.post(f'/{END_POINT}/', json=payload)
-#     assert response.status_code == 400
-
-#     # Make a POST request with missing notes
-#     payload = {
-#         'customer_id':  customer.customer_id,
-#         'company_id':  customer.company.company_id,
-#         'date': '2022-02-21 10:00:00'
-#     }
-#     response = client.post(f'/{END_POINT}/', json=payload)
-#     assert response.status_code == 400
-
-#     # Make a POST request with missing date
-#     payload = {
-#         'customer_id':  customer.customer_id,
-#         'company_id':  customer.company.company_id,
-#         'notes': 'Test dispatch',
-#     }
-#     response = client.post(f'/{END_POINT}/', json=payload)
-#     assert response.status_code == 400
-
-# def test_create_dispatch_invalid_attributes(client, customer):
-#     """_summary_
-
-#     Passes invalid attributes to endpoint
-
+#     __summary__
+#         Update a dispatch with missing attributes
 #     Args:
-#         clinet (_type_): _description_
-#         customer (_type_): _description_
+#         dispatch_authed (array): contains client and dispatch object
 #     """
-
-#     # Alphanumeric company_id
-#     payload = {
-#         'company_id': "ABC1",
-#         'customer_id':  customer.customer_id,
-#         'notes': 'Test dispatch',
-#         'date': '2022-02-21 10:00:00'
-#     }
-#     response = client.post(f"/{END_POINT}/", json=payload)
-#     assert response.status_code == 400
-
-#     # Alphanumeric customer_id
-#     payload = {
-#         'company_id': customer.company.company_id,
-#         'customer_id':  "ABC1",
-#         'notes': 'Test dispatch',
-#         'date': '2022-02-21 10:00:00'
-#     }
-#     response = client.post(f"/{END_POINT}/", json=payload)
-#     assert response.status_code == 400
-
-#     # Invalid Date
-#     payload = {
-#         'company_id': customer.company.company_id,
-#         'customer_id':  customer.customer_id,
-#         'notes': 'Test dispatch',
-#         'date': '10:00:00'
-#     }
-#     response = client.post(f"/{END_POINT}/", json=payload)
-#     assert response.status_code == 400
-
-#     # Invalid Date
-#     payload = {
-#         'company_id': customer.company.company_id,
-#         'customer_id':  customer.customer_id,
-#         'notes': 'Test dispatch',
-#         'date': '2022-02-21'
-#     }
-#     response = client.post(f"/{END_POINT}/", json=payload)
-#     assert response.status_code == 400
-
-# def test_update_dispatch_missing_attributes(client, dispatch):
-#     """_summary_
-
-#         Create a valid dispatch with missing parameters
-#     """
-
+#     # Arrange
+#     client, user = dispatch_authed
+#     company = user.company
 #     # Make a POST request with missing company_id
 #     payload = {
 #         'customer_id':  dispatch.customer.customer_id,
 #         'notes': 'Test dispatch',
 #         'date': '2022-02-21 10:00:00'
 #     }
-#     response = client.put(f'/{END_POINT}/{dispatch.company.company_id}', json=payload)
+#     response = client.put(
+#         f'/{END_POINT}/{dispatch.company.company_id}', json=payload)
 #     assert response.status_code == 400
 
 #     # Make a POST request with missing customer_id
@@ -269,7 +277,8 @@ def test_create_dispatch_missing_attributes(customer_authed):
 #         'notes': 'Test dispatch',
 #         'date': '2022-02-21 10:00:00'
 #     }
-#     response = client.put(f'/{END_POINT}/{dispatch.company.company_id}', json=payload)
+#     response = client.put(
+#         f'/{END_POINT}/{dispatch.company.company_id}', json=payload)
 #     assert response.status_code == 400
 
 #     # Make a POST request with missing notes
@@ -278,7 +287,8 @@ def test_create_dispatch_missing_attributes(customer_authed):
 #         'company_id':  dispatch.company.company_id,
 #         'date': '2022-02-21 10:00:00'
 #     }
-#     response = client.put(f'/{END_POINT}/{dispatch.company.company_id}', json=payload)
+#     response = client.put(
+#         f'/{END_POINT}/{dispatch.company.company_id}', json=payload)
 #     assert response.status_code == 400
 
 #     # Make a POST request with missing date
@@ -287,7 +297,8 @@ def test_create_dispatch_missing_attributes(customer_authed):
 #         'company_id':  dispatch.company.company_id,
 #         'notes': 'Test dispatch',
 #     }
-#     response = client.put(f'/{END_POINT}/{dispatch.company.company_id}', json=payload)
+#     response = client.put(
+#         f'/{END_POINT}/{dispatch.company.company_id}', json=payload)
 #     assert response.status_code == 400
 
 # def test_update_dispatch_invalid_attributes(client, dispatch):

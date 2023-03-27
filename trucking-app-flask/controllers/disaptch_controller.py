@@ -40,16 +40,21 @@ class DispatchController:
         notes = request_data.get('notes')
         date = request_data.get('date')
 
-        company = session.query(Company).filter_by(
-            company_id=company_id).first()
-        if company is None:
-            return make_response({'error': 'Company not found'}, 404)
-        customer = session.query(Customer).filter_by(
-            customer_id=customer_id, company_id=company_id).first()
+        customer = Customer.get_customer_by_id_and_owner(
+            session, customer_id, current_user.id)
+
         if customer is None:
             return make_response({'error': 'Customer not found'}, 404)
-        dispatch = Dispatch(company_id, customer_id, notes,
-                            datetime.strptime(date, '%Y-%m-%d %H:%M:%S'))
+
+        print(customer.company_id, company_id)
+        print(customer)
+        print(customer.company)
+        if customer.company_id != company_id:
+            return make_response({'error': 'Company not found'}, 404)
+
+        dispatch = Dispatch(
+            company_id, customer_id, notes, datetime.strptime(date, "%Y-%m-%d %H:%M:%S"))
+
         session.add(dispatch)
         session.commit()
         return make_response(dispatch.to_dict(), 201)
