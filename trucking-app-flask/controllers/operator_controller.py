@@ -14,7 +14,7 @@ class OperatorController:
         '''
         Search for an Operator using their uniquely identifying ID
 
-        Parameters: 
+        Parameters:
             Session (session): SQLAlchemy db session
             operator_id (int): Integer that uniquely identifies an individual operator
 
@@ -44,10 +44,13 @@ class OperatorController:
         email = req.get('operator_email')
 
         company = session.query(Company).filter_by(
-            company_id=company_id).first()
-        if not company:
-            make_response(
-                {"error": "Company with ID {company_id} not found"}, 400)
+            company_id=company_id, owner_id=current_user.id).first()
+
+        print(request.get_json())
+        print("QUERIED_COMPANY", company)
+        if company is None:
+            return make_response(
+                {"error": f"Company with ID {company_id} not found"}, 404)
 
         operator_email = session.query(Operator).filter_by(
             operator_email=email, company_id=company_id).first()
