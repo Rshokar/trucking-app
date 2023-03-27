@@ -1,4 +1,5 @@
 from models import Operator, Company
+from sqlalchemy.exc import IntegrityError
 from utils import make_response
 from flask_login import current_user
 from sqlalchemy import and_
@@ -77,12 +78,14 @@ class OperatorController:
         if operator is None:
             return make_response({"error": "Operator not found"}, 404)
 
-        session.delete(operator)
-        session.commit()
+        try:
+            session.delete(operator)
+            session.commit()
+            return make_response({"message": "Operator deleted successfully"}, 200)
+        except IntegrityError:
+            session.rollback()
+            return make_response({"error": "Operator has tickets refrencing it, cannot be deleted"}, 400)
 
-        return make_response({"message": "Operator deleted successfully"}, 200)
-
-    # Make changes to an existing operator
     def update_operator(session, request, operator_id):
         """
         Update an already existing operator in db (if found)

@@ -108,6 +108,13 @@ def operator():
 
 
 @pytest.fixture
+def operator_authed(client_authed):
+    client, user = client_authed
+    comp = CompanyFactory.create(owner_id=user.id)
+    return client, OperatorFactory.create(company_id=comp.company_id)
+
+
+@pytest.fixture
 def operator_dispatch():
     user = UserFactory.create()
     company = CompanyFactory.create(owner_id=user.id)

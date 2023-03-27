@@ -100,4 +100,4 @@ class DispatchController:
             return make_response({'message': 'Dispatch deleted successfully'}, 200)
         except IntegrityError as e:
             session.rollback()
-            return make_response({'message': 'Tickets exist that reference dispatch, cannot delete'}, 400)
+            return make_response({'error': 'Tickets exist that reference dispatch, cannot delete'}, 400)

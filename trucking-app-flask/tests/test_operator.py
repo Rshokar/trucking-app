@@ -1,7 +1,7 @@
 import pytest
 import json
-from config_test import app, client, session, user, company, customer, dispatch, operator, client_authed
-from utils.loader import CompanyFactory, OperatorFactory
+from config_test import app, client, session, user, company, customer, dispatch, operator, client_authed, operator_authed
+from utils.loader import CompanyFactory, OperatorFactory, CustomerFactory, DispatchFactory
 END_POINT = "v1/company/operators"
 
 
