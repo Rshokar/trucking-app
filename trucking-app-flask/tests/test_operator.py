@@ -441,49 +441,67 @@ def test_update_operator_unauthed(client, operator):
     assert res.status_code == 401
 
 
-# def test_delete_an_operator(client, operator):
-#     """_summary_
-#         Try to delete an valid operator
-#     Args:
-#         client (): _description_
-#         operator (Operator): Operator Object
-#     """
+def test_delete_operator(client_authed, operator):
+    """_summary_
+        Delete a operator
+    Args:
+        client_authed (Array): an array containing the authenticated client and user
+    """
+    # Arrange
+    client, user = client_authed
+    comp = CompanyFactory.create(owner_id=user.id)
+    oper = OperatorFactory.create(company_id=comp.company_id)
 
-#     res = client.delete(
-#         f"/{END_POINT}/{operator.company_id}/{operator.operator_id}")
-#     data = res.json
+    # Act
+    res = client.delete(f"/{END_POINT}/{oper.operator_id}")
 
-#     assert res.status_code == 200
-#     assert "message" in data.keys()
-
-
-# def test_delete_an_non_existant_operator(client, company):
-#     """_summary_
-#         Try to delete non existant operator
-#     Args:
-#         client (app): _description_
-#         operator (Operator): Operator Object
-#     """
-
-#     res = client.delete(f"/{END_POINT}/{company.company_id}/999999")
-#     data = res.json
-
-#     assert res.status_code == 404
-#     assert "error" in data.keys()
+    # Assert
+    assert res.status_code == 200
 
 
-# def test_delete_an_operator_with_non_existant_company(client, operator):
-#     """_summary_
-#         Try to delete an operator from a company that does not own it.
-#     Args:
-#         client (app): _description_
-#         operator (Operator): Operator Object
-#     """
+def test_delete_non_existant_operator(client_authed):
+    """_summary_
+        Try to delete a non-existant operator
+    Args:
+        client_authed (Array): an array containing the authenticated client and user
+    """
+    # Arrange
+    client, user = client_authed
+    comp = CompanyFactory.create(owner_id=user.id)
+    # Act
+    res = client.delete(f"/{END_POINT}/9999999")
 
-#     res = client.delete(f"/{END_POINT}/9999999/{operator.operator_id}")
-#     data = res.json
+    # Assert
+    assert res.status_code == 404
 
-#     print(data)
 
-#     assert res.status_code == 404
-#     assert "error" in data.keys()
+def test_delete_another_users_operator(client_authed, operator):
+    """_summary_
+        Try to delete a another users operator
+    Args:
+        client_authed (Array): an array containing the authenticated client and user
+    """
+    # Arrange
+    client, user = client_authed
+    comp = CompanyFactory.create(owner_id=user.id)
+    oper = OperatorFactory.create(company_id=comp.company_id)
+
+    # Act
+    res = client.delete(f"/{END_POINT}/{operator.operator_id}")
+
+    # Assert
+    assert res.status_code == 404
+
+
+def test_delete_operator_unauthed(client, operator):
+    """_summary_
+        Try to delete a operator with an unauthed user
+    Args:
+        client (flask app): Flask application
+    """
+    # Arrange
+    # Act
+    res = client.delete(f"/{END_POINT}/{operator.operator_id}")
+
+    # Assert
+    assert res.status_code == 401
