@@ -2,7 +2,7 @@ from flask import Blueprint, g, jsonify, request
 from models import Dispatch, Company, Customer
 from datetime import datetime
 from controllers import DispatchController
-from validations import dispatch_validation
+from validations import dispatch_validation, dispatch_update
 from utils import make_response
 from flask_login import login_required
 import jsonschema
@@ -33,7 +33,7 @@ def create_dispatch():
 def update_dispatch(dispatch_id):
     session = g.session
     try:
-        jsonschema.validate(request.json, dispatch_validation)
+        jsonschema.validate(request.json, dispatch_update)
         return DispatchController.update_dispatch(session=session, request=request, dispatch_id=dispatch_id)
     except jsonschema.ValidationError:
         return make_response({"error": "Invalid Request Data"}, 400)

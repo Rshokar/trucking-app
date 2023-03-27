@@ -1,4 +1,5 @@
 from models import Dispatch, Company, Customer
+from sqlalchemy.exc import IntegrityError
 from flask import jsonify
 from datetime import datetime
 from utils import make_response
@@ -46,9 +47,6 @@ class DispatchController:
         if customer is None:
             return make_response({'error': 'Customer not found'}, 404)
 
-        print(customer.company_id, company_id)
-        print(customer)
-        print(customer.company)
         if customer.company_id != company_id:
             return make_response({'error': 'Company not found'}, 404)
 
@@ -66,24 +64,22 @@ class DispatchController:
             session (_type_): SQL Alchemy Session
             request (_type_): API Request
         """
-        dispatch = session.query(Dispatch).get(dispatch_id)
+
+        data = request.json
+        notes = data.get('notes')
+
+        dispatch = Dispatch.get_dispatch_by_id_and_owner(
+            session, dispatch_id, current_user.id)
+
         if dispatch is None:
-            return jsonify({'error': 'Dispatch not found'}), 404
-        request_data = request.get_json()
-        if 'customer_id' in request_data:
-            customer_id = request_data['customer_id']
-            customer = session.query(Customer).filter_by(
-                customer_id=customer_id, company_id=dispatch.company_id).first()
-            print(customer)
-            if customer is None:
-                return jsonify({'error': 'Customer not found'}), 404
-            dispatch.customer = customer
-        if 'notes' in request_data:
-            dispatch.notes = request_data['notes']
-        if 'date' in request_data:
-            dispatch.date = request_data['date']
+            return make_response({'error': 'Dispatch not found'}, 404)
+
+        dispatch.date = datetime.strptime(
+            data.get("date"), "%Y-%m-%d %H:%M:%S")
+        dispatch.notes = data.get('notes')
+
         session.commit()
-        return jsonify({'message': 'Dispatch updated successfully', 'dispatch': dispatch.to_dict()})
+        return make_response(dispatch.to_dict(), 200)
 
     def delete_dispatch(session, dispatch_id):
         """_summary_
@@ -92,9 +88,16 @@ class DispatchController:
             session (_type_): SQL Alchemy Session
             dispatch_id (int): Dispatch Id 
         """
-        dispatch = session.query(Dispatch).get(dispatch_id)
+        dispatch = Dispatch.get_dispatch_by_id_and_owner(
+            session, dispatch_id, current_user.id)
+
         if dispatch is None:
             return make_response({'error': 'Dispatch not found'}, 404)
-        session.delete(dispatch)
-        session.commit()
-        return make_response({'message': 'Dispatch deleted successfully'}, 200)
+
+        try:
+            session.delete(dispatch)
+            session.commit()
+            return make_response({'message': 'Dispatch deleted successfully'}, 200)
+        except IntegrityError as e:
+            session.rollback()
+            return make_response({'message': 'Tickets exist that reference dispatch, cannot delete'}, 200)

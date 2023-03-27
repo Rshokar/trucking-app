@@ -5,3 +5,4 @@ from .billing_ticket_validation import billing_ticket_validation, billing_ticket
 from .company_validations import company_validation, company_update
 from .auth_validations import auth_validation
 from .customer_validations import customer_validation, customer_update
+from .dispatch_validation import dispatch_validation, dispatch_update
