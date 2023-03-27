@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, CHAR, DateTime
+from sqlalchemy.orm import relationship
 from models.model import Base
 from models.company import Company
 
@@ -12,6 +13,8 @@ class Dispatch(Base):
         "customer.customer_id"), nullable=False)
     notes = Column("notes", String(1000))
     date = Column("date", DateTime)
+
+    rfos = relationship("RFO", backref="dispatch", lazy=True)
 
     def __init__(self, company_id, customer_id, notes, date):
         self.company_id = company_id

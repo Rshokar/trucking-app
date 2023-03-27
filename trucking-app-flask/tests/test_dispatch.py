@@ -1,7 +1,7 @@
 import pytest
 import json
 from config_test import app, client, session, user, company, customer, dispatch, client_authed, company_authed, customer_authed, dispatch_authed
-from utils.loader import UserFactory, CompanyFactory, CustomerFactory, DispatchFactory, OperatorFactory
+from utils.loader import UserFactory, CompanyFactory, CustomerFactory, DispatchFactory, RFOFactory, OperatorFactory
 from datetime import datetime
 END_POINT = "v1/dispatch"
 
@@ -361,6 +361,89 @@ def test_update_dispatch_unauthed(client, dispatch):
 
     # Assert
     assert res.status_code == 401
+
+
+def test_delete_dispatch(dispatch_authed):
+    """_summary_
+        Delete a dispatch
+    Args:
+        dispatch_authed (array): contains client and dispatch object
+    """
+    # Arrange
+    client, dispatch = dispatch_authed
+
+    # Act
+    res = client.delete(f'/{END_POINT}/{dispatch.dispatch_id}')
+
+    # Assert
+    assert res.status_code == 200
+
+
+def test_delete_dispatch_unauthed(client, dispatch):
+    """_summary_
+        Delete a dispatch when unauthenticated
+    Args:
+        client (object): client object
+    """
+    # Arrange
+
+    # Act
+    res = client.delete(f'/{END_POINT}/{dispatch.dispatch_id}')
+
+    # Assert
+    assert res.status_code == 401
+
+
+def test_delete_dispatch_another_users_dispatch(dispatch_authed, dispatch):
+    """_summary_
+        Delete a dispatch with another users dispatch
+    Args:
+        dispatch_authed (array): contains client and dispatch object
+    """
+    # Arrange
+    client, dis = dispatch_authed
+
+    # Act
+    res = client.delete(f'/{END_POINT}/{dispatch.dispatch_id}')
+
+    # Assert
+    assert res.status_code == 404
+
+
+def test_delete_dispatch_invalid_id(dispatch_authed):
+    """_summary_
+        Delete a dispatch with invalid id
+    Args:
+        dispatch_authed (array): contains client and dispatch object
+    """
+    # Arrange
+    client, dispatch = dispatch_authed
+
+    # Act
+    res = client.delete(f'/{END_POINT}/0')
+
+    # Assert
+    assert res.status_code == 404
+
+
+def test_delete_dispatch_with_rfos(dispatch_authed):
+    """_summary_
+        Delete a dispatch with rfos
+    Args:
+        dispatch_authed (array): contains client and dispatch object
+    """
+    # Arrange
+    client, dispatch = dispatch_authed
+    oper = OperatorFactory.create(company_id=dispatch.company_id)
+    rfo = RFOFactory.create(
+        dispatch_id=dispatch.dispatch_id, operator_id=oper.operator_id)
+
+    print(rfo, dispatch)
+    # Act
+    res = client.delete(f'/{END_POINT}/{dispatch.dispatch_id}')
+
+    # Assert
+    assert res.status_code == 400
 
 
 # def test_update_dispatch_missing_attributes(dispatch_authed):

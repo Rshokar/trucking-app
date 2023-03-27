@@ -1,4 +1,4 @@
-from sqlalchemy.exc import IntegrityError,
+from sqlalchemy.exc import IntegrityError
 from utils import make_response
 from flask_login import current_user
 from sqlalchemy import and_
