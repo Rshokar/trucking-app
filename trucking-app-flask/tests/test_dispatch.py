@@ -251,6 +251,118 @@ def test_create_dispatch_another_users_customer(customer_authed, customer):
     # Assert
     assert res.status_code == 404
 
+
+def test_update_dispatch(dispatch_authed):
+    """_summary_
+        Update a dispatch
+    Args:
+        dispatch_authed (array): contains client and dispatch object
+    """
+    # Arrange
+    client, dispatch = dispatch_authed
+
+    payload = {
+        'notes': 'Test dispatch',
+        'date': '2022-02-21 10:00:00'
+    }
+
+    # Act
+    res = client.put(f'/{END_POINT}/{dispatch.dispatch_id}', json=payload)
+
+    print(res.data)
+    # Assert
+    assert res.status_code == 200
+
+
+def test_update_dispatch_invalid_attributes(dispatch_authed):
+    """_summary_
+        Update a dispatch with invalid attributes
+    Args:
+        dispatch_authed (array): contains client and dispatch object
+    """
+    # Arrange
+    client, dispatch = dispatch_authed
+
+    payloads = [{
+        'notes': 'Test dispatch',
+        'date': '10:00:00'
+    }, {
+        'notes': 'Test dispatch',
+        'date': '2022-02-21'
+    }, {
+        "date": "2022-02-21 10:00:00",
+        "notes": "a" * 10001,
+    }]
+
+    for payload in payloads:
+        res = client.put(f'/{END_POINT}/{dispatch.dispatch_id}', json=payload)
+        assert res.status_code == 400
+
+
+def test_update_dispatch_missing_attributes(dispatch_authed):
+    """_summary_
+        Update a dispatch with missing attributes
+    Args:
+        dispatch_authed (array): contains client and dispatch object
+    """
+    # Arrange
+    client, dispatch = dispatch_authed
+
+    payloads = [{
+        'notes': 'Test dispatch',
+    }, {
+        'date': '2022-02-21 10:00:00'
+    }, {
+        'notes': 'Test dispatch',
+        'date': '2022-02-21 10:00:00',
+        'customer_id': 1
+    }]
+
+    for payload in payloads:
+        res = client.put(f'/{END_POINT}/{dispatch.dispatch_id}', json=payload)
+        assert res.status_code == 400
+
+
+def test_update_dispatch_another_users_dispatch(dispatch_authed, dispatch):
+    """_summary_
+        Update a dispatch with another users dispatch
+    Args:
+        dispatch_authed (array): contains client and dispatch object
+    """
+    # Arrange
+    client, dis = dispatch_authed
+
+    payload = {
+        'notes': 'Test dispatch',
+        'date': '2022-02-21 10:00:00'
+    }
+
+    # Act
+    res = client.put(f'/{END_POINT}/{dispatch.dispatch_id}', json=payload)
+
+    # Assert
+    assert res.status_code == 404
+
+
+def test_update_dispatch_unauthed(client, dispatch):
+    """_summary_
+        Update a dispatch when unauthenticated
+    Args:
+        client (object): client object
+    """
+    # Arrange
+    payload = {
+        'notes': 'Test dispatch',
+        'date': '2022-02-21 10:00:00'
+    }
+
+    # Act
+    res = client.put(f'/{END_POINT}/{dispatch.dispatch_id}', json=payload)
+
+    # Assert
+    assert res.status_code == 401
+
+
 # def test_update_dispatch_missing_attributes(dispatch_authed):
 #     """
 #     __summary__
