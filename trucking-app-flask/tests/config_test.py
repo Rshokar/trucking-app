@@ -123,14 +123,14 @@ def operator_dispatch():
         customer_id=customer.customer_id
     )
     operator = OperatorFactory.create(company_id=company.company_id)
-    return operator, dispatch
+    return operator, dispatch, user, customer, company
 
 
 @pytest.fixture
 def operator_dispatch_authed(dispatch_authed):
     client, dispatch, user, comp, cus = dispatch_authed
     oper = OperatorFactory.create(company_id=comp.company_id)
-    return client, oper, user, dispatch, comp, cus
+    return client, oper, dispatch, user, comp, cus
 
 
 @pytest.fixture
