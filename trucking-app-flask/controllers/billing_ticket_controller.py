@@ -1,8 +1,10 @@
 
-from flask import Response
-from models.billing_tickets import BillingTickets, RFO
-from utils import make_response
 import json
+from flask_login import current_user
+from utils import make_response
+from flask import Response
+from models import BillingTickets, RFO, Dispatch, Company
+from sqlalchemy import and_
 
 
 class BillingTicketController:
@@ -16,7 +18,12 @@ class BillingTicketController:
         Returns:
             Response: 200, 404
         """
-        bill = session.query(BillingTickets).filter_by(bill_id=bill_id).first()
+        bill = session.query(BillingTickets)\
+            .join(RFO, RFO.rfo_id == BillingTickets.rfo_id)\
+            .join(Dispatch, Dispatch.dispatch_id == RFO.dispatch_id)\
+            .join(Company, Company.company_id == Dispatch.company_id)\
+            .filter(and_(BillingTickets.bill_id == bill_id, Company.owner_id == current_user.id))\
+            .first()
         if bill is None:
             return make_response({"error": "Billing ticket not found"}, 404)
         return make_response(bill.to_dict(), 200)
@@ -33,7 +40,11 @@ class BillingTicketController:
         ticket_number = request.json["ticket_number"]
         image_id = request.json["image_id"]
 
-        rfo = session.query(RFO).filter_by(rfo_id=rfo_id).first()
+        rfo = session.query(RFO).filter_by(rfo_id=rfo_id)\
+            .join(Dispatch, Dispatch.dispatch_id, RFO.dispatch_id)\
+            .join(Company, Company.company_id == Dispatch.company_id)\
+            .filter(Company.owner_id == current_user.id).first()
+
         if rfo is None:
             return make_response({"error": "RFO not found"}, 404)
 
@@ -42,6 +53,7 @@ class BillingTicketController:
             request.json["ticket_number"],
             request.json["image_id"]
         )
+
         session.add(bill)
         session.commit()
         return make_response(bill.to_dict(), 201)

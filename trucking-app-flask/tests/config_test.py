@@ -160,7 +160,7 @@ def rfo():
     operator = OperatorFactory.create(company_id=company.company_id)
     rfo = RFOFactory.create(dispatch_id=dispatch.dispatch_id,
                             operator_id=operator.operator_id)
-    return rfo
+    return rfo, user, customer, company, dispatch, operator
 
 
 @pytest.fixture
@@ -183,3 +183,10 @@ def billing_ticket():
                             operator_id=operator.operator_id)
     billing_ticket = BillingTicketFactory.create(rfo_id=rfo.rfo_id)
     return billing_ticket
+
+
+@pytest.fixture
+def billing_ticket_authed(rfo_authed):
+    client, rfo, user, oper, disp, comp, cus = rfo_authed
+    billing_ticket = BillingTicketFactory.create(rfo_id=rfo.rfo_id)
+    return client, billing_ticket, user, oper, disp, comp, cus, rfo

@@ -1,5 +1,6 @@
 from flask import Response
 from models import RFO, Dispatch, Operator, Company
+from sqlalchemy import and_
 from utils import make_response
 from datetime import datetime
 from flask_login import current_user
@@ -106,9 +107,15 @@ class RfoController:
 
     def delete_rfo(session, rfo_id):
         # Check if rfo exist
-        rfo = session.query(RFO).filter_by(rfo_id=rfo_id).first()
+        rfo = session.query(RFO)\
+            .join(Dispatch, RFO.dispatch_id == Dispatch.dispatch_id)\
+            .join(Company, Dispatch.company_id == Company.company_id)\
+            .filter(and_(RFO.rfo_id == rfo_id, Company.owner_id == current_user.id))\
+            .first()
+
         if rfo is None:
             return make_response({'error': 'RFO not found'}, 404)
+
         session.delete(rfo)
         session.commit()
         return make_response({'message': 'RFO deleted'}, 200)

@@ -595,20 +595,67 @@ def test_rfo_put_update_non_existing_operator(rfo_authed):
     assert "Operator not found" in data["error"]
 
 
-# def test_rfo_get(client, rfo):
-#     res = client.get(f"/{END_POINT}/{rfo.rfo_id}")
-#     data = res.json
+def test_rfo_put_unauthed(client, rfo):
+    """_summary_
+        Tries to update an RFO without being logged in.
+    Args:
+        client (App): Flask App
+        ref (RFO): rfo
+    """
 
-#     assert res.status_code == 200
-#     assert data["rfo_id"] == rfo.rfo_id
+    # Arrange
+    rfo, user, customer, copmany, dispatch, operator = rfo
+    payload = {
+        "operator_id": operator.operator_id,
+        "load_location": "Updated load_location",
+        "dump_location": "Updated dump_location",
+        "start_location": "Updated start_location",
+        "start_time": "2022-02-02 02:02:02",
+        "truck": "Updated truck",
+        "trailer": "Updated trailer",
+    }
+
+    # Act
+    res = client.put(f"/{END_POINT}/{rfo.rfo_id}", json=payload)
+
+    # Assert
+    assert res.status_code == 401
 
 
-# def test_rfo_get_non_existing(client):
-#     res = client.get(f"/{END_POINT}/999999")
-#     data = res.json
+def test_rfo_get(rfo_authed):
+    # Arrange
+    client, rfo, user, oper, disp, comp, cus = rfo_authed
 
-#     assert res.status_code == 404
-#     assert "error" in data.keys()
+    # Act
+    res = client.get(f"/{END_POINT}/{rfo.rfo_id}")
+
+    # Assert
+    assert res.status_code == 200
+    data = res.json
+    assert data["rfo_id"] == rfo.rfo_id
+
+
+def test_rfo_get_non_existing(client_authed):
+    # Arrange
+    client, user = client_authed
+
+    # Act
+    res = client.get(f"/{END_POINT}/999999")
+
+    assert res.status_code == 404
+    data = res.json
+    assert "error" in data.keys()
+
+
+def test_rfo_get_unauthed(client, rfo):
+    # Arrange
+    rfo = rfo[0]
+
+    # Act
+    res = client.get(f"/{END_POINT}/{rfo.rfo_id}")
+
+    # Assert
+    assert res.status_code == 401
 
 
 # # def test_rfo_get_all(client, session, multiple_operator_dispatch):
@@ -647,17 +694,52 @@ def test_rfo_put_update_non_existing_operator(rfo_authed):
 # #     assert res.status_code == 200
 
 
-# def test_rfo_delete(client, rfo):
-#     res = client.delete(f"/{END_POINT}/{rfo.rfo_id}")
-#     data = res.json
+def test_rfo_delete(rfo_authed):
+    # Arrange
+    client, rfo, user, oper, disp, comp, cus = rfo_authed
 
-#     assert res.status_code == 200
-#     assert "message" in data.keys()
+    # Act
+    res = client.delete(f"/{END_POINT}/{rfo.rfo_id}")
+
+    # Assert
+    assert res.status_code == 200
+    data = res.json
+    assert "message" in data.keys()
 
 
-# def test_rfo_delete_non_existant(client):
-#     res = client.delete(f"/{END_POINT}/999999")
-#     data = res.json
+def test_rfo_delete_non_existant(client_authed):
+    # Arrange
+    client, user = client_authed
 
-#     assert res.status_code == 404
-#     assert "error" in data.keys()
+    # Act
+    res = client.delete(f"/{END_POINT}/999999")
+
+    # Assert
+    assert res.status_code == 404
+    data = res.json
+    assert "error" in data.keys()
+
+
+def test_rfo_delete_unauthed(client, rfo):
+    # Arrange
+    rfo = rfo[0]
+
+    # Act
+    res = client.delete(f"/{END_POINT}/{rfo.rfo_id}")
+
+    # Assert
+    assert res.status_code == 401
+
+
+def test_rfo_delete_another_companies_rfo(rfo_authed, rfo):
+    # Arrange
+    client, requestForOperator, user, oper, disp, comp, cus = rfo_authed
+    rfo = rfo[0]
+
+    # Act
+    res = client.delete(f"/{END_POINT}/{rfo.rfo_id}")
+
+    # Assert
+    assert res.status_code == 404
+    data = res.json
+    assert "error" in data.keys()
