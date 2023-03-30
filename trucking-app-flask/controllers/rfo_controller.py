@@ -1,7 +1,8 @@
 from flask import Response
-from models import RFO, Dispatch, Operator
+from models import RFO, Dispatch, Operator, Company
 from utils import make_response
 from datetime import datetime
+from flask_login import current_user
 import json
 
 
@@ -25,14 +26,23 @@ class RfoController:
         # Check if dispatch exist
         disp = session.query(Dispatch).filter_by(dispatch_id=disp_id).first()
         if disp is None:
-            return make_response({'error': 'Dispatch not found'}), 404
+            return make_response({'error': 'Dispatch not found'}, 404)
+
+        comp = session.query(Company).filter_by(
+            owner_id=current_user.id).first()
+
+        if comp is None:
+            return make_response({'error': 'Company not found'}, 404)
+
+        if comp.company_id != disp.company_id:
+            return make_response({"error": "Dispatch not found"}, 404)
 
         oper_id = data['operator_id']
         # Check if operator exist
         oper = session.query(Operator).filter_by(
-            operator_id=oper_id, company_id=disp.company_id).first()
+            operator_id=oper_id, company_id=comp.company_id).first()
         if oper is None:
-            return make_response({'error': 'Operator not found'}), 404
+            return make_response({'error': 'Operator not found'}, 404)
 
         rfo = RFO(
             dispatch_id=disp_id,
