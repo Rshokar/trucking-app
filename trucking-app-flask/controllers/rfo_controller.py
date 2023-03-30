@@ -74,16 +74,23 @@ class RfoController:
         if rfo is None:
             return make_response({'error': 'RFO not found'}, 404)
 
-        oper = session.query(Operator).filter_by(
-            operator_id=operator_id).first()
-        if oper is None:
-            return make_response({"error": "Operator not found"}, 404)
+        # Get Company
+        comp = session.query(Company).filter_by(
+            owner_id=current_user.id).first()
+        if comp is None:
+            return make_response({'error': 'Company not found'}, 404)
+
+        if operator_id != rfo.operator_id:
+            oper = session.query(Operator).filter_by(
+                operator_id=operator_id, company_id=comp.company_id).first()
+            if oper is None:
+                return make_response({'error': 'Operator not found'}, 404)
 
         disp = session.query(Dispatch).filter_by(
-            dispatch_id=rfo.dispatch_id).first()
+            dispatch_id=rfo.dispatch_id, company_id=comp.company_id).first()
 
-        if disp.company_id != oper.company_id:
-            return make_response({"error": "Dispatch and Operator are not from the same company"}, 400)
+        if disp is None:
+            return make_response({'error': 'Dispatch not found'}, 404)
 
         rfo.operator_id = operator_id
         rfo.load_location = load_location

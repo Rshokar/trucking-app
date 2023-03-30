@@ -165,10 +165,10 @@ def rfo():
 
 @pytest.fixture
 def rfo_authed(operator_dispatch_authed):
-    client, operator, user, dispatch, comp, cus = operator_dispatch_authed
-    rfo = RFOFactory.create(dispatch_id=dispatch.dispatch_id,
-                            operator_id=operator.operator_id)
-    return client, rfo, user, operator, dispatch, comp, cus
+    client, oper, disp, user, comp, cus = operator_dispatch_authed
+    rfo = RFOFactory.create(dispatch_id=disp.dispatch_id,
+                            operator_id=oper.operator_id)
+    return client, rfo, user, oper, disp, comp, cus
 
 
 @pytest.fixture
