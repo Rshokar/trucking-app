@@ -74,16 +74,19 @@ class BillingTicketController:
             _type_: _description_
         """
 
-        json = request.json
-        ticket_number = json["ticket_number"]
-        image_id = json["image_id"]
+        data = request.json
 
-        bill = session.query(BillingTickets).filter_by(bill_id=bill_id).first()
+        bill = session.query(BillingTickets).filter_by(bill_id=bill_id)\
+            .join(RFO, RFO.rfo_id == BillingTickets.rfo_id)\
+            .join(Dispatch, Dispatch.dispatch_id == RFO.dispatch_id)\
+            .join(Company, Company.company_id == Dispatch.company_id)\
+            .filter(and_(BillingTickets.bill_id == bill_id, Company.owner_id == current_user.id))\
+            .first()
         if bill is None:
             return make_response({"error": "Billing ticket not found"}, 404)
 
-        bill.ticket_number = ticket_number
-        bill.image_id = image_id
+        bill.ticket_number = data.get("ticket_number", bill.ticket_number)
+        bill.image_id = data.get("image_id", bill.image_id)
         session.commit()
 
         return make_response(bill.to_dict(), 200)
