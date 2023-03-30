@@ -348,139 +348,57 @@ def test_update_bill_another_companies_bill(billing_ticket_authed, billing_ticke
     assert response.status_code == 404
 
 
-# def test_billing_ticket_put(client, billing_ticket):
-#     """_summary_
-#         Test updating a billing ticket
-#     Args:
-#         client (_type_): _description_
-#         billing_ticket (_type_): _description_
-#     """
+def test_delete_bill_success(billing_ticket_authed):
+    # Arrange
+    client, billing_ticket, user, oper, disp, comp, cus, rfo = billing_ticket_authed
 
-#     payload = {
-#         "ticket_number": 123456789,
-#         "image_id": 123456789
-#     }
+    # Act
+    response = client.delete(f"/{END_POINT}/{billing_ticket.bill_id}")
 
-#     res = client.put(f"/{END_POINT}/{billing_ticket.bill_id}", json=payload)
-#     data = res.json
-
-#     assert res.status_code == 200
-#     assert "bill_id" in data.keys()
-#     assert data["bill_id"] == billing_ticket.bill_id
-#     assert "rfo_id" in data.keys()
-#     assert data["rfo_id"] == billing_ticket.rfo_id
-#     assert "ticket_number" in data.keys()
-#     assert data["ticket_number"] == payload["ticket_number"]
-#     assert "image_id" in data.keys()
-#     assert data["image_id"] == payload["image_id"]
+    assert response.status_code == 200
+    assert response.json == {'message': 'Billing ticket deleted'}
 
 
-# def test_billing_ticket_put_non_existant(client):
-#     """_summary_
-#         Test updating a billing ticket that does not exist
-#     Args:
-#         client (_type_): _description_
-#     """
+def test_delete_non_existant_bill(billing_ticket_authed):
+    # Arrange
+    client, billing_ticket, user, oper, disp, comp, cus, rfo = billing_ticket_authed
 
-#     payload = {
-#         "ticket_number": 123456789,
-#         "image_id": 123456789
-#     }
+    # Act
+    response = client.delete(f'/{END_POINT}/999')
 
-#     res = client.put(f"/{END_POINT}/{123456789}", json=payload)
-#     data = res.json
-
-#     assert res.status_code == 404
-#     assert "error" in data.keys()
+    # Assert
+    assert response.status_code == 404
+    assert b"Billing ticket not found" in response.data
 
 
-# def test_billing_ticket_put_invalid_attributes(client, billing_ticket):
-#     """_summary_
-#         Test updating a billing ticket with invalid attributes
-#     Args:
-#         client (_type_): _description_
-#         billing_ticket (_type_): _description_
-#     """
+def test_delete_bill_from_different_user(billing_ticket_authed, billing_ticket):
+    # Arrange
+    client, bill, user, oper, disp, comp, cus, rfo = billing_ticket_authed
 
-#     # Invalid ticket_number
-#     payload = {
-#         "ticket_number": "invalid",
-#         "image_id": 123456789
-#     }
+    # Act
+    response = client.delete(f'/{END_POINT}/{billing_ticket.bill_id}')
 
-#     res = client.put(f"/{END_POINT}/{billing_ticket.bill_id}", json=payload)
-#     data = res.json
-
-#     assert res.status_code == 400
-#     assert "error" in data.keys()
-
-#     # Invalid image_id
-#     payload = {
-#         "ticket_number": 123456789,
-#         "image_id": "invalid"
-#     }
-
-#     res = client.put(f"/{END_POINT}/{billing_ticket.bill_id}", json=payload)
-#     data = res.json
-
-#     assert res.status_code == 400
-#     assert "error" in data.keys()
+    # Assert
+    assert response.status_code == 404
+    assert b"Billing ticket not found" in response.data
 
 
-# def test_billing_ticket_put_missing_attributes(client, billing_ticket):
-#     """_summary_
-#         Test updating a billing ticket with missing attributes
+def test_delete_non_integer_bill_id(client_authed):
+    # Arrange
+    client, user = client_authed
 
-#     Args:
-#         client (_type_): _description_
-#         billing_ticket (_type_): _description_
-#     """
+    # Act
+    response = client.delete(f'/{END_POINT}/abc')
 
-#     payload = {
-#         "ticket_number": 123456789,
-#     }
-
-#     res = client.put(f"/{END_POINT}/{billing_ticket.bill_id}", json=payload)
-#     data = res.json
-
-#     assert res.status_code == 400
-#     assert "error" in data.keys()
-
-#     payload = {
-#         "image_id": 123456789,
-#     }
-
-#     res = client.put(f"/{END_POINT}/{billing_ticket.bill_id}", json=payload)
-#     data = res.json
-
-#     assert res.status_code == 400
-#     assert "error" in data.keys()
+    # Assert
+    assert response.status_code == 404
 
 
-# def test_billing_ticket_delete(client, billing_ticket):
-#     """_summary_
-#         Test deleting a billing ticket
-#     Args:
-#         client (_type_): _description_
-#         billing_ticket (_type_): _description_
-#     """
+def test_delete_unauthorized_user(client, billing_ticket):
+    # Arrange
 
-#     res = client.delete(f"/{END_POINT}/{billing_ticket.bill_id}")
-#     data = res.json
+    # Act
+    response = client.delete(f'/{END_POINT}/{billing_ticket.bill_id}')
 
-#     assert res.status_code == 200
-#     assert "message" in data.keys()
-
-
-# def test_billing_ticket_delete_non_existant(client):
-#     """_summary_
-#         Test deleting a billing ticket that does not exist
-#     Args:
-#         client (_type_): _description_
-#     """
-
-#     res = client.delete(f"/{END_POINT}/{123456789}")
-#     data = res.json
-
-#     assert res.status_code == 404
-#     assert "error" in data.keys()
+    # Assert
+    assert response.status_code == 401

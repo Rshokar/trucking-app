@@ -102,7 +102,13 @@ class BillingTicketController:
             _type_: _description_
         """
 
-        bill = session.query(BillingTickets).filter_by(bill_id=bill_id).first()
+        bill = session.query(BillingTickets).filter_by(bill_id=bill_id)\
+            .join(RFO, RFO.rfo_id == BillingTickets.rfo_id)\
+            .join(Dispatch, Dispatch.dispatch_id == RFO.dispatch_id)\
+            .join(Company, Company.company_id == Dispatch.company_id)\
+            .filter(and_(BillingTickets.bill_id == bill_id, Company.owner_id == current_user.id))\
+            .first()
+
         if bill is None:
             return make_response({"error": "Billing ticket not found"}, 404)
         session.delete(bill)
