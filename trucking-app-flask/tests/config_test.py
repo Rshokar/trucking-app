@@ -41,7 +41,6 @@ def user():
 
 @pytest.fixture
 def client_authed(client, user):
-    print(user)
     res = client.post('/v1/auth/login', json=dict(
         email=user.email,
         password="Testing1"  # UserFactory.DEFAULT_PASSWORD
@@ -61,7 +60,7 @@ def company():
 @pytest.fixture
 def company_authed(client_authed):
     client, user = client_authed
-    return client, CompanyFactory.create(owner_id=user.id)
+    return client, CompanyFactory.create(owner_id=user.id), user
 
 
 @pytest.fixture
@@ -75,7 +74,7 @@ def customer():
 def customer_authed(client_authed):
     client, user = client_authed
     company = CompanyFactory.create(owner_id=user.id)
-    return client, CustomerFactory.create(company_id=company.company_id)
+    return client, CustomerFactory.create(company_id=company.company_id), user, company
 
 
 @pytest.fixture
@@ -97,7 +96,7 @@ def dispatch_authed(client_authed):
     return client, DispatchFactory(
         company_id=comp.company_id,
         customer_id=cust.customer_id
-    )
+    ), user, comp, cust
 
 
 @pytest.fixture
@@ -108,10 +107,10 @@ def operator():
 
 
 @pytest.fixture
-def operator_authed(client_authed):
-    client, user = client_authed
-    comp = CompanyFactory.create(owner_id=user.id)
-    return client, OperatorFactory.create(company_id=comp.company_id)
+def operator_authed(company_authed):
+    client, company, user = company_authed
+    oper = OperatorFactory.create(company_id=company.company_id)
+    return client, oper, user, company
 
 
 @pytest.fixture
@@ -125,6 +124,13 @@ def operator_dispatch():
     )
     operator = OperatorFactory.create(company_id=company.company_id)
     return operator, dispatch
+
+
+@pytest.fixture
+def operator_dispatch_authed(dispatch_authed):
+    client, dispatch, user, comp, cus = dispatch_authed
+    oper = OperatorFactory.create(company_id=comp.company_id)
+    return client, oper, user, dispatch, comp, cus
 
 
 @pytest.fixture
@@ -155,6 +161,14 @@ def rfo():
     rfo = RFOFactory.create(dispatch_id=dispatch.dispatch_id,
                             operator_id=operator.operator_id)
     return rfo
+
+
+@pytest.fixture
+def rfo_authed(operator_dispatch_authed):
+    client, operator, user, dispatch, comp, cus = operator_dispatch_authed
+    rfo = RFOFactory.create(dispatch_id=dispatch.dispatch_id,
+                            operator_id=operator.operator_id)
+    return client, rfo, user, operator, dispatch, comp, cus
 
 
 @pytest.fixture

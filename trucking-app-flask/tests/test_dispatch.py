@@ -13,7 +13,7 @@ def test_get_dispatch(dispatch_authed):
         dispatch (array): contains client and dispatch object
     """
     # Arrange
-    client, dispatch = dispatch_authed
+    client, dispatch, user, comp, cust = dispatch_authed
 
     # Act
     res = client.get(f'/{END_POINT}/{dispatch.dispatch_id}')
@@ -83,7 +83,7 @@ def test_get_dispatch_invalid_param(dispatch_authed):
     """
 
     # Arrange
-    client, dispatch = dispatch_authed
+    client, dispatch, user, comp, cust = dispatch_authed
 
     # Act
     res = client.get(f'/{END_POINT}/abc')
@@ -99,7 +99,7 @@ def test_create_dispatch(customer_authed):
         customer_authed (_type_): _description_
     """
     # Arrange
-    client, customer = customer_authed
+    client, customer, user, company = customer_authed
     company = customer.company
 
     payload = {
@@ -132,7 +132,7 @@ def test_create_dispatch_missing_attributes(customer_authed):
         customer_authed (array): contains client and customer object 
     """
     # Arrange
-    client, customer = customer_authed
+    client, customer, user, company = customer_authed
     payloads = [
         {
             "customer_id": customer.customer_id,
@@ -168,7 +168,7 @@ def test_create_dispatch_invalid_attributes(customer_authed):
     """
 
     # Arrange
-    client, customer = customer_authed
+    client, customer, user, company = customer_authed
     company = customer.company
 
     print(customer)
@@ -235,11 +235,10 @@ def test_create_dispatch_another_users_customer(customer_authed, customer):
         customer_authed (array): contains client and customer object
     """
     # Arrange
-    client, cus = customer_authed
-    company = cus.company
+    client, cus, user, comp = customer_authed
 
     payload = {
-        "company_id": company.company_id,
+        "company_id": comp.company_id,
         "customer_id": customer.customer_id,
         "notes": "Test dispatch",
         "date": "2022-02-21 10:00:00",
@@ -259,7 +258,7 @@ def test_update_dispatch(dispatch_authed):
         dispatch_authed (array): contains client and dispatch object
     """
     # Arrange
-    client, dispatch = dispatch_authed
+    client, dispatch, user, comp, cust = dispatch_authed
 
     payload = {
         'notes': 'Test dispatch',
@@ -281,7 +280,7 @@ def test_update_dispatch_invalid_attributes(dispatch_authed):
         dispatch_authed (array): contains client and dispatch object
     """
     # Arrange
-    client, dispatch = dispatch_authed
+    client, dispatch, user, comp, cust = dispatch_authed
 
     payloads = [{
         'notes': 'Test dispatch',
@@ -306,7 +305,7 @@ def test_update_dispatch_missing_attributes(dispatch_authed):
         dispatch_authed (array): contains client and dispatch object
     """
     # Arrange
-    client, dispatch = dispatch_authed
+    client, dispatch, user, comp, cust = dispatch_authed
 
     payloads = [{
         'notes': 'Test dispatch',
@@ -330,7 +329,7 @@ def test_update_dispatch_another_users_dispatch(dispatch_authed, dispatch):
         dispatch_authed (array): contains client and dispatch object
     """
     # Arrange
-    client, dis = dispatch_authed
+    client, dis, user, comp, cust = dispatch_authed
 
     payload = {
         'notes': 'Test dispatch',
@@ -370,7 +369,7 @@ def test_delete_dispatch(dispatch_authed):
         dispatch_authed (array): contains client and dispatch object
     """
     # Arrange
-    client, dispatch = dispatch_authed
+    client, dispatch, user, comp, cust = dispatch_authed
 
     # Act
     res = client.delete(f'/{END_POINT}/{dispatch.dispatch_id}')
@@ -401,7 +400,7 @@ def test_delete_dispatch_another_users_dispatch(dispatch_authed, dispatch):
         dispatch_authed (array): contains client and dispatch object
     """
     # Arrange
-    client, dis = dispatch_authed
+    client, dis, user, comp, cust = dispatch_authed
 
     # Act
     res = client.delete(f'/{END_POINT}/{dispatch.dispatch_id}')
@@ -417,7 +416,7 @@ def test_delete_dispatch_invalid_id(dispatch_authed):
         dispatch_authed (array): contains client and dispatch object
     """
     # Arrange
-    client, dispatch = dispatch_authed
+    client, dispatch, user, comp, cust = dispatch_authed
 
     # Act
     res = client.delete(f'/{END_POINT}/0')
@@ -433,7 +432,7 @@ def test_delete_dispatch_with_rfos(dispatch_authed):
         dispatch_authed (array): contains client and dispatch object
     """
     # Arrange
-    client, dispatch = dispatch_authed
+    client, dispatch, user, comp, cust = dispatch_authed
     oper = OperatorFactory.create(company_id=dispatch.company_id)
     rfo = RFOFactory.create(
         dispatch_id=dispatch.dispatch_id, operator_id=oper.operator_id)
