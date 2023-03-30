@@ -1,9 +1,9 @@
 billing_ticket_validation = {
     "type": "object",
     "properties": {
-        "rfo_id": {"type": "integer", "minimum": "1"},
+        "rfo_id": {"type": "integer", "minimum": 1},
         "ticket_number": {"type": "string", "maxLength": 50, "minLength": 2},
-        "image_id": {"type": "integer"}
+        "image_id": {"type": "string", "maxLength": 50, "minLength": 2}
     },
     "required": ["rfo_id", "ticket_number", "image_id"],
     "additionalProperties": False

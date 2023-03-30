@@ -36,22 +36,26 @@ class BillingTicketController:
         Returns:
             Response: 201, 400
         """
-        rfo_id = request.json["rfo_id"]
-        ticket_number = request.json["ticket_number"]
-        image_id = request.json["image_id"]
 
-        rfo = session.query(RFO).filter_by(rfo_id=rfo_id)\
-            .join(Dispatch, Dispatch.dispatch_id, RFO.dispatch_id)\
-            .join(Company, Company.company_id == Dispatch.company_id)\
-            .filter(Company.owner_id == current_user.id).first()
+        data = request.json
+
+        rfo_id = data.get("rfo_id")
+        ticket_number = data.get("ticket_number")
+        image_id = data.get("image_id")
+
+        rfo = session.query(RFO)\
+            .join(Dispatch, RFO.dispatch_id == Dispatch.dispatch_id)\
+            .join(Company, Dispatch.company_id == Company.company_id)\
+            .filter(and_(RFO.rfo_id == rfo_id, Company.owner_id == current_user.id))\
+            .first()
 
         if rfo is None:
             return make_response({"error": "RFO not found"}, 404)
 
         bill = BillingTickets(
-            request.json["rfo_id"],
-            request.json["ticket_number"],
-            request.json["image_id"]
+            rfo_id,
+            ticket_number,
+            image_id
         )
 
         session.add(bill)

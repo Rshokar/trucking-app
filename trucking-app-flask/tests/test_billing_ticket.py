@@ -108,6 +108,136 @@ def test_get_bill_sql_injection(client_authed):
     assert res.status_code == 404
 
 
+def test_create_bill_with_valid_inputs(rfo_authed):
+    # Arrange
+    client, rfo, user, oper, disp, comp, cus = rfo_authed
+    data = {
+        "rfo_id": rfo.rfo_id,
+        "ticket_number": "1234",
+        "image_id": "a9df89f"
+    }
+
+    # Act
+    response = client.post(f"/{END_POINT}/", json=data)
+
+    # Assert
+    print(response.data)
+    assert response.status_code == 201
+    assert response.json["rfo_id"] == data["rfo_id"]
+    assert response.json["ticket_number"] == int(data["ticket_number"])
+    assert response.json["image_id"] == data["image_id"]
+
+
+def test_create_bill_with_valid_rfo_id_not_owned_by_user(rfo_authed, rfo):
+    # Arrange
+    client, requestforOperator, user, oper, disp, comp, cus = rfo_authed
+
+    rfo, user, customer, company, dispatch, operator = rfo
+    data = {
+        "rfo_id": rfo.rfo_id,
+        "ticket_number": "1234",
+        "image_id": "a9df89f"
+    }
+
+    # Act
+    response = client.post(f"/{END_POINT}/", json=data)
+    print(response.data)
+
+    # Assert
+    assert response.status_code == 404
+
+
+def test_create_bill_with_invalid_inputs(rfo_authed):
+    # Arrange
+    client, rfo, user, oper, disp, comp, cus = rfo_authed
+    payloads = [{
+        "rfo_id": 0,
+        "ticket_number": "1234",
+        "image_id": "1"
+    }, {
+        "rfo_id": rfo.rfo_id,
+        "ticket_number": "1",
+        "image_id": "1" * 25
+    }, {
+        "rfo_id": rfo.rfo_id,
+        "ticket_number": "1" * 60,
+        "image_id": "1" * 25
+    }, {
+        "rfo_id": rfo.rfo_id,
+        "ticket_number": "1234",
+        "image_id": "1"
+    }, {
+        "rfo_id": rfo.rfo_id,
+        "ticket_number": "1234",
+        "image_id": "1" * 60
+    }]
+
+    for payload in payloads:
+        # Act
+        response = client.post(f"/{END_POINT}/", data=payload)
+
+        # Assert
+        assert response.status_code == 400
+
+
+def test_create_bill_without_required_fields(rfo_authed):
+    # Arrange
+    client, rfo, user, oper, disp, comp, cus = rfo_authed
+    payloads = [{
+        "ticket_number": "1234",
+        "image_id": "1"
+    }, {
+        "rfo_id": rfo.rfo_id,
+        "image_id": "1" * 25
+    }, {
+        "rfo_id": rfo.rfo_id,
+        "ticket_number": "1" * 60,
+    }]
+
+    for payload in payloads:
+        # Act
+        response = client.post(f"/{END_POINT}/", data=payload)
+
+        # Assert
+        assert response.status_code == 400
+
+
+def test_create_bill_with_sql_injection(client_authed):
+    # Arrange
+    client, user = client_authed
+    payloads = [{
+        "rfo_id": "1; DROP TABLE users",
+        "ticket_number": "1234",
+        "image_id": 1
+    }, {
+        "rfo_id": "1",
+        "ticket_number": "1234  DROP TABLE users",
+        "image_id": 1
+    }]
+
+    for payload in payloads:
+        # Act
+        response = client.post(f"/{END_POINT}/", json=payload)
+
+        # Assert
+        assert response.status_code == 400
+
+
+def test_create_bill_unauthed(client, rfo):
+    # Arrange
+    rfo = rfo[0]
+    data = {
+        "rfo_id": rfo.rfo_id,
+        "ticket_number": "1234",
+        "image_id": "a9df89f"
+    }
+
+    # Act
+    response = client.post(f"/{END_POINT}/", json=data)
+
+    # Assert
+    assert response.status_code == 401
+
 # def test_billing_ticket_get(client, billing_ticket):
 #     """_summary_
 #         Test geting a billing ticket
