@@ -3,7 +3,7 @@ import { StatusBar } from 'expo-status-bar'
 import styled from 'styled-components/native'
 
 import BigText from '../components/Texts/BigText'
-import RegularText from '../components/Texts/RegularText'
+// import RegularText from '../components/Texts/RegularText'
 import SmallText from '../components/Texts/SmallText'
 import RegularButton from '../components/Buttons/RegularButton'
 
@@ -19,9 +19,9 @@ const WelcomContainer = styled(Container)`
 `
 
 const TopSection = styled.View`
-    width: 100%
+    width: 100%;
     flex: 1;
-    max-height: 55%
+    max-height: 55%;
 `
 
 const TopImage = styled.Image`
@@ -34,7 +34,12 @@ const BottomSection = styled.View`
     width: 100%; 
     padding: 25px;
     flex: 1;
+    justify-content: flex-end;
 `
+
+
+
+
 
 const Welcome: FunctionComponent = () => {
     return (
@@ -42,14 +47,15 @@ const Welcome: FunctionComponent = () => {
             <StatusBar style='light' />
             <WelcomContainer>
                 <TopSection >
+                    <TopImage source={""} />
+                </TopSection>
+                <BottomSection >
                     <BigText textStyle={{ width: "70%", marginBottom: 25 }}>
-                        Paper less trucking
+                        Paper Less Trucking
                     </BigText>
                     <SmallText textStyle={{ width: "70%", marginBottom: 25 }}>
                         Drop the books and pick up the future
                     </SmallText>
-                </TopSection>
-                <BottomSection >
                     <RegularButton onPress={() => { }}>
                         Get Started
                     </RegularButton>
