@@ -1,43 +1,61 @@
-from flask import Flask
-
-# DB
-from config.db import engine
-from models.model import Base
-
-# End points
-from routes.company import company
-from routes.dispatch import dispatch
-from routes.rfo import rfo
-from routes.billing_ticket import billing_ticket
-from routes.auth import auth
-from routes.user import user
+import os
+from config.db import Session, Base, engine
+from utils import loadDB
+from routes import v1
+from flask import Flask, g
+from dotenv import load_dotenv
+from flask_login import LoginManager
+from models import User
 
 # Load env variables
-from dotenv import load_dotenv
 load_dotenv()
 
-app = Flask(__name__)
+IS_PRODUCTION = os.environ.get("STATE")
 
-# Register all endpoints
-app.register_blueprint(user, url_prefix="/user")
-app.register_blueprint(auth, url_prefix="/auth")
-app.register_blueprint(billing_ticket, url_prefix="/billing_ticket")
-app.register_blueprint(rfo, url_prefix="/rfo")
-app.register_blueprint(dispatch, url_prefix="/dispatch")
-app.register_blueprint(company, url_prefix="/company")
+if (IS_PRODUCTION == "development" or IS_PRODUCTION == "test"):
+    NUM_USERS = os.environ.get("TEST_DATA_NUM_USERS")
+    # # If development clear all database
+    Base.metadata.drop_all(engine)
 
-# Create DB Tables
-try:
-    print("--|--CREATING TABLES--|--")
-except Exception as e:
-    print("Error:", e)
+    print("--|--Creating Tables--|--")
+    # Create all tables if not already there
+    Base.metadata.create_all(engine)
 
-try:
-    # Connect to the database
-    connection = engine.connect()
-    print("--|--Connection to the database is successful--|--")
-except Exception as e:
-    print("Error:", e)
+    if (IS_PRODUCTION == "development"):
+        print("--|--Loading Test Data--|--")
+        loadDB(int(NUM_USERS))
 
-if __name__ == "__main__":
-    app.run(debug=True)
+
+def create_app():
+
+    app = Flask(__name__)
+
+    # Set secret key for auth session
+    app.secret_key = 'fzV2T57K8JmQJ@C'
+
+    # Initialize login manager
+    login_manager = LoginManager(app)
+    login_manager.init_app(app)
+
+    @login_manager.user_loader
+    def load_user(user_id, callback=None):
+        session = Session()
+        return session.query(User).get(user_id)
+
+    # Register all endpoints
+    app.register_blueprint(v1, url_prefix="/v1")
+
+    # Function to create a session for each request
+    @app.before_request
+    def create_session():
+        g.session = Session()
+
+    @app.teardown_request
+    def close_session(error):
+        if hasattr(g, 'session'):
+            g.session.close()
+
+        if error:
+            print(error)
+
+    return app
