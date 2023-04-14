@@ -2,6 +2,11 @@ import React, { FunctionComponent } from 'react'
 import { StatusBar } from 'expo-status-bar'
 import styled from 'styled-components/native'
 
+import BigText from '../components/Texts/BigText'
+import RegularText from '../components/Texts/RegularText'
+import SmallText from '../components/Texts/SmallText'
+import RegularButton from '../components/Buttons/RegularButton'
+
 // Custom Components
 import { colors } from '../components/colors'
 import { Container } from '../components/shared'
@@ -19,6 +24,12 @@ const TopSection = styled.View`
     max-height: 55%
 `
 
+const TopImage = styled.Image`
+    width: 100%; 
+    height: 100%; 
+    reasize-mode: stretch;
+`
+
 const BottomSection = styled.View`
     width: 100%; 
     padding: 25px;
@@ -30,8 +41,19 @@ const Welcome: FunctionComponent = () => {
         <>
             <StatusBar style='light' />
             <WelcomContainer>
-                <TopSection />
-                <BottomSection />
+                <TopSection >
+                    <BigText textStyle={{ width: "70%", marginBottom: 25 }}>
+                        Paper less trucking
+                    </BigText>
+                    <SmallText textStyle={{ width: "70%", marginBottom: 25 }}>
+                        Drop the books and pick up the future
+                    </SmallText>
+                </TopSection>
+                <BottomSection >
+                    <RegularButton onPress={() => { }}>
+                        Get Started
+                    </RegularButton>
+                </BottomSection>
             </WelcomContainer>
         </>
     )
