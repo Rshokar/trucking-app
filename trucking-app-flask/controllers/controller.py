@@ -4,3 +4,4 @@
 # Routes route to controller
 # Controller validates input and make sure it works
 # Validation goes in models
+# Facade design pattern
