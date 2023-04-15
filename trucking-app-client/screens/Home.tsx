@@ -18,7 +18,10 @@ const HomeContainer = styled(Container)`
 
 import portrait from '../assets/portrait.jpg'
 
+import { RoofStackParamList } from '../navigators/RoofStack'
+import { StackScreenProps } from '@react-navigation/stack'
 
+export type Props = StackScreenProps<RoofStackParamList, "Home">
 
 const Home: FunctionComponent = () => {
 

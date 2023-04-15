@@ -6,6 +6,8 @@ import styled from 'styled-components/native'
 import { ScreenWidth } from '../shared'
 import { colors } from '../colors'
 
+import { useNavigation } from '@react-navigation/native'
+import { Props as HomeProps } from '../../screens/Home'
 
 const CardBackground = styled.ImageBackground`
     height: 100%; 
@@ -52,8 +54,13 @@ import { View } from 'react-native'
 import SmallText from '../Texts/SmallText'
 
 const CardItem: FunctionComponent<CardProps> = (props) => {
-    const handlePress = () => { }
 
+    const naviation = useNavigation<HomeProps["navigation"]>();
+
+
+    const handlePress = () => {
+        naviation.navigate("Balance", { ...props })
+    }
 
     return (
         <CardBackground source={bg}>
