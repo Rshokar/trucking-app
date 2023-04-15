@@ -1,16 +1,17 @@
 import { Text } from "react-native";
 import { StatusBar } from 'expo-status-bar';
-import Welcome from './screens/Welcome';
 import { useFonts } from 'expo-font';
 import AppLoading from 'expo-app-loading';
 
+import RoofStack from "./navigators/RoofStack";
+import Welcome from './screens/Welcome';
 
 export default function App() {
 
 
   let [fontsLoaded] = useFonts({
-    "lato-Bold": require("./assets/fonts/Lato-Black.ttf"),
-    "lato-Regular": require("./assets/fonts/Lato-Regular.ttf"),
+    "Lato-Bold": require("./assets/fonts/Lato-Black.ttf"),
+    "Lato-Regular": require("./assets/fonts/Lato-Regular.ttf"),
   })
 
 
@@ -18,5 +19,5 @@ export default function App() {
     return <AppLoading />;
   }
 
-  return <Welcome />
+  return <RoofStack />
 }
