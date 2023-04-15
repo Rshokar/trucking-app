@@ -10,7 +10,6 @@ padding-bottom: 15px;
 `
 
 import { CardSelectionProps } from './types'
-import { FlatList } from 'react-native'
 import CardItem from './CardItem'
 
 const CardSection: FunctionComponent<CardSelectionProps> = (props) => {

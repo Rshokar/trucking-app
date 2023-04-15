@@ -8,10 +8,10 @@ import { colors } from '../colors'
 
 
 const CardBackground = styled.ImageBackground`
-    height: 75%; 
+    height: 100%; 
     width: ${ScreenWidth * 0.67};
     reasize-mode: cover;
-    background-color: ${colors.accent};
+    background-color: ${colors.secondary};
     border-radius: 25px; 
     margin-right: 25px; 
     overflow: hidden;
