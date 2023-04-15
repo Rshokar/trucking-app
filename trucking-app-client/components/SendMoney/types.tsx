@@ -1,4 +1,5 @@
 import { ImageSourcePropType } from "react-native";
+
 export interface SendMoneyProps {
     id: number;
     name: string;

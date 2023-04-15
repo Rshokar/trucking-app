@@ -64,7 +64,6 @@ const SendMoneySection: FunctionComponent<SendMoneySectionProps> = (props) => {
                 numColumns={3}
                 keyExtractor={({ id }: any) => id.toString()}
                 renderItem={(item: any) => {
-                    console.log("ITEM: ", item);
                     return <SendMoneyItem
                         {...item.item}
                     />

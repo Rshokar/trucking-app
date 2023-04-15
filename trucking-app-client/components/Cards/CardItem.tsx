@@ -9,7 +9,7 @@ import { colors } from '../colors'
 
 const CardBackground = styled.ImageBackground`
     height: 100%; 
-    width: ${ScreenWidth * 0.67};
+    width: ${Math.floor(ScreenWidth * 0.67)}px;
     reasize-mode: cover;
     background-color: ${colors.secondary};
     border-radius: 25px; 

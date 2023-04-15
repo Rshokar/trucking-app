@@ -10,7 +10,7 @@ import { ScreenWidth } from '../shared'
 
 const SendMoneyItemContainer = styled.TouchableHighlight`
     height: 130px; 
-    width: ${ScreenWidth * 0.27}px;
+    width: ${Math.floor(ScreenWidth * 0.27)}px;
     padding: 10px;
     border-radius: 15px; 
     justify-content: space-around;
@@ -18,13 +18,12 @@ const SendMoneyItemContainer = styled.TouchableHighlight`
 `
 import { SendMoneyProps } from './types'
 
-const SendMoneyItem: FunctionComponent<SendMoneyProps> = ({ background, name, amount }) => {
+const SendMoneyItem: FunctionComponent<SendMoneyProps> = (props) => {
 
-    console.log("Send Mondey Item", background, name, amount)
     return (
         <SendMoneyItemContainer
             underlayColor={colors.secondary}
-            style={{ backgroundColor: background }}
+            style={{ backgroundColor: props.background }}
             onPress={() => {
                 alert("Send Money!")
             }}
@@ -38,14 +37,14 @@ const SendMoneyItem: FunctionComponent<SendMoneyProps> = ({ background, name, am
                         fontSize: 12,
                     }}
                 >
-                    {name}
+                    {props.name}
                 </SmallText>
                 <RegularText textStyle={{
                     color: colors.white,
                     textAlign: "left",
                     fontSize: 13
                 }}>
-                    {amount}
+                    {props.amount}
                 </RegularText>
             </>
         </SendMoneyItemContainer>

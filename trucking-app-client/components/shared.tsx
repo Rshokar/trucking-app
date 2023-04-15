@@ -4,7 +4,7 @@ import { colors } from './colors'
 
 export const Container = styled.View`
     flex: 1;
-    aligb-items: center;
+    align-items: center;
     background-color: ${colors.white}
     `
 
