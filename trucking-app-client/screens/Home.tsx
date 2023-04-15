@@ -8,12 +8,15 @@ import { Container } from '../components/shared'
 import logo from '../assets/icon.png';
 import CardSection from '../components/Cards/CardSection'
 import TransactionSection from '../components/Transactions/TransactionSection'
+import SendMoneySection from '../components/SendMoney/SendMoneySection'
 
 const HomeContainer = styled(Container)`
     background-color: ${colors.graylight};
     width: 100%; 
     flex: 1
 `
+
+import portrait from '../assets/portrait.jpg'
 
 
 
@@ -79,11 +82,36 @@ const Home: FunctionComponent = () => {
             },
         }
     ]
+
+    const sendMoneyData = [
+        {
+            id: 1,
+            name: "Rod Williams",
+            amount: "$25.00",
+            background: colors.primary,
+            img: portrait
+        },
+        {
+            id: 2,
+            name: "Rob Wilhiam",
+            amount: "$5.00",
+            background: colors.secondary,
+            img: portrait
+        },
+        {
+            id: 1,
+            name: "Rog Villiams",
+            amount: "$25.01",
+            background: colors.tertiary,
+            img: portrait
+        },
+    ]
     return (
         <HomeContainer>
             <StatusBar style='dark' />
             <CardSection data={cardsData} />
             <TransactionSection data={transactionData} />
+            <SendMoneySection data={sendMoneyData} />
         </HomeContainer>
     )
 }
