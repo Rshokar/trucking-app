@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from 'react'
+import React, { FunctionComponent, useState } from 'react'
 import { StatusBar } from 'expo-status-bar'
 import styled from 'styled-components/native'
 
@@ -38,18 +38,29 @@ const BottomSection = styled.View`
 `
 
 
+
 import { RoofStackParamList } from '../navigators/RoofStack'
 import { StackScreenProps } from '@react-navigation/stack'
+
+import background from '../assets/welcome.png'
+import SwipeDownViewAnimation from '../components/Animated/Animated'
 
 type Props = StackScreenProps<RoofStackParamList, "Welcome">
 
 const Welcome: FunctionComponent<Props> = ({ navigation }) => {
+
+    const hideAuth = () => setShowAuth(false)
+
+    const [showAuth, setShowAuth] = useState<boolean>(false)
+
+    console.log('Welcome', showAuth)
+
     return (
         <>
             <StatusBar style='light' />
             <WelcomContainer>
                 <TopSection >
-                    <TopImage source={""} />
+                    <TopImage source={background} />
                 </TopSection>
                 <BottomSection >
                     <BigText textStyle={{ width: "70%", marginBottom: 25 }}>
@@ -58,10 +69,11 @@ const Welcome: FunctionComponent<Props> = ({ navigation }) => {
                     <SmallText textStyle={{ width: "70%", marginBottom: 25 }}>
                         Drop the books and pick up the future
                     </SmallText>
-                    <RegularButton onPress={() => { navigation.navigate("Home") }}>
+                    <RegularButton onPress={() => { setShowAuth(true) }}>
                         Get Started
                     </RegularButton>
                 </BottomSection>
+                <SwipeDownViewAnimation show={showAuth} close={hideAuth} />
             </WelcomContainer>
         </>
     )
