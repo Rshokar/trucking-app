@@ -1,12 +1,16 @@
 import React, { FunctionComponent, useState } from 'react'
 import { StatusBar } from 'expo-status-bar'
 import styled from 'styled-components/native'
+import { TouchableOpacity } from 'react-native'
 
 import BigText from '../components/Texts/BigText'
 // import RegularText from '../components/Texts/RegularText'
 import SmallText from '../components/Texts/SmallText'
 import RegularButton from '../components/Buttons/RegularButton'
 import { LoginFormResult } from '../components/Forms/types'
+import Form from '../components/Forms/Form'
+import LoginForm from '../components/Forms/LoginForm'
+import RegisterForm from '../components/Forms/RegisterForm'
 
 // Custom Components
 import { colors } from '../components/colors'
@@ -38,7 +42,7 @@ const BottomSection = styled.View`
     justify-content: flex-end;
 `
 
-const FormSwitch = styled.Text`
+const FormSwitchText = styled.Text`
     color: ${colors.tertiary}
 `
 
@@ -49,8 +53,7 @@ import { StackScreenProps } from '@react-navigation/stack'
 
 import background from '../assets/welcome.png'
 import SwipeDownViewAnimation from '../components/Animated/SwipeDownViewAnimation'
-import Form from '../components/Forms/Form'
-import LoginForm from '../components/Forms/LoginForm'
+
 
 type Props = StackScreenProps<RoofStackParamList, "Welcome">
 
@@ -69,6 +72,7 @@ const Welcome: FunctionComponent<Props> = ({ navigation }) => {
     }
 
 
+
     return (
         <>
             <StatusBar style='light' />
@@ -83,7 +87,7 @@ const Welcome: FunctionComponent<Props> = ({ navigation }) => {
                     <SmallText textStyle={{ width: "70%", marginBottom: 25 }}>
                         Drop the books and pick up the future
                     </SmallText>
-                    <RegularButton onPress={() => { setShowAuth(true) }}>
+                    <RegularButton onPress={() => setShowAuth(true)}>
                         Get Started
                     </RegularButton>
                 </BottomSection>
@@ -95,12 +99,29 @@ const Welcome: FunctionComponent<Props> = ({ navigation }) => {
                                     <BigText textStyle={{ color: colors.primary }}>Welcome Back</BigText>
                                     <SmallText textStyle={{ color: colors.secondary }}>Welcome to the trucking app, enter you credentials and lets started</SmallText>
                                     <LoginForm onSubmit={handleLogin} />
-                                    <SmallText textStyle={{ textAlign: 'center', color: colors.secondary }}>Dont't have an account? <FormSwitch>Sign up</FormSwitch></SmallText>
+                                    <SmallText
+                                        textStyle={{ textAlign: 'center', color: colors.secondary }}>
+                                        Dont't have an account?
+                                        <TouchableOpacity onPress={() => { console.log("SWITCH TO REGISTER"); setShowLogin(false) }}>
+                                            <FormSwitchText>Sign up</FormSwitchText>
+                                        </TouchableOpacity>
+                                    </SmallText>
                                 </Form>
                             </>
                             :
                             <>
-                                <div>Register</div>
+                                <Form>
+                                    <BigText textStyle={{ color: colors.primary }}>Create an Account </BigText>
+                                    <SmallText textStyle={{ color: colors.secondary }}>Welcome to the trucking app, enter you credentials and lets started</SmallText>
+                                    <RegisterForm onSubmit={handleLogin} />
+                                    <SmallText
+                                        textStyle={{ textAlign: 'center', color: colors.secondary }}>
+                                        Already have an account?
+                                        <TouchableOpacity onPress={() => { console.log("SWITCH TO LOGIN"); setShowLogin(true) }}>
+                                            <FormSwitchText >Login</FormSwitchText>
+                                        </TouchableOpacity>
+                                    </SmallText>
+                                </Form>
                             </>
 
                     }

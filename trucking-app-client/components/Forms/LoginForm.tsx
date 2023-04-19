@@ -43,8 +43,7 @@ const LoginForm: FunctionComponent<FormProps<LoginFormResult>> = (props) => {
                 />
             </StyledInputeView>
             <RegularButton
-                onPress={formikProps.handleSubmit}
-                disabled={!formikProps.values.email || !formikProps.values.password || !formikProps.values.confirmPassword || !formikProps.values.company}
+                onPress={() => { console.log('BLABLA') }}
             >Login</RegularButton>
         </>
         }

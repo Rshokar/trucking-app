@@ -1,5 +1,6 @@
 import React, { FunctionComponent } from 'react'
 import styled from 'styled-components/native'
+import { View } from 'react-native'
 
 
 // Components
@@ -38,8 +39,6 @@ const CardRow = styled.View`
     width: 100%
 `
 
-
-
 const Logo = styled.Image`
     width: 100%;
     height: 80%; 
@@ -50,7 +49,6 @@ const Logo = styled.Image`
 import { CardProps } from './types'
 import bg from '../../assets/card_background.jpg'
 import RegularText from '../Texts/RegularText'
-import { View } from 'react-native'
 import SmallText from '../Texts/SmallText'
 
 const CardItem: FunctionComponent<CardProps> = (props) => {

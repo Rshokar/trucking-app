@@ -1,22 +1,25 @@
 import React, { FunctionComponent } from 'react'
 import styled from 'styled-components/native'
+import { ViewStyle } from 'react-native'
+
 
 import { colors } from '../colors'
 
 export const StyledView = styled.View`
-    border-bottom-width: 10px;
-    border-bottom-color: ${colors.tertiary};
-    padding: 10px
-    margin-left: 20px
-    margin-right: 20px
-    margin-bottom: 20px
+    background-color: ${colors.tertiary};
+    padding: 20px
+    margin: 25px
+    border-radius: 5px
 `
 
-import { BreakProps } from './types'
+interface BreakProps {
+    style?: ViewStyle,
+    innerRef: React.MutableRefObject<null>
+}
 
 const Break: FunctionComponent<BreakProps> = (props) => {
     return (
-        <StyledView style={props.style}></StyledView>
+        <StyledView ref={props.innerRef} style={props.style}></StyledView>
     )
 }
 

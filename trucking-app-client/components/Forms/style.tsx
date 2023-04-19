@@ -10,6 +10,6 @@ export const StyledInputeView = styled.View`
 
 `;
 
-export const StyledErrorView = styled.View`
-    
+export const StyledErrorView = styled.Text`
+
 `
