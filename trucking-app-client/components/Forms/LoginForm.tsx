@@ -46,7 +46,7 @@ const LoginForm: FunctionComponent<FormProps<LoginFormResult>> = (props) => {
                     placeholder="***********"
                 />
             </StyledInputeView>
-            <RegularButton onPress={formikProps.hnadleSubmit}>Login</RegularButton>
+            <RegularButton onPress={formikProps.handleSubmit}>Login</RegularButton>
         </>
         }
     </Formik>

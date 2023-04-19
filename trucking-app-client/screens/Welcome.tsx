@@ -38,13 +38,17 @@ const BottomSection = styled.View`
     justify-content: flex-end;
 `
 
+const FormSwitch = styled.Text`
+    color: ${colors.tertiary}
+`
+
 
 
 import { RoofStackParamList } from '../navigators/RoofStack'
 import { StackScreenProps } from '@react-navigation/stack'
 
 import background from '../assets/welcome.png'
-import SwipeDownViewAnimation from '../components/Animated/Animated'
+import SwipeDownViewAnimation from '../components/Animated/SwipeDownViewAnimation'
 import Form from '../components/Forms/Form'
 import LoginForm from '../components/Forms/LoginForm'
 
@@ -52,15 +56,18 @@ type Props = StackScreenProps<RoofStackParamList, "Welcome">
 
 const Welcome: FunctionComponent<Props> = ({ navigation }) => {
 
+
+    const [showLogin, setShowLogin] = useState<boolean>(true)
+    const [showAuth, setShowAuth] = useState<boolean>(false)
+
     const hideAuth = () => setShowAuth(false)
+
+    console.log('Welcome', showAuth)
 
     const handleLogin = (result: LoginFormResult): any => {
         console.log("HANDLE LOGIN: ", result)
     }
 
-    const [showAuth, setShowAuth] = useState<boolean>(false)
-
-    console.log('Welcome', showAuth)
 
     return (
         <>
@@ -81,9 +88,22 @@ const Welcome: FunctionComponent<Props> = ({ navigation }) => {
                     </RegularButton>
                 </BottomSection>
                 <SwipeDownViewAnimation show={showAuth} close={hideAuth} >
-                    <Form>
-                        <LoginForm onSubmit={handleLogin} />
-                    </Form>
+                    {
+                        showLogin ?
+                            <>
+                                <Form>
+                                    <BigText textStyle={{ color: colors.primary }}>Welcome Back</BigText>
+                                    <SmallText textStyle={{ color: colors.secondary }}>Welcome to the trucking app, enter you credentials and lets started</SmallText>
+                                    <LoginForm onSubmit={handleLogin} />
+                                    <SmallText textStyle={{ textAlign: 'center', color: colors.secondary }}>Dont't have an account? <FormSwitch>Sign up</FormSwitch></SmallText>
+                                </Form>
+                            </>
+                            :
+                            <>
+                                <div>Register</div>
+                            </>
+
+                    }
                 </SwipeDownViewAnimation>
             </WelcomContainer>
         </>

@@ -1,19 +1,17 @@
 import React, { FunctionComponent, useRef, useEffect } from 'react';
 import {
-    View,
     PanResponder,
     Animated,
     StyleSheet,
-    KeyboardAvoidingView,
-    Platform,
     Dimensions,
 } from 'react-native';
 
 import { colors } from '../colors';
 import { AnimationProps } from './types';
+import Break from '../Break/Break';
 
 const { height: screenHeight } = Dimensions.get('window');
-const viewHeight = screenHeight * 0.75;
+const viewHeight = screenHeight * 0.95;
 
 const SwipeDownViewAnimation: FunctionComponent<AnimationProps> = (props) => {
     const position = useRef(new Animated.ValueXY({ x: 0, y: 0 })).current;
@@ -46,9 +44,6 @@ const SwipeDownViewAnimation: FunctionComponent<AnimationProps> = (props) => {
         }),
     ).current;
 
-    useEffect(() => {
-        console.log('SOLO', position.getLayout());
-    });
 
     useEffect(() => {
         if (props.show) {
@@ -66,7 +61,6 @@ const SwipeDownViewAnimation: FunctionComponent<AnimationProps> = (props) => {
     }, [props.show]);
 
     return (
-
         <Animated.View
             style={[
                 styles.container,
@@ -75,6 +69,7 @@ const SwipeDownViewAnimation: FunctionComponent<AnimationProps> = (props) => {
             ]}
             {...panResponder.panHandlers}
         >
+            <Break />
             {props.children}
         </Animated.View>
     );
@@ -83,6 +78,7 @@ const SwipeDownViewAnimation: FunctionComponent<AnimationProps> = (props) => {
 const styles = StyleSheet.create({
     container: {
         position: 'absolute',
+        height: '100%',
         width: '100%',
         top: 0,
         left: 0,
