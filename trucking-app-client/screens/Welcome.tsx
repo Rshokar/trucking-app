@@ -6,6 +6,7 @@ import BigText from '../components/Texts/BigText'
 // import RegularText from '../components/Texts/RegularText'
 import SmallText from '../components/Texts/SmallText'
 import RegularButton from '../components/Buttons/RegularButton'
+import { LoginFormResult } from '../components/Forms/types'
 
 // Custom Components
 import { colors } from '../components/colors'
@@ -44,12 +45,18 @@ import { StackScreenProps } from '@react-navigation/stack'
 
 import background from '../assets/welcome.png'
 import SwipeDownViewAnimation from '../components/Animated/Animated'
+import Form from '../components/Forms/Form'
+import LoginForm from '../components/Forms/LoginForm'
 
 type Props = StackScreenProps<RoofStackParamList, "Welcome">
 
 const Welcome: FunctionComponent<Props> = ({ navigation }) => {
 
     const hideAuth = () => setShowAuth(false)
+
+    const handleLogin = (result: LoginFormResult): any => {
+        console.log("HANDLE LOGIN: ", result)
+    }
 
     const [showAuth, setShowAuth] = useState<boolean>(false)
 
@@ -73,7 +80,11 @@ const Welcome: FunctionComponent<Props> = ({ navigation }) => {
                         Get Started
                     </RegularButton>
                 </BottomSection>
-                <SwipeDownViewAnimation show={showAuth} close={hideAuth} />
+                <SwipeDownViewAnimation show={showAuth} close={hideAuth} >
+                    <Form>
+                        <LoginForm onSubmit={handleLogin} />
+                    </Form>
+                </SwipeDownViewAnimation>
             </WelcomContainer>
         </>
     )

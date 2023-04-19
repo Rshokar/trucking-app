@@ -66,7 +66,7 @@ const SwipeDownViewAnimation: FunctionComponent<AnimationProps> = (props) => {
             {...panResponder.panHandlers}
         >
             <View style={styles.content}>
-                {/* Your view content goes here */}
+                {props.children}
             </View>
         </Animated.View>
     );
