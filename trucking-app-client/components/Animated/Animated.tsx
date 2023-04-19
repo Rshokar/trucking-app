@@ -1,12 +1,19 @@
-import React, { FunctionComponent, useRef, useEffect } from 'react'
-import { View, PanResponder, Animated, StyleSheet } from 'react-native';
+import React, { FunctionComponent, useRef, useEffect } from 'react';
+import {
+    View,
+    PanResponder,
+    Animated,
+    StyleSheet,
+    KeyboardAvoidingView,
+    Platform,
+    Dimensions,
+} from 'react-native';
 
-import { ScreenHeight } from '../shared';
-const VH = ScreenHeight * 0.75
 import { colors } from '../colors';
-
-
 import { AnimationProps } from './types';
+
+const { height: screenHeight } = Dimensions.get('window');
+const viewHeight = screenHeight * 0.75;
 
 const SwipeDownViewAnimation: FunctionComponent<AnimationProps> = (props) => {
     const position = useRef(new Animated.ValueXY({ x: 0, y: 0 })).current;
@@ -18,56 +25,57 @@ const SwipeDownViewAnimation: FunctionComponent<AnimationProps> = (props) => {
                 // Save the initial position of the touch
                 position.setOffset({
                     x: 0,
-                    y: 0
+                    y: 0,
                 });
-                position.setValue({ x: 0, y: ScreenHeight - VH });
+                position.setValue({ x: 0, y: screenHeight - viewHeight });
             },
             onPanResponderMove: (event, gesture) => {
                 // Calculate the change in gesture position from the initial position of the touch
-                position.setValue({ x: 0, y: (ScreenHeight - VH) + gesture.dy });
+                position.setValue({ x: 0, y: screenHeight - viewHeight + gesture.dy });
             },
             onPanResponderRelease: (event, gesture) => {
-                if (gesture.dy > 0.5 * ScreenHeight) {
-                    props.close()
+                if (gesture.dy > 0.5 * screenHeight) {
+                    props.close();
                 } else {
                     Animated.spring(position, {
-                        toValue: { x: 0, y: ScreenHeight - VH },
-                        useNativeDriver: true
+                        toValue: { x: 0, y: screenHeight - viewHeight },
+                        useNativeDriver: true,
                     }).start();
                 }
-
-            }
-        })
+            },
+        }),
     ).current;
 
     useEffect(() => {
-        console.log("SOLO", position.getLayout())
-    })
+        console.log('SOLO', position.getLayout());
+    });
 
     useEffect(() => {
         if (props.show) {
             return Animated.timing(position, {
-                toValue: { x: 0, y: ScreenHeight - VH },
+                toValue: { x: 0, y: screenHeight - viewHeight },
                 duration: 300,
-                useNativeDriver: true
+                useNativeDriver: true,
             }).start();
         }
         return Animated.timing(position, {
-            toValue: { x: 0, y: ScreenHeight },
+            toValue: { x: 0, y: screenHeight },
             duration: 300,
-            useNativeDriver: true
+            useNativeDriver: true,
         }).start();
-
-    }, [props.show])
+    }, [props.show]);
 
     return (
+
         <Animated.View
-            style={[styles.container, { transform: [{ translateY: position.y }] }]}
+            style={[
+                styles.container,
+                { transform: [{ translateY: position.y }] },
+                { height: viewHeight },
+            ]}
             {...panResponder.panHandlers}
         >
-            <View style={styles.content}>
-                {props.children}
-            </View>
+            {props.children}
         </Animated.View>
     );
 };
@@ -76,7 +84,6 @@ const styles = StyleSheet.create({
     container: {
         position: 'absolute',
         width: '100%',
-        height: VH,
         top: 0,
         left: 0,
         backgroundColor: colors.graylight,
@@ -87,8 +94,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-    }
+    },
 });
-
 
 export default SwipeDownViewAnimation;

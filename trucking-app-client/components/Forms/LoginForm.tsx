@@ -1,8 +1,12 @@
 import React, { FunctionComponent } from 'react'
 import { Formik, Form } from 'formik'
 import * as Yup from 'yup'
+import { TextInput } from 'react-native-gesture-handler'
 
 
+import RegularButton from '../Buttons/RegularButton'
+import { StyledInputeView } from './style'
+import { LoginFormResult } from './types'
 
 interface FormValues {
     email: string,
@@ -10,12 +14,10 @@ interface FormValues {
 }
 
 import { FormProps } from './types'
-import { TextInput } from 'react-native-gesture-handler'
-import RegularButton from '../Buttons/RegularButton'
 
-const LoginForm: FunctionComponent<FormProps> = (props) => {
+const intialValues: FormValues = { email: '', password: '' }
+const LoginForm: FunctionComponent<FormProps<LoginFormResult>> = (props) => {
 
-    const intialValues: FormValues = { email: '', password: '' }
 
     const validationSchema = Yup.object().shape({
         email: Yup.string().email('Invalid email address').required('Email is required'),
@@ -24,20 +26,26 @@ const LoginForm: FunctionComponent<FormProps> = (props) => {
             .required('Password is required')
     })
 
+    console.log("Hello");
+
     return <Formik initialValues={intialValues} onSubmit={props.onSubmit} validationSchema={validationSchema}>
         {(formikProps: any) => <>
-            <TextInput
-                onChangeText={formikProps.handleChange('name')}
-                onBlur={formikProps.handleBlur('name')}
-                value={formikProps.values.email}
-                placeholder="Name"
-            />
-            <TextInput
-                onChangeText={formikProps.handleChange('email')}
-                onBlur={formikProps.handleBlur('email')}
-                value={formikProps.values.password}
-                placeholder="Email"
-            />
+            <StyledInputeView>
+                <TextInput
+                    onChangeText={formikProps.handleChange('email')}
+                    onBlur={formikProps.handleBlur('email')}
+                    value={formikProps.values.email}
+                    placeholder="Paperless@trucking-app.com"
+                />
+            </StyledInputeView>
+            <StyledInputeView>
+                <TextInput
+                    onChangeText={formikProps.handleChange('password')}
+                    onBlur={formikProps.handleBlur('password')}
+                    value={formikProps.values.password}
+                    placeholder="***********"
+                />
+            </StyledInputeView>
             <RegularButton onPress={formikProps.hnadleSubmit}>Login</RegularButton>
         </>
         }
