@@ -7,5 +7,9 @@ export const StyledInputeView = styled.View`
   padding: 20px;
   border-radius: 20px;
   border: 1px solid ${colors.gray};
-r
+
 `;
+
+export const StyledErrorView = styled.View`
+    
+`

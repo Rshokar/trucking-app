@@ -1,5 +1,5 @@
 import React, { FunctionComponent } from 'react'
-import { Formik, Form } from 'formik'
+import { Formik } from 'formik'
 import * as Yup from 'yup'
 import { TextInput } from 'react-native-gesture-handler'
 
@@ -8,14 +8,10 @@ import RegularButton from '../Buttons/RegularButton'
 import { StyledInputeView } from './style'
 import { LoginFormResult } from './types'
 
-interface FormValues {
-    email: string,
-    password: string
-}
 
 import { FormProps } from './types'
 
-const intialValues: FormValues = { email: '', password: '' }
+const intialValues: LoginFormResult = { email: '', password: '' }
 const LoginForm: FunctionComponent<FormProps<LoginFormResult>> = (props) => {
 
 
@@ -46,7 +42,10 @@ const LoginForm: FunctionComponent<FormProps<LoginFormResult>> = (props) => {
                     placeholder="***********"
                 />
             </StyledInputeView>
-            <RegularButton onPress={formikProps.handleSubmit}>Login</RegularButton>
+            <RegularButton
+                onPress={formikProps.handleSubmit}
+                disabled={!formikProps.values.email || !formikProps.values.password || !formikProps.values.confirmPassword || !formikProps.values.company}
+            >Login</RegularButton>
         </>
         }
     </Formik>

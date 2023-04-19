@@ -24,12 +24,15 @@ interface ButtonProps {
     btnStyles?: StyleProp<ViewStyle>;
     onPress: ((event: GestureResponderEvent) => void) | undefined;
     textStyles?: StyleProp<TextStyle>
-    children: React.ReactNode
+    children: React.ReactNode;
+    disabled?: boolean
 }
 
 const RegularButton: FunctionComponent<ButtonProps> = (props) => {
+
+    const { disabled = false } = props
     return (
-        <ButtonView onPress={props.onPress} style={props.btnStyles}>
+        <ButtonView disabled={disabled} onPress={props.onPress} style={props.btnStyles}>
             <RegularText textStyle={props.textStyles}>
                 {props.children}
             </RegularText>
