@@ -8,7 +8,7 @@ type FormProps = {
 const container: StyleProp<ViewStyle> = {
     display: 'flex',
     flexDirection: 'column',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     alignItems: 'center',
     width: '100%',
     height: '100%',
