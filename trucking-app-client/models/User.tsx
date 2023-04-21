@@ -1,19 +1,23 @@
 import { Model, Query } from './Model'
+import { Request, Method, RequestError } from '../utils/Request'
 
 
 export class User implements Model<UserQuery> {
 
-    id: number;
-    role: string;
+    id?: number;
+    role?: string;
     password?: string;
-    email: string;
+    email?: string;
 
-    constructor(id: number, role: string, email: string, password: string = "") {
+    constructor(id?: number, role?: string, email?: string, password: string = "") {
+        console.log("USER CONSTRUCTOR")
         this.id = id;
         this.role = role;
         this.email = email;
         this.password = password;
     }
+
+
     get<User>(query: Partial<User>): Promise<User> {
         throw new Error('Method not implemented.');
     }
@@ -30,14 +34,20 @@ export class User implements Model<UserQuery> {
         throw new Error('Method not implemented.');
     }
 
-    create<User>(attributes: User): Promise<User> {
-        throw new Error('Method not implemented.');
+    async create<User>(attributes: User): Promise<User> {
+        try {
+            const user: User = await Request.request({ method: Method.POST, url: "/user", data: attributes })
+            return user;
+        } catch (e: any) {
+            throw e
+        }
     }
 
 }
 
 
 export class UserQuery implements Query {
+
 
 }
 

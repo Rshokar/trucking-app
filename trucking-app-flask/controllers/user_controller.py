@@ -12,6 +12,8 @@ class UserController:
 
     def create_user(session, request):
         data = request.get_json()
+
+        print(data)
         try:
             user = User(role=data['role'], email=data['email'],
                         password=data['password'])

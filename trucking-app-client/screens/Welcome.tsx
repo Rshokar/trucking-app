@@ -11,6 +11,9 @@ import { LoginFormResult, RegisterFormResult } from '../components/Forms/types'
 import Form from '../components/Forms/Form'
 import LoginForm from '../components/Forms/LoginForm'
 import RegisterForm from '../components/Forms/RegisterForm'
+import SwipeDownViewAnimation from '../components/Animated/SwipeDownViewAnimation'
+import { AuthController } from '../controllers/AuthController'
+import { User } from '../models/User'
 
 // Custom Components
 import { colors } from '../components/colors'
@@ -54,7 +57,7 @@ import { RoofStackParamList } from '../navigators/RoofStack'
 import { StackScreenProps } from '@react-navigation/stack'
 
 import background from '../assets/welcome.png'
-import SwipeDownViewAnimation from '../components/Animated/SwipeDownViewAnimation'
+
 
 
 type Props = StackScreenProps<RoofStackParamList, "Welcome">
@@ -67,12 +70,19 @@ const Welcome: FunctionComponent<Props> = ({ navigation }) => {
 
     const hideAuth = () => setShowAuth(false)
 
-    const handleLogin = (result: LoginFormResult): any => {
-        console.log("HANDLE LOGIN: ", result)
+    const handleLogin = (res: LoginFormResult): any => {
+        console.log("HANDLE LOGIN: ", res)
     }
 
-    const handleRegister = (result: RegisterFormResult): any => {
-        console.log("HANDLE REGISTER: ", result)
+    const handleRegister = async (res: RegisterFormResult): Promise<any> => {
+        console.log("HANDLE REGISTER: ", res)
+        let user: User = new User(undefined, res.acType, res.email, res.password)
+        console.log("USER: ", user)
+        try {
+            user = await AuthController.register(user)
+        } catch (e: any) {
+            console.log("Welcome Error", e.message)
+        }
     }
 
 
