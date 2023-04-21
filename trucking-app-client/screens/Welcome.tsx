@@ -67,8 +67,6 @@ const Welcome: FunctionComponent<Props> = ({ navigation }) => {
 
     const hideAuth = () => setShowAuth(false)
 
-    console.log('Welcome', showAuth)
-
     const handleLogin = (result: LoginFormResult): any => {
         console.log("HANDLE LOGIN: ", result)
     }

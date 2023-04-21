@@ -16,7 +16,8 @@ def loadDB(num_users):
     print("LOADING DATABSE WITH RANDOM DATA")
 
     for index in range(num_users):
-        user = UserFactory.create()
+        user = UserFactory.create(
+            role="dispatcher", email="test@demo.com", password="Testing1")
 
         print(f"USER --|--: \n: {user}")
 
