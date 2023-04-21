@@ -14,7 +14,7 @@ class UserRole(str, Enum):
 
 class User(Base):
     __tablename__ = 'users'
-    id = Column("id", Integer, primary_key=True)
+    id = Column("id", Integer, primary_key=True, autoincrement=True)
     role = Column("role", String(20))
     password_hash = Column("password_hash", String(100))
     email = Column("email", String(100), unique=True)

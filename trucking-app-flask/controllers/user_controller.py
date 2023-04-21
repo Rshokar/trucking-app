@@ -29,13 +29,11 @@ class UserController:
         user = session.query(User).filter_by(id=user_id).first()
         if not user:
             return make_response({"error": "User not found."}, 404)
-        print(f"BEFORE: {user}")
 
         data = request.get_json()
         try:
             user.role = data.get('role', user.role)
             user.email = data.get('email', user.email)
-            print(f"AFTER: {user}")
             session.commit()
             return make_response(user.to_dict(), 200)
         except ValueError as e:

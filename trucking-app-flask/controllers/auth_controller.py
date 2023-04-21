@@ -1,7 +1,8 @@
 from flask import Response, g, request
-from models import User
+from models import User, Company
 from utils import make_response
 from flask_login import login_user, logout_user
+from sqlalchemy.exc import IntegrityError
 import jsonschema
 
 
@@ -33,3 +34,40 @@ class AuthController:
     def logout():
         logout_user()
         return make_response("Logout successful", 200)
+
+    def register(session, request):
+        """_summary_
+            Checks if the user is already registered, if not,
+            creates a new user and there company.
+        Args:
+            session (_type_): _description_
+            request (_type_): _description_
+        """
+        data = request.get_json()
+
+        print(f"DATA: {data}")
+
+        existingUser = session.query(User).filter_by(
+            email=data.get('email')).first()
+        if existingUser:
+            return make_response({"error": "Email already used."}, 409)
+
+        try:
+            user = User(role=data.get("role"), email=data.get(
+                'email'), password=data.get('password'))
+            session.add(user)
+            session.commit()
+
+            company = Company(name=data.get('company'), owner_id=user.id)
+            session.add(company)
+            session.commit()
+
+            combined_dict = {
+                "user": user.to_dict(), "company": company.to_dict()}
+
+            return make_response(combined_dict, 201)
+
+        except ValueError as e:
+            return make_response({"error": str(e)}, 400)
+        except IntegrityError as e:
+            return make_response({"error": "Email already used."}, 409)
