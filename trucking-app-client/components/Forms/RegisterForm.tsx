@@ -1,11 +1,14 @@
 import React, { FunctionComponent } from 'react'
 import * as Yup from 'yup'
 import { Formik } from 'formik'
+import { Picker } from '@react-native-picker/picker';
 
 import RegularButton from '../Buttons/RegularButton'
 
-import { FormProps, RegisterFormResult } from './types'
 import Input from './Inputs/Input'
+
+import { FormProps, RegisterFormResult } from './types'
+import SelectInput from './Inputs/SelectInput';
 
 const intialValues: RegisterFormResult = { email: '', password: '', confirmPassword: '', company: '', acType: 'dispatcher' }
 const RegisterForm: FunctionComponent<FormProps<RegisterFormResult>> = (props) => {
@@ -18,11 +21,16 @@ const RegisterForm: FunctionComponent<FormProps<RegisterFormResult>> = (props) =
         confirmPassword: Yup.string()
             .oneOf([Yup.ref('password')], 'Passwords must match')
             .required('Password is required'),
-        company: Yup.string().required('Company name is required').length(4, "Company name must be longer than 4 characters"),
+        company: Yup.string().required('Company name is required').min(4, "Company name must be longer than 4 characters"),
         acType: Yup.string().test('valid-acType', 'Invalid account type', value => {
             return value === 'dispatcher' || value === 'operator';
         })
     });
+
+    const acTypeOptions = [
+        { label: 'Dispatcher', value: 'dispatcher' },
+        { label: 'Operator', value: 'operator' },
+    ];
 
 
     return (
@@ -62,10 +70,15 @@ const RegisterForm: FunctionComponent<FormProps<RegisterFormResult>> = (props) =
                     <Input name={'company'}
                         errorProps={{ error: errors.company, touched: touched.company }}
                         placeholder="Company"
-                        secureTextEntry={true}
                         onChangeText={handleChange('company')}
                         onBlur={handleBlur('company')}
                         value={values.company}
+                    />
+                    <SelectInput options={acTypeOptions}
+                        onChange={handleChange('acType')}
+                        errorProps={{ error: errors.acType, touched: touched.acType }}
+                        name={'acType'}
+                        value={values.acType}
                     />
                     <RegularButton
                         onPress={() => { handleSubmit() }}
@@ -76,5 +89,7 @@ const RegisterForm: FunctionComponent<FormProps<RegisterFormResult>> = (props) =
         </Formik >
     )
 }
+
+
 
 export default RegisterForm

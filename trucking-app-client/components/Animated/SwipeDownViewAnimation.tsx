@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useRef, useEffect } from 'react';
+import React, { FunctionComponent, useRef, useEffect, useState } from 'react';
 import {
     PanResponder,
     Animated,
@@ -12,10 +12,12 @@ import { colors } from '../colors';
 import { AnimationProps } from './types';
 import Break from '../Break/Break';
 
+const DEFAULT_VH: number = .85;
 const { height: screenHeight } = Dimensions.get('window');
-const viewHeight = screenHeight * 0.80;
 
 const SwipeDownViewAnimation: FunctionComponent<AnimationProps> = (props) => {
+
+    const [viewHeight, setViewHeight] = useState<number>(() => screenHeight * (props.VH ? props.VH : DEFAULT_VH));
     const position = useRef(new Animated.ValueXY({ x: 0, y: 0 })).current;
 
     const breakRef = useRef(null)
@@ -64,14 +66,18 @@ const SwipeDownViewAnimation: FunctionComponent<AnimationProps> = (props) => {
             duration: 300,
             useNativeDriver: true,
         }).start();
-    }, [props.show]);
+    }, [props.show, viewHeight]);
+
+    useEffect(() => {
+        setViewHeight(screenHeight * (props.VH ? props.VH : DEFAULT_VH))
+    }, [props.VH])
 
     return (
         <Animated.View
             style={[
                 styles.container,
                 { transform: [{ translateY: position.y }] },
-                { height: viewHeight },
+                { height: '100%' },
             ]}
             {...panResponder.panHandlers}
         >

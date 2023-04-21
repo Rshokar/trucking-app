@@ -7,7 +7,7 @@ import BigText from '../components/Texts/BigText'
 // import RegularText from '../components/Texts/RegularText'
 import SmallText from '../components/Texts/SmallText'
 import RegularButton from '../components/Buttons/RegularButton'
-import { LoginFormResult } from '../components/Forms/types'
+import { LoginFormResult, RegisterFormResult } from '../components/Forms/types'
 import Form from '../components/Forms/Form'
 import LoginForm from '../components/Forms/LoginForm'
 import RegisterForm from '../components/Forms/RegisterForm'
@@ -73,6 +73,10 @@ const Welcome: FunctionComponent<Props> = ({ navigation }) => {
         console.log("HANDLE LOGIN: ", result)
     }
 
+    const handleRegister = (result: RegisterFormResult): any => {
+        console.log("HANDLE REGISTER: ", result)
+    }
+
 
 
     return (
@@ -93,7 +97,7 @@ const Welcome: FunctionComponent<Props> = ({ navigation }) => {
                         Get Started
                     </RegularButton>
                 </BottomSection>
-                <SwipeDownViewAnimation show={showAuth} close={hideAuth} >
+                <SwipeDownViewAnimation show={showAuth} close={hideAuth} VH={showLogin ? .70 : .95}>
                     {
                         showLogin ?
                             <>
@@ -115,7 +119,7 @@ const Welcome: FunctionComponent<Props> = ({ navigation }) => {
                                 <Form>
                                     <BigText textStyle={{ color: colors.primary }}>Create an Account </BigText>
                                     <SmallText textStyle={{ color: colors.secondary }}>Welcome to the trucking app, enter you credentials and lets started</SmallText>
-                                    <RegisterForm onSubmit={handleLogin} />
+                                    <RegisterForm onSubmit={handleRegister} />
                                     <SmallText
                                         textStyle={{ textAlign: 'center', color: colors.secondary }}>
                                         Already have an account?

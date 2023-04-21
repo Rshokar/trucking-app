@@ -1,7 +1,6 @@
 import styled from "styled-components/native";
-import { TextInput } from 'react-native-gesture-handler'
 
-import { colors } from "../colors";
+import { colors } from "../../colors";
 
 
 export const StyledInputeView = styled.View`
@@ -9,7 +8,6 @@ export const StyledInputeView = styled.View`
   padding: 10px;
   border-radius: 20px;
   border: 1px solid ${colors.gray};
-
 `;
 
 export const StyledErrorView = styled.Text`
