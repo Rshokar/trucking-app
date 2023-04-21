@@ -1,12 +1,11 @@
 import React, { FunctionComponent } from 'react'
 import * as Yup from 'yup'
 import { Formik } from 'formik'
-import { TextInput } from 'react-native-gesture-handler'
 
 import RegularButton from '../Buttons/RegularButton'
-import { StyledInputeView, StyledErrorView } from './style'
 
 import { FormProps, RegisterFormResult } from './types'
+import Input from './Inputs/Input'
 
 const intialValues: RegisterFormResult = { email: '', password: '', confirmPassword: '', company: '', acType: 'dispatcher' }
 const RegisterForm: FunctionComponent<FormProps<RegisterFormResult>> = (props) => {
@@ -19,7 +18,7 @@ const RegisterForm: FunctionComponent<FormProps<RegisterFormResult>> = (props) =
         confirmPassword: Yup.string()
             .oneOf([Yup.ref('password')], 'Passwords must match')
             .required('Password is required'),
-        company: Yup.string().required('Company name is requires').length(4, "Company name must be longer than 4 characters"),
+        company: Yup.string().required('Company name is required').length(4, "Company name must be longer than 4 characters"),
         acType: Yup.string().test('valid-acType', 'Invalid account type', value => {
             return value === 'dispatcher' || value === 'operator';
         })
@@ -34,49 +33,42 @@ const RegisterForm: FunctionComponent<FormProps<RegisterFormResult>> = (props) =
         >
             {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
                 <>
-                    <StyledInputeView>
-                        <TextInput
-                            placeholder="Email"
-                            keyboardType="email-address"
-                            onChangeText={handleChange('email')}
-                            onBlur={handleBlur('email')}
-                            value={values.email}
-                        />
-                    </StyledInputeView>
+                    <Input name={'email'}
+                        errorProps={{ error: errors.email, touched: touched.email }}
+                        placeholder="Email"
+                        keyboardType="email-address"
+                        onChangeText={handleChange('email')}
+                        onBlur={handleBlur('email')}
+                        value={values.email}
+                    />
+                    <Input name={'password'}
+                        errorProps={{ error: errors.password, touched: touched.password }}
+                        placeholder="Password"
+                        secureTextEntry={true}
+                        onChangeText={handleChange('password')}
+                        onBlur={handleBlur('password')}
+                        value={values.password}
+                    />
 
-                    {errors.email && touched.email && <StyledErrorView>{errors.email}</StyledErrorView>}
-                    <StyledInputeView>
-                        <TextInput
-                            placeholder="Password"
-                            secureTextEntry={true}
-                            onChangeText={handleChange('password')}
-                            onBlur={handleBlur('password')}
-                            value={values.password}
-                        />
-                    </StyledInputeView>
-                    {errors.password && touched.password && <StyledErrorView>{errors.password}</StyledErrorView>}
-                    <StyledInputeView>
-                        <TextInput
-                            placeholder="Confirm password"
-                            secureTextEntry={true}
-                            onChangeText={handleChange('confirmPassword')}
-                            onBlur={handleBlur('confirmPassword')}
-                            value={values.confirmPassword}
-                        />
-                    </StyledInputeView>
-                    {errors.confirmPassword && touched.confirmPassword && <StyledErrorView>{errors.confirmPassword}</StyledErrorView>}
-                    <StyledInputeView>
-                        <TextInput
-                            placeholder="Company"
-                            onChangeText={handleChange('company')}
-                            onBlur={handleBlur('company')}
-                            value={values.company}
-                        />
-                        {errors.company && touched.company && <StyledErrorView>{errors.company}</StyledErrorView>}
-                    </StyledInputeView>
+                    <Input name={'confirmPassword'}
+                        errorProps={{ error: errors.confirmPassword, touched: touched.confirmPassword }}
+                        placeholder="Confirm Password"
+                        secureTextEntry={true}
+                        onChangeText={handleChange('confirmPassword')}
+                        onBlur={handleBlur('confirmPassword')}
+                        value={values.confirmPassword}
+                    />
+
+                    <Input name={'company'}
+                        errorProps={{ error: errors.company, touched: touched.company }}
+                        placeholder="Company"
+                        secureTextEntry={true}
+                        onChangeText={handleChange('company')}
+                        onBlur={handleBlur('company')}
+                        value={values.company}
+                    />
                     <RegularButton
                         onPress={() => { handleSubmit() }}
-                        disabled={!values.email || !values.password || !values.confirmPassword || !values.company}
                     >Register</RegularButton>
                 </>
             )

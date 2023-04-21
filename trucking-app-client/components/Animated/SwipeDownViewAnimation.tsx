@@ -13,7 +13,7 @@ import { AnimationProps } from './types';
 import Break from '../Break/Break';
 
 const { height: screenHeight } = Dimensions.get('window');
-const viewHeight = screenHeight * 0.95;
+const viewHeight = screenHeight * 0.80;
 
 const SwipeDownViewAnimation: FunctionComponent<AnimationProps> = (props) => {
     const position = useRef(new Animated.ValueXY({ x: 0, y: 0 })).current;
@@ -23,8 +23,6 @@ const SwipeDownViewAnimation: FunctionComponent<AnimationProps> = (props) => {
     const panResponder = useRef(
         PanResponder.create({
             onMoveShouldSetPanResponder: (event, gesture) => {
-                console.log(findNodeHandle(breakRef.current)?.toString());
-                console.log(event.nativeEvent.target);
                 return event.nativeEvent.target == findNodeHandle(breakRef.current)?.toString();
             },
             onPanResponderGrant: (event, gesture) => {
@@ -34,10 +32,8 @@ const SwipeDownViewAnimation: FunctionComponent<AnimationProps> = (props) => {
                     y: 0,
                 });
                 position.setValue({ x: 0, y: screenHeight - viewHeight });
-                console.log("ON GRANT")
             },
             onPanResponderMove: (event, gesture) => {
-                console.log("ON MOVE")
                 // Calculate the change in gesture position from the initial position of the touch
                 position.setValue({ x: 0, y: screenHeight - viewHeight + gesture.dy });
             },

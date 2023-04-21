@@ -43,6 +43,8 @@ const BottomSection = styled.View`
 `
 
 const FormSwitchText = styled.Text`
+    padding-left: 5px;
+    margin-top: 5px;
     color: ${colors.tertiary}
 `
 
@@ -118,7 +120,7 @@ const Welcome: FunctionComponent<Props> = ({ navigation }) => {
                                         textStyle={{ textAlign: 'center', color: colors.secondary }}>
                                         Already have an account?
                                         <TouchableOpacity onPress={() => { console.log("SWITCH TO LOGIN"); setShowLogin(true) }}>
-                                            <FormSwitchText >Login</FormSwitchText>
+                                            <FormSwitchText>Login</FormSwitchText>
                                         </TouchableOpacity>
                                     </SmallText>
                                 </Form>

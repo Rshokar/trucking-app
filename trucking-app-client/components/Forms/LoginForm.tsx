@@ -10,6 +10,7 @@ import { LoginFormResult } from './types'
 
 
 import { FormProps } from './types'
+import Input from './Inputs/Input'
 
 const intialValues: LoginFormResult = { email: '', password: '' }
 const LoginForm: FunctionComponent<FormProps<LoginFormResult>> = (props) => {
@@ -25,25 +26,27 @@ const LoginForm: FunctionComponent<FormProps<LoginFormResult>> = (props) => {
     console.log("Hello");
 
     return <Formik initialValues={intialValues} onSubmit={props.onSubmit} validationSchema={validationSchema}>
-        {(formikProps: any) => <>
-            <StyledInputeView>
-                <TextInput
-                    onChangeText={formikProps.handleChange('email')}
-                    onBlur={formikProps.handleBlur('email')}
-                    value={formikProps.values.email}
-                    placeholder="Paperless@trucking-app.com"
-                />
-            </StyledInputeView>
-            <StyledInputeView>
-                <TextInput
-                    onChangeText={formikProps.handleChange('password')}
-                    onBlur={formikProps.handleBlur('password')}
-                    value={formikProps.values.password}
-                    placeholder="***********"
-                />
-            </StyledInputeView>
+        {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => <>
+            <Input
+                errorProps={{ error: errors.email, touched: touched.email }}
+                onChangeText={handleChange('email')}
+                onBlur={handleBlur('email')}
+                value={values.email}
+                placeholder="Paperless@trucking-app.com"
+                name={'email'}
+            />
+
+            <Input
+                errorProps={{ error: errors.password, touched: touched.password }}
+                onChangeText={handleChange('password')}
+                onBlur={handleBlur('password')}
+                value={values.password}
+                placeholder="***********"
+                name={"password"}
+            />
+
             <RegularButton
-                onPress={() => { console.log('BLABLA') }}
+                onPress={() => { handleSubmit() }}
             >Login</RegularButton>
         </>
         }
