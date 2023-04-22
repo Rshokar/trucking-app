@@ -57,6 +57,7 @@ import { RoofStackParamList } from '../navigators/RoofStack'
 import { StackScreenProps } from '@react-navigation/stack'
 
 import background from '../assets/welcome.png'
+import FlashAnimation from '../components/Animated/FlashAnimation'
 
 
 
@@ -67,6 +68,7 @@ const Welcome: FunctionComponent<Props> = ({ navigation }) => {
 
     const [showLogin, setShowLogin] = useState<boolean>(true)
     const [showAuth, setShowAuth] = useState<boolean>(false)
+    const [flashMessage, setFlashMessage] = useState("Hello world")
 
     const hideAuth = () => setShowAuth(false)
 
@@ -115,38 +117,27 @@ const Welcome: FunctionComponent<Props> = ({ navigation }) => {
                     </RegularButton>
                 </BottomSection>
                 <SwipeDownViewAnimation show={showAuth} close={hideAuth} VH={showLogin ? .70 : .95}>
-                    {
-                        showLogin ?
-                            <>
-                                <Form>
-                                    <BigText textStyle={{ color: colors.primary }}>Welcome Back</BigText>
-                                    <SmallText textStyle={{ color: colors.secondary }}>Welcome to the trucking app, enter you credentials and lets started</SmallText>
-                                    <LoginForm onSubmit={handleLogin} />
-                                    <SmallText
-                                        textStyle={{ textAlign: 'center', color: colors.secondary }}>
-                                        Dont't have an account?
-                                        <TouchableOpacity onPress={() => { console.log("SWITCH TO REGISTER"); setShowLogin(false) }}>
-                                            <FormSwitchText>Sign up</FormSwitchText>
-                                        </TouchableOpacity>
-                                    </SmallText>
-                                </Form>
-                            </>
-                            :
-                            <>
-                                <Form>
-                                    <BigText textStyle={{ color: colors.primary }}>Create an Account </BigText>
-                                    <SmallText textStyle={{ color: colors.secondary }}>Welcome to the trucking app, enter you credentials and lets started</SmallText>
-                                    <RegisterForm onSubmit={handleRegister} />
-                                    <SmallText
-                                        textStyle={{ textAlign: 'center', color: colors.secondary }}>
-                                        Already have an account?
-                                        <TouchableOpacity onPress={() => { console.log("SWITCH TO LOGIN"); setShowLogin(true) }}>
-                                            <FormSwitchText>Login</FormSwitchText>
-                                        </TouchableOpacity>
-                                    </SmallText>
-                                </Form>
-                            </>
-                    }
+                    <Form>
+                        <BigText textStyle={{ color: colors.primary }}>{showLogin ? "Welcome Back" : "Create an Account"}</BigText>
+                        <SmallText textStyle={{ color: colors.secondary }}>
+                            {showLogin ? "Welcome to the trucking app, enter you credentials and lets started" : "Welcome to the trucking app, enter you credentials and lets started"}
+                        </SmallText>
+                        <FlashAnimation show={true}>
+                            {flashMessage}
+                        </FlashAnimation>
+                        {
+                            showLogin ? <LoginForm onSubmit={handleLogin} /> : <RegisterForm onSubmit={handleRegister} />
+                        }
+                        <SmallText
+                            textStyle={{ textAlign: 'center', color: colors.secondary }}>
+                            {showLogin ? "Don't have an account?" : "Already have an account?"}
+                            <TouchableOpacity onPress={showLogin ? () => setShowLogin(false) : () => setShowLogin(true)}>
+                                <FormSwitchText>
+                                    {showLogin ? "Create an account" : "Login"}
+                                </FormSwitchText>
+                            </TouchableOpacity>
+                        </SmallText>
+                    </Form>
                 </SwipeDownViewAnimation>
             </WelcomContainer>
         </>
