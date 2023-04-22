@@ -19,10 +19,14 @@ class AuthController:
             Response: 200 success
         """
         request_data = request.get_json()
+
+        print("REQUEST DATA: ", request_data)
         email = request_data.get('email')
         password = request_data.get('password')
 
         user = session.query(User).filter_by(email=email).first()
+
+        print(user)
 
         if not user or not user.check_password(password):
             return make_response('Invalid username or password', 401)

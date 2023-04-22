@@ -33,7 +33,6 @@ const FlashAnimation: FunctionComponent<FlashAnimationProps> = (props) => {
 
     const styles = StyleSheet.create({
         container: {
-            height: 0,
             width: '100%',
             backgroundColor: props.color ? props.color : colors.success,
             borderRadius: 5,
@@ -64,7 +63,7 @@ const FlashAnimation: FunctionComponent<FlashAnimationProps> = (props) => {
 
 
     useEffect(() => {
-        props.onAnimationBegin && props.onAnimationBegin()
+        console.log("USE EFFECT", props.children)
         if (props.children != "")
             Animated.sequence(animations).start(() => {
                 props.onAnimationEnd && props.onAnimationEnd()

@@ -9,8 +9,12 @@ export class AuthController extends Controller {
 
     }
 
-    static login() {
-
+    static async login({ email, password }: User): Promise<User> {
+        return await Request.request<User>({
+            method: Method.POST,
+            data: { email, password },
+            url: "/auth/login"
+        })
     }
 
     static logOut() {
@@ -18,6 +22,12 @@ export class AuthController extends Controller {
     }
 
     static async register(u: User, company: string): Promise<{ user: User, company: Company }> {
-        return await Request.request<{ user: User, company: Company }>({ method: Method.POST, data: { ...u, company }, url: "/auth/register" });
+        return await Request.request<{ user: User, company: Company }>(
+            {
+                method: Method.POST,
+                data: { ...u, company },
+                url: "/auth/register"
+            }
+        );
     }
 }

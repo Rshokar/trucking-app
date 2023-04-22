@@ -30,6 +30,8 @@ export class Request {
             const response = await axios[config.method]<T>(`${this.API_URL}${config.url}`, {
                 ...config.data,
             });
+            // const token = response.headers['set-cookie']?.find((cookie: string) => cookie.includes('session='));
+            // console.log(token)
             return response.data;
         } catch (error: any) {
             if (axios.isAxiosError(error))

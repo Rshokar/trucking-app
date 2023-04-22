@@ -4,7 +4,6 @@ import styled from 'styled-components/native'
 import { TouchableOpacity } from 'react-native'
 
 import BigText from '../components/Texts/BigText'
-// import RegularText from '../components/Texts/RegularText'
 import SmallText from '../components/Texts/SmallText'
 import RegularButton from '../components/Buttons/RegularButton'
 import { LoginFormResult, RegisterFormResult } from '../components/Forms/types'
@@ -72,20 +71,21 @@ const Welcome: FunctionComponent<Props> = ({ navigation }) => {
 
     const hideAuth = () => setShowAuth(false)
 
-    const handleLogin = (res: LoginFormResult): any => {
-        console.log("HANDLE LOGIN: ", res)
+    const handleLogin = async (res: LoginFormResult): Promise<any> => {
+        let u: User = new User(undefined, undefined, res.email, res.password);
+        try {
+            const user = await AuthController.login(u);
+            setFlashMessage("Successfully Loggd In")
+            setTimeout(() => navigation.navigate("Home"), 2500)
+        } catch (e: any) {
+            console.log(e.message);
+        }
     }
 
     const handleRegister = async (res: RegisterFormResult): Promise<any> => {
-        console.log("HANDLE REGISTER: ", res)
         let u: User = new User(undefined, res.acType, res.email, res.password)
-        console.log("USER: ", u)
         try {
             const { user, company } = await AuthController.register(u, res.company)
-            console.log("USER: ", user)
-            console.log("COMPANY: ", company)
-
-            // Indicate successful registration
             setFlashMessage("Welcome to the future")
         } catch (e: any) {
             console.log(e.message)
@@ -94,6 +94,7 @@ const Welcome: FunctionComponent<Props> = ({ navigation }) => {
     }
 
 
+    console.log("FLASH MESSAGE: ", flashMessage)
 
     return (
         <>
@@ -119,7 +120,7 @@ const Welcome: FunctionComponent<Props> = ({ navigation }) => {
                         <SmallText textStyle={{ color: colors.secondary }}>
                             {showLogin ? "Welcome to the trucking app, enter you credentials and lets started" : "Welcome to the trucking app, enter you credentials and lets started"}
                         </SmallText>
-                        <FlashAnimation onAnimationBegin={() => setShowLogin(true)}>
+                        <FlashAnimation onAnimationBegin={!showLogin ? () => setShowLogin(true) : undefined}>
                             {flashMessage}
                         </FlashAnimation>
                         {
