@@ -1,5 +1,4 @@
 import { Model, Query } from './Model'
-import { Request, Method, RequestError } from '../utils/Request'
 
 
 export class User implements Model<UserQuery> {
@@ -35,12 +34,7 @@ export class User implements Model<UserQuery> {
     }
 
     async create<User>(attributes: User): Promise<User> {
-        try {
-            const user: User = await Request.request({ method: Method.POST, url: "/user", data: attributes })
-            return user;
-        } catch (e: any) {
-            throw e
-        }
+        throw new Error('Method not implemented.');
     }
 
 }

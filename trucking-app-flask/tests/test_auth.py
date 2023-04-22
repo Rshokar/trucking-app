@@ -118,8 +118,6 @@ def test_register(client):
     assert "user" in data.keys()
     assert "company" in data.keys()
 
-    print(f"Data: {data}")
-
     assert data["user"]["email"] == payload["email"]
     assert data["company"]["company_name"] == payload["company"]
     assert data["company"]["owner_id"] == data["user"]["id"]

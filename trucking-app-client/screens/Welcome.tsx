@@ -76,12 +76,21 @@ const Welcome: FunctionComponent<Props> = ({ navigation }) => {
 
     const handleRegister = async (res: RegisterFormResult): Promise<any> => {
         console.log("HANDLE REGISTER: ", res)
-        let user: User = new User(undefined, res.acType, res.email, res.password)
-        console.log("USER: ", user)
+        let u: User = new User(undefined, res.acType, res.email, res.password)
+        console.log("USER: ", u)
         try {
-            user = await AuthController.register(user)
+            const { user, company } = await AuthController.register(u, res.company)
+            console.log("USER: ", user)
+            console.log("COMPANY: ", company)
+
+            // Indicate successful registration
+
+            // Switch to login form
+            setShowLogin(true)
+
         } catch (e: any) {
-            console.log("Welcome Error", e.message)
+            console.log(e.message)
+            // Deal with errors
         }
     }
 
@@ -137,7 +146,6 @@ const Welcome: FunctionComponent<Props> = ({ navigation }) => {
                                     </SmallText>
                                 </Form>
                             </>
-
                     }
                 </SwipeDownViewAnimation>
             </WelcomContainer>

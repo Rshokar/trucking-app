@@ -1,5 +1,7 @@
 import { Controller } from "./Controller";
 import { User } from "../models/User";
+import { Request, Method } from "../utils/Request";
+import { Company } from "../models/Company";
 
 export class AuthController extends Controller {
 
@@ -15,16 +17,7 @@ export class AuthController extends Controller {
 
     }
 
-    // This will make a user, if successfull it will also 
-    // create the company. If not return an message.
-    static async register(user: User): Promise<User> {
-        try {
-            const newUser: User | -1 = await user.create(user);
-            console.log(newUser)
-            return user;
-        } catch (error) {
-            throw error;
-        }
-
+    static async register(u: User, company: string): Promise<{ user: User, company: Company }> {
+        return await Request.request<{ user: User, company: Company }>({ method: Method.POST, data: { ...u, company }, url: "/auth/register" });
     }
 }
