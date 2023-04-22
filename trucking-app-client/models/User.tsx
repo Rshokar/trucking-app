@@ -1,7 +1,7 @@
 import { Model, Query } from './Model'
 
 
-export class User implements Model<UserQuery> {
+export class User implements Model {
 
     id?: number;
     role?: string;
@@ -17,30 +17,29 @@ export class User implements Model<UserQuery> {
     }
 
 
-    get<User>(query: Partial<User>): Promise<User> {
-        throw new Error('Method not implemented.');
-    }
-
-    getAll<User>(query: Partial<User>): Promise<User[]> {
-        throw new Error('Method not implemented.');
-    }
-
-    delete<User>(attributes: Partial<User>): Promise<void> {
-        throw new Error('Method not implemented.');
-    }
-
-    update<User>(attributes: Partial<User>): Promise<void> {
-        throw new Error('Method not implemented.');
-    }
-
-    async create<User>(attributes: User): Promise<User> {
-        throw new Error('Method not implemented.');
-    }
 
 }
 
 
-export class UserQuery implements Query {
+export class UserQuery implements Query<User> {
+
+    model?: User;
+
+    get<User>(): Promise<User> {
+        throw new Error('Method not implemented.');
+    }
+    getAll<User>(): Promise<User[]> {
+        throw new Error('Method not implemented.');
+    }
+    delete<User>(): Promise<void> {
+        throw new Error('Method not implemented.');
+    }
+    update<User>(): Promise<void> {
+        throw new Error('Method not implemented.');
+    }
+    create<User>(): Promise<User> {
+        throw new Error('Method not implemented.');
+    }
 
 
 }

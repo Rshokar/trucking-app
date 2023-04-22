@@ -1,14 +1,15 @@
-export interface Model<Q extends Query> {
+export interface Model {
     id?: number;
-
-    get<T extends Model<Q>>(query: Partial<T>): Promise<T>
-    getAll<T extends Model<Q>>(query: Partial<T>): Promise<T[]>
-    delete<T extends Model<Q>>(attributes: Partial<T>): Promise<void>;
-    update<T extends Model<Q>>(attributes: Partial<T>): Promise<void>;
-    create<T extends Model<Q>>(attributes: T): Promise<T | -1>;
 }
 
 
-export interface Query {
+export interface Query<T extends Model> {
 
+    model?: T;
+
+    get<T>(): Promise<T>
+    getAll<T>(): Promise<T[]>
+    delete<T>(): Promise<void>;
+    update<T>(): Promise<void>;
+    create<T>(): Promise<T>;
 }

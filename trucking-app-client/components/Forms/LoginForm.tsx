@@ -40,6 +40,7 @@ const LoginForm: FunctionComponent<FormProps<LoginFormResult>> = (props) => {
                 errorProps={{ error: errors.password, touched: touched.password }}
                 onChangeText={handleChange('password')}
                 onBlur={handleBlur('password')}
+                secureTextEntry={true}
                 value={values.password}
                 placeholder="***********"
                 name={"password"}

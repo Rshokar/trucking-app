@@ -54,6 +54,7 @@ const RoofStack: FunctionComponent = () => {
                 <Stack.Screen
                     name="Welcome"
                     component={Welcome}
+
                     options={{ headerShown: false }}
                 />
                 <Stack.Screen

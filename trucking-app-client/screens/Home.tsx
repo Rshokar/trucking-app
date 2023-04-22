@@ -1,6 +1,7 @@
-import React, { FunctionComponent } from 'react'
+import React, { FunctionComponent, useEffect, useState } from 'react'
 import { StatusBar } from 'expo-status-bar'
 import styled from 'styled-components/native'
+import { StackScreenProps } from '@react-navigation/stack'
 
 import { colors } from '../components/colors'
 import { Container } from '../components/shared'
@@ -9,6 +10,7 @@ import logo from '../assets/icon.png';
 import CardSection from '../components/Cards/CardSection'
 import TransactionSection from '../components/Transactions/TransactionSection'
 import SendMoneySection from '../components/SendMoney/SendMoneySection'
+import { Dispatch, DispatchQuery } from '../models/Dispatch'
 
 const HomeContainer = styled(Container)`
     background-color: ${colors.graylight};
@@ -19,12 +21,32 @@ const HomeContainer = styled(Container)`
 import portrait from '../assets/portrait.jpg'
 
 import { RoofStackParamList } from '../navigators/RoofStack'
-import { StackScreenProps } from '@react-navigation/stack'
 
 export type Props = StackScreenProps<RoofStackParamList, "Home">
 
 const Home: FunctionComponent = () => {
 
+    const [dispatch, setDispatch] = useState<Dispatch[]>([]);
+
+    useEffect(() => {
+        async function run() {
+            const q: DispatchQuery = new DispatchQuery();
+
+            q.model = new Dispatch();
+            q.model.company_id = 1;
+
+            console.log("GET DISPATCHES", q.model);
+
+            try {
+                const dispatches = await q.get();
+                console.log(dispatches);
+            } catch (error: any) {
+                console.log(error.message);
+            }
+        }
+
+        run();
+    }, []);
     const cardsData = [
         {
             id: 1,
@@ -48,7 +70,6 @@ const Home: FunctionComponent = () => {
             logo: logo
         },
     ]
-
 
     const transactionData = [
         {
@@ -109,6 +130,7 @@ const Home: FunctionComponent = () => {
             img: portrait
         },
     ]
+
     return (
         <HomeContainer>
             <StatusBar style='dark' />
