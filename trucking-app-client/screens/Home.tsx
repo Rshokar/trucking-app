@@ -21,10 +21,12 @@ const HomeContainer = styled(Container)`
 import portrait from '../assets/portrait.jpg'
 
 import { RoofStackParamList } from '../navigators/RoofStack'
+import RegularButton from '../components/Buttons/RegularButton'
+import { AuthController } from '../controllers/AuthController'
 
 export type Props = StackScreenProps<RoofStackParamList, "Home">
 
-const Home: FunctionComponent = () => {
+const Home: FunctionComponent<Props> = ({ navigation }) => {
 
     const [dispatch, setDispatch] = useState<Dispatch[]>([]);
 
@@ -34,8 +36,6 @@ const Home: FunctionComponent = () => {
 
             q.model = new Dispatch();
             q.model.company_id = 1;
-
-            console.log("GET DISPATCHES", q.model);
 
             try {
                 const dispatches = await q.get();
@@ -47,6 +47,17 @@ const Home: FunctionComponent = () => {
 
         run();
     }, []);
+
+
+    const logout = async () => {
+        try {
+            await AuthController.logOut()
+            navigation.navigate("Welcome");
+        } catch (error: any) {
+            console.log("ERROR", error);
+        }
+    }
+
     const cardsData = [
         {
             id: 1,
@@ -135,6 +146,7 @@ const Home: FunctionComponent = () => {
         <HomeContainer>
             <StatusBar style='dark' />
             <CardSection data={cardsData} />
+            <RegularButton onPress={logout}>Logout</RegularButton>
             <TransactionSection data={transactionData} />
             <SendMoneySection data={sendMoneyData} />
         </HomeContainer>

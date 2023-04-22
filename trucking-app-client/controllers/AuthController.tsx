@@ -17,8 +17,11 @@ export class AuthController extends Controller {
         })
     }
 
-    static logOut() {
-
+    static async logOut(): Promise<{ message: string }> {
+        return await Request.request<{ message: string }>({
+            url: "/auth/logout",
+            method: Method.DELETE
+        })
     }
 
     static async register(u: User, company: string): Promise<{ user: User, company: Company }> {

@@ -34,11 +34,12 @@ export class Request {
             // console.log(token)
             return response.data;
         } catch (error: any) {
-            if (axios.isAxiosError(error))
+            if (axios.isAxiosError(error)) {
                 throw new RequestError(
                     error.response?.data.error,
                     error.response?.status
                 )
+            }
             throw new RequestError("Error making request", 500)
         }
     }

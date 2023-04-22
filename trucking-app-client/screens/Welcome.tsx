@@ -57,6 +57,7 @@ import { StackScreenProps } from '@react-navigation/stack'
 
 import background from '../assets/welcome.png'
 import FlashAnimation from '../components/Animated/FlashAnimation'
+import { color } from 'react-native-reanimated'
 
 
 
@@ -68,16 +69,22 @@ const Welcome: FunctionComponent<Props> = ({ navigation }) => {
     const [showLogin, setShowLogin] = useState<boolean>(true)
     const [showAuth, setShowAuth] = useState<boolean>(false)
     const [flashMessage, setFlashMessage] = useState<string>("")
+    const [flashColor, setFlashColor] = useState<string>(colors.success)
 
     const hideAuth = () => setShowAuth(false)
 
     const handleLogin = async (res: LoginFormResult): Promise<any> => {
         let u: User = new User(undefined, undefined, res.email, res.password);
         try {
+            console.log('OMG')
             const user = await AuthController.login(u);
+            setFlashColor(colors.success)
             setFlashMessage("Successfully Loggd In")
             setTimeout(() => navigation.navigate("Home"), 2500)
         } catch (e: any) {
+            console.log('Error', e)
+            setFlashMessage(e.message)
+            setFlashColor("red")
             console.log(e.message);
         }
     }
@@ -120,7 +127,10 @@ const Welcome: FunctionComponent<Props> = ({ navigation }) => {
                         <SmallText textStyle={{ color: colors.secondary }}>
                             {showLogin ? "Welcome to the trucking app, enter you credentials and lets started" : "Welcome to the trucking app, enter you credentials and lets started"}
                         </SmallText>
-                        <FlashAnimation onAnimationBegin={!showLogin ? () => setShowLogin(true) : undefined}>
+                        <FlashAnimation
+                            onAnimationBegin={!showLogin ? () => setShowLogin(true) : undefined}
+                            color={flashColor}
+                        >
                             {flashMessage}
                         </FlashAnimation>
                         {
