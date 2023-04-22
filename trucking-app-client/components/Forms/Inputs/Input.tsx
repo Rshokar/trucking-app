@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from 'react'
+import React, { FunctionComponent, useState, useEffect } from 'react'
 import { TextInput } from 'react-native-gesture-handler'
 
 import { colors } from '../../colors';
@@ -8,10 +8,27 @@ import { InputProps } from './types';
 
 const Input: FunctionComponent<InputProps> = (props) => {
 
+    const [color, setColor] = useState<string>(colors.gray);
     const { error, touched } = props.errorProps;
 
+
+    useEffect(() => {
+        if (error && touched)
+            return setColor('red')
+
+        if (touched)
+            return setColor(colors.success)
+
+        return setColor(colors.gray)
+
+
+    }, [error, touched])
+
+
     return <>
-        <StyledInputeView style={{ borderColor: error && touched ? 'red' : colors.gray }}>
+        <StyledInputeView style={{
+            borderColor: color
+        }}>
             <TextInput
                 {...props}
             />
