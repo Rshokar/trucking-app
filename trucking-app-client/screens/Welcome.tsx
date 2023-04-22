@@ -68,7 +68,7 @@ const Welcome: FunctionComponent<Props> = ({ navigation }) => {
 
     const [showLogin, setShowLogin] = useState<boolean>(true)
     const [showAuth, setShowAuth] = useState<boolean>(false)
-    const [flashMessage, setFlashMessage] = useState("Hello world")
+    const [flashMessage, setFlashMessage] = useState<string>("")
 
     const hideAuth = () => setShowAuth(false)
 
@@ -86,10 +86,7 @@ const Welcome: FunctionComponent<Props> = ({ navigation }) => {
             console.log("COMPANY: ", company)
 
             // Indicate successful registration
-
-            // Switch to login form
-            setShowLogin(true)
-
+            setFlashMessage("Welcome to the future")
         } catch (e: any) {
             console.log(e.message)
             // Deal with errors
@@ -116,13 +113,13 @@ const Welcome: FunctionComponent<Props> = ({ navigation }) => {
                         Get Started
                     </RegularButton>
                 </BottomSection>
-                <SwipeDownViewAnimation show={showAuth} close={hideAuth} VH={showLogin ? .70 : .95}>
+                <SwipeDownViewAnimation show={showAuth} close={hideAuth} VH={showLogin ? .80 : .95}>
                     <Form>
                         <BigText textStyle={{ color: colors.primary }}>{showLogin ? "Welcome Back" : "Create an Account"}</BigText>
                         <SmallText textStyle={{ color: colors.secondary }}>
                             {showLogin ? "Welcome to the trucking app, enter you credentials and lets started" : "Welcome to the trucking app, enter you credentials and lets started"}
                         </SmallText>
-                        <FlashAnimation show={true}>
+                        <FlashAnimation onAnimationBegin={() => setShowLogin(true)}>
                             {flashMessage}
                         </FlashAnimation>
                         {

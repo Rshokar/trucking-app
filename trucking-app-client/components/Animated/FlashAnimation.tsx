@@ -16,9 +16,6 @@ const DEFAULT_DURATION = 500;
 
 const StyledText = styled.Text`
     color: ${colors.white};  
-    padding: 5px;
-    margin-top: -5px;
-    margin-bottom: -5px;
     text-align: center
 `
 
@@ -36,13 +33,14 @@ const FlashAnimation: FunctionComponent<FlashAnimationProps> = (props) => {
 
     const styles = StyleSheet.create({
         container: {
-            minHeight: '2.5%',
+            height: 0,
             width: '100%',
             backgroundColor: props.color ? props.color : colors.success,
             borderRadius: 5,
             display: 'flex',
             justifyContent: 'center',
-            alignContent: 'center'
+            alignContent: 'center',
+            overflow: 'hidden',
         },
     })
 
@@ -66,7 +64,11 @@ const FlashAnimation: FunctionComponent<FlashAnimationProps> = (props) => {
 
 
     useEffect(() => {
-        Animated.sequence(animations).start()
+        props.onAnimationBegin && props.onAnimationBegin()
+        if (props.children != "")
+            Animated.sequence(animations).start(() => {
+                props.onAnimationEnd && props.onAnimationEnd()
+            })
     }, [props.children])
 
     useEffect(() => setDuration(props.duration ? props.duration : DEFAULT_DURATION), [props.duration])

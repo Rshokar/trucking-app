@@ -9,19 +9,19 @@ import {
 import Ionicons from '@expo/vector-icons/Ionicons';
 
 import { colors } from '../colors';
-import { ScreenHeight } from '../shared';
 import { AnimationProps } from './types';
 import Break from '../Break/Break';
 
 const DEFAULT_VH: number = .85;
+const { height: screenHeight } = Dimensions.get('window');
 
 export interface SwipeDownViewAnimationProps extends AnimationProps {
-    close: () => void,
+    close: () => any
 }
 
 const SwipeDownViewAnimation: FunctionComponent<SwipeDownViewAnimationProps> = (props) => {
 
-    const [viewHeight, setViewHeight] = useState<number>(() => ScreenHeight * (props.VH ? props.VH : DEFAULT_VH));
+    const [viewHeight, setViewHeight] = useState<number>(() => screenHeight * (props.VH ? props.VH : DEFAULT_VH));
     const position = useRef(new Animated.ValueXY({ x: 0, y: 0 })).current;
 
     const breakRef = useRef(null)
@@ -37,18 +37,18 @@ const SwipeDownViewAnimation: FunctionComponent<SwipeDownViewAnimationProps> = (
                     x: 0,
                     y: 0,
                 });
-                position.setValue({ x: 0, y: ScreenHeight - viewHeight });
+                position.setValue({ x: 0, y: screenHeight - viewHeight });
             },
             onPanResponderMove: (event, gesture) => {
                 // Calculate the change in gesture position from the initial position of the touch
-                position.setValue({ x: 0, y: ScreenHeight - viewHeight + gesture.dy });
+                position.setValue({ x: 0, y: screenHeight - viewHeight + gesture.dy });
             },
             onPanResponderRelease: (event, gesture) => {
-                if (gesture.dy > 0.5 * ScreenHeight) {
-                    props.close ? () => props.close() : null
+                if (gesture.dy > 0.5 * screenHeight) {
+                    props.close();
                 } else {
                     Animated.spring(position, {
-                        toValue: { x: 0, y: ScreenHeight - viewHeight },
+                        toValue: { x: 0, y: screenHeight - viewHeight },
                         useNativeDriver: true,
                     }).start();
                 }
@@ -60,20 +60,20 @@ const SwipeDownViewAnimation: FunctionComponent<SwipeDownViewAnimationProps> = (
     useEffect(() => {
         if (props.show) {
             return Animated.timing(position, {
-                toValue: { x: 0, y: ScreenHeight - viewHeight },
+                toValue: { x: 0, y: screenHeight - viewHeight },
                 duration: 300,
                 useNativeDriver: true,
             }).start();
         }
         return Animated.timing(position, {
-            toValue: { x: 0, y: ScreenHeight },
+            toValue: { x: 0, y: screenHeight },
             duration: 300,
             useNativeDriver: true,
         }).start();
     }, [props.show, viewHeight]);
 
     useEffect(() => {
-        setViewHeight(ScreenHeight * (props.VH ? props.VH : DEFAULT_VH))
+        setViewHeight(screenHeight * (props.VH ? props.VH : DEFAULT_VH))
     }, [props.VH])
 
     return (
