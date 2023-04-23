@@ -33,7 +33,12 @@ class AuthController:
 
         login_user(user)
 
-        return make_response(user.to_dict(), 200)
+        comp = session.query(Company).filter_by(owner_id=user.id).first()
+
+        return make_response({
+            "user": user.to_dict(),
+            "company": comp.to_dict()
+        }, 200)
 
     def logout():
         logout_user()

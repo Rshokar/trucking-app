@@ -15,6 +15,9 @@ class Company(Base):
     dispatches = relationship(
         "Dispatch", backref="company", lazy=True, cascade="delete")
 
+    operators = relationship(
+        "Operator", backref="company", lazy=True, cascade="delete")
+
     def __init__(self, owner_id, name):
         self.owner_id = owner_id
         self.company_name = name
@@ -27,7 +30,8 @@ class Company(Base):
             "company_id": self.company_id,
             "owner_id": self.owner_id,
             "company_name": self.company_name,
-            "customers": [customer.to_dict() for customer in self.customers]
+            "customers": [customer.to_dict() for customer in self.customers],
+            "operators": [operator.to_dict() for operator in self.operators],
         }
 
     def get_company_by_id(session, company_id):

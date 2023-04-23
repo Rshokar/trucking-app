@@ -12,17 +12,19 @@ export class AuthController extends Controller {
 
     }
 
-    static async login({ email, password }: User): Promise<User> {
-        const user = await Request.request<User>({
+    static async login({ email, password }: User): Promise<{ user: User, company: Company }> {
+        const { user, company } = await Request.request<{ user: User, company: Company }>({
             method: Method.POST,
             data: { email, password },
             url: "/auth/login"
         })
 
         console.log('STRINGIFY: ', JSON.stringify(user))
+        console.log('STRINGIFY: ', JSON.stringify(company))
 
         await AsyncStorage.setItem('user', JSON.stringify(user));
-        return user;
+        await AsyncStorage.setItem('company', JSON.stringify(company));
+        return { user, company };
     }
 
     static async logOut(): Promise<{ message: string }> {

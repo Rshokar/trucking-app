@@ -46,6 +46,7 @@ const Home: FunctionComponent<Props> = ({ navigation }) => {
 
 
             console.log("CURRENTLY LOGGED IN USER: ", await AuthController.getUser())
+            console.log("CURRENTLY LOGGED IN COMPANY: ", await AuthController.getCompany())
         }
 
         run();
