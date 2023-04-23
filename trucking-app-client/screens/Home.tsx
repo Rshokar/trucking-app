@@ -11,6 +11,8 @@ import CardSection from '../components/Cards/CardSection'
 import TransactionSection from '../components/Transactions/TransactionSection'
 import SendMoneySection from '../components/SendMoney/SendMoneySection'
 import { Dispatch, DispatchQuery } from '../models/Dispatch'
+import RegularButton from '../components/Buttons/RegularButton'
+import { AuthController } from '../controllers/AuthController'
 
 const HomeContainer = styled(Container)`
     background-color: ${colors.graylight};
@@ -21,8 +23,6 @@ const HomeContainer = styled(Container)`
 import portrait from '../assets/portrait.jpg'
 
 import { RoofStackParamList } from '../navigators/RoofStack'
-import RegularButton from '../components/Buttons/RegularButton'
-import { AuthController } from '../controllers/AuthController'
 
 export type Props = StackScreenProps<RoofStackParamList, "Home">
 
@@ -43,6 +43,9 @@ const Home: FunctionComponent<Props> = ({ navigation }) => {
             } catch (error: any) {
                 console.log(error.message);
             }
+
+
+            console.log("CURRENTLY LOGGED IN USER: ", await AuthController.getUser())
         }
 
         run();

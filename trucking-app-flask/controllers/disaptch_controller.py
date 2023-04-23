@@ -20,7 +20,7 @@ class DispatchController:
         """
         dispatch = Dispatch.get_dispatch_by_id_and_owner(
             session, dispatch_id, current_user.id)
-
+        print(f"CURRENT USER: {current_user}")
         if dispatch is None:
             return make_response({'error': 'Dispatch not found'}, 404)
         return make_response(dispatch.to_dict(), 200)

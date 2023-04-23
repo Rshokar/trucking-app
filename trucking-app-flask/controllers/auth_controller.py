@@ -29,15 +29,15 @@ class AuthController:
         print(user)
 
         if not user or not user.check_password(password):
-            return make_response('Invalid username or password', 401)
+            return make_response({"error": 'Invalid username or password'}, 401)
 
         login_user(user)
 
-        return make_response('Login successful', 200)
+        return make_response(user.to_dict(), 200)
 
     def logout():
         logout_user()
-        return make_response("Logout successful", 200)
+        return make_response({"message": "Logout successful"}, 200)
 
     def register(session, request):
         """_summary_
