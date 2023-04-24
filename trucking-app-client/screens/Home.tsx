@@ -3,15 +3,13 @@ import { StatusBar } from 'expo-status-bar'
 import styled from 'styled-components/native'
 import { StackScreenProps } from '@react-navigation/stack'
 import { DateData } from 'react-native-calendars'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 import { colors } from '../components/colors'
 import { Container } from '../components/shared'
 
-import logo from '../assets/icon.png';
-import CardSection from '../components/Cards/CardSection'
 import TransactionSection from '../components/Transactions/TransactionSection'
 import SendMoneySection from '../components/SendMoney/SendMoneySection'
-import RegularButton from '../components/Buttons/RegularButton'
 import { AuthController } from '../controllers/AuthController'
 import DateRangeCalendar from '../components/Calendars/DateRangeCalendar'
 
@@ -27,29 +25,25 @@ const HomeContainer = styled(Container)`
 import portrait from '../assets/portrait.jpg'
 
 import { RoofStackParamList } from '../navigators/RoofStack'
+import { Customer } from '../models/Customer'
 
 export type Props = StackScreenProps<RoofStackParamList, "Home">
 
 const Home: FunctionComponent<Props> = ({ navigation }) => {
 
+    const [customers, setCustomers] = useState<Customer[]>([]);
     const [dispatch, setDispatch] = useState<Dispatch[]>([]);
     const [query, setQuery] = useState<DispatchQuery>(new DispatchQuery());
 
     useEffect(() => {
         async function run() {
             const q: DispatchQuery = new DispatchQuery();
-
             q.company_id = 1;
-
             try {
                 const dispatches: Dispatch = await new DispatchController().get(q);
-                console.log("DISPATCHES", dispatches);
             } catch (error: any) {
                 console.log(error.message);
             }
-
-            console.log("CURRENTLY LOGGED IN USER: ", await AuthController.getUser())
-            console.log("CURRENTLY LOGGED IN COMPANY: ", await AuthController.getCompany())
         }
         run();
     }, []);
@@ -63,6 +57,14 @@ const Home: FunctionComponent<Props> = ({ navigation }) => {
         run();
 
     }, [query])
+
+    useEffect(() => {
+        const run = async (): Promise<void> => {
+            setCustomers(await AuthController.getCustomers());
+        }
+
+        run();
+    }, [])
 
     const setDate = (date: DateData) => {
         if (!query.startDate || (query.startDate && query.endDate)) {
@@ -84,30 +86,6 @@ const Home: FunctionComponent<Props> = ({ navigation }) => {
             console.log("ERROR", error);
         }
     }
-
-    const cardsData = [
-        {
-            id: 1,
-            accountNo: "3845757744",
-            balance: 20000.15,
-            alias: "Work Debit",
-            logo: logo
-        },
-        {
-            id: 2,
-            accountNo: "3845757744",
-            balance: 12000.15,
-            alias: "Personal Prepaid",
-            logo: logo
-        },
-        {
-            id: 3,
-            accountNo: "3845757744",
-            balance: 2000.15,
-            alias: "School Prepaid",
-            logo: logo
-        },
-    ]
 
     const transactionData = [
         {
@@ -168,8 +146,6 @@ const Home: FunctionComponent<Props> = ({ navigation }) => {
             img: portrait
         },
     ]
-
-    console.log("DATE RANGE: ", query.startDate, query.endDate)
 
     return (
         <HomeContainer>

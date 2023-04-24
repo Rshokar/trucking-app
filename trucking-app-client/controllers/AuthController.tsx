@@ -19,11 +19,10 @@ export class AuthController implements Controller {
             url: "/auth/login"
         })
 
-        console.log('STRINGIFY: ', JSON.stringify(user))
-        console.log('STRINGIFY: ', JSON.stringify(company))
-
         await AsyncStorage.setItem('user', JSON.stringify(user));
         await AsyncStorage.setItem('company', JSON.stringify(company));
+        await AsyncStorage.setItem('customers', JSON.stringify(company.customers));
+
         return { user, company };
     }
 
@@ -47,7 +46,6 @@ export class AuthController implements Controller {
     static async getUser(): Promise<User> {
         try {
             const userString = await AsyncStorage.getItem('user');
-            console.log("USER STRING: ", userString)
             if (userString !== null) {
                 return JSON.parse(userString);
             } else {
@@ -61,7 +59,6 @@ export class AuthController implements Controller {
     static async getCompany(): Promise<Company> {
         try {
             const companyString = await AsyncStorage.getItem('company');
-            console.log("COMPANY STRING: ", companyString)
             if (companyString !== null) {
                 return JSON.parse(companyString);
             } else {
@@ -69,6 +66,19 @@ export class AuthController implements Controller {
             }
         } catch (error: any) {
             throw new Error(`Failed to get company data: ${error.message}`);
+        }
+    }
+
+    static async getCustomers(): Promise<User[]> {
+        try {
+            const customersString = await AsyncStorage.getItem('customers');
+            if (customersString !== null) {
+                return JSON.parse(customersString);
+            } else {
+                throw new Error('Customer data not found');
+            }
+        } catch (error: any) {
+            throw new Error(`Failed to get customer data: ${error.message}`);
         }
     }
 
