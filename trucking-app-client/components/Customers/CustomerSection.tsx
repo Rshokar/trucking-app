@@ -35,10 +35,10 @@ const TextButton = styled.TouchableOpacity`
 
 import { CustomerSectionProps } from './types'
 
+let color = 0;
 const CustomerSection: FunctionComponent<CustomerSectionProps> = (props) => {
 
     function selectRandomColor(): string {
-        const randomNumber = Math.random();
 
         if (randomNumber < 0.33) {
             return colors.primary;
@@ -47,6 +47,7 @@ const CustomerSection: FunctionComponent<CustomerSectionProps> = (props) => {
         } else {
             return colors.tertiary;
         }
+        color++;
     }
 
     const sheetRef = useRef<BottomSheet>(null)
@@ -55,11 +56,11 @@ const CustomerSection: FunctionComponent<CustomerSectionProps> = (props) => {
         return <CustomerSectionBackground>
             <CustomerRow style={{ marginBottom: 25 }}>
                 <RegularText textStyle={{ fontSize: 19, color: colors.secondary }}>
-                    Send money to
+                    Customers
                 </RegularText>
                 <TextButton onPress={() => alert("Hello")}>
                     <SmallText textStyle={{
-                        fontWeight: "bold", color: colors.tertiary
+                        fontWeight: "bold", color: colors.secondary
                     }}>
                         + Add
                     </SmallText>
@@ -77,7 +78,8 @@ const CustomerSection: FunctionComponent<CustomerSectionProps> = (props) => {
                 renderItem={(item: any) => {
                     return <CustomerItem
                         {...item.item}
-                        color={selectRandomColor()}
+                        color={colors.tertiary}
+                        onClick={props.onClick}
                     />
                 }
                 }
@@ -92,7 +94,7 @@ const CustomerSection: FunctionComponent<CustomerSectionProps> = (props) => {
             snapPoints={[240, 85]}
             borderRadius={25}
             initialSnap={1}
-            enabledContentTapInteraction={false}
+            enabledContentTapInteraction={true}
             renderContent={renderContent}
         />
     )

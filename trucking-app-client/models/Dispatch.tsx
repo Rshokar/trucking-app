@@ -27,4 +27,5 @@ export class DispatchQuery implements Query {
     startDate?: DateData;
     endDate?: DateData;
     company_id?: number;
+    customers?: Set<number>;
 } 

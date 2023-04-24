@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from 'react'
+import React, { FunctionComponent, useState } from 'react'
 import styled from 'styled-components/native'
 
 import { colors } from '../colors'
@@ -19,19 +19,21 @@ const CustomerItemContainer = styled.TouchableHighlight`
 import { Customer } from '../../models/Customer'
 interface CustomerItemProps extends Customer {
     color: string
+    onClick: (id: number) => any
 }
 
 const CustomerItem: FunctionComponent<CustomerItemProps> = (props) => {
 
-    console.log("CUSTOMER ITEM PROPS", props)
 
-    // <Profile imageContainerStyle={{ marginBottom: 10 }} />
+    const [clicked, setClicked] = useState<boolean>(false)
+
     return (
         <CustomerItemContainer
             underlayColor={colors.secondary}
-            style={{ backgroundColor: props.color }}
+            style={{ backgroundColor: clicked ? colors.success : props.color }}
             onPress={() => {
-                alert("Send Money!")
+                setClicked(!clicked)
+                props.id && props.onClick(props.id)
             }}
         >
             <>

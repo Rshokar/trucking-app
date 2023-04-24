@@ -44,6 +44,7 @@ const Home: FunctionComponent<Props> = ({ navigation }) => {
             } catch (error: any) {
                 console.log(error.message);
             }
+            setCustomers(await AuthController.getCustomers());
         }
         run();
     }, []);
@@ -58,13 +59,17 @@ const Home: FunctionComponent<Props> = ({ navigation }) => {
 
     }, [query])
 
-    useEffect(() => {
-        const run = async (): Promise<void> => {
-            setCustomers(await AuthController.getCustomers());
+    const handleAddCustomer = (id: number) => {
+        if (!query.customers) {
+            query.customers = new Set<number>();
         }
 
-        run();
-    }, [])
+        if (query.customers.has(id))
+            query.customers.delete(id)
+        else
+            query.customers.add(id);
+        setQuery({ ...query });
+    }
 
     const setDate = (date: DateData) => {
         if (!query.startDate || (query.startDate && query.endDate)) {
@@ -123,6 +128,8 @@ const Home: FunctionComponent<Props> = ({ navigation }) => {
         }
     ]
 
+    console.log('QUERY:', query);
+
     return (
         <HomeContainer>
             <StatusBar style='dark' />
@@ -133,7 +140,7 @@ const Home: FunctionComponent<Props> = ({ navigation }) => {
             >
                 <TransactionSection data={transactionData} />
             </DateRangeCalendar>
-            <CustomerSection data={customers} />
+            <CustomerSection data={customers} onClick={handleAddCustomer} />
         </HomeContainer>
     )
 }
