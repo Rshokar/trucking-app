@@ -6,7 +6,7 @@ import { Request, Method } from "../utils/Request";
 import { Company } from "../models/Company";
 
 
-export class AuthController extends Controller {
+export class AuthController implements Controller {
 
     static authenticate() {
 

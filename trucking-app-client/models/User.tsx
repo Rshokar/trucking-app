@@ -21,26 +21,6 @@ export class User implements Model {
 }
 
 
-export class UserQuery implements Query<User> {
-
-    model?: User;
-
-    get<User>(): Promise<User> {
-        throw new Error('Method not implemented.');
-    }
-    getAll<User>(): Promise<User[]> {
-        throw new Error('Method not implemented.');
-    }
-    delete<User>(): Promise<void> {
-        throw new Error('Method not implemented.');
-    }
-    update<User>(): Promise<void> {
-        throw new Error('Method not implemented.');
-    }
-    create<User>(): Promise<User> {
-        throw new Error('Method not implemented.');
-    }
-
-
+export class UserQuery implements Query {
 }
 

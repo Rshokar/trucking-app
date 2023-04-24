@@ -2,6 +2,7 @@ import React, { FunctionComponent, useEffect, useState } from 'react'
 import { StatusBar } from 'expo-status-bar'
 import styled from 'styled-components/native'
 import { StackScreenProps } from '@react-navigation/stack'
+import { DateData } from 'react-native-calendars'
 
 import { colors } from '../components/colors'
 import { Container } from '../components/shared'
@@ -10,9 +11,12 @@ import logo from '../assets/icon.png';
 import CardSection from '../components/Cards/CardSection'
 import TransactionSection from '../components/Transactions/TransactionSection'
 import SendMoneySection from '../components/SendMoney/SendMoneySection'
-import { Dispatch, DispatchQuery } from '../models/Dispatch'
 import RegularButton from '../components/Buttons/RegularButton'
 import { AuthController } from '../controllers/AuthController'
+import DateRangeCalendar from '../components/Calendars/DateRangeCalendar'
+
+import { DispatchController } from '../controllers/DispatchController'
+import { Dispatch, DispatchQuery } from '../models/Dispatch'
 
 const HomeContainer = styled(Container)`
     background-color: ${colors.graylight};
@@ -29,29 +33,48 @@ export type Props = StackScreenProps<RoofStackParamList, "Home">
 const Home: FunctionComponent<Props> = ({ navigation }) => {
 
     const [dispatch, setDispatch] = useState<Dispatch[]>([]);
+    const [query, setQuery] = useState<DispatchQuery>(new DispatchQuery());
 
     useEffect(() => {
         async function run() {
             const q: DispatchQuery = new DispatchQuery();
 
-            q.model = new Dispatch();
-            q.model.company_id = 1;
+            q.company_id = 1;
 
             try {
-                const dispatches = await q.get();
-                console.log(dispatches);
+                const dispatches: Dispatch = await new DispatchController().get(q);
+                console.log("DISPATCHES", dispatches);
             } catch (error: any) {
                 console.log(error.message);
             }
 
-
             console.log("CURRENTLY LOGGED IN USER: ", await AuthController.getUser())
             console.log("CURRENTLY LOGGED IN COMPANY: ", await AuthController.getCompany())
         }
-
         run();
     }, []);
 
+    useEffect(() => {
+        console.log('QUERY USER EFFECT: ', query)
+        async function run() {
+
+        }
+
+        run();
+
+    }, [query])
+
+    const setDate = (date: DateData) => {
+        if (!query.startDate || (query.startDate && query.endDate)) {
+            query.startDate = date;
+            query.endDate = undefined;
+        } else if (date.timestamp < query.startDate.timestamp) {
+            query.startDate = date
+        } else {
+            query.endDate = date;
+        }
+        setQuery({ ...query });
+    }
 
     const logout = async () => {
         try {
@@ -146,12 +169,18 @@ const Home: FunctionComponent<Props> = ({ navigation }) => {
         },
     ]
 
+    console.log("DATE RANGE: ", query.startDate, query.endDate)
+
     return (
         <HomeContainer>
             <StatusBar style='dark' />
-            <CardSection data={cardsData} />
-            <RegularButton onPress={logout}>Logout</RegularButton>
-            <TransactionSection data={transactionData} />
+            <DateRangeCalendar
+                setDate={setDate}
+                startDate={query.startDate}
+                endDate={query.endDate}
+            >
+                <TransactionSection data={transactionData} />
+            </DateRangeCalendar>
             <SendMoneySection data={sendMoneyData} />
         </HomeContainer>
     )

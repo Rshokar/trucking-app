@@ -14,34 +14,10 @@ export class Company implements Model {
         this.owner_id = owner_id;
     }
 
-
-
 }
 
 
-export class CompanyQuery implements Query<Company> {
+export class CompanyQuery implements Query {
 
-    model?: Company;
 
-    get<Company>(): Promise<Company> {
-
-        throw new Error('Method not implemented.');
-    }
-
-    getAll<Company>(): Promise<Company[]> {
-        throw new Error('Method not implemented.');
-    }
-
-    delete<Company>(): Promise<void> {
-        throw new Error('Method not implemented.');
-    }
-
-    update<Company>(): Promise<void> {
-        throw new Error('Method not implemented.');
-    }
-
-    async create<Company>(): Promise<Company> {
-        throw new Error('Method not implemented.');
-    }
 }
-

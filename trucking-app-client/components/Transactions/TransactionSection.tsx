@@ -10,18 +10,15 @@ const TransactionSectionBackground = styled.View`
     width: 100%; 
     padding-horizontal: 25px;
     padding-top: 5px; 
-    flex: 2;
 `
 
 const TransactionRow = styled.View`
     flex-direction: row;
     justify-content: space-between; 
     align-items: center;
-    width: 100%
 `
 
 const TransactionList = styled.FlatList`
-    width: 100%
 `
 
 import { TransactionSectionProps } from './types'
