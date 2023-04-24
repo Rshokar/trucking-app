@@ -63,7 +63,6 @@ const FlashAnimation: FunctionComponent<FlashAnimationProps> = (props) => {
 
 
     useEffect(() => {
-        console.log("USE EFFECT", props.children)
         if (props.children != "")
             Animated.sequence(animations).start(() => {
                 props.onAnimationEnd && props.onAnimationEnd()

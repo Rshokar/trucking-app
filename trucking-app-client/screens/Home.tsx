@@ -9,7 +9,7 @@ import { colors } from '../components/colors'
 import { Container } from '../components/shared'
 
 import TransactionSection from '../components/Transactions/TransactionSection'
-import SendMoneySection from '../components/SendMoney/SendMoneySection'
+import CustomerSection from '../components/Customers/CustomerSection'
 import { AuthController } from '../controllers/AuthController'
 import DateRangeCalendar from '../components/Calendars/DateRangeCalendar'
 
@@ -123,30 +123,6 @@ const Home: FunctionComponent<Props> = ({ navigation }) => {
         }
     ]
 
-    const sendMoneyData = [
-        {
-            id: 1,
-            name: "Rod Williams",
-            amount: "$25.00",
-            background: colors.primary,
-            img: portrait
-        },
-        {
-            id: 2,
-            name: "Rob Wilhiam",
-            amount: "$5.00",
-            background: colors.secondary,
-            img: portrait
-        },
-        {
-            id: 1,
-            name: "Rog Villiams",
-            amount: "$25.01",
-            background: colors.tertiary,
-            img: portrait
-        },
-    ]
-
     return (
         <HomeContainer>
             <StatusBar style='dark' />
@@ -157,7 +133,7 @@ const Home: FunctionComponent<Props> = ({ navigation }) => {
             >
                 <TransactionSection data={transactionData} />
             </DateRangeCalendar>
-            <SendMoneySection data={sendMoneyData} />
+            <CustomerSection data={customers} />
         </HomeContainer>
     )
 }

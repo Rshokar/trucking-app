@@ -6,15 +6,15 @@ import BottomSheet from 'reanimated-bottom-sheet'
 import { colors } from '../colors'
 import RegularText from '../Texts/RegularText'
 import SmallText from '../Texts/SmallText'
-import SendMoneyItem from './SendMoneyItem'
+import CustomerItem from './CustomerItem'
 
-const SendMoneySectionBackground = styled.View`
+const CustomerSectionBackground = styled.View`
     width: 100%;
     padding-top: 15px;
     background-color: ${colors.white}
 `
 
-const SendMoneyRow = styled.View`
+const CustomerRow = styled.View`
     flex-direction: row;
     justify-content: space-between; 
     align-items: center;
@@ -22,7 +22,7 @@ const SendMoneyRow = styled.View`
     padding-horizontal: 25px
 `
 
-const SendMoneyList = styled.FlatList`
+const CustomerList = styled.FlatList`
     width: 100%; 
     flex: auto;
     min-height: 80%;
@@ -33,16 +33,27 @@ const TextButton = styled.TouchableOpacity`
 
 `
 
-import { SendMoneySectionProps } from './types'
-import { Text } from 'react-native'
+import { CustomerSectionProps } from './types'
 
-const SendMoneySection: FunctionComponent<SendMoneySectionProps> = (props) => {
+const CustomerSection: FunctionComponent<CustomerSectionProps> = (props) => {
+
+    function selectRandomColor(): string {
+        const randomNumber = Math.random();
+
+        if (randomNumber < 0.33) {
+            return colors.primary;
+        } else if (randomNumber < 0.66) {
+            return colors.secondary;
+        } else {
+            return colors.tertiary;
+        }
+    }
 
     const sheetRef = useRef<BottomSheet>(null)
 
     const renderContent = () => {
-        return <SendMoneySectionBackground>
-            <SendMoneyRow style={{ marginBottom: 25 }}>
+        return <CustomerSectionBackground>
+            <CustomerRow style={{ marginBottom: 25 }}>
                 <RegularText textStyle={{ fontSize: 19, color: colors.secondary }}>
                     Send money to
                 </RegularText>
@@ -53,8 +64,8 @@ const SendMoneySection: FunctionComponent<SendMoneySectionProps> = (props) => {
                         + Add
                     </SmallText>
                 </TextButton>
-            </SendMoneyRow>
-            <SendMoneyList
+            </CustomerRow>
+            <CustomerList
                 data={props.data}
                 contentContainerStyle={{
                     alignItems: "flex-start"
@@ -62,15 +73,16 @@ const SendMoneySection: FunctionComponent<SendMoneySectionProps> = (props) => {
                 horizontal={false}
                 showsVerticalScrollIndicator={false}
                 numColumns={3}
-                keyExtractor={({ id }: any) => id.toString()}
+                keyExtractor={({ id }: any) => id + ""}
                 renderItem={(item: any) => {
-                    return <SendMoneyItem
+                    return <CustomerItem
                         {...item.item}
+                        color={selectRandomColor()}
                     />
                 }
                 }
             />
-        </SendMoneySectionBackground>
+        </CustomerSectionBackground>
     }
 
     return (
@@ -86,4 +98,4 @@ const SendMoneySection: FunctionComponent<SendMoneySectionProps> = (props) => {
     )
 }
 
-export default SendMoneySection
+export default CustomerSection

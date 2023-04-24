@@ -23,8 +23,6 @@ const LoginForm: FunctionComponent<FormProps<LoginFormResult>> = (props) => {
             .required('Password is required')
     })
 
-    console.log("Hello");
-
     return <Formik initialValues={intialValues} onSubmit={props.onSubmit} validationSchema={validationSchema}>
         {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => <>
             <Input

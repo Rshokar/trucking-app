@@ -4,6 +4,7 @@ import { Controller } from "./Controller";
 import { User } from "../models/User";
 import { Request, Method } from "../utils/Request";
 import { Company } from "../models/Company";
+import { Customer } from "../models/Customer";
 
 
 export class AuthController implements Controller {
@@ -19,9 +20,9 @@ export class AuthController implements Controller {
             url: "/auth/login"
         })
 
-        await AsyncStorage.setItem('user', JSON.stringify(user));
-        await AsyncStorage.setItem('company', JSON.stringify(company));
-        await AsyncStorage.setItem('customers', JSON.stringify(company.customers));
+        await this.saveUser(user)
+        await this.saveCustomers(company.customers)
+        await this.saveCompany(company)
 
         return { user, company };
     }
@@ -41,6 +42,35 @@ export class AuthController implements Controller {
                 url: "/auth/register"
             }
         );
+    }
+
+
+    private static async saveUser(u: any): Promise<void> {
+        const user: User = new User(u["id"], u["role"], u["email"])
+        console.log("SAVE USER", user)
+        await AsyncStorage.setItem('user', JSON.stringify(user));
+    }
+
+    private static async saveCompany(c: any): Promise<void> {
+        const company: Company = new Company(
+            c["company_id"],
+            c["company_name"],
+            c["owner_id"]
+        )
+        console.log("SAVE COMPANY", company)
+        await AsyncStorage.setItem('company', JSON.stringify(company));
+    }
+
+    private static async saveCustomers(c: any): Promise<void> {
+        const customers: Customer[] = c.map((c: any) => new Customer(
+            c["customer_id"],
+            c["company_id"],
+            c["customer_name"],
+            c["deleted"],
+        ));
+
+        console.log("SAVE CUSTOMERS", customers)
+        await AsyncStorage.setItem('customers', JSON.stringify(customers));
     }
 
     static async getUser(): Promise<User> {

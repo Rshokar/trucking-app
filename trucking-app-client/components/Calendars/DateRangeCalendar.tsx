@@ -81,12 +81,9 @@ const DateRangeCalendar: FunctionComponent<DateRangeCalendar> = (props) => {
                         selected: true,
                         selectedColor: colors.tertiary,
                     }
-                    console.log(`${start.getFullYear()}-${start.getMonth()}-${start.getDay()}`);
                     startDate.add(1, 'day');
                 }
             }
-
-            console.log("MARKED DATES", tempMarkedDate)
 
             setMarkedDates(tempMarkedDate)
         }

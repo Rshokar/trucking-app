@@ -9,7 +9,6 @@ export class User implements Model {
     email?: string;
 
     constructor(id?: number, role?: string, email?: string, password: string = "") {
-        console.log("USER CONSTRUCTOR")
         this.id = id;
         this.role = role;
         this.email = email;

@@ -76,7 +76,6 @@ const Welcome: FunctionComponent<Props> = ({ navigation }) => {
     const handleLogin = async (res: LoginFormResult): Promise<any> => {
         let u: User = new User(undefined, undefined, res.email, res.password);
         try {
-            console.log('OMG')
             const user = await AuthController.login(u);
             setFlashColor(colors.success)
             setFlashMessage("Successfully Loggd In")
@@ -99,9 +98,6 @@ const Welcome: FunctionComponent<Props> = ({ navigation }) => {
             // Deal with errors
         }
     }
-
-
-    console.log("FLASH MESSAGE: ", flashMessage)
 
     return (
         <>

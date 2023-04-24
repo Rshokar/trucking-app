@@ -8,47 +8,45 @@ import SmallText from '../Texts/SmallText'
 import Profile from '../Header/Profile'
 import { ScreenWidth } from '../shared'
 
-const SendMoneyItemContainer = styled.TouchableHighlight`
-    height: 130px; 
+const CustomerItemContainer = styled.TouchableHighlight`
+    height: 50px; 
     width: ${Math.floor(ScreenWidth * 0.27)}px;
     padding: 10px;
     border-radius: 15px; 
     justify-content: space-around;
     margin: 0px 10px 10px 0px;
 `
-import { SendMoneyProps } from './types'
+import { Customer } from '../../models/Customer'
+interface CustomerItemProps extends Customer {
+    color: string
+}
 
-const SendMoneyItem: FunctionComponent<SendMoneyProps> = (props) => {
+const CustomerItem: FunctionComponent<CustomerItemProps> = (props) => {
 
+    console.log("CUSTOMER ITEM PROPS", props)
+
+    // <Profile imageContainerStyle={{ marginBottom: 10 }} />
     return (
-        <SendMoneyItemContainer
+        <CustomerItemContainer
             underlayColor={colors.secondary}
-            style={{ backgroundColor: props.background }}
+            style={{ backgroundColor: props.color }}
             onPress={() => {
                 alert("Send Money!")
             }}
         >
             <>
-                <Profile imageContainerStyle={{ marginBottom: 10 }} />
-                <SmallText
+                <RegularText
                     textStyle={{
-                        textAlign: 'left',
+                        textAlign: 'center',
                         color: colors.white,
                         fontSize: 12,
                     }}
                 >
-                    {props.name}
-                </SmallText>
-                <RegularText textStyle={{
-                    color: colors.white,
-                    textAlign: "left",
-                    fontSize: 13
-                }}>
-                    {props.amount}
+                    {props.customerName}
                 </RegularText>
             </>
-        </SendMoneyItemContainer>
+        </CustomerItemContainer>
     )
 }
 
-export default SendMoneyItem
+export default CustomerItem
