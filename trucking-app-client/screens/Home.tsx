@@ -3,12 +3,11 @@ import { StatusBar } from 'expo-status-bar'
 import styled from 'styled-components/native'
 import { StackScreenProps } from '@react-navigation/stack'
 import { DateData } from 'react-native-calendars'
-import AsyncStorage from '@react-native-async-storage/async-storage'
 
 import { colors } from '../components/colors'
 import { Container } from '../components/shared'
 
-import TransactionSection from '../components/Transactions/TransactionSection'
+import TicketSection from '../components/Tickets/TicketSection'
 import CustomerSection from '../components/Customers/CustomerSection'
 import { AuthController } from '../controllers/AuthController'
 import DateRangeCalendar from '../components/Calendars/DateRangeCalendar'
@@ -22,7 +21,6 @@ const HomeContainer = styled(Container)`
     flex: 1
 `
 
-import portrait from '../assets/portrait.jpg'
 
 import { RoofStackParamList } from '../navigators/RoofStack'
 import { Customer } from '../models/Customer'
@@ -138,7 +136,9 @@ const Home: FunctionComponent<Props> = ({ navigation }) => {
                 startDate={query.startDate}
                 endDate={query.endDate}
             >
-                <TransactionSection data={transactionData} />
+                <TicketSection data={transactionData} render={function ({ item }: any) {
+                    throw new Error('Function not implemented.')
+                }} />
             </DateRangeCalendar>
             <CustomerSection data={customers} onClick={handleAddCustomer} />
         </HomeContainer>

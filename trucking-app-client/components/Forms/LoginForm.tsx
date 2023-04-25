@@ -5,12 +5,10 @@ import { TextInput } from 'react-native-gesture-handler'
 
 
 import RegularButton from '../Buttons/RegularButton'
-import { StyledInputeView } from './style'
+import Input from './Inputs/Input'
 import { LoginFormResult } from './types'
 
-
 import { FormProps } from './types'
-import Input from './Inputs/Input'
 
 const intialValues: LoginFormResult = { email: '', password: '' }
 const LoginForm: FunctionComponent<FormProps<LoginFormResult>> = (props) => {

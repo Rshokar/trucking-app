@@ -6,49 +6,49 @@ import SmallText from '../Texts/SmallText'
 import { colors } from '../colors'
 
 
-const TransactionSectionBackground = styled.View`
+const TicketSectionBackground = styled.View`
     width: 100%; 
     padding-horizontal: 25px;
     padding-top: 5px; 
 `
 
-const TransactionRow = styled.View`
+const TicketRow = styled.View`
     flex-direction: row;
     justify-content: space-between; 
     align-items: center;
 `
 
-const TransactionList = styled.FlatList`
+const TicketList = styled.FlatList`
 `
 
-import { TransactionSectionProps } from './types'
+import { TicketSectionProps } from './types'
 import RegularText from '../Texts/RegularText'
-import TransactionItem from './TransactionItem';
 
-const TransactionSection: FunctionComponent<TransactionSectionProps> = (props) => {
+
+const TicketSection: FunctionComponent<TicketSectionProps> = (props) => {
     return (
-        <TransactionSectionBackground>
-            <TransactionRow style={{ marginBottom: 25 }}>
+        <TicketSectionBackground>
+            <TicketRow style={{ marginBottom: 25 }}>
                 <RegularText textStyle={{ fontSize: 19, color: colors.secondary }}>
-                    Transactions
+                    Dispatches
                 </RegularText>
                 <SmallText textStyle={{ color: colors.secondary }}>
                     Recent
                     <Ionicons name="caret-down" size={13} color={colors.graydark} />
                 </SmallText>
-            </TransactionRow>
-            <TransactionList
+            </TicketRow>
+            <TicketList
                 data={props.data}
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={{
                     paddingBottom: 25,
                 }}
-                keyExtractor={({ id }: any) => id.toString()}
-                renderItem={({ item }: any) => <TransactionItem {...item} />}
+                keyExtractor={({ id }: any) => id + ""}
+                renderItem={props.render}
 
             />
-        </TransactionSectionBackground>
+        </TicketSectionBackground>
     )
 }
 
-export default TransactionSection
+export default TicketSection

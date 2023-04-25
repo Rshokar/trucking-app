@@ -17,12 +17,13 @@ const StyledView = styled.View`
 
 
 // types
-import { TransactionAviProps } from "./types"
+import { TicketAviProps } from "./types"
+import BigText from "../Texts/BigText";
 
-const TransactionAvi: FunctionComponent<TransactionAviProps> = (props) => {
+const TransactionAvi: FunctionComponent<TicketAviProps> = (props) => {
     return (
         <StyledView style={{ backgroundColor: props.background }}>
-            <Ionicons name={props.icon} size={25} color={colors.white} />
+            <BigText>{props.icon}</BigText>
         </StyledView>
     )
 }
