@@ -17,6 +17,22 @@ def get_dispatch(dispatch_id):
     return DispatchController.get_dispatch(session=session, dispatch_id=dispatch_id)
 
 
+@dispatch.route('/', methods=['GET'])
+@login_required
+def get_dispatch_all():
+    session = g.session
+
+    # get query string parameters
+    limit = request.args.get('limit')
+    page = request.args.get('page')
+    startDate = request.args.get('startDate')
+    endDate = request.args.get('endDate')
+    customers = request.args.getlist('customers')
+
+    # pass query string parameters to DispatchController
+    return DispatchController.get_dispatch_all(session=session, limit=limit, page=page, startDate=startDate, endDate=endDate, customers=customers)
+
+
 @dispatch.route('/', methods=['POST'])
 @login_required
 def create_dispatch():

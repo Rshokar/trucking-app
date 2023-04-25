@@ -39,7 +39,7 @@ def loadDB(num_users):
         billing_tickets = []
         for customer in customers:
             d = DispatchFactory.create_batch(
-                5, company_id=company.company_id, customer_id=customer.customer_id)
+                5, company_id=company.company_id, customer_id=customer.customer_id, date=fake.date_time_this_year(before_now=False, after_now=False, tzinfo=None))
 
             for dispatch in d:
                 numRfos = random.randint(0, len(operators))

@@ -7,7 +7,6 @@ import { ScreenHeight } from '../shared'
 import { colors } from '../colors'
 
 const CalandarView = styled.View`
-    height: ${ScreenHeight * .20}px
 `
 
 LocaleConfig.locales['en'] = {
@@ -65,11 +64,6 @@ const DateRangeCalendar: FunctionComponent<DateRangeCalendar> = (props) => {
             tempMarkedDate[props.startDate.dateString] = { selected: true, selectedColor: colors.tertiary }
 
             if (props.startDate && props.endDate) {
-                let start: Date = new Date(
-                    props.startDate.year,
-                    props.startDate.month,
-                    props.startDate.day
-                );
 
                 let i: number = 0;
                 const startDate = moment(props.startDate.dateString);
@@ -105,6 +99,7 @@ const DateRangeCalendar: FunctionComponent<DateRangeCalendar> = (props) => {
 
             props.setDate(dateData);
         }}
+        style={{ width: '100%' }}
         disabledOpacity={0.6}
         date={currentDate} // set current date as default date
 
@@ -117,7 +112,7 @@ const DateRangeCalendar: FunctionComponent<DateRangeCalendar> = (props) => {
             theme={{
                 backgroundColor: colors.graylight,
                 calendarBackground: colors.graylight,
-                textSectionTitleColor: '#b6c1cd'
+                textSectionTitleColor: '#b6c1cd',
             }}
             allowShadow={false}
             calendarHeight={ScreenHeight * .4}

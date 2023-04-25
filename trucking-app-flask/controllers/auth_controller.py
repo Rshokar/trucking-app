@@ -33,8 +33,11 @@ class AuthController:
 
         login_user(user)
 
+        print("USER FROM LOGIN: ", user.to_dict())
+
         comp = session.query(Company).filter_by(owner_id=user.id).first()
 
+        print("COMPANY FROM LOGIN: ", comp)
         return make_response({
             "user": user.to_dict(),
             "company": comp.to_dict()

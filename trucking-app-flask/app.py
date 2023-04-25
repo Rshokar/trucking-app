@@ -12,18 +12,18 @@ load_dotenv()
 
 IS_PRODUCTION = os.environ.get("STATE")
 
-if (IS_PRODUCTION == "development" or IS_PRODUCTION == "test"):
-    NUM_USERS = os.environ.get("TEST_DATA_NUM_USERS")
-    # # If development clear all database
-    Base.metadata.drop_all(engine)
+# if (IS_PRODUCTION == "development" or IS_PRODUCTION == "test"):
+# NUM_USERS = os.environ.get("TEST_DATA_NUM_USERS")
+# # # If development clear all database
+# Base.metadata.drop_all(engine)
 
-    print("--|--Creating Tables--|--")
-    # Create all tables if not already there
-    Base.metadata.create_all(engine)
+# print("--|--Creating Tables--|--")
+# # Create all tables if not already there
+# Base.metadata.create_all(engine)
 
-    if (IS_PRODUCTION == "development"):
-        print("--|--Loading Test Data--|--")
-        loadDB(int(NUM_USERS))
+# if (IS_PRODUCTION == "development"):
+#     print("--|--Loading Test Data--|--")
+#     loadDB(int(NUM_USERS))
 
 
 def create_app():

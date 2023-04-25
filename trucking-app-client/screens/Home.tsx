@@ -31,32 +31,28 @@ export type Props = StackScreenProps<RoofStackParamList, "Home">
 const Home: FunctionComponent<Props> = ({ navigation }) => {
 
     const [customers, setCustomers] = useState<Customer[]>([]);
-    const [dispatch, setDispatch] = useState<Dispatch[]>([]);
+    const [dispatches, setDispatches] = useState<Dispatch[]>([]);
     const [query, setQuery] = useState<DispatchQuery>(new DispatchQuery());
 
     useEffect(() => {
         async function run() {
-            const q: DispatchQuery = new DispatchQuery();
-            q.company_id = 1;
             try {
-                const dispatches: Dispatch[] = await new DispatchController().getAll(q);
+                const dispatches: Dispatch[] = await new DispatchController().getAll(query);
+                console.log(dispatches)
+                setDispatches(dispatches)
             } catch (error: any) {
                 console.log(error.message);
             }
-            setCustomers(await AuthController.getCustomers());
         }
         run();
-    }, []);
+    }, [query]);
 
     useEffect(() => {
-        console.log('QUERY USER EFFECT: ', query)
         async function run() {
-
+            setCustomers(await AuthController.getCustomers());
         }
-
-        run();
-
-    }, [query])
+        run()
+    }, [])
 
     const handleAddCustomer = (id: number) => {
         if (!query.customers) {
@@ -71,7 +67,7 @@ const Home: FunctionComponent<Props> = ({ navigation }) => {
     }
 
     const setDate = (date: DateData) => {
-        if (!query.startDate || (query.startDate && query.endDate)) {
+        if (!query.startDate || (query.startDate.dateString === date.dateString) || (query.startDate && query.endDate)) {
             query.startDate = date;
             query.endDate = undefined;
         } else if (date.timestamp < query.startDate.timestamp) {
@@ -91,42 +87,6 @@ const Home: FunctionComponent<Props> = ({ navigation }) => {
         }
     }
 
-    const transactionData = [
-        {
-            id: 1,
-            amount: "-$86.00",
-            date: "14 Sep 2021",
-            title: "Taxi",
-            subtitle: "Uber car",
-            art: {
-                background: colors.primary,
-                icon: "car"
-            },
-        },
-        {
-            id: 2,
-            amount: "-$41.00",
-            date: "14 Sep 2021",
-            title: "Shopping",
-            subtitle: "Ali Express",
-            art: {
-                background: colors.secondary,
-                icon: "cart"
-            },
-        },
-        {
-            id: 3,
-            amount: "-$586.00",
-            date: "14 Aug 2021",
-            title: "Travel",
-            subtitle: "Emirates",
-            art: {
-                background: colors.tertiary,
-                icon: "airplane"
-            },
-        }
-    ]
-
     console.log('QUERY:', query);
 
     return (
@@ -137,7 +97,7 @@ const Home: FunctionComponent<Props> = ({ navigation }) => {
                 startDate={query.startDate}
                 endDate={query.endDate}
             >
-                <TicketSection data={transactionData} render={function ({ item }: any) {
+                <TicketSection data={dispatches} render={function ({ item }: any) {
                     return <DispatchItem {...item} />
                 }} />
             </DateRangeCalendar>

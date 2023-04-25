@@ -1,4 +1,5 @@
-from models import Dispatch, Company, Customer
+from models import Dispatch, Company, Customer, RFO
+from sqlalchemy import func
 from sqlalchemy.exc import IntegrityError
 from flask import jsonify
 from datetime import datetime
@@ -24,6 +25,50 @@ class DispatchController:
         if dispatch is None:
             return make_response({'error': 'Dispatch not found'}, 404)
         return make_response(dispatch.to_dict(), 200)
+
+    def get_dispatch_all(session, limit, page, startDate, endDate, customers):
+        """_summary_
+
+        Args:
+            session (_type_): SQL Alchemy Session
+            limit (int): Limit of dispatches
+            page (int): Page of dispatches
+            startDate (datetime): Start date of dispatches
+            endDate (datetime): End date of dispatches
+            custmoers (list): List of customers
+
+        Returns:
+            Response: 200 success 404 not found
+        """
+
+        limit = int(limit) if limit is not None else 10
+        page = int(page) if page is not None else 0
+        startDate = startDate if startDate is not None else datetime.min
+        endDate = endDate if endDate is not None else datetime.max
+        customers = customers if customers is not None else []
+
+        query = session.query(Dispatch, func.count(RFO.rfo_id))\
+            .join(Company, Dispatch.company_id == Company.company_id)\
+            .outerjoin(RFO, Dispatch.dispatch_id == RFO.dispatch_id)
+        # query the database using the parameters
+        if not customers:  # if the customers array is empty, all ids pass
+            query = query.filter(
+                Dispatch.date >= startDate,
+                Dispatch.date <= endDate
+            )
+        else:  # if the customers array is not empty, check if the customer_id is in the array
+            query = query.filter(
+                Dispatch.customer_id.in_(customers),
+                Dispatch.date >= startDate,
+                Dispatch.date <= endDate
+            )
+
+        dispatches = query.group_by(Dispatch.dispatch_id)\
+            .limit(limit).offset(page * limit).all()
+
+        print("Dispatches: ", dispatches)
+        print("Dispatch: ", dispatches[0])
+        return make_response({[dispatch.to_dict() for dispatch in dispatches]}, 200)
 
     def create_dispatch(session, request):
         """_summary_
