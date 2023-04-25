@@ -21,6 +21,7 @@ import { TicketAviProps } from "./types"
 import BigText from "../Texts/BigText";
 
 const TransactionAvi: FunctionComponent<TicketAviProps> = (props) => {
+
     return (
         <StyledView style={{ backgroundColor: props.background }}>
             <BigText>{props.icon}</BigText>

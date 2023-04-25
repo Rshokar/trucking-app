@@ -30,24 +30,22 @@ const RightView = styled.View`
 
 
 import { Dispatch } from '../../models/Dispatch'
-export interface DispatchItemProps extends Dispatch {
-    numOperators: number
-}
 
-const DispatchItem: FunctionComponent<DispatchItemProps> = (props) => {
-    <TransactionAvi
-        background={colors.tertiary}
-        icon={props.customer?.customerName ? props.customer?.customerName[0] : 'T'}
-    />
+
+const DispatchItem: FunctionComponent<Dispatch> = (props) => {
     return (
         <TransactionRow>
             <LeftView>
+                <TransactionAvi
+                    background={colors.tertiary}
+                    icon={props.customer?.customerName ? props.customer?.customerName[0] : 'T'}
+                />
                 <View style={{ marginLeft: 10 }}>
                     <RegularText textStyle={{
                         color: colors.secondary,
                         textAlign: "left"
                     }}>
-                        {props.customer_id}
+                        {'BNB Contracting'}
                     </RegularText>
                     <SmallText textStyle={{
                         textAlign: 'left',
@@ -63,7 +61,7 @@ const DispatchItem: FunctionComponent<DispatchItemProps> = (props) => {
                     color: colors.secondary,
                     textAlign: "right"
                 }}>
-                    {props.numOperators}
+                    {5}
                 </RegularText>
             </RightView>
 

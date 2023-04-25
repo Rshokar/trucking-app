@@ -24,6 +24,7 @@ const HomeContainer = styled(Container)`
 
 import { RoofStackParamList } from '../navigators/RoofStack'
 import { Customer } from '../models/Customer'
+import DispatchItem from '../components/Tickets/DispatchItem'
 
 export type Props = StackScreenProps<RoofStackParamList, "Home">
 
@@ -38,7 +39,7 @@ const Home: FunctionComponent<Props> = ({ navigation }) => {
             const q: DispatchQuery = new DispatchQuery();
             q.company_id = 1;
             try {
-                const dispatches: Dispatch = await new DispatchController().get(q);
+                const dispatches: Dispatch[] = await new DispatchController().getAll(q);
             } catch (error: any) {
                 console.log(error.message);
             }
@@ -137,7 +138,7 @@ const Home: FunctionComponent<Props> = ({ navigation }) => {
                 endDate={query.endDate}
             >
                 <TicketSection data={transactionData} render={function ({ item }: any) {
-                    throw new Error('Function not implemented.')
+                    return <DispatchItem {...item} />
                 }} />
             </DateRangeCalendar>
             <CustomerSection data={customers} onClick={handleAddCustomer} />
