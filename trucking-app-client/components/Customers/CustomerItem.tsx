@@ -33,7 +33,7 @@ const CustomerItem: FunctionComponent<CustomerItemProps> = (props) => {
             style={{ backgroundColor: clicked ? colors.success : props.color }}
             onPress={() => {
                 setClicked(!clicked)
-                props.id && props.onClick(props.id)
+                props.customer_id && props.onClick(props.customer_id)
             }}
         >
             <>
@@ -44,7 +44,7 @@ const CustomerItem: FunctionComponent<CustomerItemProps> = (props) => {
                         fontSize: 12,
                     }}
                 >
-                    {props.customerName}
+                    {props.customer_name}
                 </RegularText>
             </>
         </CustomerItemContainer>

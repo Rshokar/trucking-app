@@ -43,7 +43,7 @@ const TicketSection: FunctionComponent<TicketSectionProps> = (props) => {
                 contentContainerStyle={{
                     paddingBottom: 25,
                 }}
-                keyExtractor={({ id }: any) => id + ""}
+                keyExtractor={(item: unknown, index: number) => index + ""}
                 renderItem={props.render}
 
             />

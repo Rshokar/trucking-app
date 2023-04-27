@@ -2,7 +2,7 @@ from models import Dispatch, Company, Customer, RFO
 from sqlalchemy import func
 from sqlalchemy.exc import IntegrityError
 from flask import jsonify
-from datetime import datetime
+from datetime import datetime, timedelta
 from utils import make_response
 from flask_login import current_user
 
@@ -43,13 +43,25 @@ class DispatchController:
 
         limit = int(limit) if limit is not None else 10
         page = int(page) if page is not None else 0
-        startDate = startDate if startDate is not None else datetime.min
-        endDate = endDate if endDate is not None else datetime.max
+        startDate = datetime.strptime(
+            startDate, '%Y-%m-%d') if startDate is not None else datetime.now()
+        endDate = datetime.strptime(
+            endDate, '%Y-%m-%d') + timedelta(days=1) if endDate is not None else startDate + timedelta(days=1)
         customers = customers if customers is not None else []
 
-        dispatch_query = session.query(Dispatch, func.count(RFO.rfo_id).label('rfo_count'))\
+        print("Parameter types:")
+        print("limit:", type(limit))
+        print("page:", type(page))
+        print("startDate:", type(startDate))
+        print("endDate:", type(endDate))
+        print("customers:", type(customers))
+
+        dispatch_query = session.query(Dispatch, Customer, func.count(RFO.rfo_id).label('rfo_count'))\
             .join(Company, Dispatch.company_id == Company.company_id)\
-            .join(RFO, Dispatch.dispatch_id == RFO.dispatch_id)
+            .join(RFO, Dispatch.dispatch_id == RFO.dispatch_id)\
+            .join(Customer, Dispatch.customer_id == Customer.customer_id)
+        print("CUSTOMERSsssssss: ", customers)
+
         # query the database using the parameters
         if not customers:  # if the customers array is empty, all ids pass
             dispatch_query = dispatch_query.filter(
@@ -57,6 +69,7 @@ class DispatchController:
                 Dispatch.date <= endDate
             )
         else:  # if the customers array is not empty, check if the customer_id is in the array
+            print("CUSTOMERS: ", customers)
             dispatch_query = dispatch_query.filter(
                 Dispatch.customer_id.in_(customers),
                 Dispatch.date >= startDate,
@@ -65,7 +78,7 @@ class DispatchController:
 
         dispatches = dispatch_query.group_by(Dispatch.dispatch_id)\
             .limit(limit).offset(page * limit).all()
-        print("DISPATCHES: ", dispatches)
+
         result = []
         for dispatch in dispatches:
             result.append({
@@ -74,11 +87,12 @@ class DispatchController:
                 "customer_id": dispatch[0].customer_id,
                 "notes": dispatch[0].notes,
                 "date": dispatch[0].date,
-                "rfo_count": dispatch[1]
+                "customer": dispatch[1].to_dict(),
+                "rfo_count": dispatch[2],
             })
 
         print(result)
-        return make_response({"data": result}, 200)
+        return make_response(result, 200)
 
     def create_dispatch(session, request):
         """_summary_

@@ -1,17 +1,16 @@
 import { Model, Query } from "./Model";
 
 export class Customer implements Model {
-    id?: number;
-    companyId?: number;
-    customerName?: string
+    customer_id: number = 0;
+    company_id?: number;
+    customer_name?: string
     deleted?: boolean
 
-    constructor(id?: number, companyId?: number, customerName?: string, deleted?: boolean) {
-        this.id = id;
-        this.companyId = companyId;
-        this.customerName = customerName;
-        this.deleted = deleted;
+
+    getId(): number {
+        return this.customer_id
     }
+
 }
 
 

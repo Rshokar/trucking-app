@@ -74,7 +74,9 @@ const Welcome: FunctionComponent<Props> = ({ navigation }) => {
     const hideAuth = () => setShowAuth(false)
 
     const handleLogin = async (res: LoginFormResult): Promise<any> => {
-        let u: User = new User(undefined, undefined, res.email, res.password);
+        let u: User = new User()
+        u.email = res.email
+        u.password = res.password
         try {
             const user = await AuthController.login(u);
             setFlashColor(colors.success)
@@ -89,7 +91,10 @@ const Welcome: FunctionComponent<Props> = ({ navigation }) => {
     }
 
     const handleRegister = async (res: RegisterFormResult): Promise<any> => {
-        let u: User = new User(undefined, res.acType, res.email, res.password)
+        let u: User = new User()
+        u.role = res.acType;
+        u.password = res.password;
+        u.email = res.email;
         try {
             const { user, company } = await AuthController.register(u, res.company)
             setFlashMessage("Welcome to the future")

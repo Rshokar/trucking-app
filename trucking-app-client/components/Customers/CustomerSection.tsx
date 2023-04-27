@@ -35,20 +35,8 @@ const TextButton = styled.TouchableOpacity`
 
 import { CustomerSectionProps } from './types'
 
-let color = 0;
+
 const CustomerSection: FunctionComponent<CustomerSectionProps> = (props) => {
-
-    function selectRandomColor(): string {
-
-        if (randomNumber < 0.33) {
-            return colors.primary;
-        } else if (randomNumber < 0.66) {
-            return colors.secondary;
-        } else {
-            return colors.tertiary;
-        }
-        color++;
-    }
 
     const sheetRef = useRef<BottomSheet>(null)
 

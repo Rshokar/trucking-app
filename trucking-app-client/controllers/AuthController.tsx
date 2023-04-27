@@ -46,30 +46,38 @@ export class AuthController implements Controller {
 
 
     private static async saveUser(u: any): Promise<void> {
-        const user: User = new User(u["id"], u["role"], u["email"])
-        console.log("SAVE USER", user)
+        const user: User = new User()
+        user.id = u["id"]
+        user.role = u["role"]
+        user.email = u["email"]
+
+        // console.log("SAVE USER", user)
+
         await AsyncStorage.setItem('user', JSON.stringify(user));
     }
 
     private static async saveCompany(c: any): Promise<void> {
-        const company: Company = new Company(
-            c["company_id"],
-            c["company_name"],
-            c["owner_id"]
-        )
-        console.log("SAVE COMPANY", company)
+        const company: Company = new Company()
+        company.company_id = c["company_id"];
+        company.company_name = c["company_name"]
+        company.owner_id = c["owner_id"];
+
+        // console.log("SAVE COMPANY", company)
+
         await AsyncStorage.setItem('company', JSON.stringify(company));
     }
 
     private static async saveCustomers(c: any): Promise<void> {
-        const customers: Customer[] = c.map((c: any) => new Customer(
-            c["customer_id"],
-            c["company_id"],
-            c["customer_name"],
-            c["deleted"],
-        ));
+        const customers: Customer[] = c.map((c: any) => {
+            const customer = new Customer()
+            customer.customer_id = c["customer_id"]
+            customer.company_id = c["company_id"]
+            customer.customer_name = c["customer_name"]
+            customer.deleted = c["deleted"]
+            return customer;
+        })
 
-        console.log("SAVE CUSTOMERS", customers)
+        // console.log("SAVE CUSTOMERS", customers)
         await AsyncStorage.setItem('customers', JSON.stringify(customers));
     }
 
@@ -99,7 +107,7 @@ export class AuthController implements Controller {
         }
     }
 
-    static async getCustomers(): Promise<User[]> {
+    static async getCustomers(): Promise<Customer[]> {
         try {
             const customersString = await AsyncStorage.getItem('customers');
             if (customersString !== null) {

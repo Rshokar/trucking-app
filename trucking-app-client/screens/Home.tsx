@@ -36,9 +36,11 @@ const Home: FunctionComponent<Props> = ({ navigation }) => {
 
     useEffect(() => {
         async function run() {
+
+            console.log("\n\nRENDER RENDER\n\n")
             try {
                 const dispatches: Dispatch[] = await new DispatchController().getAll(query);
-                console.log(dispatches)
+                // console.log(dispatches)
                 setDispatches(dispatches)
             } catch (error: any) {
                 console.log(error.message);
@@ -87,8 +89,6 @@ const Home: FunctionComponent<Props> = ({ navigation }) => {
         }
     }
 
-    console.log('QUERY:', query);
-
     return (
         <HomeContainer>
             <StatusBar style='dark' />
@@ -97,9 +97,13 @@ const Home: FunctionComponent<Props> = ({ navigation }) => {
                 startDate={query.startDate}
                 endDate={query.endDate}
             >
-                <TicketSection data={dispatches} render={function ({ item }: any) {
-                    return <DispatchItem {...item} />
-                }} />
+                <TicketSection data={dispatches}
+                    render={function ({ item }: any) {
+                        return <DispatchItem {...item} />
+                    }}
+
+
+                />
             </DateRangeCalendar>
             <CustomerSection data={customers} onClick={handleAddCustomer} />
         </HomeContainer>

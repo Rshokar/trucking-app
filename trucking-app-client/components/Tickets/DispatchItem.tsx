@@ -33,19 +33,22 @@ import { Dispatch } from '../../models/Dispatch'
 
 
 const DispatchItem: FunctionComponent<Dispatch> = (props) => {
+
+    console.log("DISPATCH: ", props);
+
     return (
         <TransactionRow>
             <LeftView>
                 <TransactionAvi
                     background={colors.tertiary}
-                    icon={props.customer?.customerName ? props.customer?.customerName[0] : 'T'}
+                    icon={props.customer?.customer_name ? props.customer?.customer_name[0] : 'T'}
                 />
                 <View style={{ marginLeft: 10 }}>
                     <RegularText textStyle={{
                         color: colors.secondary,
                         textAlign: "left"
                     }}>
-                        {'BNB Contracting'}
+                        {props.customer?.customer_name}
                     </RegularText>
                     <SmallText textStyle={{
                         textAlign: 'left',

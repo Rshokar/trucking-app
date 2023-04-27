@@ -27,14 +27,21 @@ export class DispatchController implements CRUDController<Dispatch, DispatchQuer
 
         q.startDate = q.startDate?.dateString;
         q.endDate = q.endDate?.dateString;
-        q.customers = q.customers ? Array.from(q.customers) : undefined;
         const queryString = qs.stringify(q);
-        console.log(queryString);
 
-        return await Request.request<Dispatch[]>({
+        // Customers have to be sent to server 
+        // with the format of customers=1,2,3
+
+
+        console.log('Hello')
+        let result: Dispatch[] = [];
+
+        result = await Request.request<Dispatch[]>({
             url: `/dispatch?${queryString}`,
             method: Method.GET,
         });
+
+        return result;
     }
 
     delete<T>(query: DispatchQuery): Promise<void> {

@@ -3,16 +3,13 @@ import { Model, Query } from './Model'
 
 export class User implements Model {
 
-    id?: number;
+    id: number = 0;
     role?: string;
     password?: string;
     email?: string;
 
-    constructor(id?: number, role?: string, email?: string, password: string = "") {
-        this.id = id;
-        this.role = role;
-        this.email = email;
-        this.password = password;
+    getId(): number {
+        return this.id
     }
 
 
