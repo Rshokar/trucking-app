@@ -7,7 +7,7 @@
 - [How to use the projcet](#how-to-use-product)
 - [Contact Information](#contact-information)
 
-## <a id="how-to-run-project">Project Description</a>
+## <a id="project-description">Project Description</a>
 Trucking App is an application born out of my prior experience in the aggregate logistic industry. Recognizing the challenges posed by fragmented systems and delayed payments, I set out to create an infrastructure that offers a transparent, efficient, and accurate invoicing system for companies in this sector.
 
 To achieve this, I developed a TypeScript React Native client and a Python Flask API with a relational SQL database. The decision to use TypeScript for the front end was driven by its strong typing system, which reduces bugs and enhances code readability. Additionally, I opted for Flask as the API framework, seeking a fresh challenge and a departure from JavaScript. Given the complex data structure and the need for sophisticated queries to generate statistics, a relational database was chosen as the backbone.
@@ -19,7 +19,7 @@ The project is organized into two main folders. The "trucking-app-client" houses
 Through the Trucking App, my goal is to streamline the invoicing process and eliminate the headaches that have plagued this industry. By providing a unified platform accessible to all stakeholders, including dispatchers, operators, and contractors, we aim to remove bottlenecks and disruptions, leading to faster and more efficient payments.
 
 
-## Technologies Used
+## <a id="technologies-used">Technologies Used</a>
 #### Languages
 - Typescript
 - Python
