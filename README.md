@@ -88,6 +88,6 @@ To get started with the project, make sure you have the following:
 
 ## Contact Information <a id="contact-information">Contact Information</a>
 
-### Ravinder Shokara
+### Ravinder Shokar
 - ravindershokar@gmail.com
 - https://www.linkedin.com/in/rshokar/
