@@ -33,11 +33,13 @@ Through the Trucking App, my goal is to streamline the invoicing process and eli
 ## <a id="how-to-run-project">How to install or run the project</a>
 
 ### Prerequisites:
-- Have a Git and GitHub account
-- Have python installed
-- Have pip installed
-- Have npx installed
-- Have expo installed
+To get started with the project, make sure you have the following:
+
+- Git and GitHub account
+- Python installed
+- Pip installed
+- Npx installed
+- Expo installed
 
 ### Cloning the repository:
 
