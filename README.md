@@ -86,7 +86,7 @@ To get started with the project, make sure you have the following:
 
 #### Client (TO-DO)
 
-## Contact Information <a id="contact-information">Contact Information</a>
+## <a id="contact-information">Contact Information</a>
 
 ### Ravinder Shokar
 - ravindershokar@gmail.com
