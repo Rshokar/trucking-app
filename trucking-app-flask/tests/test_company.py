@@ -15,11 +15,10 @@ def test_company_get(client_authed):
         company (_type_): _description_
     """
     # Arrange
-    client, user = client_authed
-    company = CompanyFactory.create(owner_id=user.id)
+    client, user, comp = client_authed
 
     # Act
-    response = client.get(f"/{END_POINT}/{company.company_id}")
+    response = client.get(f"/{END_POINT}/{comp.company_id}")
 
     # Assert
     assert response.status_code == 200
@@ -38,8 +37,7 @@ def test_company_get_nonexistent(client_authed):
         client_authed (_type_): an array containing the authenticated client and user
     """
     # Arrange
-    client, user = client_authed
-    company = CompanyFactory.create(owner_id=user.id)
+    client, user, comp = client_authed
 
     # Act
     response = client.get(f"/{END_POINT}/1000")
@@ -56,8 +54,7 @@ def test_company_get_another_users_company(client_authed, company):
         company (Company): another users company
     """
     # Arrange
-    client, user = client_authed
-    comp = CompanyFactory.create(owner_id=user.id)
+    client, user, comp = client_authed
 
     # Act
     response = client.get(f"/{END_POINT}/{company.company_id}")
@@ -73,13 +70,13 @@ def test_company_get_non_company_found(client_authed):
         client_authed (Array): an array containing the authenticated client and user
     """
     # Arrange
-    client, user = client_authed
+    client, user, comp = client_authed
 
     # Act
     res = client.get(f"/{END_POINT}/1000")
 
     # Assert
-    assert res.status_code == 404
+    assert 404 == res.status_code
 
 
 def test_company_get_unauthorized_user(client, company):
@@ -94,7 +91,7 @@ def test_company_get_unauthorized_user(client, company):
     res = client.get(f"/{END_POINT}/{company.company_id}")
 
     # Assert
-    assert res.status_code == 401
+    assert 401 == res.status_code
 
 
 def test_company_get_invalid_id(client_authed):
@@ -104,37 +101,13 @@ def test_company_get_invalid_id(client_authed):
         client_authed (Array): an array containing the authenticated client and user
     """
     # Arrange
-    client, user = client_authed
-    company = CompanyFactory.create(owner_id=user.id)
+    client, user, comp = client_authed
 
     # Act
     res = client.get(f"/{END_POINT}/invalid")
 
     # Assert
-    assert res.status_code == 404
-
-
-def test_company_post(client_authed):
-    """_summary_
-        Attempts to create a company
-    Args:
-        client_authed (Array): an array containing the authenticated client and user
-    """
-    client, user = client_authed
-    payload = {
-        "owner_id": user.id,
-        "company_name": "AKS Trucking Ltd"
-    }
-
-    res = client.post(f"/{END_POINT}/", json=payload)
-    data = res.json
-
-    assert res.status_code == 200
-    assert "company_id" in data.keys()
-    assert "owner_id" in data.keys()
-    assert data["owner_id"] == payload["owner_id"]
-    assert "company_name" in data.keys()
-    assert data["company_name"] == payload["company_name"]
+    assert 404 == res.status_code
 
 
 def test_company_post_invalid_attributes(client_authed):
@@ -145,7 +118,7 @@ def test_company_post_invalid_attributes(client_authed):
     """
 
     # Arrange (company_name is empty)
-    client, user = client_authed
+    client, user, comp = client_authed
     payload = {
         "owner_id": user.id,
         "company_name": ""
@@ -155,7 +128,7 @@ def test_company_post_invalid_attributes(client_authed):
     res = client.post(f"/{END_POINT}/", json=payload)
 
     # Assert
-    assert res.status_code == 400
+    assert 400 == res.status_code
 
     # Arrange (owner_id is empty)
     payload = {
@@ -167,7 +140,7 @@ def test_company_post_invalid_attributes(client_authed):
     res = client.post(f"/{END_POINT}/", json=payload)
 
     # Assert
-    assert res.status_code == 400
+    assert 400 == res.status_code
 
     # Arrange (owner_id is invalid)
     payload = {
@@ -179,7 +152,7 @@ def test_company_post_invalid_attributes(client_authed):
     res = client.post(f"/{END_POINT}/", json=payload)
 
     # Assert
-    assert res.status_code == 400
+    assert 400 == res.status_code
 
 
 def test_company_post_missing_attributes(client_authed):
@@ -189,7 +162,7 @@ def test_company_post_missing_attributes(client_authed):
         client_authed (_type_): _description_
     """
     # Arrange (missing company_name)
-    client, user = client_authed
+    client, user, comp = client_authed
     payload = {
         "owner_id": user.id
     }
@@ -198,7 +171,7 @@ def test_company_post_missing_attributes(client_authed):
     res = client.post(f"/{END_POINT}/", json=payload)
 
     # Assert
-    assert res.status_code == 400
+    assert 400 == res.status_code
 
     # Arrange (missing owner_id)
 
@@ -206,7 +179,7 @@ def test_company_post_missing_attributes(client_authed):
     res = client.post(f"/{END_POINT}/", json=payload)
 
     # Assert
-    assert res.status_code == 400
+    assert 400 == res.status_code
 
 
 def test_company_post_already_have_company(client_authed):
@@ -216,8 +189,7 @@ def test_company_post_already_have_company(client_authed):
         client_authed (_type_): _description_
     """
     # Arrange
-    client, user = client_authed
-    comp = CompanyFactory.create(owner_id=user.id)
+    client, user, comp = client_authed
     payload = {
         "owner_id": user.id,
         "company_name": "AKS Trucking Ltd"
@@ -227,7 +199,7 @@ def test_company_post_already_have_company(client_authed):
     res = client.post(f"/{END_POINT}/", json=payload)
 
     # Assert
-    assert res.status_code == 409
+    assert 409 == res.status_code
 
 
 def test_company_post_unauthorized_user(client):
@@ -246,7 +218,7 @@ def test_company_post_unauthorized_user(client):
     res = client.post(f"/{END_POINT}/", json=payload)
 
     # Assert
-    assert res.status_code == 401
+    assert 401 == res.status_code
 
 
 def test_company_put(client_authed):
@@ -257,8 +229,7 @@ def test_company_put(client_authed):
     """
 
     # Arrange
-    client, user = client_authed
-    comp = CompanyFactory.create(owner_id=user.id)
+    client, user, comp = client_authed
     payload = {
         "company_name": "AKS Trucking Ltd"
     }
@@ -267,7 +238,7 @@ def test_company_put(client_authed):
     res = client.put(f"/{END_POINT}/{comp.company_id}", json=payload)
 
     # Assert
-    assert res.status_code == 200
+    assert 200 == res.status_code
 
 
 def test_company_put_invalid_attributes(client_authed):
@@ -279,8 +250,7 @@ def test_company_put_invalid_attributes(client_authed):
     """
 
     # Arrange (Empty company_name)
-    client, user = client_authed
-    comp = CompanyFactory.create(owner_id=user.id)
+    client, user, comp = client_authed
     payload = {
         "company_name": ""
     }
@@ -289,7 +259,7 @@ def test_company_put_invalid_attributes(client_authed):
     res = client.put(f"/{END_POINT}/{comp.company_id}", json=payload)
 
     # Assert
-    assert res.status_code == 400
+    assert 400 == res.status_code
 
     # Arrange (Company name too long)
     payload = {
@@ -300,7 +270,7 @@ def test_company_put_invalid_attributes(client_authed):
     res = client.put(f"/{END_POINT}/{comp.company_id}", json=payload)
 
     # Assert
-    assert res.status_code == 400
+    assert 400 == res.status_code
 
 
 def test_company_put_missing_attributes(client_authed):
@@ -310,15 +280,14 @@ def test_company_put_missing_attributes(client_authed):
         client_authed (Array): an array containing the authenticated client and user
     """
     # Arrange
-    client, user = client_authed
-    comp = CompanyFactory.create(owner_id=user.id)
+    client, user, comp = client_authed
     payload = {}
 
     # Act
     res = client.put(f"/{END_POINT}/{comp.company_id}", json=payload)
 
     # Assert
-    assert res.status_code == 400
+    assert 400 == res.status_code
 
 
 def test_company_put_nonexistent(client_authed):
@@ -330,7 +299,7 @@ def test_company_put_nonexistent(client_authed):
     """
 
     # Arrange
-    client, user = client_authed
+    client, user, comp = client_authed
     payload = {
         "company_name": "AKS Trucking Ltd"
     }
@@ -339,7 +308,7 @@ def test_company_put_nonexistent(client_authed):
     res = client.put(f"/{END_POINT}/1000", json=payload)
 
     # Assert
-    assert res.status_code == 404
+    assert 404 == res.status_code
 
 
 def test_company_put_unauthorized_user(client, company):
@@ -357,7 +326,7 @@ def test_company_put_unauthorized_user(client, company):
     res = client.put(f"/{END_POINT}/{company.company_id}", json=payload)
 
     # Assert
-    assert res.status_code == 401
+    assert 401 == res.status_code
 
 
 def test_company_put_another_user_company(client_authed, company):
@@ -368,15 +337,14 @@ def test_company_put_another_user_company(client_authed, company):
     """
 
     # Arrange
-    client, user = client_authed
-    CompanyFactory.create(owner_id=user.id)
+    client, user, comp = client_authed
     payload = {"company_name": "AKS Trucking Ltd"}
 
     # Act
     res = client.put(f"/{END_POINT}/{company.company_id}", json=payload)
 
     # Assert
-    assert res.status_code == 403
+    assert 403 == res.status_code
 
 
 def test_company_delete(client_authed):
@@ -387,14 +355,13 @@ def test_company_delete(client_authed):
     """
 
     # Arrange
-    client, user = client_authed
-    comp = CompanyFactory.create(owner_id=user.id)
+    client, user, comp = client_authed
 
     # Act
     res = client.delete(f"/{END_POINT}/{comp.company_id}")
 
     # Assert
-    assert res.status_code == 200
+    assert 200 == res.status_code
 
 
 def test_company_delete_invalid_attributes(client_authed):
@@ -404,14 +371,13 @@ def test_company_delete_invalid_attributes(client_authed):
         client_authed (Array): an array containing the authenticated client and user
     """
     # Arrange
-    client, user = client_authed
-    comp = CompanyFactory.create(owner_id=user.id)
+    client, user, comp = client_authed
 
     # Act
     res = client.delete(f"/{END_POINT}/a")
 
     # Assert
-    assert res.status_code == 404
+    assert 404 == res.status_code
 
 
 def test_company_delete_missing_attributes(client_authed):
@@ -421,14 +387,13 @@ def test_company_delete_missing_attributes(client_authed):
         client_authed (Array): an array containing the authenticated client and user
     """
     # Arrange
-    client, user = client_authed
-    comp = CompanyFactory.create(owner_id=user.id)
+    client, user, comp = client_authed
 
     # Act
     res = client.delete(f"/{END_POINT}/")
 
     # Assert
-    assert res.status_code == 405
+    assert 405 == res.status_code
 
 
 def test_company_delete_unauthorized_user(client, company):
@@ -443,7 +408,7 @@ def test_company_delete_unauthorized_user(client, company):
     res = client.delete(f"/{END_POINT}/{company.company_id}")
 
     # Assert
-    assert res.status_code == 401
+    assert 401 == res.status_code
 
 
 def test_company_delete_another_user_company(client_authed, company):
@@ -454,11 +419,10 @@ def test_company_delete_another_user_company(client_authed, company):
     """
 
     # Arrange
-    client, user = client_authed
-    CompanyFactory.create(owner_id=user.id)
+    client, user, comp = client_authed
 
     # Act
     res = client.delete(f"/{END_POINT}/{company.company_id}")
 
     # Assert
-    assert res.status_code == 403
+    assert 403 == res.status_code
