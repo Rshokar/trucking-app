@@ -41,6 +41,7 @@ def user():
 
 @pytest.fixture
 def client_authed(client, user):
+    comp = CompanyFactory.create(owner_id=user.id)
     res = client.post('/v1/auth/login', json=dict(
         email=user.email,
         password="Testing1"  # UserFactory.DEFAULT_PASSWORD
@@ -48,19 +49,19 @@ def client_authed(client, user):
 
     assert 200 == res.status_code
 
-    return client, user
-
-
-@pytest.fixture
-def company():
-    user = UserFactory.create()
-    return CompanyFactory.create(owner_id=user.id)
+    return client, user, comp
 
 
 @pytest.fixture
 def company_authed(client_authed):
     client, user = client_authed
     return client, CompanyFactory.create(owner_id=user.id), user
+
+
+@pytest.fixture
+def company():
+    user = UserFactory.create()
+    return CompanyFactory.create(owner_id=user.id)
 
 
 @pytest.fixture

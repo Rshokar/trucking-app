@@ -11,7 +11,7 @@ def test_user_get_authed(client_authed):
     See if we can successfully perform GET requests on existing users and return their information
     """
     # arrange
-    client, user = client_authed
+    client, user, comp = client_authed
 
     # act``
     response = client.get(f"{END_POINT}/{user.id}")
@@ -49,7 +49,7 @@ def test_user_get_another_user(client_authed):
         valid users
     """
     # arrange
-    client, user = client_authed
+    client, user, comp = client_authed
 
     response = client.get(f"{END_POINT}/1000")
 
@@ -65,7 +65,7 @@ def test_user_get_invalid_id_format(client_authed):
     Verify that passing an invalid ID format will not work
     """
     # arrange
-    client, user = client_authed
+    client, user, comp = client_authed
 
     # act
     response = client.get(f"{END_POINT}/ABCD")
@@ -81,7 +81,7 @@ def test_user_post(client):
     payload = {
         "role": "dispatcher",
         "password": "Testing1",
-        "email": "test@demo.com"
+        "email": "testing123@demo.com"
 
     }
     headers = {"Content-Type": "application/json"}
@@ -244,10 +244,10 @@ def test_user_put(client_authed):
         Test a valid post request
     """
     # Arrange
-    client, user = client_authed
+    client, user, comp = client_authed
     headers = {"Content-Type": "application/json"}
     payload = user.to_dict()
-    payload["email"] = "update@update.com"
+    payload["email"] = "updated@updated.com"
     payload["role"] = "dispatcher"
 
     # Act
@@ -276,7 +276,8 @@ def test_user_put_another_user(client_authed):
         client_authed (_type_): _description_
     """
     # Arrange
-    client, user = client_authed
+    client, user, comp = client_authed
+    otherUser = UserFactory.create()
     headers = {"Content-Type": "application/json"}
     payload = user.to_dict()
     payload["email"] = "update@update.com"
@@ -284,13 +285,13 @@ def test_user_put_another_user(client_authed):
 
     # Act
     response = client.put(
-        f"{END_POINT}/{user.id}",
+        f"{END_POINT}/{otherUser.id}",
         headers=headers,
         json=payload
     )
 
     # assertions
-    assert 409 == response.status_code
+    assert 403 == response.status_code
 
 
 def test_user_put_unauthenticated(client, user):
@@ -321,7 +322,7 @@ def test_user_delete(client_authed):
     Deletes an existing user
     """
     # Arrange
-    client, user = client_authed
+    client, user, comp = client_authed
 
     # Act
     res = client.delete(f"{END_POINT}/{user.id}")
@@ -338,7 +339,7 @@ def test_user_delete_another_user(client_authed):
     Attemps to delete another user
     """
     # Arrange
-    client, user = client_authed
+    client, user, comp = client_authed
 
     # act
     res = client.delete(f"{END_POINT}/1000")
