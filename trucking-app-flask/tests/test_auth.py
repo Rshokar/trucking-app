@@ -1,5 +1,6 @@
 
-from config_test import app, client, user, client_authed
+from config_test import app, client, user, client_authed, company
+from utils.loader import CompanyFactory
 END_POINT = "v1/auth"
 
 
@@ -10,6 +11,8 @@ def test_auth_login(client, user):
         client (app): Flask app
         user (User): User model
     """
+
+    CompanyFactory.create(owner_id=user.id)
 
     # Arrange
     payload = {
@@ -66,7 +69,7 @@ def test_auth_logout(client_authed):
         client_authed (_type_): _description_
     """
     # Arrange
-    client, user = client_authed
+    client, user, comp = client_authed
 
     # Act
     res = client.delete(f"/{END_POINT}/logout")

@@ -363,7 +363,7 @@ def test_rfo_put_non_existing(client_authed):
     """
 
     # Arrange
-    client, user = client_authed
+    client, user, comp = client_authed
     payload = {
         "operator_id": 999999,
         "load_location": "Updated load_location",
@@ -637,7 +637,7 @@ def test_rfo_get(rfo_authed):
 
 def test_rfo_get_non_existing(client_authed):
     # Arrange
-    client, user = client_authed
+    client, user, comp = client_authed
 
     # Act
     res = client.get(f"/{END_POINT}/999999")
@@ -709,7 +709,7 @@ def test_rfo_delete(rfo_authed):
 
 def test_rfo_delete_non_existant(client_authed):
     # Arrange
-    client, user = client_authed
+    client, user, comp = client_authed
 
     # Act
     res = client.delete(f"/{END_POINT}/999999")
