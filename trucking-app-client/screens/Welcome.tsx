@@ -122,7 +122,7 @@ const Welcome: FunctionComponent<Props> = ({ navigation }) => {
                         Get Started
                     </RegularButton>
                 </BottomSection>
-                <SwipeDownViewAnimation show={showAuth} close={hideAuth} VH={showLogin ? .80 : .95}>
+                <SwipeDownViewAnimation show={showAuth} close={hideAuth} VH={.95}>
                     <Form>
                         <BigText textStyle={{ color: colors.primary }}>{showLogin ? "Welcome Back" : "Create an Account"}</BigText>
                         <SmallText textStyle={{ color: colors.secondary }}>

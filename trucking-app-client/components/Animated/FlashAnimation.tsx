@@ -40,6 +40,7 @@ const FlashAnimation: FunctionComponent<FlashAnimationProps> = (props) => {
             justifyContent: 'center',
             alignContent: 'center',
             overflow: 'hidden',
+            height: 0,
         },
     })
 

@@ -1,31 +1,27 @@
 import React from 'react'
-import { KeyboardAvoidingView, Platform, StyleProp, ViewStyle } from 'react-native'
+import { StyleProp, ViewStyle } from 'react-native'
+import styled from 'styled-components/native'
 
 type FormProps = {
     children: React.ReactNode
 }
 
-const container: StyleProp<ViewStyle> = {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-    width: '100%',
-    height: '100%',
-    paddingHorizontal: '5%',
-    gap: 20
-}
+const FormView = styled.View`
+    display: flex; 
+    flex-directio: column;
+    justify-content: flex-start; 
+    padding-horizontal: 5%;
+    align-items: center; 
+    width: 100%; 
+    height: 100%; 
+    gap: 20px;
+`
 
 const Form = (props: FormProps) => {
-    return (
-        <KeyboardAvoidingView
-            behavior={Platform.OS === 'ios' ? 'padding' : 'position'}
-            style={container}
-            enabled
-        >
-            {props.children}
+    return (<FormView>
+        {props.children}
+    </FormView>
 
-        </KeyboardAvoidingView>
     )
 }
 

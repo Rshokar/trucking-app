@@ -8,7 +8,7 @@ import RegularButton from '../Buttons/RegularButton'
 import Input from './Inputs/Input'
 
 import { FormProps, RegisterFormResult } from './types'
-import SelectInput from './Inputs/SelectInput';
+// import SelectInput from './Inputs/SelectInput';
 
 const intialValues: RegisterFormResult = { email: '', password: '', confirmPassword: '', company: '', acType: 'dispatcher' }
 const RegisterForm: FunctionComponent<FormProps<RegisterFormResult>> = (props) => {
@@ -21,10 +21,10 @@ const RegisterForm: FunctionComponent<FormProps<RegisterFormResult>> = (props) =
         confirmPassword: Yup.string()
             .oneOf([Yup.ref('password')], 'Passwords must match')
             .required('Password is required'),
-        company: Yup.string().required('Company name is required').min(4, "Company name must be longer than 4 characters"),
-        acType: Yup.string().test('valid-acType', 'Invalid account type', value => {
-            return value === 'dispatcher' || value === 'operator';
-        })
+        // company: Yup.string().required('Company name is required').min(4, "Company name must be longer than 4 characters"),
+        // acType: Yup.string().test('valid-acType', 'Invalid account type', value => {
+        //     return value === 'dispatcher' || value === 'operator';
+        // })
     });
 
     const acTypeOptions = [
@@ -67,7 +67,7 @@ const RegisterForm: FunctionComponent<FormProps<RegisterFormResult>> = (props) =
                         value={values.confirmPassword}
                     />
 
-                    <Input name={'company'}
+                    {/* <Input name={'company'}
                         errorProps={{ error: errors.company, touched: touched.company }}
                         placeholder="Company"
                         onChangeText={handleChange('company')}
@@ -79,7 +79,7 @@ const RegisterForm: FunctionComponent<FormProps<RegisterFormResult>> = (props) =
                         errorProps={{ error: errors.acType, touched: touched.acType }}
                         name={'acType'}
                         value={values.acType}
-                    />
+                    /> */}
                     <RegularButton
                         onPress={() => { handleSubmit() }}
                     >Register</RegularButton>
