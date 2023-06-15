@@ -1,5 +1,6 @@
 
-from config_test import app, client, user, client_authed
+from config_test import app, client, user, client_authed, company
+from utils.loader import CompanyFactory
 END_POINT = "v1/auth"
 
 
@@ -10,6 +11,8 @@ def test_auth_login(client, user):
         client (app): Flask app
         user (User): User model
     """
+
+    CompanyFactory.create(owner_id=user.id)
 
     # Arrange
     payload = {
@@ -66,7 +69,7 @@ def test_auth_logout(client_authed):
         client_authed (_type_): _description_
     """
     # Arrange
-    client, user = client_authed
+    client, user, comp = client_authed
 
     # Act
     res = client.delete(f"/{END_POINT}/logout")
@@ -92,3 +95,33 @@ def test_auth_logout_unauthorized(client):
 
     # Assert
     assert 401 == res.status_code
+
+
+def test_register(client):
+    """_summary_
+    Test user registration
+    Args:
+        client (_type_): _description_
+    """
+    # Arrange
+    payload = {
+        "email": "REGISTER@demo.com",
+        "password": "Testing1",
+        "role": "dispatcher",
+        "company": "Demo Company",
+    }
+
+    # Act
+    res = client.post(f"/{END_POINT}/register", json=payload)
+
+    # Assert
+    assert 201 == res.status_code
+    data = res.json
+
+    assert "user" in data.keys()
+    assert "company" in data.keys()
+
+    assert data["user"]["email"] == payload["email"]
+    assert data["company"]["company_name"] == payload["company"]
+    assert data["company"]["owner_id"] == data["user"]["id"]
+    assert data["user"]["role"] == payload["role"]

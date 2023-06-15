@@ -13,8 +13,7 @@ def test_get_operator(client_authed):
     """
 
     # Arrange
-    client, user = client_authed
-    comp = CompanyFactory.create(owner_id=user.id)
+    client, user, comp = client_authed
     oper = OperatorFactory.create(company_id=comp.company_id)
 
     # Act
@@ -36,8 +35,7 @@ def test_get_non_existant_user(client_authed):
         client_authed (Array): an array containing the authenticated client and user
     """
     # Arrange
-    client, user = client_authed
-    comp = CompanyFactory.create(owner_id=user.id)
+    client, user, comp = client_authed
     oper = OperatorFactory.create(company_id=comp.company_id)
 
     # Act
@@ -74,8 +72,7 @@ def test_get_operator_another_user(client_authed, operator):
     """
 
     # Arrange
-    client, user = client_authed
-    comp = CompanyFactory.create(owner_id=user.id)
+    client, user, comp = client_authed
     oper = OperatorFactory.create(company_id=comp.company_id)
 
     # Act
@@ -92,8 +89,7 @@ def test_get_operator_invalid_attributes(client_authed):
         client_authed (Array): an array containing the authenticated client and user
     """
     # Arrange
-    client, user = client_authed
-    comp = CompanyFactory.create(owner_id=user.id)
+    client, user, comp = client_authed
     oper = OperatorFactory.create(company_id=comp.company_id)
 
     # Act
@@ -111,8 +107,7 @@ def test_create_a_operator(client_authed):
     """
 
     # Arrange
-    client, user = client_authed
-    comp = CompanyFactory.create(owner_id=user.id)
+    client, user, comp = client_authed
     payload = {
         "company_id": comp.company_id,
         "operator_name": "Keving Gates",
@@ -136,8 +131,7 @@ def test_create_operator_missing_attribute(client_authed):
         client_authed (Array): an array containing the authenticated client and user
     """
     # Arrange (missing company_id)
-    client, user = client_authed
-    comp = CompanyFactory.create(owner_id=user.id)
+    client, user, comp = client_authed
     payloads = [{
         "operator_name": "Keving Gates",
         "operator_email": "gator@gatertown.us"
@@ -164,8 +158,7 @@ def test_create_operator_invalid_attributes(client_authed):
         company (_type_): _description_
     """
     # Arrange
-    client, user = client_authed
-    comp = CompanyFactory.create(owner_id=user.id)
+    client, user, comp = client_authed
 
     payloads = [
         {
@@ -213,8 +206,7 @@ def test_create_operator_with_email_already_taken(client_authed):
         client_authed (Array): an array containing the authenticated client and user
     """
     # Arrange
-    client, user = client_authed
-    comp = CompanyFactory.create(owner_id=user.id)
+    client, user, comp = client_authed
     oper = OperatorFactory.create(company_id=comp.company_id)
     payload = {
         "company_id": comp.company_id,
@@ -238,8 +230,7 @@ def test_create_operator_with_company_id_not_found(client_authed):
         client_authed (Array): an array containing the authenticated client and user
     """
     # Arrange
-    client, user = client_authed
-    comp = CompanyFactory.create(owner_id=user.id)
+    client, user, comp = client_authed
     payload = {
         "company_id": 99999,
         "operator_name": "Keving Gates",
@@ -282,8 +273,7 @@ def test_update_operator(client_authed):
         client_authed (Array): an array containing the authenticated client and user
     """
     # Arrange
-    client, user = client_authed
-    comp = CompanyFactory.create(owner_id=user.id)
+    client, user, comp = client_authed
     oper = OperatorFactory.create(company_id=comp.company_id)
     payload = {
         "operator_name": "Kevin Stain",
@@ -310,8 +300,7 @@ def test_update_operator_missing_attribute(client_authed):
         client_authed (Array): an array containing the authenticated client and user
     """
     # Arrange
-    client, user = client_authed
-    comp = CompanyFactory.create(owner_id=user.id)
+    client, user, comp = client_authed
     oper = OperatorFactory.create(company_id=comp.company_id)
 
     payloads = [{
@@ -331,8 +320,7 @@ def test_update_operator_invalid_attributes(client_authed):
         client_authed (Array): an array containing the authenticated client and user
     """
     # Arrange
-    client, user = client_authed
-    comp = CompanyFactory.create(owner_id=user.id)
+    client, user, comp = client_authed
     oper = OperatorFactory.create(company_id=comp.company_id)
     payload = [{
         "operator_name": "",
@@ -364,8 +352,7 @@ def test_update_non_existant_operator(client_authed):
         client_authed (Array): an array containing the authenticated client and user
     """
     # Arrange
-    client, user = client_authed
-    comp = CompanyFactory.create(owner_id=user.id)
+    client, user, comp = client_authed
     payload = {
         "operator_name": "Kevin Stain",
         "operator_email": "alegator@gatorbay.org"
@@ -385,8 +372,7 @@ def test_update_operator_with_duplicate_email(client_authed):
         client_authed (Array): an array containing the authenticated client and user
     """
     # Arrange
-    client, user = client_authed
-    comp = CompanyFactory.create(owner_id=user.id)
+    client, user, comp = client_authed
     operOne = OperatorFactory.create(company_id=comp.company_id)
     operTwo = OperatorFactory.create(company_id=comp.company_id)
     payload = {
@@ -406,8 +392,7 @@ def test_update_operator_another_users_operator(client_authed, operator):
         client_authed (Array): an array containing the authenticated client and user
     """
     # Arrange
-    client, user = client_authed
-    comp = CompanyFactory.create(owner_id=user.id)
+    client, user, comp = client_authed
     oper = OperatorFactory.create(company_id=comp.company_id)
 
     payload = {
@@ -448,8 +433,7 @@ def test_delete_operator(client_authed, operator):
         client_authed (Array): an array containing the authenticated client and user
     """
     # Arrange
-    client, user = client_authed
-    comp = CompanyFactory.create(owner_id=user.id)
+    client, user, comp = client_authed
     oper = OperatorFactory.create(company_id=comp.company_id)
 
     # Act
@@ -466,8 +450,7 @@ def test_delete_non_existant_operator(client_authed):
         client_authed (Array): an array containing the authenticated client and user
     """
     # Arrange
-    client, user = client_authed
-    comp = CompanyFactory.create(owner_id=user.id)
+    client, user, comp = client_authed
     # Act
     res = client.delete(f"/{END_POINT}/9999999")
 
@@ -482,8 +465,7 @@ def test_delete_another_users_operator(client_authed, operator):
         client_authed (Array): an array containing the authenticated client and user
     """
     # Arrange
-    client, user = client_authed
-    comp = CompanyFactory.create(owner_id=user.id)
+    client, user, comp = client_authed
     oper = OperatorFactory.create(company_id=comp.company_id)
 
     # Act

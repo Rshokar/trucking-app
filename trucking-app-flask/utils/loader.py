@@ -16,7 +16,8 @@ def loadDB(num_users):
     print("LOADING DATABSE WITH RANDOM DATA")
 
     for index in range(num_users):
-        user = UserFactory.create()
+        user = UserFactory.create(
+            role="dispatcher", email="test@demo.com", password="Testing1")
 
         print(f"USER --|--: \n: {user}")
 
@@ -38,7 +39,7 @@ def loadDB(num_users):
         billing_tickets = []
         for customer in customers:
             d = DispatchFactory.create_batch(
-                5, company_id=company.company_id, customer_id=customer.customer_id)
+                5, company_id=company.company_id, customer_id=customer.customer_id, date=fake.date_time_this_year(before_now=False, after_now=False, tzinfo=None))
 
             for dispatch in d:
                 numRfos = random.randint(0, len(operators))

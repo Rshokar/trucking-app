@@ -1,0 +1,19 @@
+import { Model, Query } from "./Model";
+
+export class Customer implements Model {
+    customer_id: number = 0;
+    company_id?: number;
+    customer_name?: string
+    deleted?: boolean
+
+
+    getId(): number {
+        return this.customer_id
+    }
+
+}
+
+
+export class CustomerQuery implements Query {
+
+}

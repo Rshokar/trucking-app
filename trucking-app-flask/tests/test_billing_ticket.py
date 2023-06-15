@@ -66,7 +66,7 @@ def test_get_bill_unauthed(client):
 
 def test_get_bill_invalid_id(client_authed):
     # Arrange
-    client, user = client_authed
+    client, user, comp = client_authed
 
     # Act
     res = client.get(f'/{END_POINT}/invalid_id')
@@ -77,7 +77,7 @@ def test_get_bill_invalid_id(client_authed):
 
 def test_get_bill_invalid_id_zero(client_authed):
     # Arrange
-    client, user = client_authed
+    client, user, comp = client_authed
 
     # Act
     res = client.get(f'/{END_POINT}/0')
@@ -88,7 +88,7 @@ def test_get_bill_invalid_id_zero(client_authed):
 
 def test_get_bill_no_id(client_authed):
     # Arrange
-    client, user = client_authed
+    client, user, comp = client_authed
 
     # Act
     res = client.get(f'/{END_POINT}/')
@@ -99,7 +99,7 @@ def test_get_bill_no_id(client_authed):
 
 def test_get_bill_sql_injection(client_authed):
     # Arrange
-    client, user = client_authed
+    client, user, comp = client_authed
 
     # Act
     res = client.get(f"/{END_POINT}/1'; DROP TABLE billing_tickets;")
@@ -204,7 +204,7 @@ def test_create_bill_without_required_fields(rfo_authed):
 
 def test_create_bill_with_sql_injection(client_authed):
     # Arrange
-    client, user = client_authed
+    client, user, comp = client_authed
     payloads = [{
         "rfo_id": "1; DROP TABLE users",
         "ticket_number": "1234",
@@ -385,7 +385,7 @@ def test_delete_bill_from_different_user(billing_ticket_authed, billing_ticket):
 
 def test_delete_non_integer_bill_id(client_authed):
     # Arrange
-    client, user = client_authed
+    client, user, comp = client_authed
 
     # Act
     response = client.delete(f'/{END_POINT}/abc')

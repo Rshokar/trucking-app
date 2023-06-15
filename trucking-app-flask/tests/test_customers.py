@@ -1,7 +1,7 @@
 import pytest
 import json
 from config_test import app, client, session, customer, company, client_authed, user, dispatch
-from utils.loader import CompanyFactory, CustomerFactory, DispatchFactory, OperatorFactory
+from utils.loader import CustomerFactory, DispatchFactory
 END_POINT = "v1/company/customers"
 
 
@@ -12,8 +12,7 @@ def test_customer_get(client_authed):
         client_authed ([client, user]): an array containing the authenticated client and user
     """
     # Arrange
-    client, user = client_authed
-    comp = CompanyFactory.create(owner_id=user.id)
+    client, user, comp = client_authed
     cust = CustomerFactory.create(company_id=comp.company_id)
 
     # Act
@@ -37,8 +36,7 @@ def test_customer_get_invalid_attributes(client_authed):
         client_authed ([client, user]): an array containing the authenticated client and user
     """
     # Arrange
-    client, user = client_authed
-    comp = CompanyFactory.create(owner_id=user.id)
+    client, user, comp = client_authed
     cust = CustomerFactory.create(company_id=comp.company_id)
 
     # Act
@@ -55,8 +53,7 @@ def test_customer_get_missing_attributes(client_authed):
         client_authed ([client, user]): an array containing the authenticated client and user
     """
     # Arrange
-    client, user = client_authed
-    comp = CompanyFactory.create(owner_id=user.id)
+    client, user, comp = client_authed
     cust = CustomerFactory.create(company_id=comp.company_id)
 
     # Act
@@ -90,8 +87,7 @@ def test_customer_get_another_users_customer(client_authed, customer):
         customer (Customer): customer object
     """
     # Arrange
-    client, user = client_authed
-    comp = CompanyFactory.create(owner_id=user.id)
+    client, user, comp = client_authed
     cust = CustomerFactory.create(company_id=comp.company_id)
 
     # Act
@@ -106,8 +102,7 @@ def test_customer_post(client_authed):
     Test valid customer post
     """
     # Arrange
-    client, user = client_authed
-    comp = CompanyFactory.create(owner_id=user.id)
+    client, user, comp = client_authed
 
     payload = {
         "customer_name": "Test Customer",
@@ -134,8 +129,7 @@ def test_customer_post_invalid_attributes(client_authed):
     Test invalid customer post
     """
     # Arrange (empty customer_name)
-    client, user = client_authed
-    comp = CompanyFactory.create(owner_id=user.id)
+    client, user, comp = client_authed
 
     payload = {
         "customer_name": "",
@@ -189,8 +183,7 @@ def test_customer_post_missing_attributes(client_authed):
     Test missing customer post attributes
     """
     # Arrange (missing company_id)
-    client, user = client_authed
-    comp = CompanyFactory.create(owner_id=user.id)
+    client, user, comp = client_authed
 
     payload = {
         "customer_name": "Test Customer",
@@ -240,8 +233,7 @@ def test_customer_post_another_users_company(client_authed, customer):
     Test customer post with an unauthorized company
     """
     # Arrange
-    client, user = client_authed
-    comp = CompanyFactory.create(owner_id=user.id)
+    client, user, comp = client_authed
 
     payload = {
         "customer_name": "Test Customer",
@@ -262,8 +254,7 @@ def test_customer_post_ducplicate_customer(client_authed):
         client_authed ([client, user]): an array containing the authenticated client and user
     """
     # Arrange
-    client, user = client_authed
-    comp = CompanyFactory.create(owner_id=user.id)
+    client, user, comp = client_authed
     customer = CustomerFactory.create(company_id=comp.company_id)
     payload = {
         "customer_name": customer.customer_name,
@@ -284,8 +275,7 @@ def test_customer_delete(client_authed):
         client_authed ([client, user]): an array containing the authenticated client and user
     """
     # Arrange
-    client, user = client_authed
-    comp = CompanyFactory.create(owner_id=user.id)
+    client, user, comp = client_authed
     cust = CustomerFactory.create(company_id=comp.company_id)
 
     # Act
@@ -302,8 +292,7 @@ def test_customer_delete_invalid_id(client_authed):
         client_authed ([client, user]): an array containing the authenticated client and user
     """
     # Arrange
-    client, user = client_authed
-    comp = CompanyFactory.create(owner_id=user.id)
+    client, user, comp = client_authed
     cust = CustomerFactory.create(company_id=comp.company_id)
 
     # Act
@@ -320,8 +309,7 @@ def test_customer_delete_missing_id(client_authed):
         client_authed ([client, user]): an array containing the authenticated client and user
     """
     # Arrange
-    client, user = client_authed
-    comp = CompanyFactory.create(owner_id=user.id)
+    client, user, comp = client_authed
     cust = CustomerFactory.create(company_id=comp.company_id)
 
     # Act
@@ -354,8 +342,7 @@ def test_customer_delete_customer_with_dispatches(client_authed):
         client_authed ([client, user]): an array containing the authenticated client and user
     """
     # Arrange
-    client, user = client_authed
-    comp = CompanyFactory.create(owner_id=user.id)
+    client, user, comp = client_authed
     cust = CustomerFactory.create(company_id=comp.company_id)
     DispatchFactory.create(customer_id=cust.customer_id,
                            company_id=comp.company_id)
@@ -382,8 +369,7 @@ def test_customer_put(client_authed):
         company (Company): a company object
     """
     # Arrange
-    client, user = client_authed
-    comp = CompanyFactory.create(owner_id=user.id)
+    client, user, comp = client_authed
     cus = CustomerFactory.create(company_id=comp.company_id)
     payload = {
         "customer_name": "updated customer",
@@ -408,8 +394,7 @@ def test_customer_post_invalid_attributes(client_authed):
         company (Company): a company object
     """
     # Arrange (Invalid deleted value)
-    client, user = client_authed
-    comp = CompanyFactory.create(owner_id=user.id)
+    client, user, comp = client_authed
     cus = CustomerFactory.create(company_id=comp.company_id)
     payload = {
         "customer_name": "updated customer",
@@ -467,8 +452,7 @@ def test_customer_put_missing_attributes(client_authed):
     """
 
     # Arrange (missing customer name)
-    client, user = client_authed
-    comp = CompanyFactory.create(owner_id=user.id)
+    client, user, comp = client_authed
     cus = CustomerFactory.create(company_id=comp.company_id)
 
     payload = {
@@ -489,8 +473,7 @@ def test_customer_put_invalid_id(client_authed):
         client_authed ([client, user]): an array containing the authenticated client and user
     """
     # Arrange
-    client, user = client_authed
-    comp = CompanyFactory.create(owner_id=user.id)
+    client, user, comp = client_authed
     cus = CustomerFactory.create(company_id=comp.company_id)
     payload = {
         "customer_name": "updated customer",
@@ -511,8 +494,7 @@ def test_customer_put_missing_id(client_authed):
         client_authed ([client, user]): an array containing the authenticated client and user
     """
     # Arrange
-    client, user = client_authed
-    comp = CompanyFactory.create(owner_id=user.id)
+    client, user, comp = client_authed
     cus = CustomerFactory.create(company_id=comp.company_id)
     payload = {
         "customer_name": "updated customer",
@@ -554,8 +536,7 @@ def test_customer_put_another_users_customer(client_authed, customer):
         customer (Customer): a customer object
     """
     # Arrange
-    client, user = client_authed
-    comp = CompanyFactory.create(owner_id=user.id)
+    client, user, comp = client_authed
     cus = CustomerFactory.create(company_id=comp.company_id)
     payload = {
         "customer_name": "updated customer",
