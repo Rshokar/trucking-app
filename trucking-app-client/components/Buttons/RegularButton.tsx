@@ -14,7 +14,7 @@ import RegularText from '../Texts/RegularText'
 
 const ButtonView = styled.TouchableOpacity`
     align-items: center;
-    background-color: ${colors.primary};
+    background-color: ${colors.secondary};
     width: 100%;
     padding: 20px;
     border-radius: 20px;

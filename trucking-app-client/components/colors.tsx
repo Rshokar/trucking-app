@@ -8,4 +8,5 @@ export const colors = {
     graydark: "#4B5563",
     accent: "#fbcd77",
     success: "#01A971",
+    red: 'red'
 }

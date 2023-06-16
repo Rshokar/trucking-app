@@ -23,6 +23,7 @@ import { AnimationProps } from './types'
 export interface FlashAnimationProps extends AnimationProps {
     color?: string,
     duration?: number
+    toggle: boolean
 }
 
 const FlashAnimation: FunctionComponent<FlashAnimationProps> = (props) => {
@@ -40,7 +41,7 @@ const FlashAnimation: FunctionComponent<FlashAnimationProps> = (props) => {
             justifyContent: 'center',
             alignContent: 'center',
             overflow: 'hidden',
-            height: 0,
+            height: 25,
         },
     })
 
@@ -64,14 +65,15 @@ const FlashAnimation: FunctionComponent<FlashAnimationProps> = (props) => {
 
 
     useEffect(() => {
-        if (props.children != "")
-            Animated.sequence(animations).start(() => {
-                props.onAnimationEnd && props.onAnimationEnd()
-            })
-    }, [props.children])
+        console.log('USE EFFECT')
+        Animated.sequence(animations).start(() => {
+            props.onAnimationEnd && props.onAnimationEnd()
+        })
+    }, [props.toggle])
 
     useEffect(() => setDuration(props.duration ? props.duration : DEFAULT_DURATION), [props.duration])
 
+    console.log("FLASH ANIMATION", props.toggle)
     return <Animated.View
         style={[
             styles.container,

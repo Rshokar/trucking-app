@@ -11,7 +11,7 @@ const SelectInput: FunctionComponent<SelectInputProps> = (props) => {
 
     return (
         <>
-            <StyledInputeView style={{ borderColor: error && touched ? 'red' : colors.gray }}>
+            <StyledInputeView style={{ paddingVertical: 0, borderColor: error && touched ? 'red' : colors.gray }}>
                 <RNPickerSelect
                     onValueChange={props.onChange}
                     style={pickerSelectStyles}

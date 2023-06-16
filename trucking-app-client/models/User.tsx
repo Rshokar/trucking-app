@@ -3,13 +3,13 @@ import { Model, Query } from './Model'
 
 export class User implements Model {
 
-    id: number = 0;
+    id?: number;
     role?: string;
     password?: string;
     email?: string;
 
     getId(): number {
-        return this.id
+        return this.id || 0
     }
 
 

@@ -70,7 +70,7 @@ const Welcome: FunctionComponent<Props> = ({ navigation }) => {
     const [showAuth, setShowAuth] = useState<boolean>(false)
     const [flashMessage, setFlashMessage] = useState<string>("")
     const [flashColor, setFlashColor] = useState<string>(colors.success)
-
+    const [flashToggle, setFlashToggle] = useState<boolean>(false);
     const hideAuth = () => setShowAuth(false)
 
     const handleLogin = async (res: LoginFormResult): Promise<any> => {
@@ -81,12 +81,14 @@ const Welcome: FunctionComponent<Props> = ({ navigation }) => {
             const user = await AuthController.login(u);
             setFlashColor(colors.success)
             setFlashMessage("Successfully Loggd In")
-            setTimeout(() => navigation.navigate("Home"), 2500)
+            setFlashToggle(!flashToggle)
+            setTimeout(() => navigation.navigate("Home"), 2000)
         } catch (e: any) {
             console.log('Error', e)
             setFlashMessage(e.message)
             setFlashColor("red")
             console.log(e.message);
+            setFlashToggle(!flashToggle)
         }
     }
 
@@ -96,13 +98,24 @@ const Welcome: FunctionComponent<Props> = ({ navigation }) => {
         u.password = res.password;
         u.email = res.email;
         try {
-            const { user, company } = await AuthController.register(u, res.company)
-            setFlashMessage("Welcome to the future")
+            await AuthController.register(u, res.company)
+            setFlashColor(colors.success)
+            setFlashMessage("Registered. Please Login. ")
+            setFlashToggle(!flashToggle)
+            setShowLogin(true);
+
         } catch (e: any) {
             console.log(e.message)
+            setFlashColor(colors.red)
+            setFlashMessage(e.message)
+            setFlashToggle(!flashToggle)
             // Deal with errors
+        } finally {
+
         }
     }
+
+    console.log("WELCOME", flashToggle)
 
     return (
         <>
@@ -118,7 +131,7 @@ const Welcome: FunctionComponent<Props> = ({ navigation }) => {
                     <SmallText textStyle={{ width: "70%", marginBottom: 25 }}>
                         Drop the books and pick up the future
                     </SmallText>
-                    <RegularButton onPress={() => setShowAuth(true)}>
+                    <RegularButton btnStyles={{ backgroundColor: colors.primary }} onPress={() => setShowAuth(true)}>
                         Get Started
                     </RegularButton>
                 </BottomSection>
@@ -129,6 +142,7 @@ const Welcome: FunctionComponent<Props> = ({ navigation }) => {
                             {showLogin ? "Welcome to the trucking app, enter you credentials and lets started" : "Welcome to the trucking app, enter you credentials and lets started"}
                         </SmallText>
                         <FlashAnimation
+                            toggle={flashToggle}
                             onAnimationBegin={!showLogin ? () => setShowLogin(true) : undefined}
                             color={flashColor}
                         >
