@@ -34,10 +34,9 @@ const Home: FunctionComponent<Props> = ({ navigation }) => {
     const [dispatches, setDispatches] = useState<Dispatch[]>([]);
     const [query, setQuery] = useState<DispatchQuery>(new DispatchQuery());
 
+    // Get dispatches
     useEffect(() => {
         async function run() {
-
-            console.log("\n\nRENDER RENDER\n\n")
             try {
                 const dispatches: Dispatch[] = await new DispatchController().getAll(query);
                 // console.log(dispatches)
@@ -49,6 +48,7 @@ const Home: FunctionComponent<Props> = ({ navigation }) => {
         run();
     }, [query]);
 
+    // Get Customers
     useEffect(() => {
         async function run() {
             setCustomers(await AuthController.getCustomers());
@@ -56,6 +56,8 @@ const Home: FunctionComponent<Props> = ({ navigation }) => {
         run()
     }, [])
 
+
+    // Add a new customer to the dispatch query
     const handleAddCustomer = (id: number) => {
         if (!query.customers) {
             query.customers = new Set<number>();
@@ -68,6 +70,8 @@ const Home: FunctionComponent<Props> = ({ navigation }) => {
         setQuery({ ...query });
     }
 
+
+    // Date range for dispatch query
     const setDate = (date: DateData) => {
         if (!query.startDate || (query.startDate.dateString === date.dateString) || (query.startDate && query.endDate)) {
             query.startDate = date;
@@ -105,6 +109,7 @@ const Home: FunctionComponent<Props> = ({ navigation }) => {
 
                 />
             </DateRangeCalendar>
+
             <CustomerSection data={customers} onClick={handleAddCustomer} />
         </HomeContainer>
     )

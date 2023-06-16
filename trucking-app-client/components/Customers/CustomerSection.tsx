@@ -76,7 +76,6 @@ const CustomerSection: FunctionComponent<CustomerSectionProps> = (props) => {
     }
 
     return (
-        // <Text>Hello</Text>
         <BottomSheet
             ref={sheetRef}
             snapPoints={[240, 85]}
