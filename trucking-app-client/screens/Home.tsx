@@ -34,19 +34,21 @@ const Home: FunctionComponent<Props> = ({ navigation }) => {
     const [customers, setCustomers] = useState<Customer[]>([]);
     const [dispatches, setDispatches] = useState<Dispatch[]>([]);
     const [query, setQuery] = useState<DispatchQuery>(new DispatchQuery());
-
+    const [enablePaginate, setEnablePaginate] = useState<boolean>(false);
     // Get dispatches
     useEffect(() => {
         async function run() {
             try {
                 const dispatches: Dispatch[] = await new DispatchController().getAll(query);
+                setEnablePaginate(dispatches.length === query.limit);
                 setDispatches(dispatches)
             } catch (error: any) {
                 console.log(error.message);
             }
         }
+        setDispatches([]);
         run();
-    }, [query]);
+    }, [customers]);
 
     // Get Customers
     useEffect(() => {
@@ -55,6 +57,17 @@ const Home: FunctionComponent<Props> = ({ navigation }) => {
         }
         run()
     }, [])
+
+
+    const paginate = () => {
+
+        console.log("PAGINATING", query);
+        if (enablePaginate) {
+            query.page = query.page + 1;
+            setQuery({ ...query });
+            setEnablePaginate(false);
+        }
+    }
 
 
     // Add a new customer to the dispatch query
@@ -101,7 +114,11 @@ const Home: FunctionComponent<Props> = ({ navigation }) => {
                     setDate={setDate}
                     startDate={query.startDate}
                     endDate={query.endDate}
-
+                    reset={() => {
+                        query.endDate = undefined;
+                        query.startDate = undefined;
+                        setQuery({ ...query })
+                    }}
                 >
                 </DateRangeCalendar>
             </View>
@@ -110,6 +127,7 @@ const Home: FunctionComponent<Props> = ({ navigation }) => {
                 render={function ({ item }: any) {
                     return <DispatchItem {...item} />
                 }}
+                paginate={paginate}
 
             />
             <CustomerSection data={customers} onClick={handleAddCustomer} />

@@ -50,6 +50,7 @@ import { UpdateSources } from 'react-native-calendars/src/expandableCalendar/com
 
 export interface DateRangeCalendar extends CalendarProps {
     children?: React.ReactNode
+    reset: () => any
 }
 
 const DateRangeCalendar: FunctionComponent<DateRangeCalendar> = (props) => {
@@ -103,7 +104,6 @@ const DateRangeCalendar: FunctionComponent<DateRangeCalendar> = (props) => {
         date={currentDate} // set current date as default date
     >
         <ExpandableCalendar
-
             hideArrows={true}
             hideKnob={false}
             initialPosition={ExpandableCalendar.positions.CLOSED}
@@ -116,6 +116,7 @@ const DateRangeCalendar: FunctionComponent<DateRangeCalendar> = (props) => {
             calendarHeight={ScreenHeight * .4}
             closeOnDayPress={false}
             markedDates={markedDates}
+            onDayLongPress={props.reset}
         />
         {props.children}
     </CalendarProvider>

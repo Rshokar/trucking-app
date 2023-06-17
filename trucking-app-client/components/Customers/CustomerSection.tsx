@@ -62,7 +62,7 @@ const CustomerSection: FunctionComponent<CustomerSectionProps> = (props) => {
                 horizontal={false}
                 showsVerticalScrollIndicator={false}
                 numColumns={3}
-                keyExtractor={({ id }: any) => id + ""}
+                keyExtractor={({ customer_id }: any) => customer_id + ""}
                 renderItem={(item: any) => {
                     return <CustomerItem
                         {...item.item}

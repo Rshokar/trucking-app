@@ -25,12 +25,21 @@ export class DispatchController implements CRUDController<Dispatch, DispatchQuer
         // Build query string using dispatch query
         const q: any = { ...query };
 
+        let customers: string = "";
+
+        query.customers?.forEach((item: number) => {
+            customers += `&customers=${item}`;
+        })
+
+        console.log("QUERY: ", q, customers);
         q.startDate = q.startDate?.dateString;
         q.endDate = q.endDate?.dateString;
-        const queryString = qs.stringify(q);
+        const queryString = qs.stringify(q) + customers;
 
         // Customers have to be sent to server 
         // with the format of customers=1,2,3
+
+        console.log("QUERY STRING:", queryString)
         let result: Dispatch[] = await Request.request<Dispatch[]>({
             url: `/dispatch?${queryString}`,
             method: Method.GET,

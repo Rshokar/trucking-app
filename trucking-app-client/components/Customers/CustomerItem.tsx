@@ -32,7 +32,8 @@ const CustomerItem: FunctionComponent<CustomerItemProps> = (props) => {
             underlayColor={colors.secondary}
             style={{ backgroundColor: clicked ? colors.success : props.color }}
             onPress={() => {
-                setClicked(!clicked)
+                if (clicked) setClicked(false);
+                else setClicked(true);
                 props.customer_id && props.onClick(props.customer_id)
             }}
         >

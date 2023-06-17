@@ -54,6 +54,7 @@ const TicketSection: FunctionComponent<TicketSectionProps> = (props) => {
                             }}
                             keyExtractor={(item: unknown, index: number) => index + ""}
                             renderItem={props.render}
+                            onEndReached={props.paginate}
                         />
                         <View style={{ height: 120 }} />
                     </>

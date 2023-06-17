@@ -7,6 +7,7 @@ export interface TicketSectionProps {
     data: Array<Model>
     render: ({ item }: any) => any
     style?: StyleProps
+    paginate?: () => void;
 }
 
 export interface TicketAviProps {

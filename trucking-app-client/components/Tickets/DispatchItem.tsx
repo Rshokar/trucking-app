@@ -35,8 +35,6 @@ import moment from 'moment'
 
 const DispatchItem: FunctionComponent<Dispatch> = (props) => {
 
-    console.log("DISPATCH: ", typeof props.date, props.date);
-
     return (
         <TransactionRow>
             <LeftView>
