@@ -77,8 +77,8 @@ class DispatchController:
                 "company_id": dispatch.company_id,
                 "customer_id": dispatch.customer_id,
                 "notes": dispatch.notes,
-                "date": dispatch.date,
-                "customer_name": customer,
+                "date": dispatch.date.isoformat(),
+                "customer": {"customer_name": customer},
                 "rfo_count": rfo_count,
             })
 

@@ -39,7 +39,6 @@ const Home: FunctionComponent<Props> = ({ navigation }) => {
         async function run() {
             try {
                 const dispatches: Dispatch[] = await new DispatchController().getAll(query);
-                // console.log(dispatches)
                 setDispatches(dispatches)
             } catch (error: any) {
                 console.log(error.message);
@@ -105,7 +104,6 @@ const Home: FunctionComponent<Props> = ({ navigation }) => {
                     render={function ({ item }: any) {
                         return <DispatchItem {...item} />
                     }}
-
 
                 />
             </DateRangeCalendar>

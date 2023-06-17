@@ -1,10 +1,12 @@
 import React, { FunctionComponent } from 'react';
 import styled from 'styled-components/native';
 import { Ionicons } from "@expo/vector-icons";
+import { ActivityIndicator } from 'react-native';
 
 import SmallText from '../Texts/SmallText'
 import { colors } from '../colors'
-
+import { TicketSectionProps } from './types'
+import RegularText from '../Texts/RegularText'
 
 const TicketSectionBackground = styled.View`
     width: 100%; 
@@ -21,8 +23,7 @@ const TicketRow = styled.View`
 const TicketList = styled.FlatList`
 `
 
-import { TicketSectionProps } from './types'
-import RegularText from '../Texts/RegularText'
+
 
 
 const TicketSection: FunctionComponent<TicketSectionProps> = (props) => {
@@ -37,16 +38,22 @@ const TicketSection: FunctionComponent<TicketSectionProps> = (props) => {
                     <Ionicons name="caret-down" size={13} color={colors.graydark} />
                 </SmallText>
             </TicketRow>
-            <TicketList
-                data={props.data}
-                showsVerticalScrollIndicator={false}
-                contentContainerStyle={{
-                    paddingBottom: 25,
-                }}
-                keyExtractor={(item: unknown, index: number) => index + ""}
-                renderItem={props.render}
+            {
+                props.data.length === 0 ?
+                    <ActivityIndicator size={'large'} color={colors.tertiary} />
+                    :
+                    <TicketList
+                        data={props.data}
+                        showsVerticalScrollIndicator={false}
+                        contentContainerStyle={{
+                            paddingBottom: 25,
+                        }}
+                        keyExtractor={(item: unknown, index: number) => index + ""}
+                        renderItem={props.render}
 
-            />
+
+                    />
+            }
         </TicketSectionBackground>
     )
 }

@@ -4,8 +4,8 @@ import { Model, Query } from './Model'
 import { Customer } from './Customer';
 
 export class Dispatch implements Model {
+
     dispatch_id: number = 0;
-    
     company_id?: number
     customer_id?: number
     notes?: string;
@@ -13,7 +13,7 @@ export class Dispatch implements Model {
     customer?: Customer;
     rfos?: any
     rfo_count?: number
-    
+
     getId(): number {
         return this.dispatch_id
     }

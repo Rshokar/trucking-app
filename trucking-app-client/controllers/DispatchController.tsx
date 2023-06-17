@@ -31,15 +31,12 @@ export class DispatchController implements CRUDController<Dispatch, DispatchQuer
 
         // Customers have to be sent to server 
         // with the format of customers=1,2,3
-
-
-        console.log('Hello')
-        let result: Dispatch[] = [];
-
-        result = await Request.request<Dispatch[]>({
+        let result: Dispatch[] = await Request.request<Dispatch[]>({
             url: `/dispatch?${queryString}`,
             method: Method.GET,
         });
+
+
 
         return result;
     }

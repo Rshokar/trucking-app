@@ -8,18 +8,18 @@ import { colors } from '../colors'
 import SmallText from '../Texts/SmallText'
 
 const TransactionRow = styled.View`
-flex-direction: row;
-justify-content: space-between;
-align-items: center;
-width: 100%;
-margin-bottom: 25px;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 25px;
 `
 
 const LeftView = styled.View`
-flex-direction: row;
-justify-content: flex-start;
-height: 100%;
-align-items: center;
+    flex-direction: row;
+    justify-content: flex-start;
+    height: 100%;
+    align-items: center;
     flex:2;
     `
 
@@ -30,11 +30,12 @@ const RightView = styled.View`
 
 
 import { Dispatch } from '../../models/Dispatch'
+import moment from 'moment'
 
 
 const DispatchItem: FunctionComponent<Dispatch> = (props) => {
 
-    console.log("DISPATCH: ", props);
+    console.log("DISPATCH: ", typeof props.date, props.date);
 
     return (
         <TransactionRow>
@@ -54,7 +55,7 @@ const DispatchItem: FunctionComponent<Dispatch> = (props) => {
                         textAlign: 'left',
                         color: colors.graydark,
                     }}>
-                        {props.date}
+                        {moment(props.date).format('YYYY-MM-DD HH:mm:ss')}
 
                     </SmallText>
                 </View>

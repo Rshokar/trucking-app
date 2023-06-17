@@ -24,7 +24,7 @@ class AuthController:
         email = request_data.get('email')
         password = request_data.get('password')
 
-        user = session.query(User).filter_by(email=email).first()
+        user = session.query(User).filter_by(email=email.lower()).first()
 
         print(user)
 
@@ -57,10 +57,8 @@ class AuthController:
         """
         data = request.get_json()
 
-        print(f"DATA: {data}")
-
         existingUser = session.query(User).filter_by(
-            email=data.get('email')).first()
+            email=data.get('email').lower()).first()
         if existingUser:
             return make_response({"error": "Email already used."}, 409)
 
