@@ -1,7 +1,9 @@
+from typing import Optional, List
 from models import Dispatch, Company, Customer, RFO
 from sqlalchemy import func
 from sqlalchemy.exc import IntegrityError
-from flask import jsonify
+from sqlalchemy.orm import Session
+from flask import Response, jsonify
 from datetime import datetime, timedelta
 from utils import make_response
 from flask_login import current_user
@@ -26,7 +28,7 @@ class DispatchController:
             return make_response({'error': 'Dispatch not found'}, 404)
         return make_response(dispatch.to_dict(), 200)
 
-    def get_dispatch_all(session, limit, page, startDate, endDate, customers):
+    def get_dispatch_all(session: Session, limit: int, page: int, startDate: Optional[datetime], endDate: Optional[datetime], customers: Optional[List[int]]) -> Response:
         """_summary_
 
         Args:
@@ -41,35 +43,24 @@ class DispatchController:
             Response: 200 success 404 not found
         """
 
-        limit = int(limit) if limit is not None else 10
-        page = int(page) if page is not None else 0
-        startDate = datetime.strptime(
-            startDate, '%Y-%m-%d') if startDate is not None else datetime.now()
-        endDate = datetime.strptime(
-            endDate, '%Y-%m-%d') + timedelta(days=1) if endDate is not None else startDate + timedelta(days=1)
-        customers = customers if customers is not None else []
-
         print("Parameter types:")
-        print("limit:", type(limit))
-        print("page:", type(page))
-        print("startDate:", type(startDate))
-        print("endDate:", type(endDate))
-        print("customers:", type(customers))
+        print("limit:", type(limit), limit)
+        print("page:", type(page), page)
+        print("startDate:", type(startDate), startDate)
+        print("endDate:", type(endDate), endDate)
+        print("customers:", type(customers), customers)
 
-        dispatch_query = session.query(Dispatch, Customer, func.count(RFO.rfo_id).label('rfo_count'))\
+        dispatch_query = session.query(Dispatch, Customer.customer_name, func.count(RFO.rfo_id).label('rfo_count'))\
             .join(Company, Dispatch.company_id == Company.company_id)\
             .join(RFO, Dispatch.dispatch_id == RFO.dispatch_id)\
             .join(Customer, Dispatch.customer_id == Customer.customer_id)
-        print("CUSTOMERSsssssss: ", customers)
 
-        # query the database using the parameters
-        if not customers:  # if the customers array is empty, all ids pass
+        if not customers:
             dispatch_query = dispatch_query.filter(
                 Dispatch.date >= startDate,
                 Dispatch.date <= endDate
             )
-        else:  # if the customers array is not empty, check if the customer_id is in the array
-            print("CUSTOMERS: ", customers)
+        else:
             dispatch_query = dispatch_query.filter(
                 Dispatch.customer_id.in_(customers),
                 Dispatch.date >= startDate,
@@ -80,18 +71,19 @@ class DispatchController:
             .limit(limit).offset(page * limit).all()
 
         result = []
-        for dispatch in dispatches:
+        for dispatch, customer, rfo_count in dispatches:
             result.append({
-                "dispatch_id": dispatch[0].dispatch_id,
-                "company_id": dispatch[0].company_id,
-                "customer_id": dispatch[0].customer_id,
-                "notes": dispatch[0].notes,
-                "date": dispatch[0].date,
-                "customer": dispatch[1].to_dict(),
-                "rfo_count": dispatch[2],
+                "dispatch_id": dispatch.dispatch_id,
+                "company_id": dispatch.company_id,
+                "customer_id": dispatch.customer_id,
+                "notes": dispatch.notes,
+                "date": dispatch.date,
+                "customer_name": customer,
+                "rfo_count": rfo_count,
             })
 
         print(result)
+
         return make_response(result, 200)
 
     def create_dispatch(session, request):

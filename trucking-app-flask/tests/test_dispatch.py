@@ -129,7 +129,7 @@ def test_create_dispatch_missing_attributes(customer_authed):
     """_summary_
         Create a dispatch with missing attributes
     Args:
-        customer_authed (array): contains client and customer object 
+        customer_authed (array): contains client and customer object
     """
     # Arrange
     client, customer, user, company = customer_authed
@@ -443,3 +443,36 @@ def test_delete_dispatch_with_rfos(dispatch_authed):
 
     # Assert
     assert res.status_code == 400
+
+
+def test_get_all_dispatches(client_authed):
+    """_summary_
+        This test will attemp to get all of the dispatches.
+        Should on resturn 10, there are defaul paging values
+    Args:
+        client_authed (_type_): _description_
+    """
+
+    # Arrange
+    client, user, company = client_authed
+
+    customerOne, customerTwo = CustomerFactory.create_batch(
+        2, company_id=company.company_id)
+
+    DispatchFactory.create_batch(
+        12, company_id=company.company_id, customer_id=customerOne.customer_id)
+    DispatchFactory.create_batch(
+        12, company_id=company.company_id, customer_id=customerTwo.customer_id)
+
+    # Act
+    res = client.get(f'/{END_POINT}/?customers={customerTwo.customer_id}')
+
+    # Assert
+    print(res.status_code)
+    data = res.json
+    print(data)
+    assert 200 != res.status_code
+
+    for dispatch in data:
+        assert customerTwo.customer_id != dispatch.customer_id
+        assert customerTwo.customer_name == dispatch.customer_name
