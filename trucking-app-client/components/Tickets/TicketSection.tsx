@@ -7,11 +7,14 @@ import SmallText from '../Texts/SmallText'
 import { colors } from '../colors'
 import { TicketSectionProps } from './types'
 import RegularText from '../Texts/RegularText'
+import { View } from 'react-native';
 
 const TicketSectionBackground = styled.View`
     width: 100%; 
     padding-horizontal: 25px;
     padding-top: 5px; 
+    z-index: -1;
+    height: 90%
 `
 
 const TicketRow = styled.View`
@@ -28,7 +31,7 @@ const TicketList = styled.FlatList`
 
 const TicketSection: FunctionComponent<TicketSectionProps> = (props) => {
     return (
-        <TicketSectionBackground>
+        <TicketSectionBackground style={props.style}>
             <TicketRow style={{ marginBottom: 25 }}>
                 <RegularText textStyle={{ fontSize: 19, color: colors.secondary }}>
                     Dispatches
@@ -42,17 +45,18 @@ const TicketSection: FunctionComponent<TicketSectionProps> = (props) => {
                 props.data.length === 0 ?
                     <ActivityIndicator size={'large'} color={colors.tertiary} />
                     :
-                    <TicketList
-                        data={props.data}
-                        showsVerticalScrollIndicator={false}
-                        contentContainerStyle={{
-                            paddingBottom: 25,
-                        }}
-                        keyExtractor={(item: unknown, index: number) => index + ""}
-                        renderItem={props.render}
-
-
-                    />
+                    <>
+                        <TicketList
+                            data={props.data}
+                            showsVerticalScrollIndicator={false}
+                            contentContainerStyle={{
+                                paddingBottom: 25,
+                            }}
+                            keyExtractor={(item: unknown, index: number) => index + ""}
+                            renderItem={props.render}
+                        />
+                        <View style={{ height: 120 }} />
+                    </>
             }
         </TicketSectionBackground>
     )

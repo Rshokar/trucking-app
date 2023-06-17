@@ -47,7 +47,6 @@ LocaleConfig.defaultLocale = 'en';
 
 import { CalendarProps } from './types'
 import { UpdateSources } from 'react-native-calendars/src/expandableCalendar/commons'
-import { color } from 'react-native-reanimated'
 
 export interface DateRangeCalendar extends CalendarProps {
     children?: React.ReactNode
@@ -99,10 +98,9 @@ const DateRangeCalendar: FunctionComponent<DateRangeCalendar> = (props) => {
 
             props.setDate(dateData);
         }}
-        style={{ width: '100%' }}
+        style={{ width: '100%', zIndex: 99999 }}
         disabledOpacity={0.6}
         date={currentDate} // set current date as default date
-
     >
         <ExpandableCalendar
 

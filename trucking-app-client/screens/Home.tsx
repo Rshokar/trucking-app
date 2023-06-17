@@ -1,4 +1,5 @@
 import React, { FunctionComponent, useEffect, useState } from 'react'
+import { Dimensions, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar'
 import styled from 'styled-components/native'
 import { StackScreenProps } from '@react-navigation/stack'
@@ -95,19 +96,22 @@ const Home: FunctionComponent<Props> = ({ navigation }) => {
     return (
         <HomeContainer>
             <StatusBar style='dark' />
-            <DateRangeCalendar
-                setDate={setDate}
-                startDate={query.startDate}
-                endDate={query.endDate}
-            >
-                <TicketSection data={dispatches}
-                    render={function ({ item }: any) {
-                        return <DispatchItem {...item} />
-                    }}
+            <View style={{ height: 150 }}>
+                <DateRangeCalendar
+                    setDate={setDate}
+                    startDate={query.startDate}
+                    endDate={query.endDate}
 
-                />
-            </DateRangeCalendar>
+                >
+                </DateRangeCalendar>
+            </View>
+            <TicketSection
+                data={dispatches}
+                render={function ({ item }: any) {
+                    return <DispatchItem {...item} />
+                }}
 
+            />
             <CustomerSection data={customers} onClick={handleAddCustomer} />
         </HomeContainer>
     )

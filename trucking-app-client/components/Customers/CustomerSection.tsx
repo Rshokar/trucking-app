@@ -78,10 +78,11 @@ const CustomerSection: FunctionComponent<CustomerSectionProps> = (props) => {
     return (
         <BottomSheet
             ref={sheetRef}
-            snapPoints={[240, 85]}
+            snapPoints={[300, 80]}
             borderRadius={25}
             initialSnap={1}
             enabledContentTapInteraction={true}
+            enabledBottomClamp={true}
             renderContent={renderContent}
         />
     )
