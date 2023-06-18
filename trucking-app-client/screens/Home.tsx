@@ -39,16 +39,22 @@ const Home: FunctionComponent<Props> = ({ navigation }) => {
     useEffect(() => {
         async function run() {
             try {
-                const dispatches: Dispatch[] = await new DispatchController().getAll(query);
-                setEnablePaginate(dispatches.length === query.limit);
-                setDispatches(dispatches)
+                const disRes: Dispatch[] = await new DispatchController().getAll(query);
+                if (query.page === 0) {
+                    setDispatches(disRes)
+                } else {
+                    setDispatches([...dispatches, ...disRes])
+                }
+                setEnablePaginate(disRes.length === query.limit);
             } catch (error: any) {
                 console.log(error.message);
             }
         }
-        setDispatches([]);
+
+
+        query.page === 0 && setDispatches([]);
         run();
-    }, [customers]);
+    }, [query]);
 
     // Get Customers
     useEffect(() => {
@@ -60,8 +66,6 @@ const Home: FunctionComponent<Props> = ({ navigation }) => {
 
 
     const paginate = () => {
-
-        console.log("PAGINATING", query);
         if (enablePaginate) {
             query.page = query.page + 1;
             setQuery({ ...query });
@@ -72,6 +76,11 @@ const Home: FunctionComponent<Props> = ({ navigation }) => {
 
     // Add a new customer to the dispatch query
     const handleAddCustomer = (id: number) => {
+
+
+        query.page = 0;
+
+        console.log("HANDLE ADD CUSTOMERS");
         if (!query.customers) {
             query.customers = new Set<number>();
         }
@@ -123,12 +132,12 @@ const Home: FunctionComponent<Props> = ({ navigation }) => {
                 </DateRangeCalendar>
             </View>
             <TicketSection
+                more={enablePaginate}
                 data={dispatches}
                 render={function ({ item }: any) {
                     return <DispatchItem {...item} />
                 }}
                 paginate={paginate}
-
             />
             <CustomerSection data={customers} onClick={handleAddCustomer} />
         </HomeContainer>

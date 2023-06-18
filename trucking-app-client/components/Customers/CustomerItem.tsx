@@ -8,7 +8,7 @@ import SmallText from '../Texts/SmallText'
 import Profile from '../Header/Profile'
 import { ScreenWidth } from '../shared'
 
-const CustomerItemContainer = styled.TouchableHighlight`
+const CustomerItemContainer = styled.TouchableOpacity`
     height: 50px; 
     width: ${Math.floor(ScreenWidth * 0.27)}px;
     padding: 10px;
@@ -29,7 +29,6 @@ const CustomerItem: FunctionComponent<CustomerItemProps> = (props) => {
 
     return (
         <CustomerItemContainer
-            underlayColor={colors.secondary}
             style={{ backgroundColor: clicked ? colors.success : props.color }}
             onPress={() => {
                 if (clicked) setClicked(false);
