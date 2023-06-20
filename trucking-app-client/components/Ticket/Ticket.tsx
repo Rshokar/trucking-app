@@ -8,7 +8,7 @@ import { ScreenWidth } from '../shared'
 import { colors } from '../colors'
 
 const CardBackground = styled.View`
-    height: 200px; 
+    max-height: 180px;
     width: ${Math.floor(ScreenWidth * .90)}px;
     reasize-mode: cover;
     background-color: ${colors.secondary};
@@ -22,10 +22,11 @@ const CardTouchable = styled.TouchableHighlight`
 `
 
 const TouchableView = styled.View`
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center; 
-    padding: 30px;
+    padding: 20px;
     flex: 1;
+    gap: 10px;
 `
 
 const CardRow = styled.View`
@@ -33,13 +34,6 @@ const CardRow = styled.View`
     justify-content: space-between;
     align-items: center;
     width: 100%
-`
-
-const Logo = styled.Image`
-    width: 100%;
-    height: 80%; 
-    resize-mode: cover;
-    flex: 1;
 `
 
 import { TicketProps } from './types'

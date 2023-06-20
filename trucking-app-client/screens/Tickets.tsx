@@ -75,7 +75,7 @@ const Tickets: FunctionComponent<Props> = ({ route }) => {
     return (
         <BalanceContainer>
             <DispatchSection {...dispatch} />
-            {/* <AmountSection balance={route?.params?.balance} /> */}
+
             {/* <BalanceCardSection {...route?.params} /> */}
             <ButtonSection />
         </BalanceContainer>
