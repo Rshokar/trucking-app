@@ -6,8 +6,8 @@ export class Operator implements Model {
 
     operator_id?: number;
     company_id?: number;
-    operator_name?: String;
-    operator_email?: String;
+    operator_name?: string;
+    operator_email?: string;
 
     getId?(): number {
         return this.operator_id ?? 0;

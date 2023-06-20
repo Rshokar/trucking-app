@@ -30,36 +30,32 @@ const RightView = styled.View`
 
 
 
-import { Dispatch } from '../../models/Dispatch'
+import { RFO } from '../../models/RFO'
 import moment from 'moment'
 
 
-interface DispatchItemProps extends Dispatch {
+interface RfoItemProps extends RFO {
     onClick: () => any,
 }
 
 
-const DispatchItem: FunctionComponent<DispatchItemProps> = (props) => {
+const RfoItem: FunctionComponent<RfoItemProps> = (props) => {
 
     return (
         <TicketRow onPress={props.onClick}>
             <LeftView>
-                <TransactionAvi
-                    background={colors.tertiary}
-                    icon={props.rfo_count}
-                />
                 <View style={{ marginLeft: 10 }}>
                     <RegularText textStyle={{
                         color: colors.secondary,
                         textAlign: "left"
                     }}>
-                        {props.customer?.customer_name}
+                        {props.operator?.operator_name}
                     </RegularText>
                     <SmallText textStyle={{
                         textAlign: 'left',
                         color: colors.graydark,
                     }}>
-                        {moment(props.date).format('YYYY-MM-DD h:mm a')}
+                        {props.load_location}
 
                     </SmallText>
                 </View>
@@ -69,7 +65,7 @@ const DispatchItem: FunctionComponent<DispatchItemProps> = (props) => {
                     color: colors.secondary,
                     textAlign: "right"
                 }}>
-                    <AntDesign name="caretright" size={15} color="black" />
+                    {props.start_time ? moment(props.start_time).format("YYYY-MM-DD h:MM a") : "Date not found"}
                 </RegularText>
             </RightView>
 
@@ -77,4 +73,4 @@ const DispatchItem: FunctionComponent<DispatchItemProps> = (props) => {
     )
 }
 
-export default DispatchItem
+export default RfoItem

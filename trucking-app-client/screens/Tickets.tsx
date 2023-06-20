@@ -19,6 +19,7 @@ import { DispatchController } from '../controllers/DispatchController'
 import { AuthController } from '../controllers/AuthController'
 import { Company } from '../models/Company'
 import { Customer } from '../models/Customer'
+import RfoSection from '../components/RfoSection/RfoSection'
 
 type Props = StackScreenProps<RoofStackParamList, 'Tickets'>;
 
@@ -41,7 +42,6 @@ const Tickets: FunctionComponent<Props> = ({ route }) => {
     const [billId, setBillId] = useState<number>();
 
     useEffect(() => {
-
         const run = async () => {
             const dC = new DispatchController();
             const dQ = new DispatchQuery();
@@ -68,16 +68,24 @@ const Tickets: FunctionComponent<Props> = ({ route }) => {
             setDispatch(dispRes as Dispatch);
         };
         run();
+    }, [tickets.dispId])
 
+    useEffect(() => {
 
-    }, [])
+    }, [tickets.dispId])
 
     return (
         <BalanceContainer>
             <DispatchSection {...dispatch} />
+            <RfoSection
+                dispatch_id={tickets.dispId}
+                setFocusedRfo={(id: number) => setRfoId(id)}
+                focusedRFO={rfoId}
+
+            />
+
 
             {/* <BalanceCardSection {...route?.params} /> */}
-            <ButtonSection />
         </BalanceContainer>
     )
 }

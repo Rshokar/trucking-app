@@ -14,7 +14,7 @@ const DispatchSection: FC<Dispatch> = (props) => {
             id={0}
             title={props.customer?.customer_name ?? "No Title Found"}
             subTitle={props.notes ?? "No Notes Found"}
-            data={props.date ? moment(props.date).format('YYYY-MM-DD h:mm a') : "No Date Found"}
+            data={props.date ? moment(props.date).format('YYYY-MM-DD') : "No Date Found"}
         />
     )
 }

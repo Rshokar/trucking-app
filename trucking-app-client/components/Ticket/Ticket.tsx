@@ -44,7 +44,7 @@ import BigText from '../Texts/BigText'
 const Ticket: FunctionComponent<TicketProps> = (props) => {
 
     return (
-        <CardBackground>
+        <CardBackground style={props.style}>
             <CardTouchable underlayColor={colors.secondary}>
                 <TouchableView>
                     <CardRow style={{ flexDirection: 'column', alignItems: 'flex-start' }}>

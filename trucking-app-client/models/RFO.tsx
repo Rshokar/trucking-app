@@ -1,6 +1,7 @@
 import { DateData } from 'react-native-calendars'
 import { Model, Query } from './Model'
 import { Dispatch } from './Dispatch';
+import { Operator } from './Operator';
 
 export class RFO implements Model {
 
@@ -15,6 +16,7 @@ export class RFO implements Model {
     start_time?: string;
 
     dispatch?: Dispatch;
+    operator?: Operator;
 
     getId?(): number {
         return this.rfo_id ?? 0;
