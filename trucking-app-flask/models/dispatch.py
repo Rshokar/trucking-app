@@ -31,7 +31,7 @@ class Dispatch(Base):
             "company_id": self.company_id,
             "customer_id": self.customer_id,
             "notes": self.notes,
-            "date": self.date,
+            "date": self.date.isoformat(),
         }
 
     def get_dispatch_by_id_and_owner(session, dispatch_id, owner_id):

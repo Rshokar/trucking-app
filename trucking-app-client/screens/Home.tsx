@@ -1,5 +1,5 @@
 import React, { FunctionComponent, useEffect, useState } from 'react'
-import { Dimensions, View } from 'react-native';
+import { View } from 'react-native';
 import { StatusBar } from 'expo-status-bar'
 import styled from 'styled-components/native'
 import { StackScreenProps } from '@react-navigation/stack'
@@ -40,6 +40,7 @@ const Home: FunctionComponent<Props> = ({ navigation }) => {
         async function run() {
             try {
                 const disRes: Dispatch[] = await new DispatchController().getAll(query);
+                console.log("DISPATCH RESULTS \n", disRes);
                 if (query.page === 0) {
                     setDispatches(disRes)
                 } else {
@@ -47,12 +48,12 @@ const Home: FunctionComponent<Props> = ({ navigation }) => {
                 }
                 setEnablePaginate(disRes.length === query.limit);
             } catch (error: any) {
-                console.log(error.message);
+                console.log("ERROR", error);
             }
         }
 
-
-        query.page === 0 && setDispatches([]);
+        // if page is zero then we want to clear the cached dispatches
+        // query.page === 0 && setDispatches([]);
         run();
     }, [query]);
 
@@ -115,6 +116,9 @@ const Home: FunctionComponent<Props> = ({ navigation }) => {
         }
     }
 
+    // console.log(customers)
+    // console.log(dispatches)
+
     return (
         <HomeContainer>
             <StatusBar style='dark' />
@@ -135,7 +139,7 @@ const Home: FunctionComponent<Props> = ({ navigation }) => {
                 more={enablePaginate}
                 data={dispatches}
                 render={function ({ item }: any) {
-                    return <DispatchItem {...item} />
+                    return <DispatchItem {...item} onClick={() => navigation.navigate("Tickets", { dispId: item.dispatch_id })} />
                 }}
                 paginate={paginate}
             />

@@ -69,9 +69,8 @@ const TicketSection: FunctionComponent<TicketSectionProps> = (props) => {
                                 setPaginating(true);
                             }
                         }}
-                        ListFooterComponent={props.more ? <LoadingIndicator size="small" color={colors.tertiary} /> : undefined}
+                        ListFooterComponent={props.more ? <LoadingIndicator size="large" color={colors.primary} /> : undefined}
                     />
-                    {props.more && paginating && < LoadingIndicator size="small" color={colors.tertiary} />}
                     <View style={{ height: 145 }} />
                 </>
             )}

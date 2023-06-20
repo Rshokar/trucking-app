@@ -6,8 +6,9 @@ import TransactionAvi from './TicketAvi'
 import RegularText from '../Texts/RegularText'
 import { colors } from '../colors'
 import SmallText from '../Texts/SmallText'
+import { AntDesign } from '@expo/vector-icons';
 
-const TransactionRow = styled.View`
+const TicketRow = styled.TouchableOpacity`
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
@@ -33,14 +34,21 @@ import { Dispatch } from '../../models/Dispatch'
 import moment from 'moment'
 
 
-const DispatchItem: FunctionComponent<Dispatch> = (props) => {
+interface DispatchItemProps extends Dispatch {
+    onClick: () => any,
+}
+
+
+const DispatchItem: FunctionComponent<DispatchItemProps> = (props) => {
+
+    console.log(props.date, props.dispatch_id);
 
     return (
-        <TransactionRow>
+        <TicketRow onPress={props.onClick}>
             <LeftView>
                 <TransactionAvi
                     background={colors.tertiary}
-                    icon={props.customer?.customer_name ? props.customer?.customer_name[0] : 'T'}
+                    icon={props.rfo_count}
                 />
                 <View style={{ marginLeft: 10 }}>
                     <RegularText textStyle={{
@@ -53,7 +61,7 @@ const DispatchItem: FunctionComponent<Dispatch> = (props) => {
                         textAlign: 'left',
                         color: colors.graydark,
                     }}>
-                        {moment(props.date).format('YYYY-MM-DD HH:mm:ss')}
+                        {moment(props.date).format('YYYY-MM-DD h:mm a')}
 
                     </SmallText>
                 </View>
@@ -63,11 +71,11 @@ const DispatchItem: FunctionComponent<Dispatch> = (props) => {
                     color: colors.secondary,
                     textAlign: "right"
                 }}>
-                    {5}
+                    <AntDesign name="caretright" size={15} color="black" />
                 </RegularText>
             </RightView>
 
-        </TransactionRow>
+        </TicketRow>
     )
 }
 

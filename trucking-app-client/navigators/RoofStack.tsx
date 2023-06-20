@@ -2,7 +2,7 @@ import React, { FunctionComponent } from 'react'
 
 import Welcome from '../screens/Welcome'
 import Home from '../screens/Home'
-import Balance from '../screens/Balance'
+import Tickets from '../screens/Tickets'
 
 import { colors } from '../components/colors'
 
@@ -15,12 +15,15 @@ import { createStackNavigator } from '@react-navigation/stack'
 import Greeting from '../components/Header/Greeting'
 import Profile from '../components/Header/Profile'
 
-import { CardProps } from '../components/Cards/types'
 
 export type RoofStackParamList = {
     Welcome: undefined
     Home: undefined
-    Balance: CardProps
+    Tickets: {
+        dispId: number,
+        rfoId?: number,
+        billId?: number,
+    }
 }
 
 const Stack = createStackNavigator<RoofStackParamList>();
@@ -71,8 +74,8 @@ const RoofStack: FunctionComponent = () => {
                     }}
                 />
                 <Stack.Screen
-                    name="Balance"
-                    component={Balance}
+                    name="Tickets"
+                    component={Tickets}
                     options={({ route }) => ({
                         headerTitle: route?.params?.alias,
                         headerTitleAlign: 'center',

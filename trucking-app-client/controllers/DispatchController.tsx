@@ -11,12 +11,11 @@ export class DispatchController implements CRUDController<Dispatch, DispatchQuer
     async get<Dispatch>(query: DispatchQuery): Promise<Dispatch> {
         try {
             const results = await Request.request<Dispatch>({
-                url: `/dispatch${query.company_id ? "/" + query.company_id : ""}`,
+                url: `/dispatch/${query.dispatch_id}`,
                 method: Method.GET,
             });
             return results;
-        } catch (err) {
-            console.log(err);
+        } catch (err: any) {
             throw err;
         }
     }
@@ -40,14 +39,20 @@ export class DispatchController implements CRUDController<Dispatch, DispatchQuer
         // with the format of customers=1,2,3
 
         console.log("QUERY STRING:", queryString)
-        let result: Dispatch[] = await Request.request<Dispatch[]>({
-            url: `/dispatch?${queryString}`,
-            method: Method.GET,
-        });
+        let res: Dispatch[] = [];
+        try {
+            res = await Request.request<Dispatch[]>({
+                url: `/dispatch?${queryString}`,
+                method: Method.GET,
+            });
+        } catch (err: any) {
+            console.log(err.message);
+            throw err;
+        }
 
 
 
-        return result;
+        return res;
     }
 
     delete<T>(query: DispatchQuery): Promise<void> {

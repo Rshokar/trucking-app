@@ -1,5 +1,5 @@
 export interface Model {
-    getId(): number
+    getId?(): number
 }
 
 

@@ -1,4 +1,4 @@
-import { CardProps } from "../Cards/types";
+import { CardProps } from "../Ticket/types";
 
 export interface AmountProps {
     balance: number;
