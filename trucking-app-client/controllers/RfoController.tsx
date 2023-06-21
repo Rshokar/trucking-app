@@ -11,7 +11,7 @@ export class RFOController implements CRUDController<RFO, RFOQuery> {
     async get<RFO>(query: RFOQuery): Promise<RFO> {
         try {
             const results = await Request.request<RFO>({
-                url: `/dispatch/${query.dispatch_id}`,
+                url: `/rfo/${query.rfo_id}`,
                 method: Method.GET,
             });
             return results;
@@ -21,23 +21,17 @@ export class RFOController implements CRUDController<RFO, RFOQuery> {
     }
 
     async getAll<RFO>(query: RFOQuery): Promise<RFO[]> {
-        // Build query string using dispatch query
+        // Build query string using rfo query
         const q: any = { ...query };
-
-
 
         q.startDate = q.startDateTime?.dateString;
         q.endDate = q.endDateTime?.dateString;
         const queryString = qs.stringify(q);
 
-        // Customers have to be sent to server 
-        // with the format of customers=1,2,3
-
-        console.log("QUERY STRING:", queryString)
         let res: RFO[] = [];
         try {
             res = await Request.request<RFO[]>({
-                url: `/dispatch?${queryString}`,
+                url: `/rfo?${queryString}`,
                 method: Method.GET,
             });
         } catch (err: any) {

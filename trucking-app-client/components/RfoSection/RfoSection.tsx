@@ -1,8 +1,10 @@
 import { useState, useEffect, FC } from 'react'
-import { RFO } from '../../models/RFO'
+import { RFO, RFOQuery } from '../../models/RFO'
 import { View, Text } from 'react-native'
 import Ticket from '../Ticket/Ticket'
 import moment from 'moment'
+import { number } from 'yup'
+import { RFOController } from '../../controllers/RfoController'
 
 interface RfoSectionProps extends RFO {
     focusedRFO?: number,
@@ -15,9 +17,15 @@ const RfoSection: FC<RfoSectionProps> = (props) => {
 
     const [rfos, setRfos] = useState<RFO[]>([]);
     const [rfo, setRfo] = useState<RFO>();
+    const [rfoQ, setRfoQ] = useState<RFOQuery>(new RFOQuery());
     useEffect(() => {
-        const run = () => {
+        const run = async () => {
+            rfoQ.dispatch_id = props.dispatch_id;
+            rfoQ.limit = 9999;
 
+            const rC: RFOController = new RFOController();
+            const rfoRes = await rC.getAll<RFO>(rfoQ);
+            setRfos(rfoRes);
         }
         run();
     }, [props.dispatch_id])
