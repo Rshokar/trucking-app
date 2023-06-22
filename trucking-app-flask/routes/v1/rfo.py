@@ -1,4 +1,5 @@
 from flask import Blueprint, request, g
+from datetime import datetime
 from controllers.rfo_controller import RfoController
 from validations import rfo_update, rfo_validation
 from utils import make_response
@@ -7,6 +8,16 @@ import jsonschema
 
 
 rfo = Blueprint("rfo", __name__)
+
+
+@rfo.route("/", methods=["GET"])
+@login_required
+def GET_ALL():
+    # Getquery string parameter and replae with default
+    limit = int(request.args.get('limit', 10))
+    page = int(request.args.get('page', 0))
+    dispatch_id = request.args.get('dispatch_id')
+    return RfoController.get_all_rfo(g.session, limit, page, dispatch_id)
 
 
 @rfo.route("/<int:rfo_id>", methods=["GET"])

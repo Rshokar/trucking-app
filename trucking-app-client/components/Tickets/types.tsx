@@ -9,6 +9,7 @@ export interface TicketSectionProps {
     style?: StyleProps
     paginate?: () => void;
     more: boolean;
+    title?: string;
 }
 
 export interface TicketAviProps {

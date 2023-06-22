@@ -19,6 +19,7 @@ from config_test import (app,
                          rfo_authed,
                          billing_ticket
                          )
+from utils.loader import CustomerFactory, OperatorFactory, DispatchFactory, RFOFactory
 END_POINT = "v1/rfo"
 
 
@@ -290,7 +291,7 @@ def test_rfo_post_rfo_to_another_company(operator_dispatch_authed, operator_disp
 
 def test_rfo_post_rfo_add_another_compoanies_operator_to_rfo(operator_dispatch_authed, operator_dispatch):
     """_summary_
-        This tell will attempt to create an RFO and add another 
+        This tell will attempt to create an RFO and add another
         companies operator to the RFO
 
     Args:
@@ -743,3 +744,33 @@ def test_rfo_delete_another_companies_rfo(rfo_authed, rfo):
     assert res.status_code == 404
     data = res.json
     assert "error" in data.keys()
+
+
+def test_rfo_get_all(client_authed):
+    # Arrange
+    client, user, comp = client_authed
+    cust = CustomerFactory.create(company_id=comp.company_id)
+    operOne = OperatorFactory.create(company_id=comp.company_id)
+    operTwo = OperatorFactory.create(company_id=comp.company_id)
+
+    dispOne = DispatchFactory.create(
+        company_id=comp.company_id, customer_id=cust.customer_id)
+    dispTwo = DispatchFactory.create(
+        company_id=comp.company_id, customer_id=cust.customer_id)
+
+    rfoSet = RFOFactory.create_batch(12, dispatch_id=dispOne.dispatch_id,
+                                     operator_id=operOne.operator_id)
+
+    RFOFactory.create_batch(12, dispatch_id=dispTwo.dispatch_id,
+                            operator_id=operTwo.operator_id)
+
+    # Act
+    res = client.get(f"/{END_POINT}/?dispatch_id={dispOne.dispatch_id}")
+
+    # Assert
+    assert res.status_code == 200
+    data = res.json
+
+    print(data)
+    for disp in data:
+        assert dispOne.dispatch_id == disp["dispatch_id"]

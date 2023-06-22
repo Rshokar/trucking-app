@@ -9,6 +9,7 @@ import DispatchSection from '../components/DispatchSection/DispatchSection'
 const BalanceContainer = styled(Container)`
     background-color: ${colors.graylight}; 
     width: 100%;
+    gap: 20px; 
     flex: 1;
 `
 import { RoofStackParamList } from '../navigators/RoofStack'
@@ -83,8 +84,6 @@ const Tickets: FunctionComponent<Props> = ({ route }) => {
                 focusedRFO={rfoId}
 
             />
-
-
             {/* <BalanceCardSection {...route?.params} /> */}
         </BalanceContainer>
     )

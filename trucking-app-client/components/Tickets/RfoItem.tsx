@@ -61,12 +61,12 @@ const RfoItem: FunctionComponent<RfoItemProps> = (props) => {
                 </View>
             </LeftView>
             <RightView>
-                <RegularText textStyle={{
+                <SmallText textStyle={{
                     color: colors.secondary,
                     textAlign: "right"
                 }}>
-                    {props.start_time ? moment(props.start_time).format("YYYY-MM-DD h:MM a") : "Date not found"}
-                </RegularText>
+                    {props.start_time ? moment(props.start_time).format("MMM Do YYYY h:MM a") : "Date not found"}
+                </SmallText>
             </RightView>
 
         </TicketRow>

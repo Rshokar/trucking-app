@@ -32,8 +32,8 @@ export class RFOQuery implements Query {
     start_location?: string;
     dump_location?: string;
     load_location?: string;
-    startDateTime?: DateData;
-    endDateTime?: DateData;
+    start_time?: DateData;
+    end_Time?: DateData;
     limit: number = 10;
     page: number = 0;
 } 

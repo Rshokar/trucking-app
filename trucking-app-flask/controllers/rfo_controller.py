@@ -18,7 +18,44 @@ class RfoController:
         except Exception as e:
             print(e)
 
-    # def get_all_rfo(request, disaptch_id=None, operator_id=None, ):
+    def get_all_rfo(session, limit: int, page: int, dispatch_id: int):
+
+        print(dispatch_id)
+
+        # First we need to check id the dispatch
+        # belongs to the current user
+        if (dispatch_id is not None):
+            disp = session.query(Dispatch)\
+                .join(Company, Dispatch.company_id == Company.company_id)\
+                .where(Company.owner_id == current_user.id)\
+                .first()
+            # if it does not, return a 404
+            if (disp is None):
+                return make_response({"error": "Dispatch not found"}, 404)
+
+        rfos = session.query(RFO, Operator)\
+            .join(Operator, Operator.operator_id == RFO.operator_id)\
+            .where(RFO.dispatch_id == dispatch_id if dispatch_id is not None else True)\
+            .limit(limit).offset(page * limit).all()
+
+        print(rfos)
+        result = []
+
+        for rfo, op in rfos:
+            result.append({
+                "rfo_id": rfo.rfo_id,
+                "dispatch_id": rfo.dispatch_id,
+                "operator_id": rfo.operator_id,
+                "trailer": rfo.trailer,
+                "truck": rfo.truck,
+                "start_location": rfo.start_location,
+                "dump_location": rfo.dump_location,
+                "load_location": rfo.load_location,
+                "start_time": rfo.start_time.isoformat(),
+                "operator": {"operator_name": op.operator_name}
+            })
+
+        return make_response(result, 200)
 
     def create_rfo(request, session):
         data = request.json

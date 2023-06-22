@@ -82,8 +82,6 @@ class DispatchController:
                 "rfo_count": rfo_count,
             })
 
-        print(result)
-
         return make_response(result, 200)
 
     def create_dispatch(session, request):

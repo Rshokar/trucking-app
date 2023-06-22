@@ -5,7 +5,6 @@ import { RFO, RFOQuery } from "../models/RFO";
 import { Request } from "../utils/Request";
 import { Method } from "../utils/Request";
 
-
 export class RFOController implements CRUDController<RFO, RFOQuery> {
 
     async get<RFO>(query: RFOQuery): Promise<RFO> {
@@ -38,9 +37,6 @@ export class RFOController implements CRUDController<RFO, RFOQuery> {
             console.log(err.message);
             throw err;
         }
-
-
-
         return res;
     }
 

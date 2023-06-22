@@ -8,7 +8,7 @@ import { ScreenWidth } from '../shared'
 import { colors } from '../colors'
 
 const CardBackground = styled.View`
-    max-height: 180px;
+    max-height: 170px;
     width: ${Math.floor(ScreenWidth * .90)}px;
     reasize-mode: cover;
     background-color: ${colors.secondary};
@@ -24,7 +24,7 @@ const CardTouchable = styled.TouchableHighlight`
 const TouchableView = styled.View`
     justify-content: flex-start;
     align-items: center; 
-    padding: 20px;
+    padding: 15px;
     flex: 1;
     gap: 10px;
 `

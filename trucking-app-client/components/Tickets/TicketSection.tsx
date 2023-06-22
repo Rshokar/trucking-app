@@ -47,7 +47,7 @@ const TicketSection: FunctionComponent<TicketSectionProps> = (props) => {
         <TicketSectionBackground style={props.style}>
             <TicketRow style={{ marginBottom: 25 }}>
                 <RegularText textStyle={{ fontSize: 19, color: colors.secondary }}>
-                    Dispatches
+                    {props.title ?? "Dispatches"}
                 </RegularText>
                 <SmallText textStyle={{ color: colors.secondary }}>
                     Recent
