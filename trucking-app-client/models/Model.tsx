@@ -4,4 +4,6 @@ export interface Model {
 
 
 export interface Query {
+    page?: number;
+    limit?: number;
 }
