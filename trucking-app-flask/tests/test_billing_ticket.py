@@ -1,6 +1,7 @@
 import pytest
 import json
 from config_test import app, user, client, billing_ticket, rfo, billing_ticket_authed, rfo_authed, operator_authed, dispatch_authed, company_authed, client_authed, operator_dispatch_authed
+from utils.loader import RFOFactory, BillingTicketFactory, OperatorFactory
 END_POINT = "v1/billing_ticket"
 
 
@@ -84,17 +85,6 @@ def test_get_bill_invalid_id_zero(client_authed):
 
     # Assert
     assert res.status_code == 404
-
-
-def test_get_bill_no_id(client_authed):
-    # Arrange
-    client, user, comp = client_authed
-
-    # Act
-    res = client.get(f'/{END_POINT}/')
-
-    # Assert
-    assert res.status_code == 405
 
 
 def test_get_bill_sql_injection(client_authed):
@@ -402,3 +392,38 @@ def test_delete_unauthorized_user(client, billing_ticket):
 
     # Assert
     assert response.status_code == 401
+
+
+def test_get_all_bill_ticket(billing_ticket_authed):
+    # Arrange
+    client, bill, user, oper, disp, comp, cus, rfo = billing_ticket_authed
+
+    oper_two = OperatorFactory.create(company_id=comp.company_id)
+    rfo_two = RFOFactory.create(
+        dispatch_id=disp.dispatch_id, operator_id=oper_two.operator_id)
+
+    bill_set = BillingTicketFactory.create_batch(12, rfo_id=rfo.rfo_id)
+    BillingTicketFactory.create_batch(12, rfo_id=rfo_two.rfo_id)
+
+    # ACt
+    res = client.get(f"/{END_POINT}/?rfo_id={rfo.rfo_id}")
+
+    # Assert
+    assert 200 == res.status_code
+    data = res.json
+
+    assert 10 == len(data)
+
+    for bill in data:
+        assert rfo.rfo_id == bill["rfo_id"]
+
+
+def test_get_all_bills_no_params(client_authed):
+    # Arrange
+    client, user, comp = client_authed
+
+    # Act
+    res = client.get(f'/{END_POINT}/')
+
+    # Assert
+    assert res.status_code == 400
