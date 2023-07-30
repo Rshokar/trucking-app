@@ -1,7 +1,7 @@
 import React, { FunctionComponent } from 'react'
 
 import Welcome from '../screens/Welcome'
-import Home from '../screens/Home'
+import Home from '../screens/Home/Home'
 import Tickets from '../screens/Tickets'
 
 import { colors } from '../components/colors'
@@ -52,7 +52,7 @@ const RoofStack: FunctionComponent = () => {
                         imageContainerStyle={{ backgroundColor: colors.tertiary }}
                     />
                 }}
-                initialRouteName='Home'
+                initialRouteName='Welcome'
             >
                 <Stack.Screen
                     name="Welcome"

@@ -13,9 +13,3 @@ export class Company implements Model {
     customers: Customer[] = [];
 
 }
-
-
-export class CompanyQuery implements Query {
-
-
-}

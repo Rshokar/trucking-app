@@ -8,6 +8,23 @@ from sqlalchemy import and_
 
 class OperatorController:
 
+    def get_all_operators(session, limit, page):
+        """_summary_
+        Gets all operators according to the queries passed in
+        Args:
+            session (_type_): _description_
+            limit: (int): Number of items to return
+            page: (int): What off set of limit should i start at
+        """
+        operators = session.query(Operator)\
+            .join(Company, Company.company_id == Operator.company_id)\
+            .filter(Company.owner_id == current_user.id)\
+            .limit(limit).offset(page * limit).all()
+
+        operators_dict = [operator.to_dict() for operator in operators]
+
+        return make_response(operators_dict, 200)
+
     def get_operator(session, operator_id):
         '''
         Search for an Operator using their uniquely identifying ID

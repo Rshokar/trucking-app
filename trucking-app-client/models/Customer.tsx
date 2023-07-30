@@ -15,5 +15,8 @@ export class Customer implements Model {
 
 
 export class CustomerQuery implements Query {
-
+    customer_id: number = 0;
+    customer_name?: string;
+    page: number = 0;
+    limit: number = 20;
 }

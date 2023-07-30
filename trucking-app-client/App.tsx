@@ -1,10 +1,26 @@
-import { Text } from "react-native";
-import { StatusBar } from 'expo-status-bar';
 import { useFonts } from 'expo-font';
 import AppLoading from 'expo-app-loading';
-
+import { PaperProvider, DefaultTheme } from 'react-native-paper';
 import RoofStack from "./navigators/RoofStack";
-import Welcome from './screens/Welcome';
+
+
+const theme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    white: '#fff',
+    primary: "#2c365a",
+    secondary: "#ef835d",
+    tertiary: "#85c6d8",
+    gray: "#d1d5db",
+    graylight: "#F3F4F6",
+    graydark: "#4B5563",
+    accent: "#fbcd77",
+    success: "#01A971",
+    red: 'red',
+
+  }
+}
 
 export default function App() {
 
@@ -19,5 +35,7 @@ export default function App() {
     return <AppLoading />;
   }
 
-  return <RoofStack />
+  return <PaperProvider theme={theme}>
+    <RoofStack />
+  </PaperProvider>
 }

@@ -15,6 +15,16 @@ def get_operator(operator_id):
     return OperatorController.get_operator(session, operator_id=operator_id)
 
 
+@operators.route("/", methods=["GET"])
+@login_required
+def get_all_operators():    # get query string parameters with defaults
+    session = g.session
+    limit = int(request.args.get('limit', 10))
+    page = int(request.args.get('page', 0))
+    # pass query string parameters to DispatchController
+    return OperatorController.get_all_operators(session=session, limit=limit, page=page)
+
+
 @operators.route("/", methods=["POST"])
 @login_required
 def create_operator():

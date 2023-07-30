@@ -13,6 +13,16 @@ def get_customer(customer_id):
     return CustomerController.get_customer(g.session, customer_id)
 
 
+@customers.route("/", methods=["GET"])
+@login_required
+def get_all_customers():  # get query string parameters with defaults
+    session = g.session
+    limit = int(request.args.get('limit', 10))
+    page = int(request.args.get('page', 0))
+    # pass query string parameters to DispatchController
+    return CustomerController.get_all_customers(session=session, limit=limit, page=page)
+
+
 @customers.route('/', methods=['POST'])
 @login_required
 def create_customer():

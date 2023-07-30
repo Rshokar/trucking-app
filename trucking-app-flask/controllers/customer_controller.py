@@ -19,6 +19,33 @@ class CustomerController:
         # return the customer
         return make_response(customer.to_dict(), 200)
 
+    def get_all_customers(session, page, limit):
+        """
+        Get all customers owned by the current user.
+
+        Args:
+            session (Session): SQLAlchemy session
+            page (int): Page number to fetch for pagination
+            limit (int): Number of customers to fetch per page
+
+        Returns:
+            list of dict: List of dictionaries containing customer data
+        """
+        # Calculate the starting point
+        offset = page * limit
+
+        # Query all customers owned by the current user
+        customers = session.query(Customer)\
+            .join(Company, Company.company_id == Customer.company_id)\
+            .filter(Company.owner_id == current_user.id)\
+            .order_by(Customer.customer_id)\
+            .offset(offset).limit(limit).all()
+
+        # Convert customers to dictionary
+        customers_dict = [customer.to_dict() for customer in customers]
+
+        return make_response(customers_dict, 200)
+
     def create_customer(session, request):
 
         # get attributes from request

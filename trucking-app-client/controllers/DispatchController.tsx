@@ -4,6 +4,7 @@ import { CRUDController } from "./Controller";
 import { Dispatch, DispatchQuery } from "../models/Dispatch";
 import { Request } from "../utils/Request";
 import { Method } from "../utils/Request";
+import moment from 'moment';
 
 
 export class DispatchController implements CRUDController<Dispatch, DispatchQuery> {
@@ -31,14 +32,11 @@ export class DispatchController implements CRUDController<Dispatch, DispatchQuer
         })
 
         console.log("QUERY: ", q, customers);
-        q.startDate = q.startDate?.dateString;
-        q.endDate = q.endDate?.dateString;
         const queryString = qs.stringify(q) + customers;
 
         // Customers have to be sent to server 
         // with the format of customers=1,2,3
 
-        console.log("QUERY STRING:", queryString)
         let res: Dispatch[] = [];
         try {
             res = await Request.request<Dispatch[]>({
@@ -49,8 +47,6 @@ export class DispatchController implements CRUDController<Dispatch, DispatchQuer
             console.log(err.message);
             throw err;
         }
-
-
 
         return res;
     }

@@ -8,13 +8,13 @@ import { colors } from '../colors'
 import { TicketSectionProps } from './types'
 import RegularText from '../Texts/RegularText'
 import { View } from 'react-native';
+import { Button } from 'react-native-paper';
 
 const TicketSectionBackground = styled.View`
-    width: 100%; 
     padding-horizontal: 25px;
-    padding-top: 5px; 
-    z-index: -1;
-    height: 90%
+    padding-bottom: 10px;
+    z-index: -1; 
+    flex:1; 
 `
 
 const TicketRow = styled.View`
@@ -63,15 +63,16 @@ const TicketSection: FunctionComponent<TicketSectionProps> = (props) => {
                         showsVerticalScrollIndicator={false}
                         keyExtractor={(item: unknown, index: number) => index + ""}
                         renderItem={props.render}
-                        onEndReached={() => {
+                        ListFooterComponent={props.more ? <Button mode="contained" onPress={() => {
                             if (props.paginate) {
                                 props.paginate();
                                 setPaginating(true);
                             }
-                        }}
-                        ListFooterComponent={props.more ? <LoadingIndicator size="large" color={colors.primary} /> : undefined}
+                        }}>
+                            Load More
+                        </Button> : undefined}
                     />
-                    <View style={{ height: 145 }} />
+                    {paginating && <LoadingIndicator size="large" color={colors.primary} />}
                 </>
             )}
         </TicketSectionBackground>
