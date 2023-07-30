@@ -5,16 +5,13 @@ import { TextInput, Button, Text } from 'react-native-paper';
 import { CustomerFormResult, FormProps } from './types';
 import { Customer } from '../../models/Customer';
 import styled from 'styled-components/native';
+import { InputBox } from './styles';
 
 // Define validation schema with Yup
 const validationSchema = yup.object().shape({
     customer_name: yup.string().required('Customer name is required'),
     // Add more fields as needed...
 });
-
-const InputBox = styled.View`
-    padding-bottom: 20px;
-`
 
 const CustomerForm: FC<FormProps<CustomerFormResult>> = (props) => {
     const [submitting, setSubmitting] = useState<boolean>(false);

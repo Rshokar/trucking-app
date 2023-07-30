@@ -23,12 +23,14 @@ export interface TicketItemProps {
     title: string;
     subtitle?: string;
     avatar: string;
-    buttonOneIcon?: IconSource;
-    buttonTwoIcon?: IconSource;
-    onClick?: (event: GestureResponderEvent) => void;
-    onLongClick?: (event: GestureResponderEvent) => void;
+
+    buttonClickIcon?: IconSource;
+    onButtonClick?: () => any;
+
     onDelete?: () => Promise<boolean>;
-    onButton2Click?: (event: GestureResponderEvent) => void;
+
+    onClick?: (event: GestureResponderEvent) => void;
+
     style?: ViewStyle;
     textStyle?: TextStyle;
     aviColor?: string;

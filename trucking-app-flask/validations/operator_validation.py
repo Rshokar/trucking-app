@@ -16,5 +16,4 @@ operator_update = {
         "operator_email": {"type": "string", "pattern": "^([a-z\\d\\.-_-]+)@([a-z\\d-]+)([\\.])([a-z]{2,6})(\\.[a-z]{2,6})?$"}
     },
     "required": ["operator_name", "operator_email"],
-    "additionalProperties": False
 }

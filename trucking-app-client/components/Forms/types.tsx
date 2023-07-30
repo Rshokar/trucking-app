@@ -19,6 +19,11 @@ export interface CustomerFormResult extends FormResult {
     customer_name: string;
 }
 
+export interface OperatorFormResult extends FormResult {
+    operator_name: string;
+    operator_email: string;
+}
+
 export interface FormProps<T extends FormResult> {
     onSubmit: (results: T, id?: string) => any | Promise<boolean>;
     defaultValues?: T;

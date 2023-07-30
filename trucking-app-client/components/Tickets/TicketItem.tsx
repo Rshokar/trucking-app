@@ -31,6 +31,8 @@ const RightView = styled.View`
     align-items: center;
 `
 
+
+
 const TicketItem: FunctionComponent<TicketItemProps> = (props) => {
 
     const [deleting, setDeleting] = useState(false);
@@ -40,8 +42,9 @@ const TicketItem: FunctionComponent<TicketItemProps> = (props) => {
         props.onDelete && setDeleting(await props.onDelete())
         setDeleting(false);
     }
+
     return (
-        <TicketRow onPress={props.onClick} onLongPress={props.onLongClick}>
+        <TicketRow onPress={props.onClick} onLongPress={() => setDeleting(true)}>
             <LeftView>
                 <TransactionAvi
                     background={props.aviColor || colors.tertiary}
@@ -66,12 +69,11 @@ const TicketItem: FunctionComponent<TicketItemProps> = (props) => {
                 </View>
             </LeftView>
             <RightView>
-                {deleting && <>
-                    <IconButton icon={"check"} iconColor={theme.colors.error} size={20} onPress={() => handleDelete()} />
-                    <IconButton icon={"cancel"} size={20} onPress={() => setDeleting(false)} />
-                </>
-                }
-                {(props.buttonOneIcon && !deleting) && <IconButton icon={"delete"} iconColor={theme.colors.error} size={20} onPress={() => setDeleting(true)} disabled={deleting} />}
+                {(deleting && props.onDelete) && <>
+                    <IconButton icon={'cancel'} iconColor={theme.colors.primary} size={20} onPress={() => setDeleting(false)} />
+                    <IconButton icon={'delete'} iconColor={theme.colors.error} size={20} onPress={handleDelete} />
+                </>}
+                {(!deleting && props.buttonClickIcon && props.onButtonClick) && <IconButton icon={props.buttonClickIcon} size={20} onPress={props.onButtonClick} />}
             </RightView>
         </TicketRow>
     )

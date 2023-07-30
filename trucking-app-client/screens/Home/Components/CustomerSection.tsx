@@ -131,7 +131,6 @@ const CustomerSection: FC<Props> = ({ navigateToTicket }) => {
 
 
 
-    console.log(focusedCustomers)
 
     return (
         <StyledSection>
@@ -156,12 +155,13 @@ const CustomerSection: FC<Props> = ({ navigateToTicket }) => {
                                 title={item.customer_name || ''}
                                 avatar={item.customer_name?.charAt(0).toLocaleUpperCase() || 'A'}
                                 onClick={() => navigateToTicket(item.customer_id)}
-                                onLongClick={() => {
+                                onButtonClick={() => {
                                     setFocusedCustomer(item)
                                     setVisible(true);
                                 }}
+                                buttonClickIcon={"pencil"}
                                 onDelete={async (): Promise<boolean> => await handleDelete(item.customer_id + "")}
-                                buttonOneIcon={'delete'}
+
                             />
                         );
                     }

@@ -1,11 +1,11 @@
 import qs from 'qs'
 
-import { CRUDController } from "./Controller";
 import { Operator, OperatorQuery } from "../models/Operator";
 import { Request } from "../utils/Request";
 import { Method } from "../utils/Request";
+import { AuthController } from './AuthController';
 
-export class OperatorController implements CRUDController<Operator, OperatorQuery> {
+export class OperatorController {
 
     async get<Operator>(query: OperatorQuery): Promise<Operator> {
         try {
@@ -37,10 +37,10 @@ export class OperatorController implements CRUDController<Operator, OperatorQuer
         return res;
     }
 
-    async delete<T>(query: OperatorQuery): Promise<void> {
+    async delete<Operator>(id: string): Promise<void> {
         try {
             await Request.request({
-                url: `/company/operators/${query.operator_id}`,
+                url: `/company/operators/${id}`,
                 method: Method.DELETE,
             });
         } catch (err: any) {
@@ -48,24 +48,29 @@ export class OperatorController implements CRUDController<Operator, OperatorQuer
         }
     }
 
-    async update<T>(query: OperatorQuery, model: T): Promise<void> {
+    async update<Operator>(id: string, model: Operator): Promise<Operator> {
         try {
-            await Request.request({
-                url: `/company/operators/${query.operator_id}`,
+            const res: Operator = await Request.request({
+                url: `/company/operators/${id}`,
                 method: Method.PUT,
                 data: model,
             });
+            return res;
         } catch (err: any) {
+            console.log(err);
             throw err;
         }
     }
 
-    async create<T>(model: T): Promise<T> {
+    async create<Operator>(data: Operator): Promise<Operator> {
+
         try {
-            const result = await Request.request<T>({
-                url: `company/operators`,
+            const company = await AuthController.getCompany();
+            data.company_id = company.company_id;
+            const result = await Request.request<Operator>({
+                url: `/company/operators`,
                 method: Method.POST,
-                data: model,
+                data: data,
             });
             return result;
         } catch (err: any) {

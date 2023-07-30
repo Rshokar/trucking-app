@@ -32,7 +32,8 @@ def create_operator():
     try:
         jsonschema.validate(request.json, operator_validation)
         return OperatorController.create_operator(session, request=request)
-    except jsonschema.ValidationError:
+    except jsonschema.ValidationError as e:
+        print(e)
         return make_response({"error": "Invalid Request Data"}, 400)
 
 
@@ -40,6 +41,7 @@ def create_operator():
 @login_required
 def update_operator(operator_id):
     session = g.session
+    print(request.json)
     try:
         jsonschema.validate(request.json, operator_update)
         return OperatorController.update_operator(session, request=request, operator_id=operator_id)
