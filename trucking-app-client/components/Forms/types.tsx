@@ -15,6 +15,11 @@ export interface RegisterFormResult extends FormResult {
     acType: 'dispatcher' | 'operator'
 }
 
+export interface CustomerFormResult extends FormResult {
+    customer_name: string;
+}
+
 export interface FormProps<T extends FormResult> {
-    onSubmit: (results: T) => any;
+    onSubmit: (results: T, id?: string) => any | Promise<boolean>;
+    defaultValues?: T;
 }

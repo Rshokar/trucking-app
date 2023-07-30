@@ -14,3 +14,5 @@ export const StyledErrorView = styled.Text`
   width: 90%
   color: red
 `
+
+

@@ -35,8 +35,9 @@ export class Request {
             return response.data;
         } catch (error: any) {
             if (axios.isAxiosError(error)) {
+                console.log(error.response?.data.message);
                 throw new RequestError(
-                    error.response?.data.error,
+                    error.response?.data.message,
                     error.response?.status
                 )
             }

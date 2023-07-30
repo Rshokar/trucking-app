@@ -1,11 +1,11 @@
-import React, { FunctionComponent } from 'react'
-import { TouchableOpacity, View, Button } from 'react-native'
+import React, { FunctionComponent, useState } from 'react'
+import { View } from 'react-native'
 import styled from 'styled-components/native'
 import TransactionAvi from './TicketAvi'
 import RegularText from '../Texts/RegularText'
 import { colors } from '../colors'
 import SmallText from '../Texts/SmallText'
-import { AntDesign } from '@expo/vector-icons';
+import { IconButton, useTheme } from 'react-native-paper';
 import { TicketItemProps } from './types'
 
 const TicketRow = styled.TouchableOpacity`
@@ -21,14 +21,25 @@ const LeftView = styled.View`
     justify-content: flex-start;
     height: 100%;
     align-items: center;
-    flex:2;
+    flex:3;
 `
 
 const RightView = styled.View`
-    flex: 1; 
+    flex: 1;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
 `
 
 const TicketItem: FunctionComponent<TicketItemProps> = (props) => {
+
+    const [deleting, setDeleting] = useState(false);
+    const theme = useTheme();
+
+    const handleDelete = async () => {
+        props.onDelete && setDeleting(await props.onDelete())
+        setDeleting(false);
+    }
     return (
         <TicketRow onPress={props.onClick} onLongPress={props.onLongClick}>
             <LeftView>
@@ -55,14 +66,12 @@ const TicketItem: FunctionComponent<TicketItemProps> = (props) => {
                 </View>
             </LeftView>
             <RightView>
-                {props.button1Label && <Button title={props.button1Label} onPress={props.onButton1Click} />}
-                {props.button2Label && <Button title={props.button2Label} onPress={props.onButton2Click} />}
-                <RegularText textStyle={{
-                    color: colors.secondary,
-                    textAlign: "right"
-                }}>
-                    <AntDesign name="caretright" size={15} color="black" />
-                </RegularText>
+                {deleting && <>
+                    <IconButton icon={"check"} iconColor={theme.colors.error} size={20} onPress={() => handleDelete()} />
+                    <IconButton icon={"cancel"} size={20} onPress={() => setDeleting(false)} />
+                </>
+                }
+                {(props.buttonOneIcon && !deleting) && <IconButton icon={"delete"} iconColor={theme.colors.error} size={20} onPress={() => setDeleting(true)} disabled={deleting} />}
             </RightView>
         </TicketRow>
     )

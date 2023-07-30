@@ -93,7 +93,7 @@ class CustomerController:
         try:
             session.delete(customer)
             session.commit()
-            return make_response({"message": f"Customer {customer_id} deleted"}, 200)
+            return make_response({"message": f"Customer {customer_id} deleted"}, 201)
         except IntegrityError:
             session.rollback()
             return make_response({"error": "Cannot delete customer because of dependent records"}, 400)

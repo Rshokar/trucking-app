@@ -27,13 +27,11 @@ const HomeContainer = styled.View`
 export type Props = StackScreenProps<RoofStackParamList, "Home">
 
 const Home: FunctionComponent<Props> = ({ navigation }) => {
-    const theme = useTheme()
-    const index = useTabIndex()
     const [customers, setCustomers] = useState<Customer[]>([])
     const [dispatches, setDispatches] = useState<Dispatch[]>([])
     const [query, setQuery] = useState<DispatchQuery>(new DispatchQuery())
-    const [enablePaginate, setEnablePaginate] = useState<boolean>(false)
-    const [showDateModal, setShowDateModal] = useState<boolean>(false)
+    const [, setEnablePaginate] = useState<boolean>(false)
+
 
     useEffect(() => {
         async function fetchDispatches() {
@@ -57,48 +55,6 @@ const Home: FunctionComponent<Props> = ({ navigation }) => {
         fetchCustomers()
     }, [])
 
-    const handleFABPress = () => {
-        if (index === 0) {
-            // Open dispatch form
-        } else if (index === 1) {
-            // Open customer form
-        } else if (index === 2) {
-            // Open operator form
-        }
-    }
-
-    const paginate = () => {
-        if (enablePaginate) {
-            query.page = query.page + 1
-            setQuery({ ...query })
-            setEnablePaginate(false)
-        }
-    }
-
-    const handleAddCustomer = (id: number) => {
-        query.page = 0
-        if (!query.customers) {
-            query.customers = new Set<number>()
-        }
-        if (query.customers.has(id))
-            query.customers.delete(id)
-        else
-            query.customers.add(id)
-        setQuery({ ...query })
-    }
-
-    const logout = async () => {
-        await AuthController.logOut()
-        navigation.navigate("Welcome")
-    }
-
-    const onConfirm = useCallback(({ startDate, endDate }: any) => {
-        setShowDateModal(false)
-        query.startDate = moment(startDate).format("YYYY-MM-DD")
-        query.endDate = moment(endDate).format("YYYY-MM-DD")
-        setQuery({ ...query })
-    }, [setShowDateModal, setQuery])
-
     return (
         <HomeContainer>
             <Tabs>
@@ -117,16 +73,6 @@ const Home: FunctionComponent<Props> = ({ navigation }) => {
                         navigateToTicket={ticketId => console.log("HELLO WORLD", ticketId)} />
                 </TabScreen>
             </Tabs>
-            <FAB
-                style={{
-                    position: 'absolute',
-                    margin: 16,
-                    right: 0,
-                    bottom: 0,
-                }}
-                icon="plus"
-                onPress={handleFABPress}
-            />
         </HomeContainer>
     )
 }

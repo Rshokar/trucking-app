@@ -1,14 +1,26 @@
 import React, { FC, useState, useEffect } from 'react';
-import { TextInput, useTheme } from 'react-native-paper';
+import { Button, FAB, Modal, Portal, Text, TextInput, useTheme, Snackbar } from 'react-native-paper';
 import styled from 'styled-components/native';
 import { Customer, CustomerQuery } from '../../../models/Customer';
 import { CustomerController } from '../../../controllers/CustomerController';
 import TicketItem from '../../../components/Tickets/TicketItem';
 import { StyledHeader, StyledSection } from './styles';
 import TicketSection from '../../../components/Tickets/TicketSection';
+import CustomerForm from '../../../components/Forms/CustomerForm';
+import { CustomerFormResult } from '../../../components/Forms/types';
+import MyModal from '../../../components/Modal/MyModal';
+import { bool } from 'prop-types';
 
 const StyledInput = styled(TextInput)`
     width: 90%;
+`;
+
+const FabContainer = styled.View`
+  flex: 1;
+  justify-content: flex-end;
+  align-items: flex-end;
+  margin-bottom: 20px;
+  margin-right: 20px;
 `;
 
 type Props = {
@@ -19,6 +31,12 @@ const CustomerSection: FC<Props> = ({ navigateToTicket }) => {
     const [customers, setCustomers] = useState<Customer[]>([]);
     const [query, setQuery] = useState<CustomerQuery>(new CustomerQuery());
     const [enablePaginate, setEnablePaginate] = useState<boolean>(false);
+    const [snackbarVisible, setSnackbarVisible] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState('');
+    const [visible, setVisible] = useState(false);
+    const [focusedCustomers, setFocusedCustomer] = useState<Customer>();
+    const showModal = () => setVisible(true);
+    const hideModal = () => setVisible(false);
     const theme = useTheme();
 
     useEffect(() => {
@@ -45,6 +63,76 @@ const CustomerSection: FC<Props> = ({ navigateToTicket }) => {
         }
     };
 
+    const handleAddCustomer = async (data: Customer): Promise<boolean> => {
+        try {
+            const cC = new CustomerController();
+            const res: Customer = await cC.create<Customer>(data as Customer);
+            setCustomers([...customers, res]);
+            hideModal();
+            return true;
+        } catch (err: any) {
+            console.log(err);
+            setSnackbarMessage(err.message);
+            setSnackbarVisible(true);
+            return false;
+        }
+    }
+
+    const handleEditCustomer = async (data: Customer, id: string): Promise<boolean> => {
+        try {
+            const cC = new CustomerController();
+            const q = new CustomerQuery();
+            q.customer_id = parseFloat(id);
+            const res: Customer = await cC.update<Customer>(id, data as Customer);
+            const index = customers.findIndex(cus => (cus.customer_id + "") === id);
+            customers[index] = res;
+            setCustomers([...customers]);
+            setFocusedCustomer(undefined);
+            hideModal();
+            return true;
+        } catch (err: any) {
+            console.log(err);
+            setSnackbarMessage(err.message);
+            setSnackbarVisible(true);
+            return false;
+        }
+    }
+    const handleFormSubmit = async (formData: CustomerFormResult, id?: string): Promise<boolean> => {
+        if (id) {
+            return await handleAddCustomer(formData as Customer);
+        } else {
+            return await handleEditCustomer(formData as Customer, focusedCustomers?.customer_id + "")
+        }
+    };
+
+    const handleDelete = async (id: string): Promise<boolean> => {
+        try {
+            const cC = new CustomerController();
+            const res = await cC.delete(id);
+
+            // if true customer was deleted otherwise flagged deleted
+            if (res) {
+                setCustomers([...customers.filter(c => (c.customer_id + "") !== id)])
+            } else {
+                let index = customers.findIndex(c => c.customer_id.toString() === id);
+                customers[index].deleted = true;
+                setCustomers([...customers]);
+            }
+            setSnackbarMessage('Customer deleted successfully');
+            setSnackbarVisible(true);
+            return true;
+        } catch (err: any) {
+            console.log(err);
+            setSnackbarMessage(err.message);
+            setSnackbarVisible(true);
+            return false;
+        }
+    }
+
+
+
+    console.log(focusedCustomers)
+
     return (
         <StyledSection>
             <StyledHeader>
@@ -64,16 +152,58 @@ const CustomerSection: FC<Props> = ({ navigateToTicket }) => {
                     if (item.customer_name?.match(query.customer_name || '')) {
                         return (
                             <TicketItem
-                                aviColor={theme.colors.error}
+                                aviColor={theme.colors.tertiary}
                                 title={item.customer_name || ''}
                                 avatar={item.customer_name?.charAt(0).toLocaleUpperCase() || 'A'}
                                 onClick={() => navigateToTicket(item.customer_id)}
+                                onLongClick={() => {
+                                    setFocusedCustomer(item)
+                                    setVisible(true);
+                                }}
+                                onDelete={async (): Promise<boolean> => await handleDelete(item.customer_id + "")}
+                                buttonOneIcon={'delete'}
                             />
                         );
                     }
                 }}
                 paginate={paginate}
             />
+            <MyModal
+                visible={visible}
+                onDismiss={function (): void {
+                    setVisible(false);
+                }}
+                title={'Add Customer'}
+            >
+                <CustomerForm
+                    onSubmit={handleFormSubmit}
+                    defaultValues={focusedCustomers as CustomerFormResult} />
+            </MyModal>
+
+            <Snackbar
+                visible={snackbarVisible}
+                onDismiss={() => setSnackbarVisible(false)}
+                action={{
+                    label: 'Dismiss',
+                    onPress: () => {
+                        setSnackbarVisible(false);
+                    },
+                }}
+            >
+                {snackbarMessage}
+            </Snackbar>
+
+            {
+                !visible &&
+                <FAB icon="plus"
+                    onPress={showModal}
+                    style={{
+                        position: 'absolute',
+                        margin: 16,
+                        right: 0,
+                        bottom: 0,
+                    }} />
+            }
         </StyledSection>
     );
 };

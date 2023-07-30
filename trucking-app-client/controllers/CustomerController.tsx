@@ -4,8 +4,10 @@ import { CRUDController } from "./Controller";
 import { Customer, CustomerQuery } from "../models/Customer";
 import { Request } from "../utils/Request";
 import { Method } from "../utils/Request";
+import { AuthController } from './AuthController';
+import axios, { AxiosResponse } from 'axios';
 
-export class CustomerController implements CRUDController<Customer, CustomerQuery> {
+export class CustomerController {
 
     async get<Customer>(query: CustomerQuery): Promise<Customer> {
         try {
@@ -37,33 +39,34 @@ export class CustomerController implements CRUDController<Customer, CustomerQuer
         return res;
     }
 
-    async delete<T>(query: CustomerQuery): Promise<void> {
+    async delete(id: string): Promise<boolean> {
         try {
-            await Request.request({
-                url: `/company/customers/${query.customer_id}`,
-                method: Method.DELETE,
-            });
+            const res: AxiosResponse = await axios.delete(`http://10.0.0.134:5000/v1/company/customers/${id}`)
+            return res.status === 200
         } catch (err: any) {
             throw err;
         }
     }
 
-    async update<T>(query: CustomerQuery, model: T): Promise<void> {
+    async update<Customer>(id: string, model: Customer): Promise<Customer> {
         try {
-            await Request.request({
-                url: `/company/customers/${query.customer_id}`,
+            const res: Customer = await Request.request({
+                url: `/company/customers/${id}`,
                 method: Method.PUT,
                 data: model,
             });
+            return res;
         } catch (err: any) {
             throw err;
         }
     }
 
-    async create<T>(model: T): Promise<T> {
+    async create<Customer>(model: Customer): Promise<Customer> {
         try {
-            const result = await Request.request<T>({
-                url: `company/customers`,
+            const company = await AuthController.getCompany();
+            model.company_id = company.company_id;
+            const result = await Request.request<Customer>({
+                url: `/company/customers`,
                 method: Method.POST,
                 data: model,
             });
