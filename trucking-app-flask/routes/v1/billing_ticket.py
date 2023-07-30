@@ -8,6 +8,17 @@ from flask_login import login_required
 billing_ticket = Blueprint("billing_ticket", __name__)
 
 
+@billing_ticket.route("/", methods=["GET"])
+@login_required
+def get_all_bills():
+    # Get params and set deafults
+    limit = int(request.args.get('limit', 10))
+    page = int(request.args.get('page', 0))
+    rfo_id = int(request.args.get('rfo_id', 0))
+
+    return BillingTicketController.get_all_bills(g.session, page, limit, rfo_id)
+
+
 @billing_ticket.route("/<int:bill_id>", methods=["GET"])
 @login_required
 def get_bill(bill_id):

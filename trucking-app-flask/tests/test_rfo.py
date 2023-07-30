@@ -758,9 +758,8 @@ def test_rfo_get_all(client_authed):
     dispTwo = DispatchFactory.create(
         company_id=comp.company_id, customer_id=cust.customer_id)
 
-    rfoSet = RFOFactory.create_batch(12, dispatch_id=dispOne.dispatch_id,
-                                     operator_id=operOne.operator_id)
-
+    RFOFactory.create_batch(12, dispatch_id=dispOne.dispatch_id,
+                            operator_id=operOne.operator_id)
     RFOFactory.create_batch(12, dispatch_id=dispTwo.dispatch_id,
                             operator_id=operTwo.operator_id)
 

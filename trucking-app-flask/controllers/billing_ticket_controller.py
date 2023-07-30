@@ -28,6 +28,42 @@ class BillingTicketController:
             return make_response({"error": "Billing ticket not found"}, 404)
         return make_response(bill.to_dict(), 200)
 
+    def get_all_bills(session, page: int, limit: int, rfo_id: int):
+        """_summary_
+            Gets all bills according to id
+            If current user is not owner of rfo 
+            then 404 is returned
+        Args:
+            session (_type_): _description_
+            page (_type_): _description_
+            limit (_type_): _description_
+            rfo_id (_type_): _description_
+        """
+        if rfo_id <= 0:
+            return make_response({"error": "RFO ID is required and must be greater than 0"}, 400)
+
+        rfo = None
+
+        rfo = session.query(RFO)\
+            .join(Dispatch, RFO.dispatch_id == Dispatch.dispatch_id)\
+            .join(Company, Company.company_id == Dispatch.company_id)\
+            .where(Company.owner_id == current_user.id)\
+            .first()
+
+        if (rfo is None):
+            return make_response({"error": "RFO not found"}, 404)
+
+        bills = session.query(BillingTickets)\
+            .where(BillingTickets.rfo_id == rfo_id)\
+            .limit(limit).offset(page * limit).all()
+
+        res = []
+
+        for bill in bills:
+            res.append(bill.to_dict())
+
+        return make_response(res, 200)
+
     def create_bill(session, request):
         """_summary_
             Creates a billing ticket in the database
