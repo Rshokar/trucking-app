@@ -1,13 +1,12 @@
 import qs from 'qs'
 
-import { CRUDController } from "./Controller";
 import { Dispatch, DispatchQuery } from "../models/Dispatch";
-import { Request } from "../utils/Request";
-import { Method } from "../utils/Request";
+import { Request, Method } from "../utils/Request";
 import moment from 'moment';
+import { AuthController } from './AuthController';
 
 
-export class DispatchController implements CRUDController<Dispatch, DispatchQuery> {
+export class DispatchController {
 
     async get<Dispatch>(query: DispatchQuery): Promise<Dispatch> {
         try {
@@ -22,7 +21,6 @@ export class DispatchController implements CRUDController<Dispatch, DispatchQuer
     }
 
     async getAll<Dispatch>(query: DispatchQuery): Promise<Dispatch[]> {
-        // Build query string using dispatch query
         const q: any = { ...query };
 
         let customers: string = "";
@@ -33,9 +31,6 @@ export class DispatchController implements CRUDController<Dispatch, DispatchQuer
 
         console.log("QUERY: ", q, customers);
         const queryString = qs.stringify(q) + customers;
-
-        // Customers have to be sent to server 
-        // with the format of customers=1,2,3
 
         let res: Dispatch[] = [];
         try {
@@ -51,13 +46,44 @@ export class DispatchController implements CRUDController<Dispatch, DispatchQuer
         return res;
     }
 
-    delete<T>(query: DispatchQuery): Promise<void> {
-        throw new Error("Method not implemented.");
+    async delete(id: string): Promise<void> {
+        try {
+            await Request.request({
+                url: `/dispatch/${id}`,
+                method: Method.DELETE,
+            });
+        } catch (err: any) {
+            throw err;
+        }
     }
-    update<T>(query: DispatchQuery, model: T): Promise<void> {
-        throw new Error("Method not implemented.");
+
+    async update(id: string, model: Dispatch): Promise<Dispatch> {
+        try {
+            const updatedDispatch = await Request.request<Dispatch>({
+                url: `/dispatch/${id}`,
+                method: Method.PUT,
+                data: JSON.stringify(model)
+            });
+            return updatedDispatch;
+        } catch (err: any) {
+            throw err;
+        }
     }
-    create<T>(model: T): Promise<T> {
-        throw new Error("Method not implemented.");
+
+    async create(model: Dispatch): Promise<Dispatch> {
+        console.log(model);
+        try {
+            const company = await AuthController.getCompany();
+            model.company_id = company.company_id;
+            const createdDispatch = await Request.request<Dispatch>({
+                url: `/dispatch`,
+                method: Method.POST,
+                data: model
+            });
+            return createdDispatch;
+        } catch (err: any) {
+            console.log(err);
+            throw err;
+        }
     }
 }

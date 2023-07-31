@@ -60,7 +60,8 @@ const Home: FunctionComponent<Props> = ({ navigation }) => {
             <Tabs>
                 <TabScreen label="Dispatch" icon="book">
                     <DispatchSection
-                        navigateToTickets={dispId => navigation.navigate("Tickets", { dispId: parseFloat(dispId) })}
+                        customers={customers}
+                        navigateToTicket={dispId => navigation.navigate("Tickets", { dispId: parseFloat(dispId + "") })}
                     />
                 </TabScreen>
                 <TabScreen label="Customer" icon="account">

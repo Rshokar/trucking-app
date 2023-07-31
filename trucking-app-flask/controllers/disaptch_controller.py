@@ -37,7 +37,7 @@ class DispatchController:
             page (int): Page of dispatches
             startDate (datetime): Start date of dispatches
             endDate (datetime): End date of dispatches
-            custmoers (list): List of customers
+            customers (list): List of customers
 
         Returns:
             Response: 200 success 404 not found
@@ -52,7 +52,7 @@ class DispatchController:
 
         dispatch_query = session.query(Dispatch, Customer.customer_name, func.count(RFO.rfo_id).label('rfo_count'))\
             .join(Company, Dispatch.company_id == Company.company_id)\
-            .join(RFO, Dispatch.dispatch_id == RFO.dispatch_id)\
+            .outerjoin(RFO, Dispatch.dispatch_id == RFO.dispatch_id)\
             .join(Customer, Dispatch.customer_id == Customer.customer_id)
 
         if not customers:
@@ -82,6 +82,9 @@ class DispatchController:
                 "rfo_count": rfo_count,
             })
 
+        print("RESULT")
+        print(result)
+
         return make_response(result, 200)
 
     def create_dispatch(session, request):
@@ -110,7 +113,7 @@ class DispatchController:
             return make_response({'error': 'Company not found'}, 404)
 
         dispatch = Dispatch(
-            company_id, customer_id, notes, datetime.strptime(date, "%Y-%m-%d %H:%M:%S"))
+            company_id, customer_id, notes, datetime.strptime(date, "%Y-%m-%d"))
 
         session.add(dispatch)
         session.commit()

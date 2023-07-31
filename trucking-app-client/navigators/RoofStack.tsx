@@ -52,7 +52,7 @@ const RoofStack: FunctionComponent = () => {
                         imageContainerStyle={{ backgroundColor: colors.tertiary }}
                     />
                 }}
-                initialRouteName='Home'
+                initialRouteName='Welcome'
             >
                 <Stack.Screen
                     name="Welcome"

@@ -5,7 +5,7 @@ dispatch_validation = {
         "company_id": {"type": "integer", "minimum": 1},
         "customer_id": {"type": "integer", "minimum": 1},
         "notes": {"type": "string", "maxLength": 1000},
-        "date": {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}$"},
+        "date": {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$"},
     },
     "required": ["company_id", "customer_id", "notes", "date"],
     "additionalProperties": False

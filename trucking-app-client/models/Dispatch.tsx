@@ -7,7 +7,7 @@ import { CalendarDate } from 'react-native-paper-dates/lib/typescript/Date/Calen
 
 export class Dispatch implements Model {
 
-    dispatch_id?: number = 0;
+    dispatch_id?: number;
     company_id?: number
     customer_id?: number
     notes?: string;
