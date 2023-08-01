@@ -37,9 +37,11 @@ const DispatchForm: FC<Props> = ({ onSubmit, defaultValues, customers }) => {
     const openMenu = () => setVisible(true);
     const closeMenu = () => setVisible(false);
 
+    const dv: any = { ...defaultValues, date: defaultValues?.date.toString().split("T")[0] }
+
     return (
         <Formik
-            initialValues={defaultValues ?? new Dispatch()}
+            initialValues={dv ?? new Dispatch()}
             validationSchema={DispatchFormSchema}
             onSubmit={async (values, { setSubmitting }) => {
                 values.customer_id = parseFloat(values.customer_id + "");
@@ -48,8 +50,6 @@ const DispatchForm: FC<Props> = ({ onSubmit, defaultValues, customers }) => {
             }}
         >
             {({ handleChange, handleBlur, handleSubmit, values, errors, isSubmitting }) => {
-                console.log(errors)
-                console.log(values)
                 return <>
                     <InputBox>
                         <Menu
@@ -104,8 +104,8 @@ const DispatchForm: FC<Props> = ({ onSubmit, defaultValues, customers }) => {
                             error={errors.notes ? true : false}
                         />
                     </InputBox>
-                    <RegularButton onPress={() => handleSubmit()} disabled={isSubmitting}>
-                        Submit
+                    <RegularButton onPress={() => handleSubmit()} disabled={isSubmitting} btnStyles={{ backgroundColor: isSubmitting ? theme.colors.onSurfaceDisabled : theme.colors.primary }} >
+                        {isSubmitting ? "Submitting...." : "Submit"}
                     </RegularButton>
                 </>
             }}

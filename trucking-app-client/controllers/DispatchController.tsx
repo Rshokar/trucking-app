@@ -58,11 +58,16 @@ export class DispatchController {
     }
 
     async update(id: string, model: Dispatch): Promise<Dispatch> {
+        const data = {
+            notes: model.notes,
+            date: model.date,
+            customer_id: model.customer_id,
+        }
         try {
             const updatedDispatch = await Request.request<Dispatch>({
                 url: `/dispatch/${id}`,
                 method: Method.PUT,
-                data: JSON.stringify(model)
+                data: data
             });
             return updatedDispatch;
         } catch (err: any) {

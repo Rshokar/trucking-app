@@ -51,7 +51,6 @@ export class AuthController implements Controller {
         user.role = u["role"]
         user.email = u["email"]
 
-        // console.log("SAVE USER", user)
 
         await AsyncStorage.setItem('user', JSON.stringify(user));
     }

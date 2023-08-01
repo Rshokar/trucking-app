@@ -1,5 +1,5 @@
 import React, { FunctionComponent } from 'react'
-
+import { Text } from 'react-native'
 import Welcome from '../screens/Welcome'
 import Home from '../screens/Home/Home'
 import Tickets from '../screens/Tickets'
@@ -14,25 +14,34 @@ import { createStackNavigator } from '@react-navigation/stack'
 
 import Greeting from '../components/Header/Greeting'
 import Profile from '../components/Header/Profile'
+import { User } from '../models/User'
+import { Company } from '../models/Company'
+import { IconButton, useTheme } from 'react-native-paper'
+import Account from '../screens/Account/Account'
 
 
 export type RoofStackParamList = {
     Welcome: undefined
-    Home: undefined
+    Home: {
+        company: Company
+    }
     Tickets: {
         dispId: number,
         rfoId?: number,
         billId?: number,
-    }
+    },
+    Account: undefined
 }
 
 const Stack = createStackNavigator<RoofStackParamList>();
 
 const RoofStack: FunctionComponent = () => {
+    const theme = useTheme();
+
     return (
         <NavigationContainer>
             <Stack.Navigator
-                screenOptions={{
+                screenOptions={({ navigation }) => ({
                     headerStyle: {
                         backgroundColor: colors.graylight,
                         borderBottomWidth: 0,
@@ -48,10 +57,15 @@ const RoofStack: FunctionComponent = () => {
                     headerLeftContainerStyle: {
                         paddingRight: 10,
                     },
-                    headerRight: () => <Profile
-                        imageContainerStyle={{ backgroundColor: colors.tertiary }}
+                    headerRight: () => <IconButton
+                        size={25}
+                        containerColor={theme.colors.primary}
+                        iconColor={'white'}
+                        background={theme.colors.secondary}
+                        icon={'account'}
+                        onPress={() => navigation.navigate("Account")}
                     />
-                }}
+                })}
                 initialRouteName='Welcome'
             >
                 <Stack.Screen
@@ -63,16 +77,19 @@ const RoofStack: FunctionComponent = () => {
                 <Stack.Screen
                     name="Home"
                     component={Home}
-                    options={{
-                        headerTitle: (props) => <Greeting
-                            mainText='Hello User'
-                            subText='Welcome back'
-                            {...props}
-                        />,
+                    options={({ route }) => ({
+                        headerTitle: props => {
+                            console.log(route, props);
+                            return <Greeting
+                                mainText={`${route.params?.company.company_name ?? "Hello User"}`}
+                                subText='Welcome back'
+                                {...props}
+                            />
+                        },
                         headerTitleAlign: 'left',
-                        headerLeft: () => <></>
-                    }}
+                    })}
                 />
+
                 <Stack.Screen
                     name="Tickets"
                     component={Tickets}
@@ -91,6 +108,10 @@ const RoofStack: FunctionComponent = () => {
                             paddingLeft: 0
                         }
                     })}
+                />
+                <Stack.Screen
+                    name="Account"
+                    component={Account}
                 />
             </Stack.Navigator>
         </NavigationContainer>

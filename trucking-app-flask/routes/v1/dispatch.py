@@ -40,8 +40,7 @@ def create_dispatch():
         jsonschema.validate(request.json, dispatch_validation)
         print(request.json)
         return DispatchController.create_dispatch(session=session, request=request)
-    except jsonschema.ValidationError as e:
-        print(e)
+    except jsonschema.ValidationError:
         return make_response({"error": "Invalid Request Data"}, 400)
 
 
@@ -52,7 +51,8 @@ def update_dispatch(dispatch_id):
     try:
         jsonschema.validate(request.json, dispatch_update)
         return DispatchController.update_dispatch(session=session, request=request, dispatch_id=dispatch_id)
-    except jsonschema.ValidationError:
+    except jsonschema.ValidationError as e:
+        print(e)
         return make_response({"error": "Invalid Request Data"}, 400)
 
 

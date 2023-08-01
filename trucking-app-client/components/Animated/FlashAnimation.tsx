@@ -65,7 +65,6 @@ const FlashAnimation: FunctionComponent<FlashAnimationProps> = (props) => {
 
 
     useEffect(() => {
-        console.log('USE EFFECT')
         Animated.sequence(animations).start(() => {
             props.onAnimationEnd && props.onAnimationEnd()
         })
@@ -73,7 +72,6 @@ const FlashAnimation: FunctionComponent<FlashAnimationProps> = (props) => {
 
     useEffect(() => setDuration(props.duration ? props.duration : DEFAULT_DURATION), [props.duration])
 
-    console.log("FLASH ANIMATION", props.toggle)
     return <Animated.View
         style={[
             styles.container,

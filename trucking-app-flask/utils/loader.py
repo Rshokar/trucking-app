@@ -41,15 +41,15 @@ def loadDB(num_users):
             d = DispatchFactory.create_batch(
                 5, company_id=company.company_id, customer_id=customer.customer_id, date=fake.date_time_this_year(before_now=True, after_now=False, tzinfo=None))
 
-            for dispatch in d:
-                numRfos = random.randint(0, len(operators))
-                for i in range(numRfos):
-                    rfo = RFOFactory.create(
-                        dispatch_id=dispatch.dispatch_id, operator_id=operators[i].operator_id)
-                    billing_ticket = BillingTicketFactory.create(
-                        rfo_id=rfo.rfo_id)
-                    billing_tickets.append(billing_ticket)
-                    rfos.append(rfo)
+            # for dispatch in d:
+            #     numRfos = random.randint(0, len(operators))
+            #     for i in range(numRfos):
+            #         rfo = RFOFactory.create(
+            #             dispatch_id=dispatch.dispatch_id, operator_id=operators[i].operator_id)
+            #         billing_ticket = BillingTicketFactory.create(
+            #             rfo_id=rfo.rfo_id)
+            #         billing_tickets.append(billing_ticket)
+            #         rfos.append(rfo)
 
             dispatches.append(d)
 

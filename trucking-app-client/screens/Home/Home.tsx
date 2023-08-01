@@ -1,13 +1,8 @@
-import React, { FunctionComponent, useEffect, useState, useCallback } from 'react'
-import { View } from 'react-native'
+import React, { FunctionComponent, useEffect, useState } from 'react'
 import { StackScreenProps } from '@react-navigation/stack'
-import { useTheme, TextInput, FAB } from 'react-native-paper'
-import { DatePickerModal } from 'react-native-paper-dates'
 import styled from 'styled-components/native'
 
-import { colors } from '../../components/colors'
-import { Container } from '../../components/shared'
-import { Tabs, TabScreen, useTabIndex, useTabNavigation } from 'react-native-paper-tabs'
+import { Tabs, TabScreen } from 'react-native-paper-tabs'
 
 import DispatchSection from './Components/DispatchSection'
 import { AuthController } from '../../controllers/AuthController'
@@ -15,7 +10,6 @@ import { DispatchController } from '../../controllers/DispatchController'
 import { RoofStackParamList } from '../../navigators/RoofStack'
 import { Customer } from '../../models/Customer'
 import { Dispatch, DispatchQuery } from '../../models/Dispatch'
-import moment from 'moment'
 import OperatorSection from './Components/OperatorSection'
 import CustomerSection from './Components/CustomerSection'
 
@@ -29,7 +23,7 @@ export type Props = StackScreenProps<RoofStackParamList, "Home">
 const Home: FunctionComponent<Props> = ({ navigation }) => {
     const [customers, setCustomers] = useState<Customer[]>([])
     const [dispatches, setDispatches] = useState<Dispatch[]>([])
-    const [query, setQuery] = useState<DispatchQuery>(new DispatchQuery())
+    const [query] = useState<DispatchQuery>(new DispatchQuery())
     const [, setEnablePaginate] = useState<boolean>(false)
 
 
@@ -58,18 +52,19 @@ const Home: FunctionComponent<Props> = ({ navigation }) => {
     return (
         <HomeContainer>
             <Tabs>
-                <TabScreen label="Dispatch" icon="book">
+                <TabScreen label="Dispatches">
                     <DispatchSection
                         customers={customers}
-                        navigateToTicket={dispId => navigation.navigate("Tickets", { dispId: parseFloat(dispId + "") })}
+                        navigateToTickets={(dispId: string): void => navigation.navigate("Tickets", { dispId: parseFloat(dispId) })}
                     />
+
                 </TabScreen>
-                <TabScreen label="Customer" icon="account">
+                <TabScreen label="Customers">
                     <CustomerSection navigateToTicket={function (customerId: number): void {
                         console.log(customerId);
                     }} />
                 </TabScreen>
-                <TabScreen label="Operator" icon="truck">
+                <TabScreen label="Operators">
                     <OperatorSection
                         navigateToTicket={ticketId => console.log("HELLO WORLD", ticketId)} />
                 </TabScreen>

@@ -29,7 +29,6 @@ export class BillController implements CRUDController<Bill, BillQuery> {
         // Customers have to be sent to server 
         // with the format of customers=1,2,3
 
-        console.log("QUERY STRING:", queryString)
         let res: Bill[] = [];
         try {
             res = await Request.request<Bill[]>({

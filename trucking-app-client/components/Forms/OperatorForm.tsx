@@ -1,11 +1,12 @@
 import React, { FC, useState } from 'react';
 import { Formik } from 'formik';
 import * as yup from 'yup';
-import { TextInput, Button, Text } from 'react-native-paper';
+import { TextInput, Button, Text, useTheme } from 'react-native-paper';
 import { OperatorFormResult, FormProps } from './types';
 import { Operator } from '../../models/Operator';
 import styled from 'styled-components/native';
 import { InputBox } from './styles';
+import RegularButton from '../Buttons/RegularButton';
 
 // Define validation schema with Yup
 const validationSchema = yup.object().shape({
@@ -15,6 +16,7 @@ const validationSchema = yup.object().shape({
 
 const OperatorForm: FC<FormProps<OperatorFormResult>> = (props) => {
     const [submitting, setSubmitting] = useState<boolean>(false);
+    const theme = useTheme();
 
     return (
         <Formik
@@ -53,9 +55,9 @@ const OperatorForm: FC<FormProps<OperatorFormResult>> = (props) => {
                         {touched.operator_email && <Text>{errors.operator_email}</Text>}
                     </InputBox>
 
-                    <Button mode="contained" onPress={(e) => handleSubmit()} disabled={submitting}>
+                    <RegularButton onPress={(e) => handleSubmit()} disabled={submitting} btnStyles={{ backgroundColor: submitting ? theme.colors.onSurfaceDisabled : theme.colors.primary }}>
                         {submitting ? "Loading..." : "Submit"}
-                    </Button>
+                    </RegularButton>
                 </>
             )}
         </Formik>

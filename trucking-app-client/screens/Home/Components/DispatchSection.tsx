@@ -9,8 +9,9 @@ import { StyledSection, StyledHeader } from './styles';
 import TicketSection from '../../../components/Tickets/TicketSection';
 import TicketItem from '../../../components/Tickets/TicketItem';
 import { DispatchFormResult } from '../../../components/Forms/DispatchForm';
-import { Customer } from '../../../models/Customer';
+import { Customer, CustomerQuery } from '../../../models/Customer';
 import MyModal from '../../../components/Modal/MyModal';
+import { CustomerController } from '../../../controllers/CustomerController';
 
 type Props = {
     navigateToTickets: (dispId: string) => void;
@@ -64,10 +65,10 @@ const DispatchSection: FunctionComponent<Props> = ({ navigateToTickets, customer
             } else {
                 return await handleCreateDispatch(values);
             }
-        } catch (err) {
+        } catch (err: any) {
             console.error(err);
             setSnackbarColor('red');
-            setSnackbarMessage('Error while processing dispatch');
+            setSnackbarMessage(err.message);
             setVisibleSnackbar(true);
             return false;
         }
@@ -89,7 +90,7 @@ const DispatchSection: FunctionComponent<Props> = ({ navigateToTickets, customer
             return true;
         } catch (err: any) {
             setSnackbarColor('red');
-            setSnackbarMessage('Failed to create dispatch');
+            setSnackbarMessage(err.message);
             setVisibleSnackbar(true);
             throw err;
         }
@@ -100,6 +101,16 @@ const DispatchSection: FunctionComponent<Props> = ({ navigateToTickets, customer
         if (!focusingDispatch) return false;
         try {
             const updatedDispatch = await dC.update(focusingDispatch.dispatch_id + "", data);
+            if (data.customer_id !== focusingDispatch.customer_id) {
+                // Get customer from DB
+                const cC = new CustomerController();
+                const cQ = new CustomerQuery();
+                cQ.customer_id = data.customer_id ?? 0;
+                const cus: Customer = await cC.get(cQ)
+                updatedDispatch.customer = cus;
+            }
+            console.log("UPDATED DISPATCH", updatedDispatch);
+            updatedDispatch.rfo_count = focusingDispatch.rfo_count;
             const index = dispatches.findIndex(d => d.dispatch_id === focusingDispatch.dispatch_id);
             dispatches[index] = updatedDispatch;
             setDispatches([...dispatches]);
@@ -108,13 +119,31 @@ const DispatchSection: FunctionComponent<Props> = ({ navigateToTickets, customer
             setSnackbarMessage('Dispatch updated successfully');
             setVisibleSnackbar(true);
             setShowFormModal(false)
-
             return true;
         } catch (err: any) {
             setSnackbarColor('red');
-            setSnackbarMessage('Failed to update dispatch');
+            setSnackbarMessage(err.message);
             setVisibleSnackbar(true);
-            throw err;
+            return false;
+        }
+    }
+
+    const handleDelete = async (id: string): Promise<boolean> => {
+        try {
+            const dC = new DispatchController();
+
+            await dC.delete(id);
+            setDispatches([...dispatches.filter(d => (d.dispatch_id + "") !== id)])
+            setSnackbarMessage("Dispatch deleted successfully");
+            setSnackbarColor('green');
+            setVisibleSnackbar(true);
+            setShowFormModal(false);
+            return true;
+        } catch (err: any) {
+            setSnackbarColor('red');
+            setSnackbarMessage(err.message);
+            setVisibleSnackbar(true);
+            return false
         }
     }
     return (
@@ -143,15 +172,22 @@ const DispatchSection: FunctionComponent<Props> = ({ navigateToTickets, customer
             <TicketSection
                 more={enablePaginate}
                 data={dispatches}
-                render={({ item }: any) => {
+                render={({ item }: { item: Dispatch }) => {
                     return <TicketItem
                         title={item.customer?.customer_name || ''}
                         subtitle={moment(item.date).format('YYYY-MM-DD')}
-                        avatar={item.rfo_count}
+                        avatar={item.rfo_count + ""}
                         onClick={() => {
+                            console.log("HELLO WORLD");
                             setFocusingDispatch(item);
-                            navigateToTickets(item.dispatch_id);
+                            navigateToTickets(item.dispatch_id + "");
                         }}
+                        onButtonClick={() => {
+                            setFocusingDispatch(item);
+                            setShowFormModal(true);
+                        }}
+                        buttonClickIcon={'pencil'}
+                        onDelete={() => handleDelete(item.dispatch_id + "")}
                     />
                 }}
                 paginate={paginate}

@@ -23,7 +23,7 @@ class DispatchController:
         """
         dispatch = Dispatch.get_dispatch_by_id_and_owner(
             session, dispatch_id, current_user.id)
-        print(f"CURRENT USER: {current_user}")
+
         if dispatch is None:
             return make_response({'error': 'Dispatch not found'}, 404)
         return make_response(dispatch.to_dict(), 200)
@@ -42,13 +42,6 @@ class DispatchController:
         Returns:
             Response: 200 success 404 not found
         """
-
-        print("Parameter types:")
-        print("limit:", type(limit), limit)
-        print("page:", type(page), page)
-        print("startDate:", type(startDate), startDate)
-        print("endDate:", type(endDate), endDate)
-        print("customers:", type(customers), customers)
 
         dispatch_query = session.query(Dispatch, Customer.customer_name, func.count(RFO.rfo_id).label('rfo_count'))\
             .join(Company, Dispatch.company_id == Company.company_id)\
@@ -81,9 +74,6 @@ class DispatchController:
                 "customer": {"customer_name": customer},
                 "rfo_count": rfo_count,
             })
-
-        print("RESULT")
-        print(result)
 
         return make_response(result, 200)
 
@@ -128,7 +118,6 @@ class DispatchController:
         """
 
         data = request.json
-        notes = data.get('notes')
 
         dispatch = Dispatch.get_dispatch_by_id_and_owner(
             session, dispatch_id, current_user.id)
@@ -137,8 +126,9 @@ class DispatchController:
             return make_response({'error': 'Dispatch not found'}, 404)
 
         dispatch.date = datetime.strptime(
-            data.get("date"), "%Y-%m-%d %H:%M:%S")
+            data.get("date"), "%Y-%m-%d")
         dispatch.notes = data.get('notes')
+        dispatch.customer_id = data.get('customer_id')
 
         session.commit()
         return make_response(dispatch.to_dict(), 200)
@@ -162,4 +152,4 @@ class DispatchController:
             return make_response({'message': 'Dispatch deleted successfully'}, 200)
         except IntegrityError as e:
             session.rollback()
-            return make_response({'error': 'Tickets exist that reference dispatch, cannot delete'}, 400)
+            return make_response({'error': 'Tickets exist that reference dispatch. Dispatch cannot be deleted.'}, 400)

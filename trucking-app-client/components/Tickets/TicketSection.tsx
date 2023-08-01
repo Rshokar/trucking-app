@@ -41,8 +41,6 @@ const TicketSection: FunctionComponent<TicketSectionProps> = (props) => {
         setPaginating(false);
     }, [props.data])
 
-    console.log(props.more, paginating);
-
     return (
         <TicketSectionBackground style={props.style}>
             <TicketRow style={{ marginBottom: 25 }}>

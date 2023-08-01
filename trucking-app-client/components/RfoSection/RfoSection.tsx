@@ -38,7 +38,6 @@ const RfoSection: FC<RfoSectionProps> = (props) => {
     // Filter for rfo
     useEffect(() => {
         const focusRFO: RFO | undefined = rfos.find((r) => r.rfo_id === props.focusedRFO);
-        console.log("FOUND RFO", focusRFO);
         if (focusRFO) {
             setRfo(focusRFO);
             animateFocus(true);
@@ -77,8 +76,6 @@ const RfoSection: FC<RfoSectionProps> = (props) => {
         inputRange: [0, 1],
         outputRange: [400, 0]
     })
-
-    console.log("FOCUSED RFO", rfo, focusH, listH)
 
     return (
         <View>

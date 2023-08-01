@@ -16,8 +16,9 @@ dispatch_update = {
     "type": "object",
     "properties": {
         "notes": {"type": "string", "maxLength": 1000},
-        "date": {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}$"},
+        "date": {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$"},
+        "customer_id": {"type": "integer", "minimum": 1},
     },
-    "required": ["notes", "date"],
+    "required": ["notes", "date", "customer_id"],
     "additionalProperties": False
 }

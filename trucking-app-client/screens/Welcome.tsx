@@ -82,7 +82,7 @@ const Welcome: FunctionComponent<Props> = ({ navigation }) => {
             setFlashColor(colors.success)
             setFlashMessage("Successfully Loggd In")
             setFlashToggle(!flashToggle)
-            setTimeout(() => navigation.navigate("Home"), 2000)
+            setTimeout(async () => navigation.navigate("Home", { company: await AuthController.getCompany() }), 2000)
         } catch (e: any) {
             console.log('Error', e)
             setFlashMessage(e.message)
@@ -114,8 +114,6 @@ const Welcome: FunctionComponent<Props> = ({ navigation }) => {
 
         }
     }
-
-    console.log("WELCOME", flashToggle)
 
     return (
         <>
