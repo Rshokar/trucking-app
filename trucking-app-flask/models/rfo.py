@@ -13,6 +13,7 @@ class RFO(Base):
                          ForeignKey(Dispatch.dispatch_id), nullable=False)
     operator_id = Column("operator_id", Integer,
                          ForeignKey(Operator.operator_id), nullable=False)
+
     trailer = Column("trailer", String(100))
     truck = Column("truck", String(100))
     start_location = Column("start_location", String(

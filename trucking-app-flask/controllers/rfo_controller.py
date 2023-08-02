@@ -147,7 +147,11 @@ class RfoController:
 
         session.commit()
 
-        return make_response(rfo.to_dict(), 200)
+        res = rfo.to_dict()
+        # Conversion is done here instead.
+        res["start_time"] = rfo.start_time.isoformat()
+
+        return make_response(res, 200)
 
     def delete_rfo(session, rfo_id):
         # Check if rfo exist

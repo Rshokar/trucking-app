@@ -1,6 +1,5 @@
 import qs from 'qs'
 
-import { CRUDController } from "./Controller";
 import { RFO, RFOQuery } from "../models/RFO";
 import { Request } from "../utils/Request";
 import { Method } from "../utils/Request";
@@ -54,9 +53,20 @@ export class RFOController {
         }
     }
 
-    update<RFO>(id: string, model: RFO): Promise<RFO> {
-        throw new Error("Method not implemented.");
+    async update<RFO>(id: string, model: RFO): Promise<RFO> {
+        try {
+            return await Request.request<RFO>({
+                url: `/rfo/${id}`,
+                method: Method.PUT,
+                data: model,
+            });
+        } catch (err: any) {
+            if (isAxiosError(err))
+                throw new Error(err.response?.data);
+            throw new Error("Error updating RFO");
+        }
     }
+
     async create<RFO>(model: RFO): Promise<RFO> {
         try {
             return await Request.request<RFO>({
@@ -67,7 +77,7 @@ export class RFOController {
         } catch (err: any) {
             if (isAxiosError(err))
                 throw new Error(err.response?.data);
-            throw new Error("Error adding RFO.");
+            throw new Error("Error adding RFO");
         }
     }
 }

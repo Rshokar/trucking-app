@@ -82,5 +82,5 @@ rfo_update = {
         }
     },
     "required": ["operator_id", "trailer", "truck", "start_location", "start_time", "dump_location", "load_location"],
-    "additionalProperties": False
+    "additionalProperties": True
 }

@@ -84,6 +84,7 @@ const RFOSection: FC<Props> = ({ navigateToTicket, dispId, operators, }) => {
             const q = new RFOQuery();
             q.rfo_id = parseFloat(id);
             const res: RFO = await rC.update<RFO>(id, data as RFO);
+            res.operator = focusedRFO?.operator;
             const index = rfos.findIndex(rfo => (rfo.rfo_id + "") === id);
             rfos[index] = res;
             setRFOs([...rfos]);
@@ -133,6 +134,7 @@ const RFOSection: FC<Props> = ({ navigateToTicket, dispId, operators, }) => {
         }
     };
 
+    console.log("RFOS", rfos, rfos.length);
     return (
         <StyledSection>
             <StyledHeader>
@@ -153,7 +155,7 @@ const RFOSection: FC<Props> = ({ navigateToTicket, dispId, operators, }) => {
                             <TicketItem
                                 aviColor={theme.colors.tertiary}
                                 title={item.operator?.operator_name || ''}
-                                subtitle={moment(item.start_time).format("YYYY-MM-DD h:mm a")}
+                                subtitle={moment(item.start_time).format("h:mm a") + ` ${item.truck} ${item.trailer}`}
                                 avatar={item.operator?.operator_name?.charAt(0).toLocaleUpperCase() || 'A'}
                                 onButtonClick={() => {
                                     setFocusedRFO(item);

@@ -68,9 +68,11 @@ const RFOForm: FC<Props> = ({ onSubmit, defaultValues, operators }) => {
     const iv: any = { ...defaultValues };
 
     if (defaultValues?.start_time) {
-        iv["start_time"] = defaultValues.start_time.split("T")[1];
-        iv["start_date"] = defaultValues.start_time.split("T")[0];
+        const [date, time] = moment(defaultValues.start_time).format("YYYY-MM-DD HH:mm:ss").split(" ");
+        iv["start_time"] = time;
+        iv["start_date"] = date;
     }
+
     return (
         <Formik
             initialValues={iv as RFOFormResult}
