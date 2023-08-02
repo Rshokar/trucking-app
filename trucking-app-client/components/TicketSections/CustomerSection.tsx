@@ -1,14 +1,14 @@
 import React, { FC, useState, useEffect } from 'react';
 import { Button, FAB, Modal, Portal, Text, TextInput, useTheme, Snackbar } from 'react-native-paper';
 import styled from 'styled-components/native';
-import { Customer, CustomerQuery } from '../../../models/Customer';
-import { CustomerController } from '../../../controllers/CustomerController';
-import TicketItem from '../../../components/Tickets/TicketItem';
+import { Customer, CustomerQuery } from '../../models/Customer';
+import { CustomerController } from '../../controllers/CustomerController';
+import TicketItem from '../Tickets/TicketItem';
 import { StyledHeader, StyledSection } from './styles';
-import TicketSection from '../../../components/Tickets/TicketSection';
-import CustomerForm from '../../../components/Forms/CustomerForm';
-import { CustomerFormResult } from '../../../components/Forms/types';
-import MyModal from '../../../components/Modal/MyModal';
+import TicketSection from '../Tickets/TicketSection';
+import CustomerForm from '../Forms/CustomerForm';
+import { CustomerFormResult } from '../Forms/types';
+import MyModal from '../Modal/MyModal';
 import { bool } from 'prop-types';
 
 const StyledInput = styled(TextInput)`

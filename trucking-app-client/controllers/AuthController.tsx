@@ -45,7 +45,7 @@ export class AuthController implements Controller {
     }
 
 
-    private static async saveUser(u: any): Promise<void> {
+    public static async saveUser(u: any): Promise<void> {
         const user: User = new User()
         user.id = u["id"]
         user.role = u["role"]
@@ -55,7 +55,7 @@ export class AuthController implements Controller {
         await AsyncStorage.setItem('user', JSON.stringify(user));
     }
 
-    private static async saveCompany(c: any): Promise<void> {
+    public static async saveCompany(c: any): Promise<void> {
         const company: Company = new Company()
         company.company_id = c["company_id"];
         company.company_name = c["company_name"]
@@ -66,7 +66,7 @@ export class AuthController implements Controller {
         await AsyncStorage.setItem('company', JSON.stringify(company));
     }
 
-    private static async saveCustomers(c: any): Promise<void> {
+    public static async saveCustomers(c: any): Promise<void> {
         const customers: Customer[] = c.map((c: any) => {
             const customer = new Customer()
             customer.customer_id = c["customer_id"]

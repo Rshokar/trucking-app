@@ -4,14 +4,15 @@ import styled from 'styled-components/native'
 
 import { Tabs, TabScreen } from 'react-native-paper-tabs'
 
-import DispatchSection from './Components/DispatchSection'
 import { AuthController } from '../../controllers/AuthController'
 import { DispatchController } from '../../controllers/DispatchController'
 import { RoofStackParamList } from '../../navigators/RoofStack'
 import { Customer } from '../../models/Customer'
 import { Dispatch, DispatchQuery } from '../../models/Dispatch'
-import OperatorSection from './Components/OperatorSection'
-import CustomerSection from './Components/CustomerSection'
+
+import DispatchSection from '../../components/TicketSections/DispatchSection'
+import OperatorSection from '../../components/TicketSections/OperatorSection'
+import CustomerSection from '../../components/TicketSections/CustomerSection'
 
 const HomeContainer = styled.View`
     width: 100%; 

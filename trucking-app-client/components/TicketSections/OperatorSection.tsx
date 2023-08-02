@@ -1,14 +1,14 @@
 import React, { FC, useState, useEffect } from 'react';
 import { TextInput, useTheme, FAB, Modal, Snackbar } from 'react-native-paper';
 import styled from 'styled-components/native';
-import { Operator, OperatorQuery } from '../../../models/Operator';
-import { OperatorController } from '../../../controllers/OperatorController';
-import TicketItem from '../../../components/Tickets/TicketItem';
+import { Operator, OperatorQuery } from '../../models/Operator';
+import { OperatorController } from '../../controllers/OperatorController';
+import TicketItem from '../Tickets/TicketItem';
 import { StyledHeader, StyledSection } from './styles';
-import TicketSection from '../../../components/Tickets/TicketSection';
-import OperatorForm from '../../../components/Forms/OperatorForm';
-import { OperatorFormResult } from '../../../components/Forms/types';
-import MyModal from '../../../components/Modal/MyModal';
+import TicketSection from '../Tickets/TicketSection';
+import OperatorForm from '../Forms/OperatorForm';
+import { OperatorFormResult } from '../Forms/types';
+import MyModal from '../Modal/MyModal';
 
 const StyledInput = styled(TextInput)`
     width: 90%;

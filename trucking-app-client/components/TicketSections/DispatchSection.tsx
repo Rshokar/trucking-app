@@ -2,17 +2,16 @@ import React, { FunctionComponent, useEffect, useState, useCallback } from 'reac
 import { TextInput, Modal, FAB, Snackbar } from 'react-native-paper';
 import { DatePickerModal } from 'react-native-paper-dates';
 import moment from 'moment';
-import { Dispatch, DispatchQuery } from '../../../models/Dispatch'
-import { DispatchController } from '../../../controllers/DispatchController'
-import DispatchForm from '../../../components/Forms/DispatchForm';
+import { Dispatch, DispatchQuery } from '../../models/Dispatch';
+import { DispatchController } from '../../controllers/DispatchController';
+import DispatchForm from '../Forms/DispatchForm';
 import { StyledSection, StyledHeader } from './styles';
-import TicketSection from '../../../components/Tickets/TicketSection';
-import TicketItem from '../../../components/Tickets/TicketItem';
-import { DispatchFormResult } from '../../../components/Forms/DispatchForm';
-import { Customer, CustomerQuery } from '../../../models/Customer';
-import MyModal from '../../../components/Modal/MyModal';
-import { CustomerController } from '../../../controllers/CustomerController';
-
+import TicketSection from '../Tickets/TicketSection';
+import TicketItem from '../Tickets/TicketItem';
+import { DispatchFormResult } from '../Forms/DispatchForm';
+import { CustomerQuery, Customer } from '../../models/Customer';
+import MyModal from '../Modal/MyModal';
+import { CustomerController } from '../../controllers/CustomerController';
 type Props = {
     navigateToTickets: (dispId: string) => void;
     customers: Customer[]

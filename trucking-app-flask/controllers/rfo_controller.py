@@ -91,11 +91,18 @@ class RfoController:
             start_time=datetime.strptime(
                 data['start_time'], "%Y-%m-%d %H:%M:%S"),
             dump_location=data['dump_location'],
-            load_location=data['load_location']
+            load_location=data['load_location'],
         )
         session.add(rfo)
         session.commit()
-        return make_response(rfo.to_dict(), 201)
+
+        # to_dict should not change rfo.start_time to string.
+        res = rfo.to_dict()
+        res["operator"] = oper.to_dict()
+        # Conversion is done here instead.
+        res["start_time"] = rfo.start_time.isoformat()
+
+        return make_response(res, 201)
 
     def update_rfo(session, request, rfo_id):
         request_json = request.json

@@ -2,7 +2,7 @@ import React, { FunctionComponent } from 'react'
 import { Text } from 'react-native'
 import Welcome from '../screens/Welcome'
 import Home from '../screens/Home/Home'
-import Tickets from '../screens/Tickets'
+import Tickets from '../screens/Tickets/Tickets'
 
 import { colors } from '../components/colors'
 
@@ -18,6 +18,7 @@ import { User } from '../models/User'
 import { Company } from '../models/Company'
 import { IconButton, useTheme } from 'react-native-paper'
 import Account from '../screens/Account/Account'
+import { AuthController } from '../controllers/AuthController'
 
 
 export type RoofStackParamList = {
@@ -30,7 +31,9 @@ export type RoofStackParamList = {
         rfoId?: number,
         billId?: number,
     },
-    Account: undefined
+    Account: {
+        company: Company
+    }
 }
 
 const Stack = createStackNavigator<RoofStackParamList>();
@@ -63,10 +66,13 @@ const RoofStack: FunctionComponent = () => {
                         iconColor={'white'}
                         background={theme.colors.secondary}
                         icon={'account'}
-                        onPress={() => navigation.navigate("Account")}
+                        onPress={async () => {
+                            const company = await AuthController.getCompany();
+                            navigation.navigate("Account", { company })
+                        }}
                     />
                 })}
-                initialRouteName='Welcome'
+                initialRouteName='Home'
             >
                 <Stack.Screen
                     name="Welcome"
@@ -112,6 +118,17 @@ const RoofStack: FunctionComponent = () => {
                 <Stack.Screen
                     name="Account"
                     component={Account}
+                    options={({ route }) => ({
+                        headerRight: props => {
+                            return <Greeting
+                                subTextStyles={{ textAlign: 'right' }}
+                                mainText={`${route.params?.company.company_name ?? "Hello User"}`}
+                                subText='Welcome back'
+                                {...props}
+                            />
+                        },
+                        headerTitle: props => { },
+                    })}
                 />
             </Stack.Navigator>
         </NavigationContainer>

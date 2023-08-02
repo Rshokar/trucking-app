@@ -1,8 +1,12 @@
 from flask import jsonify, request, Blueprint, g
+import jsonschema
 from sqlalchemy.exc import IntegrityError
 from controllers import UserController
 from flask_login import login_required, current_user
 from models import User
+from utils import make_response
+from validations import account_validation
+
 
 user = Blueprint('user', __name__)
 # GET operation (get user by ID)
@@ -45,3 +49,15 @@ def delete_user(user_id):
         return jsonify({"error": "You are not authorized to delete this user"}), 403
     session = g.session
     return UserController.delete_user(session=session, user_id=user_id)
+
+
+@user.route('/account', methods=["PUT"])
+@login_required
+def update_profile():
+    print(request.json)
+    try:
+        jsonschema.validate(request.json, account_validation)
+        return UserController.update_account(request=request, session=g.session)
+    except jsonschema.ValidationError as e:
+        print(e)
+        return make_response({"error": e.message}, 400)

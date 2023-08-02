@@ -24,6 +24,10 @@ export interface OperatorFormResult extends FormResult {
     operator_email: string;
 }
 
+export interface RFOFormResult extends FormResult {
+
+}
+
 export interface FormProps<T extends FormResult> {
     onSubmit: (results: T, id?: string) => any | Promise<boolean>;
     defaultValues?: T;

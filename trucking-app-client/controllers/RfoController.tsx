@@ -4,8 +4,9 @@ import { CRUDController } from "./Controller";
 import { RFO, RFOQuery } from "../models/RFO";
 import { Request } from "../utils/Request";
 import { Method } from "../utils/Request";
+import { isAxiosError } from 'axios';
 
-export class RFOController implements CRUDController<RFO, RFOQuery> {
+export class RFOController {
 
     async get<RFO>(query: RFOQuery): Promise<RFO> {
         try {
@@ -40,13 +41,33 @@ export class RFOController implements CRUDController<RFO, RFOQuery> {
         return res;
     }
 
-    delete<T>(query: RFOQuery): Promise<void> {
+    async delete<RFO>(id: string): Promise<void> {
+        try {
+            await Request.request<void>({
+                url: `/rfo/${id}`,
+                method: Method.DELETE
+            })
+        } catch (err: any) {
+            if (isAxiosError(err))
+                throw new Error(err.message);
+            throw new Error("Error deleting message");
+        }
+    }
+
+    update<RFO>(id: string, model: RFO): Promise<RFO> {
         throw new Error("Method not implemented.");
     }
-    update<T>(query: RFOQuery, model: T): Promise<void> {
-        throw new Error("Method not implemented.");
-    }
-    create<T>(model: T): Promise<T> {
-        throw new Error("Method not implemented.");
+    async create<RFO>(model: RFO): Promise<RFO> {
+        try {
+            return await Request.request<RFO>({
+                url: `/rfo`,
+                method: Method.POST,
+                data: model,
+            })
+        } catch (err: any) {
+            if (isAxiosError(err))
+                throw new Error(err.response?.data);
+            throw new Error("Error adding RFO.");
+        }
     }
 }
