@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy import Column, Integer, String, ForeignKey, Boolean
 from sqlalchemy.orm import relationship
 from models.model import Base
 from models.company import Company
@@ -8,13 +8,17 @@ class Operator(Base):
     __tablename__ = 'operators'
     operator_id = Column("operator_id", Integer, primary_key=True)
     company_id = Column("company_id", Integer, ForeignKey(Company.company_id))
-    operator_name = Column("operator_name", String(100))
-    operator_email = Column("operator_email", String(200))
+    operator_name = Column("operator_name", String(100), nullable=False)
+    operator_email = Column("operator_email", String(200), nullable=False)
+    confirmed = Column("confirmed", Boolean, default=False)
+    confirm_token = Column("confirm_token", String(200), nullable=True)
 
-    def __init__(self, company_id, operator_name, operator_email) -> None:
+    def __init__(self, company_id, operator_name, operator_email, confirm_token, confirmed=False) -> None:
         self.company_id = company_id
         self.operator_name = operator_name
         self.operator_email = operator_email
+        self.confirmed = confirmed
+        self.confirm_token = confirm_token
 
     def __repr__(self):
         return f"OPERATOR: ({self.operator_id}) {self.company_id} {self.operator_name} {self.operator_email}"
@@ -24,7 +28,9 @@ class Operator(Base):
             "operator_id": self.operator_id,
             "company_id": self.company_id,
             "operator_name": self.operator_name,
-            "operator_email": self.operator_email
+            "operator_email": self.operator_email,
+            "confirmed": self.confirmed,
+            "confirm_token": self.confirm_token
         }
 
     def get_operator_by_id_and_owner(session, operator_id, owner_id):

@@ -7,8 +7,10 @@ from dotenv import load_dotenv
 from flask_login import LoginManager
 from models import User
 
+
 # Load env variables
 load_dotenv()
+
 
 IS_PRODUCTION = os.environ.get("STATE")
 
@@ -25,36 +27,47 @@ IS_PRODUCTION = os.environ.get("STATE")
 #         loadDB(int(1))
 
 
-def create_app():
+app = Flask(__name__)
 
-    app = Flask(__name__)
+# SMTP server name provided by AWS
+app.config['MAIL_SERVER'] = 'email-smtp.us-west-2.amazonaws.com'
+app.config['MAIL_PORT'] = 587  # Port number provided by AWS
+# SMTP username provided by AWS
+app.config['MAIL_USERNAME'] = 'AKIA56YFAK5VQDUD56U2'
+# SMTP password provided by AWS
+app.config['MAIL_PASSWORD'] = 'BOxXBK/OHsOFXcapQAuuhRvrblCxHL1BEU/2enfB9n3t'
+app.config['MAIL_USE_TLS'] = True  # AWS recommends using StartTLS
+app.config['MAIL_USE_SSL'] = False
 
-    # Set secret key for auth session
-    app.secret_key = 'fzV2T57K8JmQJ@C'
+# Set secret key for auth session
+app.secret_key = 'fzV2T57K8JmQJ@C'
 
-    # Initialize login manager
-    login_manager = LoginManager(app)
-    login_manager.init_app(app)
+# Initialize login manager
+login_manager = LoginManager(app)
+login_manager.init_app(app)
 
-    @login_manager.user_loader
-    def load_user(user_id, callback=None):
-        session = Session()
-        return session.query(User).get(user_id)
 
-    # Register all endpoints
-    app.register_blueprint(v1, url_prefix="/v1")
+@login_manager.user_loader
+def load_user(user_id, callback=None):
+    session = Session()
+    return session.query(User).get(user_id)
 
-    # Function to create a session for each request
-    @app.before_request
-    def create_session():
-        g.session = Session()
 
-    @app.teardown_request
-    def close_session(error):
-        if hasattr(g, 'session'):
-            g.session.close()
+# Register all endpoints
+app.register_blueprint(v1, url_prefix="/v1")
 
-        if error:
-            print(error)
+# Function to create a session for each request
 
-    return app
+
+@app.before_request
+def create_session():
+    g.session = Session()
+
+
+@app.teardown_request
+def close_session(error):
+    if hasattr(g, 'session'):
+        g.session.close()
+
+    if error:
+        print(error)

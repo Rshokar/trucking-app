@@ -196,7 +196,10 @@ const CustomerSection: FC<Props> = ({ navigateToTicket }) => {
             {
                 !visible &&
                 <FAB icon="plus"
-                    onPress={showModal}
+                    onPress={() => {
+                        setFocusedCustomer(undefined)
+                        showModal();
+                    }}
                     style={{
                         position: 'absolute',
                         margin: 16,

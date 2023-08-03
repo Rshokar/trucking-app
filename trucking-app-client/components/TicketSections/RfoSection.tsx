@@ -171,7 +171,7 @@ const RFOSection: FC<Props> = ({ navigateToTicket, dispId, operators, }) => {
             >
                 <RFOForm
                     onSubmit={handleFormSubmit}
-                    defaultValues={(!focusedRFO && rfos.length > 0 ? rfos[rfos.length - 1] : focusedRFO) as RFOFormResult}
+                    defaultValues={focusedRFO as RFOFormResult}
                     operators={operators} />
             </MyModal>
             <Snackbar
@@ -190,7 +190,10 @@ const RFOSection: FC<Props> = ({ navigateToTicket, dispId, operators, }) => {
                 !visible &&
                 <FAB
                     icon="plus"
-                    onPress={showModal}
+                    onPress={() => {
+                        setFocusedRFO(undefined);
+                        showModal();
+                    }}
                     style={{
                         position: 'absolute',
                         margin: 16,

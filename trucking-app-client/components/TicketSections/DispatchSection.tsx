@@ -20,7 +20,7 @@ type Props = {
 const DispatchSection: FunctionComponent<Props> = ({ navigateToTickets, customers }) => {
     const [dispatches, setDispatches] = useState<Dispatch[]>([]);
     const [query, setQuery] = useState<DispatchQuery>(new DispatchQuery());
-    const [focusingDispatch, setFocusingDispatch] = useState<Dispatch | null>(null);
+    const [focusingDispatch, setFocusingDispatch] = useState<Dispatch>();
     const [enablePaginate, setEnablePaginate] = useState<boolean>(false);
     const [showDateModal, setShowDateModal] = useState<boolean>(false);
     const [showFormModal, setShowFormModal] = useState<boolean>(false);
@@ -111,7 +111,7 @@ const DispatchSection: FunctionComponent<Props> = ({ navigateToTickets, customer
             const index = dispatches.findIndex(d => d.dispatch_id === focusingDispatch.dispatch_id);
             dispatches[index] = updatedDispatch;
             setDispatches([...dispatches]);
-            setFocusingDispatch(null); // Reset focusingDispatch after update
+            setFocusingDispatch(undefined); // Reset focusingDispatch after update
             setSnackbarColor('green');
             setSnackbarMessage('Dispatch updated successfully');
             setVisibleSnackbar(true);
@@ -196,7 +196,10 @@ const DispatchSection: FunctionComponent<Props> = ({ navigateToTickets, customer
                     bottom: 0,
                 }}
                 icon="plus"
-                onPress={() => setShowFormModal(true)}
+                onPress={() => {
+                    setFocusingDispatch(undefined)
+                    setShowFormModal(true)
+                }}
             />
 
             <Snackbar

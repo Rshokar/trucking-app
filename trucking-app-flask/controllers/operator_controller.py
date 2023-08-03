@@ -1,9 +1,15 @@
+from itsdangerous import URLSafeTimedSerializer
 from models import Operator, Company
 from sqlalchemy.exc import IntegrityError
-from utils import make_response
+from utils import make_response, send_verification_email
 from flask_login import current_user
 from sqlalchemy import and_
-# Operator always accessed through company
+from flask import current_app as app
+from flask_mail import Mail
+
+
+s = URLSafeTimedSerializer('Your_secret_key')
+SALT = 'email-confirm'
 
 
 class OperatorController:
@@ -53,6 +59,7 @@ class OperatorController:
         Returns:
             Responses: 201 Created
         '''
+        mail = Mail(app)
         req = request.get_json()
         company_id = req.get('company_id')
         name = req.get('operator_name')
@@ -70,10 +77,18 @@ class OperatorController:
         if operator_email is not None:
             return make_response({'error': 'Operator email already used'}, 400)
 
+        # Generate unique token for the operator
+        token = s.dumps(email, salt=SALT)
+
+        # Create operator
         new_operator = Operator(company_id=company_id,
-                                operator_name=name, operator_email=email)
+                                operator_name=name, operator_email=email, confirmed=False, confirm_token=token)
+
         session.add(new_operator)
         session.commit()
+
+        # Send verification email to the new operator
+        send_verification_email(mail, email, token, name)
 
         return make_response(new_operator.to_dict(), 201)
 
@@ -141,3 +156,37 @@ class OperatorController:
         session.commit()
 
         return make_response(operator.to_dict(), 200)
+
+    def validate_operator(session, token):
+        '''
+        Validates an operator's email
+
+        Parameters:
+            Session (session): SQLAlchemy db session
+            token (str): Token string
+
+        Returns:
+            Responses: 200 OK if successful, 404 if operator not found, 400 if token is expired or invalid
+        '''
+
+        if token is None:
+            return make_response({'error': 'Token required.'}, 404)
+        try:
+            # Change max_age as per your requirements
+            email = s.loads(token, salt=SALT, max_age=3600)
+        except:
+            return make_response({'error': 'The confirmation link is invalid or has expired.'}, 400)
+
+        operator = session.query(Operator).filter_by(
+            operator_email=email).first()
+
+        if operator is None:
+            return make_response({'error': 'Operator not found.'}, 404)
+
+        if operator.confirmed:
+            return make_response({'error': 'Account already confirmed.'}, 200)
+
+        operator.confirmed = True
+        session.commit()
+
+        return make_response({'message': 'You have confirmed your account. Thanks!'}, 200)

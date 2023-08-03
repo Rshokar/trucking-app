@@ -102,6 +102,7 @@ class OperatorFactory(SQLAlchemyModelFactory):
     company_id = SubFactory(CompanyFactory)
     operator_name = Faker('company')
     operator_email = Faker('email')
+    confirm_token = Faker('word')
 
 
 class DispatchFactory(SQLAlchemyModelFactory):

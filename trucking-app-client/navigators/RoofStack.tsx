@@ -72,7 +72,7 @@ const RoofStack: FunctionComponent = () => {
                         }}
                     />
                 })}
-                initialRouteName='Welcome'
+                initialRouteName='Home'
             >
                 <Stack.Screen
                     name="Welcome"

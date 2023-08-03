@@ -155,7 +155,10 @@ const OperatorSection: FC<Props> = ({ navigateToTicket }) => {
             {
                 !visible &&
                 <FAB icon="plus"
-                    onPress={showModal}
+                    onPress={() => {
+                        setFocusedOperator(undefined);
+                        showModal()
+                    }}
                     style={{
                         position: 'absolute',
                         margin: 16,

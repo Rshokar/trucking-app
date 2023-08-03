@@ -54,3 +54,10 @@ def update_operator(operator_id):
 def delete_operator(operator_id):
     session = g.session
     return OperatorController.delete_operator(session=session, operator_id=operator_id)
+
+
+@operators.route('/validate', methods=["GET"])
+def validate_operators():
+    session = g.session
+    token = request.args.get("token", None)
+    return OperatorController.validate_operator(session, token)
