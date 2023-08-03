@@ -77,7 +77,7 @@ class BillingTicketController:
 
         rfo_id = data.get("rfo_id")
         ticket_number = data.get("ticket_number")
-        image_id = data.get("image_id")
+        image_id = data.get("image_id", 100)
 
         rfo = session.query(RFO)\
             .join(Dispatch, RFO.dispatch_id == Dispatch.dispatch_id)\

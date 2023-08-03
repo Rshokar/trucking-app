@@ -5,8 +5,8 @@ billing_ticket_validation = {
         "ticket_number": {"type": "string", "maxLength": 50, "minLength": 2},
         "image_id": {"type": "string", "maxLength": 50, "minLength": 2}
     },
-    "required": ["rfo_id", "ticket_number", "image_id"],
-    "additionalProperties": False
+    "required": ["rfo_id", "ticket_number"],
+    "additionalProperties": True
 }
 
 
@@ -17,5 +17,5 @@ billing_ticket_upate = {
         "image_id": {"type": "string", "maxLength": 50, "minLength": 2}
     },
     "required": ["ticket_number", "image_id"],
-    "additionalProperties": False
+    "additionalProperties": True
 }

@@ -8,8 +8,8 @@ export class Bill implements Model {
     }
 
     bill_id?: number;
-    rfo_id?: string;
-    ticket_number?: number;
+    rfo_id?: number;
+    ticket_number?: string;
     image_id?: number;
     rfo?: RFO;
 }

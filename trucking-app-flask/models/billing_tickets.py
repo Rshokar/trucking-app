@@ -7,7 +7,7 @@ class BillingTickets(Base):
     __tablename__ = 'billing_tickets'
     bill_id = Column("bill_id", Integer, primary_key=True)
     rfo_id = Column("rof_id", Integer, ForeignKey(RFO.rfo_id))
-    ticket_number = Column("ticket_number", Integer)
+    ticket_number = Column("ticket_number", String(200))
     # We won't ever need an image ID, right? If not, how will the image ID be integrated with the rest of the app
     image_id = Column("image_id", Integer)
 

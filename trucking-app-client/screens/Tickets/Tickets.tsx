@@ -15,10 +15,12 @@ import RfoSection from '../../components/TicketSections/RfoSection'
 import { OperatorController } from '../../controllers/OperatorController'
 import { Operator, OperatorQuery } from '../../models/Operator'
 import { Snackbar } from 'react-native-paper'
+import { ScrollView } from 'react-native'
 import { RFO } from '../../models/RFO'
 import { Bill } from '../../models/Bill'
 import DispatchCard from './Components/DIspatchCard'
 import RFOCard from './Components/RFOCard'
+import BillSection from '../../components/TicketSections/BillSection'
 
 
 const BalanceContainer = styled(Container)`
@@ -101,7 +103,7 @@ const Tickets: FunctionComponent<Props> = ({ route }) => {
         run();
     }, [])
 
-    console.log("DISPATCH", dispatch, "\n\n\n");
+    console.log("DISPATCH", dispatch, "\n\n\n", rfo);
 
     return (
         <BalanceContainer>
@@ -119,6 +121,12 @@ const Tickets: FunctionComponent<Props> = ({ route }) => {
                             setRFO(rfo);
                         }}
                     />
+            }
+            {
+                rfo &&
+                <BillSection rfoId={rfo.rfo_id ?? 0} navigateToTicket={function (bill: Bill): void {
+                    console.log('SHOW BILL IMAGE')
+                }} />
             }
             <Snackbar
                 visible={showSnackBar}

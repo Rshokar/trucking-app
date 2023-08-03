@@ -1,12 +1,11 @@
 import qs from 'qs'
-
-import { CRUDController } from "./Controller";
 import { Bill, BillQuery } from "../models/Bill";
 import { Request } from "../utils/Request";
 import { Method } from "../utils/Request";
+import { isAxiosError } from 'axios';
 
 
-export class BillController implements CRUDController<Bill, BillQuery> {
+export class BillController {
 
     async get<Bill>(query: BillQuery): Promise<Bill> {
         try {
@@ -44,14 +43,45 @@ export class BillController implements CRUDController<Bill, BillQuery> {
 
         return res;
     }
+    async delete<Bill>(id: string): Promise<void> {
+        try {
+            await Request.request<void>({
+                url: `/billing_ticket/${id}`,
+                method: Method.DELETE
+            })
+        } catch (err: any) {
+            if (isAxiosError(err))
+                throw new Error(err.message);
+            throw new Error("Error deleting bill");
+        }
+    }
 
-    delete<T>(query: BillQuery): Promise<void> {
-        throw new Error("Method not implemented.");
+    async update<Bill>(id: string, model: Bill): Promise<Bill> {
+        try {
+            return await Request.request<Bill>({
+                url: `/billing_ticket/${id}`,
+                method: Method.PUT,
+                data: model,
+            });
+        } catch (err: any) {
+            if (isAxiosError(err))
+                throw new Error(err.response?.data);
+            throw new Error("Error updating bill");
+        }
     }
-    update<T>(query: BillQuery, model: T): Promise<void> {
-        throw new Error("Method not implemented.");
-    }
-    create<T>(model: T): Promise<T> {
-        throw new Error("Method not implemented.");
+
+    async create<Bill>(model: Bill): Promise<Bill> {
+        console.log("CREATING BILL", model)
+        try {
+            return await Request.request<Bill>({
+                url: `/billing_ticket`,
+                method: Method.POST,
+                data: model,
+            })
+        } catch (err: any) {
+            if (isAxiosError(err))
+                throw new Error(err.response?.data);
+            throw new Error("Error adding bill");
+        }
     }
 }

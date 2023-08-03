@@ -136,14 +136,6 @@ const RFOSection: FC<Props> = ({ navigateToTicket, dispId, operators, }) => {
 
     return (
         <StyledSection>
-            <StyledHeader>
-                <StyledInput
-                    label={'Search By Operator'}
-                    onChangeText={(text) => {
-                        setSearch(text)
-                    }}
-                />
-            </StyledHeader>
             <TicketSection
                 title={'RFOs'}
                 more={enablePaginate}

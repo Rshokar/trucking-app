@@ -51,7 +51,7 @@ const RoofStack: FunctionComponent = () => {
                         shadowColor: "transparent",
                         shadowOpacity: 0,
                         elevation: 0,
-                        height: 120
+                        height: 100
                     },
                     headerTintColor: colors.secondary,
                     headerRightContainerStyle: {
@@ -72,26 +72,28 @@ const RoofStack: FunctionComponent = () => {
                         }}
                     />
                 })}
-                initialRouteName='Home'
+                initialRouteName='Welcome'
             >
                 <Stack.Screen
                     name="Welcome"
                     component={Welcome}
-
                     options={{ headerShown: false }}
                 />
                 <Stack.Screen
                     name="Home"
+
                     component={Home}
                     options={({ route }) => ({
                         headerTitle: props => {
                             return <Greeting
+                                mainTextSubStyles={{ fontSize: 20 }}
                                 mainText={`${route.params?.company.company_name ?? "Hello User"}`}
                                 subText='Welcome back'
                                 {...props}
                             />
                         },
                         headerTitleAlign: 'left',
+                        headerLeft: null,
                     })}
                 />
 
@@ -120,6 +122,7 @@ const RoofStack: FunctionComponent = () => {
                     options={({ route }) => ({
                         headerRight: props => {
                             return <Greeting
+                                mainTextSubStyles={{ fontSize: 20 }}
                                 subTextStyles={{ textAlign: 'right' }}
                                 mainText={`${route.params?.company.company_name ?? "Hello User"}`}
                                 subText='Welcome back'

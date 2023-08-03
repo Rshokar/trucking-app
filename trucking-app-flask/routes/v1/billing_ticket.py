@@ -28,10 +28,12 @@ def get_bill(bill_id):
 @billing_ticket.route("/", methods=["POST"])
 @login_required
 def create_bill():
+    print(request.json)
     try:
         jsonschema.validate(request.json, billing_ticket_validation)
         return BillingTicketController.create_bill(g.session, request)
     except jsonschema.ValidationError as e:
+        print(e)
         return make_response({"error": e.message}, 400)
 
 
