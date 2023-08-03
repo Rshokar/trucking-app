@@ -85,7 +85,6 @@ const RoofStack: FunctionComponent = () => {
                     component={Home}
                     options={({ route }) => ({
                         headerTitle: props => {
-                            console.log(route, props);
                             return <Greeting
                                 mainText={`${route.params?.company.company_name ?? "Hello User"}`}
                                 subText='Welcome back'

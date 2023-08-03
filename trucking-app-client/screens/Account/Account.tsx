@@ -55,8 +55,6 @@ const Account: FC<Props> = (props) => {
             // TODO: Save updates to backend with values
         }
     }
-
-    console.log(company, user);
     return (<>
         <View style={{
             padding: 20,

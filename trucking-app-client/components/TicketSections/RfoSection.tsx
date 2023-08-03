@@ -134,7 +134,6 @@ const RFOSection: FC<Props> = ({ navigateToTicket, dispId, operators, }) => {
         }
     };
 
-    console.log("RFOS", rfos, rfos.length);
     return (
         <StyledSection>
             <StyledHeader>

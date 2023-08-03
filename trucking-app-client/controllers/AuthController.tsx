@@ -61,8 +61,6 @@ export class AuthController implements Controller {
         company.company_name = c["company_name"]
         company.owner_id = c["owner_id"];
 
-        // console.log("SAVE COMPANY", company)
-
         await AsyncStorage.setItem('company', JSON.stringify(company));
     }
 
@@ -76,7 +74,6 @@ export class AuthController implements Controller {
             return customer;
         })
 
-        // console.log("SAVE CUSTOMERS", customers)
         await AsyncStorage.setItem('customers', JSON.stringify(customers));
     }
 

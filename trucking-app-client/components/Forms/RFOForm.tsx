@@ -78,7 +78,6 @@ const RFOForm: FC<Props> = ({ onSubmit, defaultValues, operators }) => {
             initialValues={iv as RFOFormResult}
             validationSchema={RFOFormSchema}
             onSubmit={async (values, { setSubmitting }) => {
-                console.log(values)
                 await onSubmit(values);
                 setSubmitting(false);
             }}

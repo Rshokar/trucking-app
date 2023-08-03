@@ -29,7 +29,6 @@ export class DispatchController {
             customers += `&customers=${item}`;
         })
 
-        console.log("QUERY: ", q, customers);
         const queryString = qs.stringify(q) + customers;
 
         let res: Dispatch[] = [];
@@ -76,7 +75,6 @@ export class DispatchController {
     }
 
     async create(model: Dispatch): Promise<Dispatch> {
-        console.log(model);
         try {
             const company = await AuthController.getCompany();
             model.company_id = company.company_id;

@@ -77,7 +77,6 @@ const DispatchSection: FunctionComponent<Props> = ({ navigateToTickets, customer
         const dC = new DispatchController();
         try {
             const res: Dispatch = await dC.create(data);
-            console.log("DISPATCH RESULT", res)
             res.customer = customers.find(c => c.customer_id === data.customer_id);
             res.rfo_count = 0;
             dispatches.push(res)
@@ -108,7 +107,6 @@ const DispatchSection: FunctionComponent<Props> = ({ navigateToTickets, customer
                 const cus: Customer = await cC.get(cQ)
                 updatedDispatch.customer = cus;
             }
-            console.log("UPDATED DISPATCH", updatedDispatch);
             updatedDispatch.rfo_count = focusingDispatch.rfo_count;
             const index = dispatches.findIndex(d => d.dispatch_id === focusingDispatch.dispatch_id);
             dispatches[index] = updatedDispatch;
@@ -177,7 +175,6 @@ const DispatchSection: FunctionComponent<Props> = ({ navigateToTickets, customer
                         subtitle={moment(item.date).format('YYYY-MM-DD')}
                         avatar={item.rfo_count + ""}
                         onClick={() => {
-                            console.log("HELLO WORLD");
                             setFocusingDispatch(item);
                             navigateToTickets(item.dispatch_id + "");
                         }}

@@ -84,10 +84,8 @@ const Welcome: FunctionComponent<Props> = ({ navigation }) => {
             setFlashToggle(!flashToggle)
             setTimeout(async () => navigation.navigate("Home", { company: await AuthController.getCompany() }), 2000)
         } catch (e: any) {
-            console.log('Error', e)
             setFlashMessage(e.message)
             setFlashColor("red")
-            console.log(e.message);
             setFlashToggle(!flashToggle)
         }
     }

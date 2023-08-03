@@ -17,6 +17,8 @@ import { Operator, OperatorQuery } from '../../models/Operator'
 import { Snackbar } from 'react-native-paper'
 import { RFO } from '../../models/RFO'
 import { Bill } from '../../models/Bill'
+import DispatchCard from './Components/DIspatchCard'
+import RFOCard from './Components/RFOCard'
 
 
 const BalanceContainer = styled(Container)`
@@ -71,7 +73,7 @@ const Tickets: FunctionComponent<Props> = ({ route }) => {
 
             // Set customers nad company
             dispRes.company = compRes
-            dispRes.customer = custRes.find((c: Customer) => c.customer_id == dispRes.customer_id)[0];
+            dispRes.customer = custRes.find((c: Customer) => c.customer_id === dispRes.customer_id);
 
             // Set Dispatch
             setDispatch(dispRes as Dispatch);
@@ -99,20 +101,25 @@ const Tickets: FunctionComponent<Props> = ({ route }) => {
         run();
     }, [])
 
-    console.log(tickets, rfo);
+    console.log("DISPATCH", dispatch, "\n\n\n");
 
     return (
         <BalanceContainer>
-            <RfoSection
-                dispId={tickets.dispId}
-                operators={operators}
-                navigateToTicket={(rfo: RFO): any => {
-                    tickets.rfoId = rfo.rfo_id;
-                    setTickets({ ...tickets });
-                    setRFO(rfo);
-                }}
-            />
-            {/* <BalanceCardSection {...route?.params} /> */}
+            <DispatchCard {...dispatch} />
+            {
+                rfo ?
+                    <RFOCard {...rfo} onClick={() => setRFO(undefined)} onLongPress={() => console.log("ON LONG PRESS")} />
+                    :
+                    <RfoSection
+                        dispId={tickets.dispId}
+                        operators={operators}
+                        navigateToTicket={(rfo: RFO): any => {
+                            tickets.rfoId = rfo.rfo_id;
+                            setTickets({ ...tickets });
+                            setRFO(rfo);
+                        }}
+                    />
+            }
             <Snackbar
                 visible={showSnackBar}
                 onDismiss={function (): void {
