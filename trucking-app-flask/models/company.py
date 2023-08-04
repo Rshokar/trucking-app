@@ -25,14 +25,22 @@ class Company(Base):
     def __repr__(self):
         return f"COMPANY: ({self.company_id}) {self.owner_id} {self.company_name}"
 
-    def to_dict(self):
-        return {
+    def to_dict(self, include_customers=True, include_operators=True):
+        data = {
             "company_id": self.company_id,
             "owner_id": self.owner_id,
             "company_name": self.company_name,
-            "customers": [customer.to_dict() for customer in self.customers],
-            "operators": [operator.to_dict() for operator in self.operators],
         }
+
+        if include_customers:
+            data["customers"] = [customer.to_dict()
+                                 for customer in self.customers]
+
+        if include_operators:
+            data["operators"] = [operator.to_dict()
+                                 for operator in self.operators]
+
+        return data
 
     def get_company_by_id(session, company_id):
         return session.query(Company).filter_by(company_id=company_id).first()

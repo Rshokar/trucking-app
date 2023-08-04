@@ -1,10 +1,16 @@
 
 import json
 from flask_login import current_user
+from itsdangerous import BadTimeSignature, SignatureExpired, URLSafeTimedSerializer
 from utils import make_response
 from flask import Response
 from models import BillingTickets, RFO, Dispatch, Company
 from sqlalchemy import and_
+import os
+
+OPERATOR_ACCESS_TOKEN_SECRET = os.environ.get(
+    "OPERATOR_ACCESS_TOKEN_SECRET"
+)
 
 
 class BillingTicketController:
@@ -150,3 +156,35 @@ class BillingTicketController:
         session.delete(bill)
         session.commit()
         return make_response({"message": "Billing ticket deleted"}, 200)
+
+    def operator_get_billing_tickets(session, token):
+        '''
+        Fetch Bills related to rfo_id in token
+
+        Parameters:
+            Session (session): SQLAlchemy db session
+            token (str): Token string
+
+        Returns:
+            Responses: 200 OK if successful, 400 if token is expired or invalid
+        '''
+        s = URLSafeTimedSerializer(OPERATOR_ACCESS_TOKEN_SECRET)
+
+        try:
+            data = s.loads(token, max_age=86400)  # Token valid for 24 hours
+        except SignatureExpired:
+            return make_response({'error': 'Token expired.'}, 400)
+        except BadTimeSignature:
+            return make_response({'error': 'Invalid token.'}, 400)
+
+        result = session.query(BillingTickets).filter_by(
+            rfo_id=data["rfo_id"]
+        ).all()
+
+        if not result:
+            return make_response({'error': 'No BillingTickets found for the given RFO.'}, 404)
+
+        # If there are any results, convert them to dictionary
+        response = [billing_ticket.to_dict() for billing_ticket in result]
+
+        return make_response(response, 200)

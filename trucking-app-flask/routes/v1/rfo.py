@@ -54,3 +54,19 @@ def edit_rfo(rfo_id):
 @login_required
 def delete_rfo(rfo_id):
     return RfoController.delete_rfo(g.session, rfo_id)
+
+
+@rfo.route("/send_operator_email/<int:rfo_id>", methods=["GET"])
+@login_required
+def send_operator_email(rfo_id):
+    return RfoController.send_operator_rfo_email(g.session, rfo_id)
+
+
+@rfo.route("/operator", methods=["GET"])
+def operator_get_rfo():
+    auth_header = request.headers.get('Authorization')
+    if not auth_header or 'Bearer' not in auth_header:
+        return make_response({'error': 'Bearer token required.'}, 401)
+    # Split the token from the Bearer
+    token = auth_header.split(' ')[1]
+    return RfoController.operator_get_rfo(g.session, token)

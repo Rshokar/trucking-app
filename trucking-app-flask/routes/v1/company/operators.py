@@ -61,3 +61,15 @@ def validate_operators():
     session = g.session
     token = request.args.get("token", None)
     return OperatorController.validate_operator(session, token)
+
+
+@operators.route('/generate_token/<string:request_token>', methods=["GET"])
+def generate_token(request_token):
+    session = g.session
+    return OperatorController.generate_operator_auth_token(session, request_token)
+
+
+@operators.route('/validate_token/<string:request_token>', methods=["GET"])
+def validate(request_token):
+    session = g.session
+    return OperatorController.validate_operator_auth_token(session, request_token)

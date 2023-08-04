@@ -1,10 +1,20 @@
-from flask import Response
-from models import RFO, Dispatch, Operator, Company
+from flask import Response, current_app as app
+from models import RFO, Dispatch, Operator, Company, Customer
 from sqlalchemy import and_
-from utils import make_response
+from utils import make_response, send_operator_rfo
 from datetime import datetime
 from flask_login import current_user
+from itsdangerous import BadTimeSignature, SignatureExpired, URLSafeTimedSerializer
+from flask_mail import Mail
 import json
+import os
+
+SEND_OPERATOR_RFO_TOKEN_SECRET = os.environ.get(
+    "SEND_OPERATOR_RFO_TOKEN_SECRET")
+
+OPERATOR_ACCESS_TOKEN_SECRET = os.environ.get(
+    "OPERATOR_ACCESS_TOKEN_SECRET"
+)
 
 
 class RfoController:
@@ -167,3 +177,95 @@ class RfoController:
         session.delete(rfo)
         session.commit()
         return make_response({'message': 'RFO deleted'}, 200)
+
+    def operator_get_rfo(session, token):
+        '''
+        Fetch RFO, Dispatch, Company, and Customer details for an operator with valid token
+
+        Parameters:
+            Session (session): SQLAlchemy db session
+            token (str): Token string
+
+        Returns:
+            Responses: 200 OK if successful, 404 if RFO not found, 400 if token is expired or invalid
+        '''
+        s = URLSafeTimedSerializer(OPERATOR_ACCESS_TOKEN_SECRET)
+
+        try:
+            data = s.loads(token, max_age=86400)  # Token valid for 24 hours
+        except SignatureExpired:
+            return make_response({'error': 'Token expired.'}, 400)
+        except BadTimeSignature:
+            return make_response({'error': 'Invalid token.'}, 400)
+
+        result = session.query(RFO, Dispatch, Company, Customer)\
+            .join(Dispatch, RFO.dispatch_id == Dispatch.dispatch_id)\
+            .join(Company, Dispatch.company_id == Company.company_id)\
+            .join(Customer, Dispatch.customer_id == Customer.customer_id)\
+            .filter(RFO.rfo_id == data['rfo_id']).first()
+
+        if result is None:
+            return make_response({'error': 'RFO not found.'}, 404)
+
+        rfo, dispatch, company, customer = result
+
+        response = {
+            'rfo': rfo.to_dict(),
+            'dispatch': dispatch.to_dict(),
+            'company': company.to_dict(False, False),
+            'customer': customer.to_dict()
+        }
+
+        return make_response(response, 200)
+
+    def send_operator_rfo_email(session, rfo_id):
+        '''
+        Fetches RFO, related Operator, Company, Customer, and Dispatch details from database 
+        and then sends email to operator with a link to RFO
+
+        Parameters:
+            session (session): SQLAlchemy db session
+            rfo_id (int): RFO's id
+
+        Returns:
+            Responses: 200 OK if successful, 404 if RFO not found or email sending failed
+        '''
+        rfo = session.query(RFO).filter_by(rfo_id=rfo_id).first()
+
+        if rfo is None:
+            return make_response({'error': 'RFO not found'}, 404)
+
+        operator = session.query(Operator).filter_by(
+            operator_id=rfo.operator_id).first()
+        if operator is None:
+            return make_response({'error': 'Operator not found'}, 404)
+
+        company = session.query(Company).filter_by(
+            company_id=operator.company_id, owner_id=current_user.id).first()
+        if company is None:
+            return make_response({'error': 'Company not found'}, 404)
+
+        dispatch = session.query(Dispatch).filter_by(
+            dispatch_id=rfo.dispatch_id).first()
+        if dispatch is None:
+            return make_response({'error': 'Dispatch not found'}, 404)
+
+        customer = session.query(Customer).filter_by(
+            customer_id=dispatch.customer_id).first()
+        if customer is None:
+            return make_response({'error': 'Customer not found'}, 404)
+        s = URLSafeTimedSerializer(SEND_OPERATOR_RFO_TOKEN_SECRET)
+        token_data = {"operator_id": operator.operator_id,
+                      "rfo_id": rfo.rfo_id}
+        # This will give you a secure token with the operator_id and rfo_id
+
+        token = s.dumps(token_data)
+        print(
+            f"TOKEN {token} \nSEND OPERATOR RFO TOKEN SECRET: {SEND_OPERATOR_RFO_TOKEN_SECRET}")
+        try:
+            send_operator_rfo(Mail(app), operator.operator_email,
+                              rfo, operator, company, customer, dispatch, token)
+        except Exception as e:
+            return make_response({'error': 'Failed to send email. ' + str(e)}, 500)
+
+        return make_response({'message': 'Email sent to operator.'}, 200)

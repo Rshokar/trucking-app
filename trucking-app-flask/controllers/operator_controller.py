@@ -1,12 +1,20 @@
 from itsdangerous import URLSafeTimedSerializer
-from models import Operator, Company
+from models import Operator, Company, RFO
 from sqlalchemy.exc import IntegrityError
-from utils import make_response, send_verification_email
+from utils import make_response, send_verification_email, send_operator_auth_token
+from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadTimeSignature
 from flask_login import current_user
 from sqlalchemy import and_
 from flask import current_app as app
 from flask_mail import Mail
+import os
 
+SEND_OPERATOR_RFO_TOKEN_SECRET = os.environ.get(
+    "SEND_OPERATOR_RFO_TOKEN_SECRET")
+OPERATOR_AUTH_TOKEN_SECRET = os.environ.get("OPERATOR_AUTH_TOKEN_SECRET")
+OPERATOR_ACCESS_TOKEN_SECRET = os.environ.get(
+    "OPERATOR_ACCESS_TOKEN_SECRET"
+)
 
 s = URLSafeTimedSerializer('Your_secret_key')
 SALT = 'email-confirm'
@@ -190,3 +198,93 @@ class OperatorController:
         session.commit()
 
         return make_response({'message': 'You have confirmed your account. Thanks!'}, 200)
+
+    def generate_operator_auth_token(session, request_token):
+        '''
+        Generate a unique 6 digit alphanumeric token for an operator to access a ticket
+
+        Parameters:
+            Session (session): SQLAlchemy db session
+            operator_id (int): Operator's id
+
+        Returns:
+            Responses: 200 OK if successful, 404 if operator not found
+        '''
+
+        s = URLSafeTimedSerializer(SEND_OPERATOR_RFO_TOKEN_SECRET)
+
+        print(
+            f"TOKEN {request_token} \nSEND OPERATOR RFO TOKEN SECRET: {SEND_OPERATOR_RFO_TOKEN_SECRET}")
+        try:
+            data = s.loads(
+                request_token, max_age=86400)  # Token valid for 24 hours
+        except SignatureExpired as e:
+            print(e)
+            return make_response({'error': 'Token expired.'}, 400)
+        except BadTimeSignature as e:
+            print(e)
+            return make_response({'error': 'Invalid token.'}, 400)
+
+        operator = session.query(Operator).filter_by(
+            operator_id=data["operator_id"], confirmed=True).first()
+
+        rfo = session.query(RFO).filter_by(rfo_id=data["rfo_id"]).first()
+
+        if operator is None:
+            return make_response({'error': 'Operator not found.'}, 404)
+
+        if rfo is None:
+            return make_response({'error': 'RFO not found.'}, 404)
+
+        # Generate a unique alphanumeric token for the operator
+        s = URLSafeTimedSerializer(OPERATOR_AUTH_TOKEN_SECRET)
+        token = s.dumps(
+            {'operator_id': data["operator_id"], 'rfo_id': data["rfo_id"]})
+
+        # Send the token to the operator's email
+        send_operator_auth_token(
+            Mail(app), operator.operator_email, token, operator.operator_name)
+
+        return make_response({'message': 'Token sent to operator email.'}, 200)
+
+    def validate_operator_auth_token(session, token):
+        '''
+        Validates an operator's token. Returns a access token. Token will last 24 hours
+
+        Parameters:
+            Session (session): SQLAlchemy db session
+            token (str): Token string
+
+        Returns:
+            Responses: 200 OK if successful, 404 if operator not found, 400 if token is expired or invalid
+        '''
+        authS = URLSafeTimedSerializer(OPERATOR_AUTH_TOKEN_SECRET)
+
+        try:
+            # Token valid for 24 hours
+            data = authS.loads(token, max_age=86400)
+        except SignatureExpired:
+            return make_response({'error': 'Token expired.'}, 400)
+        except BadTimeSignature:
+            return make_response({'error': 'Invalid token.'}, 400)
+
+        operator = session.query(Operator).filter_by(
+            operator_id=data['operator_id']).first()
+
+        rfo = session.query(RFO).filter_by(rfo_id=data['rfo_id']).first()
+
+        if operator is None:
+            return make_response({'error': 'Operator not found.'}, 404)
+
+        if operator.confirmed is False:
+            return make_response({'error': 'Operator email not verified.'}, 401)
+
+        if rfo is None:
+            return make_response({'error': 'RFO not found.'}, 404)
+
+        accessS = URLSafeTimedSerializer(OPERATOR_ACCESS_TOKEN_SECRET)
+
+        # Once the token is validated, you may issue a new token (access token)
+        access_token = accessS.dumps(data)
+
+        return make_response({'access_token': access_token}, 200)
