@@ -25,14 +25,19 @@ class Dispatch(Base):
     def __repr__(self):
         return f"DISPATCH: ({self.dispatch_id}) {self.company_id} {self.customer_id} {self.date}"
 
-    def to_dict(self):
-        return {
+    def to_dict(self, customer):
+        dispatch_dict = {
             "dispatch_id": self.dispatch_id,
             "company_id": self.company_id,
             "customer_id": self.customer_id,
             "notes": self.notes,
             "date": self.date.isoformat(),
         }
+
+        if customer is not None:
+            dispatch_dict["customer"] = self.customer.to_dict()
+
+        return dispatch_dict
 
     def get_dispatch_by_id_and_owner(session, dispatch_id, owner_id):
         return session.query(Dispatch)\

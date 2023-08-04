@@ -26,7 +26,7 @@ class DispatchController:
 
         if dispatch is None:
             return make_response({'error': 'Dispatch not found'}, 404)
-        return make_response(dispatch.to_dict(), 200)
+        return make_response(dispatch.to_dict(True), 200)
 
     def get_dispatch_all(session: Session, limit: int, page: int, startDate: Optional[datetime], endDate: Optional[datetime], customers: Optional[List[int]]) -> Response:
         """_summary_
@@ -131,7 +131,9 @@ class DispatchController:
         dispatch.customer_id = data.get('customer_id')
 
         session.commit()
-        return make_response(dispatch.to_dict(), 200)
+        res = dispatch.to_dict(True)
+        print(res)
+        return make_response(res, 200)
 
     def delete_dispatch(session, dispatch_id):
         """_summary_

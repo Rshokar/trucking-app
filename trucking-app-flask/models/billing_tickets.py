@@ -9,7 +9,7 @@ class BillingTickets(Base):
     rfo_id = Column("rof_id", Integer, ForeignKey(RFO.rfo_id))
     ticket_number = Column("ticket_number", String(200))
     # We won't ever need an image ID, right? If not, how will the image ID be integrated with the rest of the app
-    image_id = Column("image_id", Integer)
+    image_id = Column("image_id", String(200))
 
     def __init__(self, rfo_id, ticket_number, image_id):
         self.rfo_id = rfo_id

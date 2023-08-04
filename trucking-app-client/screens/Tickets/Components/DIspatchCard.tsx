@@ -9,7 +9,7 @@ const LeftContent = (props: any) => <Avatar.Icon {...props} icon="folder" />
 
 const DispatchCard: React.FC<Dispatch> = (props) => (
     <Card style={{ width: '90%' }}>
-        <Card.Title title={<Text style={{ fontWeight: 'bold' }} variant='titleMedium'>
+        <Card.Title title={<Text style={{ fontWeight: 'bold' }} variant='titleLarge'>
             {props.customer?.customer_name}
         </Text>} subtitle={moment(props.date).format("YYYY-MM-DD")} left={LeftContent} />
         <Card.Content>

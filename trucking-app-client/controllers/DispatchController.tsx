@@ -68,6 +68,7 @@ export class DispatchController {
                 method: Method.PUT,
                 data: data
             });
+            console.log("RETURNED UPDATED DISPATCH", updatedDispatch);
             return updatedDispatch;
         } catch (err: any) {
             throw err;

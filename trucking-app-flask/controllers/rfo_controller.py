@@ -29,9 +29,6 @@ class RfoController:
             print(e)
 
     def get_all_rfo(session, limit: int, page: int, dispatch_id: int):
-
-        print(dispatch_id)
-
         # First we need to check id the dispatch
         # belongs to the current user
         if (dispatch_id is not None):
@@ -48,7 +45,6 @@ class RfoController:
             .where(RFO.dispatch_id == dispatch_id if dispatch_id is not None else True)\
             .limit(limit).offset(page * limit).all()
 
-        print(rfos)
         result = []
 
         for rfo, op in rfos:
@@ -260,8 +256,7 @@ class RfoController:
         # This will give you a secure token with the operator_id and rfo_id
 
         token = s.dumps(token_data)
-        print(
-            f"TOKEN {token} \nSEND OPERATOR RFO TOKEN SECRET: {SEND_OPERATOR_RFO_TOKEN_SECRET}")
+
         try:
             send_operator_rfo(Mail(app), operator.operator_email,
                               rfo, operator, company, customer, dispatch, token)

@@ -20,7 +20,7 @@ const Line = styled.View`
 
 const RFOCard: React.FC<RFOCardProps> = (props) => (
     <Card style={{ width: '90%' }} onLongPress={props.onLongPress} >
-        <Card.Title title={<Text style={{ fontWeight: 'bold' }} variant='titleMedium'>
+        <Card.Title title={<Text style={{ fontWeight: 'bold' }} variant='titleLarge'>
             {props.operator?.operator_name}
         </Text>} subtitle={`${props.truck} ${props.trailer}`} left={LeftContent} right={() => <IconButton iconColor={'red'} onPress={props.onClick} icon={"cancel"} />} />
         <Card.Content>

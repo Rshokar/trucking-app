@@ -15,19 +15,20 @@ const TicketSectionBackground = styled.View`
     padding-bottom: 10px;
     z-index: -1; 
     flex:1; 
+    max-width: 100%;
 `
 
 const TicketRow = styled.View`
     flex-direction: row;
     justify-content: space-between; 
     align-items: center;
+    width: 100%;
 `
 
 const TicketList = styled.FlatList`
 `
 
 const LoadingIndicator = styled(ActivityIndicator)`
-    margin-vertical: 20px;
 `
 
 const LoadingText = styled(SmallText)`
@@ -43,7 +44,7 @@ const TicketSection: FunctionComponent<TicketSectionProps> = (props) => {
 
     return (
         <TicketSectionBackground style={props.style}>
-            <TicketRow style={{ marginBottom: 25 }}>
+            <TicketRow style={{ marginBottom: 10 }}>
                 <RegularText textStyle={{ fontSize: 19, color: colors.secondary }}>
                     {props.title ?? "Dispatches"}
                 </RegularText>
@@ -53,7 +54,7 @@ const TicketSection: FunctionComponent<TicketSectionProps> = (props) => {
                 </SmallText>
             </TicketRow>
             {props.data.length === 0 ? (
-                <ActivityIndicator size="large" color={colors.tertiary} />
+                <LoadingIndicator size="large" color={colors.tertiary} />
             ) : (
                 <>
                     <TicketList
