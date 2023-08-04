@@ -9,9 +9,12 @@ import Input from './Inputs/Input'
 import { LoginFormResult } from './types'
 
 import { FormProps } from './types'
+import { Button, Text, useTheme } from 'react-native-paper'
 
 const intialValues: LoginFormResult = { email: '', password: '' }
 const LoginForm: FunctionComponent<FormProps<LoginFormResult>> = (props) => {
+
+    const theme = useTheme();
 
 
     const validationSchema = Yup.object().shape({
@@ -42,9 +45,14 @@ const LoginForm: FunctionComponent<FormProps<LoginFormResult>> = (props) => {
                 name={"password"}
             />
 
-            <RegularButton
+            <Button
+                style={{ backgroundColor: theme.colors.primary, width: '100%' }}
                 onPress={() => { handleSubmit() }}
-            >Login</RegularButton>
+            >
+                <Text style={{ color: 'white' }}>
+                    Login
+                </Text>
+            </Button>
         </>
         }
     </Formik>

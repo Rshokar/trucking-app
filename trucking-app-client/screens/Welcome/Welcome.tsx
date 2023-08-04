@@ -2,7 +2,7 @@ import React, { FunctionComponent, useEffect, useState } from 'react'
 import { StatusBar } from 'expo-status-bar'
 import styled from 'styled-components/native'
 import { TouchableOpacity } from 'react-native'
-import { Snackbar } from 'react-native-paper'
+import { Button, Snackbar, Text } from 'react-native-paper'
 
 import BigText from '../../components/Texts/BigText'
 import SmallText from '../../components/Texts/SmallText'
@@ -141,9 +141,12 @@ const Welcome: FunctionComponent<Props> = ({ navigation }) => {
                     <SmallText textStyle={{ width: "70%", marginBottom: 25 }}>
                         Drop the books and pick up the future
                     </SmallText>
-                    <RegularButton btnStyles={{ backgroundColor: colors.primary }} onPress={() => setShowAuth(true)}>
-                        Get Started
-                    </RegularButton>
+                    <Button style={{ backgroundColor: colors.primary }} onPress={() => setShowAuth(true)}>
+                        <Text style={{ color: 'white' }}>
+
+                            Get Started
+                        </Text>
+                    </Button>
                 </BottomSection>
                 <SwipeDownViewAnimation show={showAuth} close={hideAuth} VH={.95}>
                     <Form>

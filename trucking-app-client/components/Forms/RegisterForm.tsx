@@ -8,6 +8,7 @@ import Input from './Inputs/Input'
 import SelectInput from './Inputs/SelectInput'
 import { colors } from '../colors'
 import { FormProps, RegisterFormResult } from './types'
+import { Button, useTheme } from 'react-native-paper'
 
 const initialValues: RegisterFormResult = {
     email: '',
@@ -30,6 +31,7 @@ const AnimatedView = styled.View<{ show: boolean }>`
 `
 
 const RegisterForm: FunctionComponent<FormProps<RegisterFormResult>> = (props) => {
+    const theme = useTheme();
     const [step, setStep] = useState<number>(1)
     const [results, setResults] = useState({});
 
@@ -97,9 +99,16 @@ const RegisterForm: FunctionComponent<FormProps<RegisterFormResult>> = (props) =
                             value={values.confirmPassword}
                         />
 
-                        <RegularButton onPress={() => handleSubmit()} disabled={!isValid}>
-                            Next
-                        </RegularButton>
+
+                        <Button
+                            style={{ backgroundColor: theme.colors.primary, width: '100%' }}
+                            onPress={() => { handleSubmit() }}
+                            disabled={!isValid}
+                        >
+                            <Text style={{ color: 'white' }}>
+                                Next
+                            </Text>
+                        </Button>
                     </AnimatedView>
                 )}
             </Formik>
@@ -132,17 +141,24 @@ const RegisterForm: FunctionComponent<FormProps<RegisterFormResult>> = (props) =
                         />
                         {errors.acType && touched.acType && <Text>{errors.acType}</Text>}
 
-                        <RegularButton onPress={() => handleSubmit()} disabled={!isValid}>
-                            Register
-                        </RegularButton>
-                        <RegularButton
-                            btnStyles={{ backgroundColor: colors.primary }}
-                            onPress={() => {
-                                setStep(1)
-                            }}
+                        <Button
+                            style={{ backgroundColor: theme.colors.primary, width: '100%' }}
+                            onPress={() => { handleSubmit() }}
+                            disabled={!isValid}
                         >
-                            Back
-                        </RegularButton>
+                            <Text style={{ color: 'white' }}>
+                                Register
+                            </Text>
+                        </Button>
+                        <Button
+                            style={{ backgroundColor: theme.colors.secondary, width: '100%' }}
+                            onPress={() => { setStep(1) }}
+                            disabled={!isValid}
+                        >
+                            <Text style={{ color: 'white' }}>
+                                Back
+                            </Text>
+                        </Button>
                     </AnimatedView>
                 )}
             </Formik>

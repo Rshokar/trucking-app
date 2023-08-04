@@ -1,7 +1,7 @@
 // Account.tsx
 import React, { FC, useState, useEffect } from 'react'
 import { StackScreenProps } from '@react-navigation/stack'
-import { Text, Snackbar, useTheme } from 'react-native-paper'
+import { Text, Snackbar, useTheme, Button } from 'react-native-paper'
 import { View } from 'react-native'
 import { RoofStackParamList } from '../../navigators/RoofStack'
 import { Company } from '../../models/Company'
@@ -55,6 +55,17 @@ const Account: FC<Props> = (props) => {
             // TODO: Save updates to backend with values
         }
     }
+
+    const handleLogout = async () => {
+        try {
+            await AuthController.logOut();
+            props.navigation.navigate('Welcome')
+        } catch (err: any) {
+            setSnackbarMessage(err.message);
+            setSnackbarColor('red');
+            setVisible(true)
+        }
+    }
     return (<>
         <View style={{
             padding: 20,
@@ -73,6 +84,15 @@ const Account: FC<Props> = (props) => {
             }
 
 
+        </View>
+        <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'flex-end', padding: 20 }}>
+            <Button
+                style={{ backgroundColor: theme.colors.error }}
+                onPress={handleLogout}>
+                <Text style={{ color: 'white' }}>
+                    Logout
+                </Text>
+            </Button>
         </View>
         <Snackbar
             visible={visible}
