@@ -3,7 +3,7 @@ from models import User, Company
 from utils import make_response
 from flask_login import login_user, logout_user
 from sqlalchemy.exc import IntegrityError
-import jsonschema
+from datetime import timedelta
 
 
 class AuthController:
@@ -31,7 +31,7 @@ class AuthController:
         if not user or not user.check_password(password):
             return make_response({"error": 'Invalid username or password'}, 401)
 
-        login_user(user)
+        login_user(user, remember=True, duration=timedelta(days=2))
 
         print("USER FROM LOGIN: ", user.to_dict())
 

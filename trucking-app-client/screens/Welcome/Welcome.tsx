@@ -1,26 +1,27 @@
-import React, { FunctionComponent, useState } from 'react'
+import React, { FunctionComponent, useEffect, useState } from 'react'
 import { StatusBar } from 'expo-status-bar'
 import styled from 'styled-components/native'
 import { TouchableOpacity } from 'react-native'
+import { Snackbar } from 'react-native-paper'
 
-import BigText from '../components/Texts/BigText'
-import SmallText from '../components/Texts/SmallText'
-import RegularButton from '../components/Buttons/RegularButton'
-import { LoginFormResult, RegisterFormResult } from '../components/Forms/types'
-import Form from '../components/Forms/Form'
-import LoginForm from '../components/Forms/LoginForm'
-import RegisterForm from '../components/Forms/RegisterForm'
-import SwipeDownViewAnimation from '../components/Animated/SwipeDownViewAnimation'
-import { AuthController } from '../controllers/AuthController'
-import { User } from '../models/User'
+import BigText from '../../components/Texts/BigText'
+import SmallText from '../../components/Texts/SmallText'
+import RegularButton from '../../components/Buttons/RegularButton'
+import { LoginFormResult, RegisterFormResult } from '../../components/Forms/types'
+import Form from '../../components/Forms/Form'
+import LoginForm from '../../components/Forms/LoginForm'
+import RegisterForm from '../../components/Forms/RegisterForm'
+import SwipeDownViewAnimation from '../../components/Animated/SwipeDownViewAnimation'
+import { AuthController } from '../../controllers/AuthController'
+import { User } from '../../models/User'
 
 // Custom Components
-import { colors } from '../components/colors'
-import { Container } from '../components/shared'
+import { colors } from '../../components/colors'
+import { Container } from '../../components/shared'
 
 const WelcomContainer = styled(Container)`
     background-color: ${colors.secondary};
-    justify-content: space-between;
+    justify-content: space-between;r
     width: 100%;
     height: 100%;
 `
@@ -47,17 +48,16 @@ const BottomSection = styled.View`
 const FormSwitchText = styled.Text`
     padding-left: 5px;
     margin-top: 5px;
-    color: ${colors.tertiary}
+    color: ${colors.tertiary};
 `
 
 
 
-import { RoofStackParamList } from '../navigators/RoofStack'
+import { RoofStackParamList } from '../../navigators/RoofStack'
 import { StackScreenProps } from '@react-navigation/stack'
 
-import background from '../assets/welcome.png'
-import FlashAnimation from '../components/Animated/FlashAnimation'
-import { color } from 'react-native-reanimated'
+import background from '../../assets/welcome.png'
+import FlashAnimation from '../../components/Animated/FlashAnimation'
 
 
 
@@ -71,7 +71,21 @@ const Welcome: FunctionComponent<Props> = ({ navigation }) => {
     const [flashMessage, setFlashMessage] = useState<string>("")
     const [flashColor, setFlashColor] = useState<string>(colors.success)
     const [flashToggle, setFlashToggle] = useState<boolean>(false);
+
     const hideAuth = () => setShowAuth(false)
+
+    // We want to check if the current user is logged in
+    // If they are logged in then we will redirect to home
+    useEffect(() => {
+        const run = async () => {
+            try {
+                await AuthController.isUserAuthed();
+                navigation.navigate("Home", { company: await AuthController.getCompany() })
+            } catch (err: any) {
+            }
+        }
+        run();
+    }, [])
 
     const handleLogin = async (res: LoginFormResult): Promise<any> => {
         let u: User = new User()

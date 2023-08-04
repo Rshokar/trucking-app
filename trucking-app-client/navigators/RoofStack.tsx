@@ -1,6 +1,6 @@
 import React, { FunctionComponent } from 'react'
 import { Text } from 'react-native'
-import Welcome from '../screens/Welcome'
+import Welcome from '../screens/Welcome/Welcome'
 import Home from '../screens/Home/Home'
 import Tickets from '../screens/Tickets/Tickets'
 
@@ -72,7 +72,7 @@ const RoofStack: FunctionComponent = () => {
                         }}
                     />
                 })}
-                initialRouteName='Home'
+                initialRouteName='Welcome'
             >
                 <Stack.Screen
                     name="Welcome"

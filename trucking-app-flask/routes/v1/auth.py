@@ -3,7 +3,7 @@ from flask import Blueprint, request, g
 from utils import make_response
 from validations import auth_validation, register_validation
 from controllers.auth_controller import AuthController
-from flask_login import login_required
+from flask_login import login_required, current_user
 auth = Blueprint("auth", __name__)
 
 
@@ -31,3 +31,11 @@ def register():
         return AuthController.register(session=session, request=request)
     except jsonschema.exceptions.ValidationError as e:
         return make_response({"error": e.message}, 400)
+
+
+@auth.route("/check_auth", methods=["GET"])
+def check_auth():
+    if current_user.is_authenticated:
+        return make_response({"message": "User is authenticated"}, 200)
+    else:
+        return make_response({"message": "User is not authenticated"}, 401)

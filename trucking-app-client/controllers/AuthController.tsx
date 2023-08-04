@@ -44,6 +44,13 @@ export class AuthController implements Controller {
         );
     }
 
+    static async isUserAuthed() {
+        return await Request.request({
+            method: Method.GET,
+            url: "/auth/check_auth"
+        })
+    }
+
 
     public static async saveUser(u: any): Promise<void> {
         const user: User = new User()
