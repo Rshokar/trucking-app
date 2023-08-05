@@ -1,4 +1,4 @@
-
+from flask import send_file
 import json
 from flask_login import current_user
 from itsdangerous import BadTimeSignature, SignatureExpired, URLSafeTimedSerializer
@@ -7,6 +7,10 @@ from config import s3, create_unique_image_key
 from models import BillingTickets, RFO, Dispatch, Company
 from sqlalchemy import and_
 import os
+import botocore
+
+import boto3
+from io import BytesIO
 
 S3_BUCKET_NAME = os.environ.get('S3_BUCKET_NAME')
 
@@ -207,3 +211,33 @@ class BillingTicketController:
         response = [billing_ticket.to_dict() for billing_ticket in result]
 
         return make_response(response, 200)
+
+    def get_bill_ticket_image(session, bill_id: int):
+        """_summary_
+        Returns the image associated with a bill_id
+        Args:
+            session (_type_): _description_
+            bill_id (_type_): _description_
+        """
+        # Query the BillingTickets table for the record with the given bill_id
+        bill = session.query(BillingTickets).filter_by(bill_id=bill_id).first()
+
+        if bill is None:
+            return make_response({"error": "Billing ticket not found"}, 404)
+
+        s3 = boto3.resource('s3')
+
+        # Try to download the image from S3
+        try:
+            file_object = s3.Object(S3_BUCKET_NAME, bill.image_id)
+            file_stream = file_object.get()['Body'].read()
+
+            # Create a BytesIO object from the file_stream
+            file_io = BytesIO(file_stream)
+
+            # Use Flask's send_file function to return the image
+            return send_file(file_io, mimetype='image/jpeg')
+
+        except botocore.exceptions.ClientError as e:
+            # Handle any errors that occurred while trying to retrieve the file
+            return make_response({"error": "Failed to retrieve image from S3: " + str(e)}, 500)

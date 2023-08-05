@@ -4,8 +4,8 @@ import uuid
 import mimetypes
 
 S3_BUCKET = os.environ.get('S3_BUCKET')
-S3_ACCESS_KEY = os.environ.get('S3_ACCESS_KEY')
-S3_SECRET_KEY = os.environ.get('S3_SECRET_KEY')
+S3_ACCESS_KEY = os.environ.get('AWS_ACCESS_KEY_ID')
+S3_SECRET_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
 
 s3 = boto3.client(
     "s3",

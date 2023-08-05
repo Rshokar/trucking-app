@@ -72,3 +72,9 @@ def operator_get_rfo():
     # Split the token from the Bearer
     token = auth_header.split(' ')[1]
     return BillingTicketController.operator_get_billing_tickets(g.session, token)
+
+
+@billing_ticket.route("/<int:bill_id>/image", methods=["GET"])
+@login_required
+def get_bill_image(bill_id):
+    return BillingTicketController.get_bill_ticket_image(g.session, bill_id)
