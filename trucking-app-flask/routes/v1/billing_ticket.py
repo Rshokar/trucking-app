@@ -4,6 +4,7 @@ import jsonschema
 from utils import make_response
 from validations import billing_ticket_validation, billing_ticket_upate
 from flask_login import login_required
+from config import is_image
 
 billing_ticket = Blueprint("billing_ticket", __name__)
 
@@ -28,13 +29,23 @@ def get_bill(bill_id):
 @billing_ticket.route("/", methods=["POST"])
 @login_required
 def create_bill():
-    print(request.json)
+    if request.mimetype != 'multipart/form-data':
+        return make_response({"error": "Content type must be multipart/form-data"}, 400)
+
+    if 'file' not in request.files:
+        return make_response({"error": "No file part in the request."}, 400)
+
+    file = request.files['file']
+    if not file or not is_image(file.filename):
+        return make_response({'error': "Invalid image file."}, 400)
     try:
-        jsonschema.validate(request.json, billing_ticket_validation)
-        return BillingTicketController.create_bill(g.session, request)
+        jsonschema.validate(request.form, billing_ticket_validation)
+        return BillingTicketController.create_bill(g.session, file, int(request.form["rfo_id"]), request.form["ticket_number"])
     except jsonschema.ValidationError as e:
         print(e)
         return make_response({"error": e.message}, 400)
+    except ValueError:
+        return make_response({"error": "Value of rfo_id is not a number"})
 
 
 @billing_ticket.route("/<int:bill_id>", methods=["PUT"])

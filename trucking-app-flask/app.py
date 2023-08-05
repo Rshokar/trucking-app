@@ -13,6 +13,7 @@ load_dotenv()
 
 
 IS_PRODUCTION = os.environ.get("STATE")
+MAX_CONTENT_SIZE = os.environ.get("MAX_CONTENT_SIZE")
 
 # if (IS_PRODUCTION == "development" or IS_PRODUCTION == "test"):
 #     # # If development clear all database
@@ -38,6 +39,7 @@ app.config['MAIL_USERNAME'] = 'AKIA56YFAK5VQDUD56U2'
 app.config['MAIL_PASSWORD'] = 'BOxXBK/OHsOFXcapQAuuhRvrblCxHL1BEU/2enfB9n3t'
 app.config['MAIL_USE_TLS'] = True  # AWS recommends using StartTLS
 app.config['MAIL_USE_SSL'] = False
+app.config['MAX_CONTENT_LENGTH'] = int(MAX_CONTENT_SIZE)  # 16 megabytes
 
 # Set secret key for auth session
 app.secret_key = 'fzV2T57K8JmQJ@C'

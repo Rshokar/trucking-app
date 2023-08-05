@@ -46,9 +46,9 @@ def loadDB(num_users):
                 for i in range(numRfos):
                     rfo = RFOFactory.create(
                         dispatch_id=dispatch.dispatch_id, operator_id=operators[i].operator_id)
-                    billing_ticket = BillingTicketFactory.create(
-                        rfo_id=rfo.rfo_id)
-                    billing_tickets.append(billing_ticket)
+                    # billing_ticket = BillingTicketFactory.create(
+                    #     rfo_id=rfo.rfo_id)
+                    # billing_tickets.append(billing_ticket)
                     rfos.append(rfo)
 
             dispatches.append(d)

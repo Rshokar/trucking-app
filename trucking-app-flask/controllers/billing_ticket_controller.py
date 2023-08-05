@@ -3,10 +3,12 @@ import json
 from flask_login import current_user
 from itsdangerous import BadTimeSignature, SignatureExpired, URLSafeTimedSerializer
 from utils import make_response
-from flask import Response
+from config import s3, create_unique_image_key
 from models import BillingTickets, RFO, Dispatch, Company
 from sqlalchemy import and_
 import os
+
+S3_BUCKET_NAME = os.environ.get('S3_BUCKET_NAME')
 
 OPERATOR_ACCESS_TOKEN_SECRET = os.environ.get(
     "OPERATOR_ACCESS_TOKEN_SECRET"
@@ -70,7 +72,7 @@ class BillingTicketController:
 
         return make_response(res, 200)
 
-    def create_bill(session, request):
+    def create_bill(session, file, rfo_id: int, ticket_number: str):
         """_summary_
             Creates a billing ticket in the database
         Args:
@@ -78,12 +80,10 @@ class BillingTicketController:
         Returns:
             Response: 201, 400
         """
-
-        data = request.json
-
-        rfo_id = data.get("rfo_id")
-        ticket_number = data.get("ticket_number")
-        image_id = data.get("image_id", 100)
+        print(S3_BUCKET_NAME)
+        print(file)
+        print(rfo_id)
+        print(ticket_number)
 
         rfo = session.query(RFO)\
             .join(Dispatch, RFO.dispatch_id == Dispatch.dispatch_id)\
@@ -94,10 +94,29 @@ class BillingTicketController:
         if rfo is None:
             return make_response({"error": "RFO not found"}, 404)
 
+        # Generate a unique key for the image
+        image_key = create_unique_image_key() + f"_{rfo_id}"
+
+        # Try to upload the image to S3
+        try:
+            s3.upload_fileobj(
+                file,
+                S3_BUCKET_NAME,
+                image_key,
+                ExtraArgs={
+                    "ContentType": file.content_type
+                }
+            )
+        except Exception as e:
+            return make_response({"error": "Failed to upload image to S3: " + str(e)}, 500)
+
+        # Create the billing ticket with the image key
         bill = BillingTickets(
             rfo_id,
             ticket_number,
-            image_id
+            image_key,
+            S3_BUCKET_NAME,
+            "us-west-2"
         )
 
         session.add(bill)
