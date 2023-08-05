@@ -51,9 +51,18 @@ def create_bill():
 @billing_ticket.route("/<int:bill_id>", methods=["PUT"])
 @login_required
 def update_bill(bill_id):
+    if request.mimetype != 'multipart/form-data':
+        return make_response({"error": "Content type must be multipart/form-data"}, 400)
+
+    file = None
+    if 'file' in request.files:
+        file = request.files['file']
+        if not is_image(file.filename):
+            return make_response({'error': "Invalid image file."}, 400)
+
     try:
-        jsonschema.validate(request.json, billing_ticket_upate)
-        return BillingTicketController.update_bill(g.session, request, bill_id)
+        jsonschema.validate(request.form, billing_ticket_upate)
+        return BillingTicketController.update_bill(g.session, bill_id, request.form["ticket_number"], file)
     except jsonschema.ValidationError as e:
         return make_response({"error": e.message}, 400)
 

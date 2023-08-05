@@ -128,7 +128,7 @@ class BillingTicketController:
         session.commit()
         return make_response(bill.to_dict(), 201)
 
-    def update_bill(session, request, bill_id):
+    def update_bill(session, bill_id, ticket_number, file=None):
         """_summary_
             Updates a billing ticket in the database
         Args:
@@ -140,19 +140,43 @@ class BillingTicketController:
             _type_: _description_
         """
 
-        data = request.json
-
         bill = session.query(BillingTickets).filter_by(bill_id=bill_id)\
             .join(RFO, RFO.rfo_id == BillingTickets.rfo_id)\
             .join(Dispatch, Dispatch.dispatch_id == RFO.dispatch_id)\
             .join(Company, Company.company_id == Dispatch.company_id)\
             .filter(and_(BillingTickets.bill_id == bill_id, Company.owner_id == current_user.id))\
             .first()
+
         if bill is None:
             return make_response({"error": "Billing ticket not found"}, 404)
 
-        bill.ticket_number = data.get("ticket_number", bill.ticket_number)
-        bill.image_id = data.get("image_id", bill.image_id)
+        if file:
+            # delete the old image if it exists
+            try:
+                s3.delete_object(Bucket=S3_BUCKET_NAME, Key=bill.image_id)
+            except ClientError as e:
+                # If the image was not found in S3, we log the exception and continue with updating the bill
+                print(
+                    f"An exception occurred while deleting the image from S3: {e}")
+
+                # Try to upload the image to S3
+            try:
+
+                new_id = create_unique_image_key() + f'_{bill.rfo_id}'
+                s3.upload_fileobj(
+                    file,
+                    S3_BUCKET_NAME,
+                    new_id,
+                    ExtraArgs={
+                        "ContentType": file.content_type
+                    }
+                )
+            except Exception as e:
+                return make_response({"error": "Failed to upload image to S3: " + str(e)}, 500)
+            bill.image_id = new_id
+
+        bill.ticket_number = ticket_number or bill.ticket_number
+
         session.commit()
 
         return make_response(bill.to_dict(), 200)
