@@ -8,6 +8,7 @@ from models import BillingTickets, RFO, Dispatch, Company
 from sqlalchemy import and_
 import os
 import botocore
+from botocore.exceptions import ClientError
 
 import boto3
 from io import BytesIO
@@ -158,7 +159,7 @@ class BillingTicketController:
 
     def delete_bill(session, bill_id):
         """_summary_
-            Deletes a billing ticket from the database
+            Deletes a billing ticket from the database and associated image from S3
         Args:
             session (_type_): _description_
             bill_id (_type_): _description_
@@ -176,6 +177,16 @@ class BillingTicketController:
 
         if bill is None:
             return make_response({"error": "Billing ticket not found"}, 404)
+
+        # Delete the associated image from S3
+        try:
+            s3.delete_object(Bucket=S3_BUCKET_NAME,
+                             Key=bill.image_id)
+        except ClientError as e:
+            # If the image was not found in S3, we log the exception and continue with deleting the bill
+            return make_response({"error": "An error occured while deleting the image"}, 500)
+
+        # # Delete the bill
         session.delete(bill)
         session.commit()
         return make_response({"message": "Billing ticket deleted"}, 200)
