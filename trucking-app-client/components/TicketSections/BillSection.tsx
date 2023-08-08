@@ -64,9 +64,8 @@ const BillSection: FC<Props> = ({ navigateToTicket, rfoId }) => {
 
     const handleAddBill = async (data: Bill): Promise<boolean> => {
         try {
-            data.rfo_id = parseFloat(data.rfo_id + "");
             const bC = new BillController();
-            const res: Bill = await bC.create<Bill>(data);
+            const res: Bill = await bC.create(data);
             setBills([...bills, res]);
             hideModal();
             return true;

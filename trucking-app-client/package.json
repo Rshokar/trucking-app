@@ -23,6 +23,7 @@
     "expo": "~48.0.10",
     "expo-app-loading": "^2.1.1",
     "expo-font": "~11.1.1",
+    "expo-image-picker": "~14.1.1",
     "expo-status-bar": "~1.4.4",
     "formik": "^2.2.9",
     "formik-material-ui": "^4.0.0-alpha.2",

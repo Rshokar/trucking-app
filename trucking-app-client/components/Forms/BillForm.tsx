@@ -1,11 +1,14 @@
-import React, { FC } from 'react';
+import React, { FC, useState } from 'react';
 import { Formik } from 'formik';
-import { TextInput, Button, useTheme } from 'react-native-paper';
+import { Image, View } from 'react-native'
+import { TextInput, Button, useTheme, Text } from 'react-native-paper';
+import * as ImagePicker from 'expo-image-picker'
 import * as Yup from 'yup';
 import { InputBox } from './styles';
 
 export type BillFormResult = {
     ticket_number: string;
+    file: ImagePicker.ImagePickerAsset; // <-- Include image in type
 };
 
 type Props = {
@@ -19,20 +22,44 @@ const BillFormSchema = Yup.object().shape({
 
 const BillForm: FC<Props> = ({ onSubmit, defaultValues }) => {
     const theme = useTheme();
+    const [image, setImage] = useState<ImagePicker.ImagePickerAsset>();  // <-- State to hold the picked image
+    const [imageError, setImageError] = useState<string>();
 
-    console.log("DEFAULT VALUE", defaultValues);
+
+    const pickImage = async () => {
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.All,
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1,
+        });
+
+
+
+        console.log(result);
+
+        if (!result.canceled) {
+            setImage(result.assets[0]);
+        }
+    }
 
     return (
         <Formik
             initialValues={(defaultValues ?? {}) as BillFormResult}
             validationSchema={BillFormSchema}
             onSubmit={async (values, { setSubmitting }) => {
-                await onSubmit(values);
+                if (!image) {
+                    setImageError("Image is required");
+                    return;
+                } else {
+                    values.file = image; // <-- Assign image to the values before submission
+                    await onSubmit(values);
+                }
                 setSubmitting(false);
+
             }}
         >
             {({ handleChange, handleBlur, handleSubmit, values, errors, isSubmitting }) => {
-                console.log(values);
                 return (
                     <>
                         <InputBox>
@@ -44,6 +71,11 @@ const BillForm: FC<Props> = ({ onSubmit, defaultValues }) => {
                                 error={errors.ticket_number ? true : false}
                             />
                         </InputBox>
+                        {image && <Image source={{ uri: image.uri }} style={{ width: '100%', height: 300 }} />}
+                        <Button onPress={pickImage}>Pick Image</Button>
+                        <View>
+                            <Text>{imageError}</Text>
+                        </View>
                         <Button mode="contained" onPress={() => handleSubmit()} disabled={isSubmitting} style={{ marginTop: 10, backgroundColor: theme.colors.primary }}>
                             {isSubmitting ? "Submitting...." : "Submit"}
                         </Button>

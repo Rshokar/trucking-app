@@ -1,5 +1,6 @@
 import { RFO } from './RFO';
 import { Model, Query } from './Model'
+import * as ImagePicker from 'expo-image-picker';
 
 
 export class Bill implements Model {
@@ -8,6 +9,7 @@ export class Bill implements Model {
     }
 
     bill_id?: number;
+    file?: ImagePicker.ImagePickerAsset;
     rfo_id?: number;
     ticket_number?: string;
     image_id?: number;

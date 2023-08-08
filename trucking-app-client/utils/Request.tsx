@@ -27,7 +27,7 @@ export class Request {
         try {
             const response = await axios[config.method]<T>(`${this.API_URL}${config.url}`, {
                 ...config.data,
-            });
+            }, { headers: { ...config.headers } });
             return response.data;
         } catch (error: any) {
             if (axios.isAxiosError(error)) {

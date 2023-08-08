@@ -2,7 +2,8 @@ import qs from 'qs'
 import { Bill, BillQuery } from "../models/Bill";
 import { Request } from "../utils/Request";
 import { Method } from "../utils/Request";
-import { isAxiosError } from 'axios';
+import axios, { isAxiosError } from 'axios';
+import { cos } from 'react-native-reanimated';
 
 
 export class BillController {
@@ -70,18 +71,34 @@ export class BillController {
         }
     }
 
-    async create<Bill>(model: Bill): Promise<Bill> {
-        console.log("CREATING BILL", model)
+    async create(model: Bill): Promise<Bill> {
+        // Create a new instance of FormData
+        const formData = new FormData();
+
+        model.file && formData.append('file', {
+            uri: model.file.uri,
+            type: model.file.type,
+            name: model.file.fileName || 'uploaded-image.jpg' // Use original filename if available
+        } as any);
+
+
+        formData.append('ticket_number', model.ticket_number + '');
+        formData.append('rfo_id', model.rfo_id + '');
+
         try {
-            return await Request.request<Bill>({
-                url: `/billing_ticket`,
-                method: Method.POST,
-                data: model,
-            })
+            return await axios({
+                url: `http://10.0.0.134:5000/v1/billing_ticket`,
+                method: 'POST',
+                data: formData,
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
         } catch (err: any) {
             if (isAxiosError(err))
                 throw new Error(err.response?.data);
             throw new Error("Error adding bill");
         }
     }
+
 }
