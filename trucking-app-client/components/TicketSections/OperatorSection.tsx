@@ -1,5 +1,5 @@
 import React, { FC, useState, useEffect } from 'react';
-import { TextInput, useTheme, FAB, Modal, Snackbar } from 'react-native-paper';
+import { TextInput, useTheme, FAB, Modal, Snackbar, Portal } from 'react-native-paper';
 import styled from 'styled-components/native';
 import { Operator, OperatorQuery } from '../../models/Operator';
 import { OperatorController } from '../../controllers/OperatorController';
@@ -9,6 +9,9 @@ import TicketSection from '../Tickets/TicketSection';
 import OperatorForm from '../Forms/OperatorForm';
 import { OperatorFormResult } from '../Forms/types';
 import MyModal from '../Modal/MyModal';
+import RFOSection from './RfoSection';
+import { RFO } from '../../models/RFO';
+import { View } from 'react-native';
 
 const StyledInput = styled(TextInput)`
     width: 90%;
@@ -26,6 +29,7 @@ const OperatorSection: FC<Props> = ({ navigateToTicket }) => {
     const [focusedOperator, setFocusedOperator] = useState<Operator>();
     const [snackbarVisible, setSnackbarVisible] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
+    const [showRfos, setShowRfos] = useState<boolean>(false)
     const theme = useTheme();
     const showModal = () => setVisible(true);
     const hideModal = () => setVisible(false);
@@ -98,6 +102,11 @@ const OperatorSection: FC<Props> = ({ navigateToTicket }) => {
         setQuery(q);
     }
 
+    const showOperatorsRfos = (oper: Operator) => {
+        setFocusedOperator(oper);
+        setShowRfos(true);
+    }
+
     return (
         <StyledSection>
             <StyledHeader>
@@ -122,7 +131,7 @@ const OperatorSection: FC<Props> = ({ navigateToTicket }) => {
                                 title={item.operator_name || ''}
                                 subtitle={item.confirmed ? item.operator_email : "Email not validated"}
                                 avatar={item.operator_name?.charAt(0).toLocaleUpperCase() || 'A'}
-                                onClick={() => navigateToTicket(item.operator_id ?? 0)}
+                                onLongpress={() => showOperatorsRfos(item)}
                                 onButtonClick={() => {
                                     setFocusedOperator(item)
                                     setVisible(true);
@@ -144,6 +153,27 @@ const OperatorSection: FC<Props> = ({ navigateToTicket }) => {
                     onSubmit={handleFormSubmit}
                     defaultValues={focusedOperator as OperatorFormResult} />
             </MyModal>
+            <Portal>
+                <Modal
+                    visible={showRfos}
+                    onDismiss={() => {
+                        setShowRfos(false);
+                        setFocusedOperator(undefined);
+                    }}
+                    style={{ alignItems: 'center' }}
+                >
+                    <View style={{ backgroundColor: 'white', height: '95%', width: '95%', paddingVertical: 20, borderRadius: 10 }}>
+
+                        <RFOSection
+                            navigateToTicket={function (rfo: RFO): void {
+                                throw new Error('Function not implemented.');
+                            }}
+                            operators={operators}
+                            operId={focusedOperator?.operator_id}
+                        />
+                    </View>
+                </Modal>
+            </Portal>
 
             <Snackbar
                 visible={snackbarVisible}

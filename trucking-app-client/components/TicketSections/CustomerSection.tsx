@@ -159,17 +159,17 @@ const CustomerSection: FC<Props> = ({ navigateToTicket }) => {
                                 aviColor={theme.colors.tertiary}
                                 title={item.customer_name || ''}
                                 avatar={item.customer_name?.charAt(0).toLocaleUpperCase() || 'A'}
-                                onClick={() => {
-                                    navigateToTicket(item)
-                                    tabNav(0)
-                                }}
                                 onButtonClick={() => {
-                                    setFocusedCustomer(item)
+                                    setFocusedCustomer(item);
                                     setVisible(true);
                                 }}
                                 buttonClickIcon={"pencil"}
                                 onDelete={async (): Promise<boolean> => await handleDelete(item.customer_id + "")}
-
+                                onClick={function () {
+                                    console.log("HELLO WORLD");
+                                    navigateToTicket(item);
+                                    tabNav(0);
+                                }}
                             />
                         );
                     }

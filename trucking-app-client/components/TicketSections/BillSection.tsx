@@ -161,7 +161,7 @@ const BillSection: FC<Props> = ({ navigateToTicket, rfoId }) => {
                                     setFocusedBill(item);
                                     setVisible(true);
                                 }}
-                                onAVIClick={() => handleShowBill(item)}
+                                onLongpress={() => handleShowBill(item)}
                                 onClick={() => navigateToTicket(item)}
                                 buttonClickIcon={"pencil"}
                                 onDelete={async (): Promise<boolean> => await handleDelete(item.bill_id + "")}

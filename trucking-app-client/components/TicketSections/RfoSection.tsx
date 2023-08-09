@@ -1,6 +1,5 @@
 import React, { FC, useState, useEffect } from 'react';
 import { FAB, Modal, TextInput, useTheme, Snackbar, Portal } from 'react-native-paper';
-import styled from 'styled-components/native';
 import { RFO, RFOQuery } from '../../models/RFO';
 import { RFOController } from '../../controllers/RfoController';
 import TicketItem from '../Tickets/TicketItem';
@@ -13,24 +12,23 @@ import { Operator } from '../../models/Operator';
 import moment from 'moment';
 import RFOCard from '../Cards/RFOCard';
 
-const StyledInput = styled(TextInput)`
-    width: 90%;
-`;
-
 type Props = {
     navigateToTicket: (rfo: RFO) => void;
     operators: Operator[];
-    dispId: number;
+    dispId?: number;
+    operId?: number
 };
 
-const RFOSection: FC<Props> = ({ navigateToTicket, dispId, operators, }) => {
+const RFOSection: FC<Props> = ({ navigateToTicket, dispId, operId, operators }) => {
     const [rfos, setRFOs] = useState<RFO[]>([]);
     const [query, setQuery] = useState<RFOQuery>(() => {
         const rQ = new RFOQuery();
         rQ.limit = 100;
-        rQ.dispatch_id = dispId;
+        if (operId) rQ.operator_id = operId
+        if (dispId) rQ.dispatch_id = dispId
         return rQ;
     });
+
     const [enablePaginate, setEnablePaginate] = useState<boolean>(false);
     const [snackbarVisible, setSnackbarVisible] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
@@ -166,7 +164,7 @@ const RFOSection: FC<Props> = ({ navigateToTicket, dispId, operators, }) => {
                                 onClick={() => navigateToTicket(item)}
                                 buttonClickIcon={"pencil"}
                                 onDelete={async (): Promise<boolean> => await handleDelete(item.rfo_id + "")}
-                                onAVIClick={() => {
+                                onLongpress={() => {
                                     setFocusedRFO(item)
                                     setShowRFOCards(true)
                                 }}
@@ -223,7 +221,7 @@ const RFOSection: FC<Props> = ({ navigateToTicket, dispId, operators, }) => {
             </Portal>
 
             {
-                !visible &&
+                (dispId && !visible) &&
                 <FAB
                     icon="plus"
                     onPress={() => {

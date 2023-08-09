@@ -227,7 +227,7 @@ const DispatchSection: FunctionComponent<Props> = ({ navigateToTickets, customer
                             setFocusingDispatch(item);
                             setShowFormModal(true);
                         }}
-                        onAVIClick={() => {
+                        onLongpress={() => {
                             setFocusingDispatch(item)
                             setShowDispatchCard(true)
                         }}

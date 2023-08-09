@@ -17,7 +17,8 @@ def GET_ALL():
     limit = int(request.args.get('limit', 10))
     page = int(request.args.get('page', 0))
     dispatch_id = request.args.get('dispatch_id')
-    return RfoController.get_all_rfo(g.session, limit, page, dispatch_id)
+    operator_id = request.args.get('operator_id')
+    return RfoController.get_all_rfo(g.session, limit, page, dispatch_id, operator_id)
 
 
 @rfo.route("/<int:rfo_id>", methods=["GET"])

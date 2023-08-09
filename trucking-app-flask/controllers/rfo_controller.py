@@ -28,7 +28,7 @@ class RfoController:
         except Exception as e:
             print(e)
 
-    def get_all_rfo(session, limit: int, page: int, dispatch_id: int):
+    def get_all_rfo(session, limit: int, page: int, dispatch_id: int, operator_id: int):
         # First we need to check id the dispatch
         # belongs to the current user
         if (dispatch_id is not None):
@@ -43,6 +43,7 @@ class RfoController:
         rfos = session.query(RFO, Operator)\
             .join(Operator, Operator.operator_id == RFO.operator_id)\
             .where(RFO.dispatch_id == dispatch_id if dispatch_id is not None else True)\
+            .where(RFO.operator_id == operator_id if operator_id is not None else True)\
             .limit(limit).offset(page * limit).all()
 
         result = []

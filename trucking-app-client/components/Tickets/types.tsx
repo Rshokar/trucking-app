@@ -29,7 +29,7 @@ export interface TicketItemProps {
     onButtonClick?: () => any;
     onDelete?: () => Promise<boolean>;
     onClick?: (event: GestureResponderEvent) => void;
-    onAVIClick?: () => any;
+    onLongpress?: () => any;
     style?: ViewStyle;
     textStyle?: TextStyle;
     aviColor?: string;
