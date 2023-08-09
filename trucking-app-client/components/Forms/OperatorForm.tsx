@@ -4,9 +4,7 @@ import * as yup from 'yup';
 import { TextInput, Button, Text, useTheme } from 'react-native-paper';
 import { OperatorFormResult, FormProps } from './types';
 import { Operator } from '../../models/Operator';
-import styled from 'styled-components/native';
 import { InputBox } from './styles';
-import RegularButton from '../Buttons/RegularButton';
 
 // Define validation schema with Yup
 const validationSchema = yup.object().shape({
@@ -55,9 +53,9 @@ const OperatorForm: FC<FormProps<OperatorFormResult>> = (props) => {
                         {touched.operator_email && <Text>{errors.operator_email}</Text>}
                     </InputBox>
 
-                    <RegularButton onPress={(e) => handleSubmit()} disabled={submitting} btnStyles={{ backgroundColor: submitting ? theme.colors.onSurfaceDisabled : theme.colors.primary }}>
+                    <Button onPress={(e) => handleSubmit()} disabled={submitting} style={{ backgroundColor: submitting ? theme.colors.onSurfaceDisabled : theme.colors.primary }}>
                         {submitting ? "Loading..." : "Submit"}
-                    </RegularButton>
+                    </Button>
                 </>
             )}
         </Formik>

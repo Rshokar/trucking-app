@@ -93,7 +93,10 @@ const OperatorSection: FC<Props> = ({ navigateToTicket }) => {
         }
     };
 
-    console.log("HELLO WORLD", operators)
+    const handleRefresh = async () => {
+        const q = new OperatorQuery();
+        setQuery(q);
+    }
 
     return (
         <StyledSection>
@@ -110,6 +113,7 @@ const OperatorSection: FC<Props> = ({ navigateToTicket }) => {
                 title={'Operators'}
                 more={enablePaginate}
                 data={operators}
+                onRefresh={handleRefresh}
                 render={({ item }: { item: Operator }) => {
                     if (item.operator_name?.match(query.operator_name || '')) {
                         return (

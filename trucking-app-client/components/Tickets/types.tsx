@@ -11,6 +11,7 @@ export interface TicketSectionProps {
     paginate?: () => void;
     more: boolean;
     title?: string;
+    onRefresh?: () => Promise<any>;
 }
 
 export interface TicketAviProps {

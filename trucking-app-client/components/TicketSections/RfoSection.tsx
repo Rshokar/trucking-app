@@ -1,17 +1,16 @@
 import React, { FC, useState, useEffect } from 'react';
-import { FAB, Modal, Text, TextInput, useTheme, Snackbar, Portal } from 'react-native-paper';
+import { FAB, Modal, TextInput, useTheme, Snackbar, Portal } from 'react-native-paper';
 import styled from 'styled-components/native';
 import { RFO, RFOQuery } from '../../models/RFO';
 import { RFOController } from '../../controllers/RfoController';
 import TicketItem from '../Tickets/TicketItem';
 import TicketSection from '../Tickets/TicketSection';
-import { StyledHeader, StyledSection } from './styles';
+import { StyledSection } from './styles';
 import MyModal from '../Modal/MyModal';
 import RFOForm from '../Forms/RFOForm';
 import { RFOFormResult } from '../Forms/RFOForm';
 import { Operator } from '../../models/Operator';
 import moment from 'moment';
-import DispatchCard from '../Cards/DIspatchCard';
 import RFOCard from '../Cards/RFOCard';
 
 const StyledInput = styled(TextInput)`
@@ -28,6 +27,7 @@ const RFOSection: FC<Props> = ({ navigateToTicket, dispId, operators, }) => {
     const [rfos, setRFOs] = useState<RFO[]>([]);
     const [query, setQuery] = useState<RFOQuery>(() => {
         const rQ = new RFOQuery();
+        rQ.limit = 100;
         rQ.dispatch_id = dispId;
         return rQ;
     });
@@ -137,12 +137,20 @@ const RFOSection: FC<Props> = ({ navigateToTicket, dispId, operators, }) => {
         }
     };
 
+    const handleRefresh = async () => {
+        const rQ = new RFOQuery();
+        rQ.limit = 100;
+        rQ.dispatch_id = dispId;
+        setQuery(rQ);
+    }
+
     return (
         <StyledSection>
             <TicketSection
                 title={'RFOs'}
                 more={enablePaginate}
                 data={rfos}
+                onRefresh={handleRefresh}
                 render={({ item }: { item: RFO }) => {
                     if (item.operator?.operator_name?.match(search || '')) {
                         return (
@@ -174,7 +182,7 @@ const RFOSection: FC<Props> = ({ navigateToTicket, dispId, operators, }) => {
                     setVisible(false);
                     setFocusedRFO(undefined)
                 }}
-                title={'Add RFO'}
+                title={focusedRFO ? "Edit Rfo" : "Add Rfo"}
             >
                 <RFOForm
                     onSubmit={handleFormSubmit}

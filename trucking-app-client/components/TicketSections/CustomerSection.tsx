@@ -130,7 +130,10 @@ const CustomerSection: FC<Props> = ({ navigateToTicket }) => {
     }
 
 
-
+    const handleRefresh = async () => {
+        const q = new CustomerQuery();
+        setQuery(q);
+    }
 
     return (
         <StyledSection>

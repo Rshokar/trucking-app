@@ -1,14 +1,13 @@
 import React, { FunctionComponent, useEffect, useState } from 'react';
 import styled from 'styled-components/native';
 import { Ionicons } from "@expo/vector-icons";
-import { ActivityIndicator } from 'react-native';
+import { ActivityIndicator, RefreshControl } from 'react-native';
 
 import SmallText from '../Texts/SmallText'
 import { colors } from '../colors'
 import { TicketSectionProps } from './types'
 import RegularText from '../Texts/RegularText'
-import { View } from 'react-native';
-import { Button } from 'react-native-paper';
+import { Button, useTheme } from 'react-native-paper';
 
 const TicketSectionBackground = styled.View`
     padding-horizontal: 25px;
@@ -37,10 +36,16 @@ const LoadingText = styled(SmallText)`
 
 const TicketSection: FunctionComponent<TicketSectionProps> = (props) => {
     const [paginating, setPaginating] = useState<boolean>(false);
+    const [refreshing, setRefreshing] = useState<boolean>(false);
+    const theme = useTheme();
 
     useEffect(() => {
         setPaginating(false);
     }, [props.data])
+
+    const handleRefresh = async () => props.onRefresh && await props.onRefresh();
+
+
 
     return (
         <TicketSectionBackground style={props.style}>
@@ -70,6 +75,13 @@ const TicketSection: FunctionComponent<TicketSectionProps> = (props) => {
                         }}>
                             Load More
                         </Button> : undefined}
+                        refreshControl={
+                            <RefreshControl
+                                refreshing={refreshing}
+                                onRefresh={handleRefresh}
+                                tintColor={theme.colors.primary}
+                            />
+                        }
                     />
                     {paginating && <LoadingIndicator size="large" color={colors.primary} />}
                 </>

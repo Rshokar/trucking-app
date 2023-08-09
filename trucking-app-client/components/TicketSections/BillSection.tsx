@@ -24,6 +24,7 @@ const BillSection: FC<Props> = ({ navigateToTicket, rfoId }) => {
     const [bills, setBills] = useState<Bill[]>([]);
     const [query, setQuery] = useState<BillQuery>(() => {
         const bQ = new BillQuery();
+        bQ.limit = 500;
         bQ.rfo_id = rfoId + "";
         return bQ;
     });
@@ -128,7 +129,13 @@ const BillSection: FC<Props> = ({ navigateToTicket, rfoId }) => {
         setShowBill(true);
     }
 
-    console.log("FOCUSED BILL", focusedBill);
+    const handleRefresh = async () => {
+        const bQ = new BillQuery();
+        bQ.limit = 500;
+        bQ.rfo_id = rfoId + "";
+        setQuery(bQ);
+    }
+
     return (
         <StyledSection>
             <StyledHeader>
@@ -141,6 +148,7 @@ const BillSection: FC<Props> = ({ navigateToTicket, rfoId }) => {
                 title={'Bills'}
                 more={enablePaginate}
                 data={bills}
+                onRefresh={handleRefresh}
                 render={({ item }: { item: Bill }) => {
                     if (item.ticket_number?.toString().includes(search)) {
                         return (

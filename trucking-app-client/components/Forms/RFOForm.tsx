@@ -92,7 +92,6 @@ const RFOForm: FC<Props> = ({ onSubmit, defaultValues, operators }) => {
                                     mode={'outlined'}
                                     value={values.operator_id}
                                     setValue={(value) => {
-                                        console.log("VALUE", value)
                                         setFieldValue('operator_id', value)
                                     }}
                                     list={operatorList}

@@ -145,6 +145,15 @@ const DispatchSection: FunctionComponent<Props> = ({ navigateToTickets, customer
             return false
         }
     }
+
+    const handleRefresh = async () => {
+        const q = new DispatchQuery();
+        q.startDate = query.startDate;
+        q.endDate = query.endDate;
+        q.customers = query.customers;
+        setQuery(q);
+    }
+
     return (
         <StyledSection>
             <StyledHeader>
@@ -171,6 +180,7 @@ const DispatchSection: FunctionComponent<Props> = ({ navigateToTickets, customer
             <TicketSection
                 more={enablePaginate}
                 data={dispatches}
+                onRefresh={handleRefresh}
                 render={({ item }: { item: Dispatch }) => {
                     return <TicketItem
                         title={item.customer?.customer_name || ''}
