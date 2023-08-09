@@ -93,6 +93,8 @@ const OperatorSection: FC<Props> = ({ navigateToTicket }) => {
         }
     };
 
+    console.log("HELLO WORLD", operators)
+
     return (
         <StyledSection>
             <StyledHeader>
@@ -114,7 +116,7 @@ const OperatorSection: FC<Props> = ({ navigateToTicket }) => {
                             <TicketItem
                                 aviColor={theme.colors.secondary}
                                 title={item.operator_name || ''}
-                                subtitle={item.operator_email || ''}
+                                subtitle={item.confirmed ? item.operator_email : "Email not validated"}
                                 avatar={item.operator_name?.charAt(0).toLocaleUpperCase() || 'A'}
                                 onClick={() => navigateToTicket(item.operator_id ?? 0)}
                                 onButtonClick={() => {

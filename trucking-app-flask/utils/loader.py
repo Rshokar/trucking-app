@@ -103,6 +103,7 @@ class OperatorFactory(SQLAlchemyModelFactory):
     operator_name = Faker('company')
     operator_email = Faker('email')
     confirm_token = Faker('word')
+    confirmed = Faker('boolean')
 
 
 class DispatchFactory(SQLAlchemyModelFactory):
