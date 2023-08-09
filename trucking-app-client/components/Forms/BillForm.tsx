@@ -48,10 +48,13 @@ const BillForm: FC<Props> = ({ onSubmit, defaultValues }) => {
             initialValues={(defaultValues ?? {}) as BillFormResult}
             validationSchema={BillFormSchema}
             onSubmit={async (values, { setSubmitting }) => {
-                if (!image) {
+                if (!image && !defaultValues) {
+                    console.log("HELLO")
                     setImageError("Image is required");
                     return;
-                } else {
+                } else if (defaultValues) {
+                    await onSubmit(values);
+                } else if (image) {
                     values.file = image; // <-- Assign image to the values before submission
                     await onSubmit(values);
                 }
@@ -71,11 +74,16 @@ const BillForm: FC<Props> = ({ onSubmit, defaultValues }) => {
                                 error={errors.ticket_number ? true : false}
                             />
                         </InputBox>
-                        {image && <Image source={{ uri: image.uri }} style={{ width: '100%', height: 300 }} />}
-                        <Button onPress={pickImage}>Pick Image</Button>
-                        <View>
-                            <Text>{imageError}</Text>
-                        </View>
+                        {!defaultValues && image && <Image source={{ uri: image.uri }} style={{ width: '100%', height: 300 }} />}
+                        {
+                            !defaultValues &&
+                            <>
+                                <Button onPress={pickImage}>Pick Image</Button>
+                                <View>
+                                    <Text>{imageError}</Text>
+                                </View>
+                            </>
+                        }
                         <Button mode="contained" onPress={() => handleSubmit()} disabled={isSubmitting} style={{ marginTop: 10, backgroundColor: theme.colors.primary }}>
                             {isSubmitting ? "Submitting...." : "Submit"}
                         </Button>

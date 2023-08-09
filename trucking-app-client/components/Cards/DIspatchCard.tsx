@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Avatar, Button, Card, Text } from 'react-native-paper';
-import { Dispatch } from '../../../models/Dispatch';
+import { Dispatch } from '../../models/Dispatch';
 import moment from 'moment';
 
 const LeftContent = (props: any) => <Avatar.Icon {...props} icon="folder" />

@@ -3,7 +3,6 @@ import { Bill, BillQuery } from "../models/Bill";
 import { Request } from "../utils/Request";
 import { Method } from "../utils/Request";
 import axios, { isAxiosError } from 'axios';
-import { cos } from 'react-native-reanimated';
 
 
 export class BillController {
@@ -63,11 +62,10 @@ export class BillController {
                 url: `/billing_ticket/${id}`,
                 method: Method.PUT,
                 data: model,
+                headers: { 'Content-Type': 'multipart/form-data' }
             });
         } catch (err: any) {
-            if (isAxiosError(err))
-                throw new Error(err.response?.data);
-            throw new Error("Error updating bill");
+            throw err
         }
     }
 
@@ -98,6 +96,19 @@ export class BillController {
             if (isAxiosError(err))
                 throw new Error(err.response?.data);
             throw new Error("Error adding bill");
+        }
+    }
+
+    async getImageUrl(id: string): Promise<string> {
+        try {
+            const res = await Request.request({
+                url: `/billing_ticket/${id}/image`,
+                method: Method.GET
+            })
+
+            return res as string;
+        } catch (err: any) {
+            throw err;
         }
     }
 

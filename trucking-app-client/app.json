@@ -33,6 +33,9 @@
           "photosPermission": "The app accesses your photos to let you share them with your friends."
         }
       ]
-    ]
+    ],
+    "extra": {
+      "API_URL": "http://10.0.0.134:5000/v1"
+    }
   }
 }

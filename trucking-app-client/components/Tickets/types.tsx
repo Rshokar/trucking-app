@@ -16,6 +16,7 @@ export interface TicketSectionProps {
 export interface TicketAviProps {
     icon: any;
     background: string;
+    onClick?: () => any
 }
 
 
@@ -23,14 +24,11 @@ export interface TicketItemProps {
     title: string;
     subtitle?: string;
     avatar: string;
-
     buttonClickIcon?: IconSource;
     onButtonClick?: () => any;
-
     onDelete?: () => Promise<boolean>;
-
     onClick?: (event: GestureResponderEvent) => void;
-
+    onAVIClick?: () => any;
     style?: ViewStyle;
     textStyle?: TextStyle;
     aviColor?: string;

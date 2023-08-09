@@ -1,5 +1,5 @@
 import React, { FC, useState, useEffect } from 'react';
-import { FAB, Modal, Snackbar, TextInput, useTheme } from 'react-native-paper';
+import { FAB, Modal, Portal, Snackbar, TextInput, useTheme } from 'react-native-paper';
 import styled from 'styled-components/native';
 import { Bill, BillQuery } from '../../models/Bill';
 import { BillController } from '../../controllers/BillController';
@@ -9,6 +9,7 @@ import { StyledHeader, StyledSection } from './styles';
 import MyModal from '../Modal/MyModal';
 import BillForm from '../Forms/BillForm';
 import { BillFormResult } from '../Forms/BillForm';
+import BillCard from '../Cards/BillCard';
 
 const StyledInput = styled(TextInput)`
     width: 90%;
@@ -33,6 +34,7 @@ const BillSection: FC<Props> = ({ navigateToTicket, rfoId }) => {
     const [focusedBill, setFocusedBill] = useState<Bill>();
     const [search, setSearch] = useState<string>("");
     const theme = useTheme();
+    const [showBill, setShowBill] = useState<boolean>(false);
 
     const showModal = () => setVisible(true);
     const hideModal = () => setVisible(false);
@@ -121,6 +123,11 @@ const BillSection: FC<Props> = ({ navigateToTicket, rfoId }) => {
         }
     };
 
+    const handleShowBill = (bill: Bill) => {
+        setFocusedBill(bill)
+        setShowBill(true);
+    }
+
     console.log("FOCUSED BILL", focusedBill);
     return (
         <StyledSection>
@@ -146,6 +153,7 @@ const BillSection: FC<Props> = ({ navigateToTicket, rfoId }) => {
                                     setFocusedBill(item);
                                     setVisible(true);
                                 }}
+                                onAVIClick={() => handleShowBill(item)}
                                 onClick={() => navigateToTicket(item)}
                                 buttonClickIcon={"pencil"}
                                 onDelete={async (): Promise<boolean> => await handleDelete(item.bill_id + "")}
@@ -161,14 +169,28 @@ const BillSection: FC<Props> = ({ navigateToTicket, rfoId }) => {
                     setVisible(false);
                     setFocusedBill(undefined)
                 }}
-                title={'Add Bill'}
+                title={focusedBill ? "Edit Bill" : "Add Bill"}
             >
                 <BillForm
                     onSubmit={handleFormSubmit}
                     defaultValues={focusedBill}
                 />
             </MyModal>
-
+            <Portal>
+                <Modal
+                    visible={showBill}
+                    onDismiss={() => {
+                        setShowBill(false);
+                        setFocusedBill(undefined);
+                    }}
+                    contentContainerStyle={{ justifyContent: 'center', alignItems: 'center' }}
+                >
+                    <BillCard
+                        getId={() => focusedBill?.bill_id ?? 0}
+                        {...focusedBill}
+                    />
+                </Modal>
+            </Portal>
             <Snackbar
                 visible={snackbarVisible}
                 onDismiss={() => setSnackbarVisible(false)}

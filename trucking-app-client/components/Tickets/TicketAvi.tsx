@@ -6,7 +6,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { colors } from "../colors"
 
 
-const StyledView = styled.View`
+const StyledView = styled.TouchableOpacity`
     width: 45px;
     height: 45px;
     border-radius: 10px;
@@ -23,7 +23,7 @@ import BigText from "../Texts/BigText";
 const TransactionAvi: FunctionComponent<TicketAviProps> = (props) => {
 
     return (
-        <StyledView style={{ backgroundColor: props.background }}>
+        <StyledView style={{ backgroundColor: props.background }} onPress={props.onClick}>
             <BigText>{props.icon}</BigText>
         </StyledView>
     )

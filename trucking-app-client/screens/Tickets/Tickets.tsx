@@ -18,8 +18,8 @@ import { Snackbar } from 'react-native-paper'
 import { ScrollView } from 'react-native'
 import { RFO } from '../../models/RFO'
 import { Bill } from '../../models/Bill'
-import DispatchCard from './Components/DIspatchCard'
-import RFOCard from './Components/RFOCard'
+import DispatchCard from '../../components/Cards/DIspatchCard'
+import RFOCard from '../../components/Cards/RFOCard'
 import BillSection from '../../components/TicketSections/BillSection'
 
 

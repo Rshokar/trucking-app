@@ -44,11 +44,12 @@ const TicketItem: FunctionComponent<TicketItemProps> = (props) => {
     }
 
     return (
-        <TicketRow onPress={props.onClick} onLongPress={() => setDeleting(true)}>
+        <TicketRow onPress={props.onClick} onLongPress={() => setDeleting(true)} pressRetentionOffset={{ top: 10, left: 10, bottom: 10, right: 10 }}>
             <LeftView>
                 <TransactionAvi
                     background={props.aviColor || colors.tertiary}
                     icon={props.avatar}
+                    onClick={props.onAVIClick}
                 />
                 <View style={{ marginLeft: 10 }}>
                     <RegularText textStyle={{

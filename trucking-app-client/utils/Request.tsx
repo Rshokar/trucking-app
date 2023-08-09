@@ -40,25 +40,4 @@ export class Request {
             throw new RequestError("Error making request", 500)
         }
     }
-
-
-    // static async authedRequest<T>(config: RequestConfig): Promise<T> {
-
-    //     console.log("REQUEST CONFIG:", config)
-    //     try {
-    //         const response = await axios[config.method]<T>(`${this.API_URL}${config.url}`,
-    //             { ...config.data }
-    //         );
-    //         return response.data;
-    //     } catch (error: any) {
-    //         if (axios.isAxiosError(error))
-    //             throw new RequestError(
-    //                 error.response?.data.error,
-    //                 error.response?.status
-    //             )
-    //         throw new RequestError("Error making request", 500)
-    //     }
-    // }
-
-
 }

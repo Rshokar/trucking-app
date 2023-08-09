@@ -248,11 +248,12 @@ class BillingTicketController:
         return make_response(response, 200)
 
     def get_bill_ticket_image(session, bill_id: int):
-        """_summary_
-        Returns the image associated with a bill_id
+        """Summary: Returns a pre-signed URL to access the image associated with a bill_id
         Args:
-            session (_type_): _description_
-            bill_id (_type_): _description_
+            session (Session): The database session
+            bill_id (int): The ID of the billing ticket
+        Returns:
+            Flask Response: A response containing the pre-signed URL or an error message.
         """
         # Query the BillingTickets table for the record with the given bill_id
         bill = session.query(BillingTickets).filter_by(bill_id=bill_id).first()
@@ -260,19 +261,20 @@ class BillingTicketController:
         if bill is None:
             return make_response({"error": "Billing ticket not found"}, 404)
 
-        s3 = boto3.resource('s3')
-
-        # Try to download the image from S3
         try:
-            file_object = s3.Object(S3_BUCKET_NAME, bill.image_id)
-            file_stream = file_object.get()['Body'].read()
+            # Generate a pre-signed URL for the S3 object
+            url = s3.generate_presigned_url(
+                'get_object',
+                Params={
+                    'Bucket': S3_BUCKET_NAME,
+                    'Key': bill.image_id
+                },
+                ExpiresIn=60  # 1 minute
+            )
 
-            # Create a BytesIO object from the file_stream
-            file_io = BytesIO(file_stream)
+            # Return the pre-signed URL in the response
+            return make_response({"data": url}, 200)
 
-            # Use Flask's send_file function to return the image
-            return send_file(file_io, mimetype='image/jpeg')
-
-        except botocore.exceptions.ClientError as e:
-            # Handle any errors that occurred while trying to retrieve the file
-            return make_response({"error": "Failed to retrieve image from S3: " + str(e)}, 500)
+        except Exception as e:
+            # Handle any errors that occurred while generating the pre-signed URL
+            return make_response({"error": "Failed to generate pre-signed URL: " + str(e)}, 500)
