@@ -2,7 +2,7 @@ import React, { FunctionComponent, useEffect, useState } from 'react'
 import { StackScreenProps } from '@react-navigation/stack'
 import styled from 'styled-components/native'
 
-import { Tabs, TabScreen } from 'react-native-paper-tabs'
+import { Tabs, TabScreen, useTabNavigation } from 'react-native-paper-tabs'
 
 import { AuthController } from '../../controllers/AuthController'
 import { DispatchController } from '../../controllers/DispatchController'
@@ -24,8 +24,9 @@ export type Props = StackScreenProps<RoofStackParamList, "Home">
 const Home: FunctionComponent<Props> = ({ navigation }) => {
     const [customers, setCustomers] = useState<Customer[]>([])
     const [dispatches, setDispatches] = useState<Dispatch[]>([])
+    const [filterCustomers, setFilteredCustomers] = useState<Set<Customer>>(new Set<Customer>());
     const [query] = useState<DispatchQuery>(new DispatchQuery())
-    const [, setEnablePaginate] = useState<boolean>(false)
+    const [paginate, setEnablePaginate] = useState<boolean>(false)
 
 
     useEffect(() => {
@@ -50,20 +51,29 @@ const Home: FunctionComponent<Props> = ({ navigation }) => {
         fetchCustomers()
     }, [])
 
+    // Here we will add or remove the customer from the set. 
+    // If they are in the set already, then they are removed
+    const handleCustomerFilter = (cus: Customer) => {
+        if (filterCustomers.has(cus)) filterCustomers.delete(cus)
+        else filterCustomers.add(cus);
+        setFilteredCustomers(new Set<Customer>(filterCustomers))
+    }
+
+    console.log(filterCustomers)
     return (
         <HomeContainer>
             <Tabs>
                 <TabScreen label="Dispatches">
                     <DispatchSection
+                        removeCustomerFilter={handleCustomerFilter}
+                        filteringCustomers={filterCustomers}
                         customers={customers}
                         navigateToTickets={(dispId: string): void => navigation.navigate("Tickets", { dispId: parseFloat(dispId) })}
                     />
-
                 </TabScreen>
                 <TabScreen label="Customers">
-                    <CustomerSection navigateToTicket={function (customerId: number): void {
-                        console.log(customerId);
-                    }} />
+                    <CustomerSection
+                        navigateToTicket={handleCustomerFilter} />
                 </TabScreen>
                 <TabScreen label="Operators">
                     <OperatorSection

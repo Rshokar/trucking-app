@@ -1,5 +1,5 @@
 import React, { FunctionComponent, useEffect, useState, useCallback } from 'react';
-import { TextInput, Modal, FAB, Snackbar, Portal } from 'react-native-paper';
+import { TextInput, Modal, FAB, Snackbar, Portal, Chip, useTheme } from 'react-native-paper';
 import { DatePickerModal } from 'react-native-paper-dates';
 import moment from 'moment';
 import { Dispatch, DispatchQuery } from '../../models/Dispatch';
@@ -13,12 +13,15 @@ import { CustomerQuery, Customer } from '../../models/Customer';
 import MyModal from '../Modal/MyModal';
 import { CustomerController } from '../../controllers/CustomerController';
 import DispatchCard from '../Cards/DIspatchCard';
+import { View } from 'react-native';
 type Props = {
     navigateToTickets: (dispId: string) => void;
-    customers: Customer[]
+    customers: Customer[];
+    filteringCustomers: Set<Customer>
+    removeCustomerFilter: (cus: Customer) => any
 }
 
-const DispatchSection: FunctionComponent<Props> = ({ navigateToTickets, customers }) => {
+const DispatchSection: FunctionComponent<Props> = ({ navigateToTickets, customers, filteringCustomers, removeCustomerFilter }) => {
     const [dispatches, setDispatches] = useState<Dispatch[]>([]);
     const [query, setQuery] = useState<DispatchQuery>(new DispatchQuery());
     const [focusingDispatch, setFocusingDispatch] = useState<Dispatch>();
@@ -29,6 +32,14 @@ const DispatchSection: FunctionComponent<Props> = ({ navigateToTickets, customer
     const [snackbarMessage, setSnackbarMessage] = useState('');
     const [snackbarColor, setSnackbarColor] = useState('green');
     const [showDispatchCard, setShowDispatchCard] = useState<boolean>(false)
+    const theme = useTheme();
+
+    useEffect(() => {
+        const cusIds = new Set<number>();
+        filteringCustomers.forEach(c => cusIds.add(c.customer_id))
+        query.customers = cusIds
+        setQuery({ ...query });
+    }, [filteringCustomers])
 
     useEffect(() => {
         async function fetchDispatches() {
@@ -169,6 +180,28 @@ const DispatchSection: FunctionComponent<Props> = ({ navigateToTickets, customer
                     onConfirm={onConfirm}
                 />
             </StyledHeader>
+            {
+                filteringCustomers.size > 0 &&
+                <View style={{
+                    justifyContent: 'flex-start',
+                    alignItems: 'center',
+                    flexDirection: 'row',
+                    flexWrap: 'wrap',
+                    gap: 10,
+                    padding: 20
+                }}>
+                    {Array.from(filteringCustomers).map((customer, index) => (
+                        <Chip
+                            key={index}
+                            style={{ backgroundColor: theme.colors.secondary }}
+                            textStyle={{ color: 'white' }}
+                            onPress={() => removeCustomerFilter(customer)}
+                        >
+                            {customer.customer_name}
+                        </Chip>
+                    ))}
+                </View>
+            }
             <MyModal visible={showFormModal}
                 onDismiss={() => setShowFormModal(false)}
                 title={'Add/Edit Dispatch'} >

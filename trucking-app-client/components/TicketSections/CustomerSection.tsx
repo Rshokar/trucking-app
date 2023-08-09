@@ -1,5 +1,6 @@
 import React, { FC, useState, useEffect } from 'react';
 import { Button, FAB, Modal, Portal, Text, TextInput, useTheme, Snackbar } from 'react-native-paper';
+import { useTabNavigation } from 'react-native-paper-tabs';
 import styled from 'styled-components/native';
 import { Customer, CustomerQuery } from '../../models/Customer';
 import { CustomerController } from '../../controllers/CustomerController';
@@ -24,7 +25,7 @@ const FabContainer = styled.View`
 `;
 
 type Props = {
-    navigateToTicket: (customerId: number) => void;
+    navigateToTicket: (cus: Customer) => void;
 };
 
 const CustomerSection: FC<Props> = ({ navigateToTicket }) => {
@@ -38,7 +39,7 @@ const CustomerSection: FC<Props> = ({ navigateToTicket }) => {
     const showModal = () => setVisible(true);
     const hideModal = () => setVisible(false);
     const theme = useTheme();
-
+    const tabNav = useTabNavigation();
     useEffect(() => {
         getCustomers();
     }, [query]);
@@ -150,6 +151,7 @@ const CustomerSection: FC<Props> = ({ navigateToTicket }) => {
                 title={'Customers'}
                 more={enablePaginate}
                 data={customers}
+                onRefresh={handleRefresh}
                 render={({ item }: { item: Customer }) => {
                     if (item.customer_name?.match(query.customer_name || '')) {
                         return (
@@ -157,7 +159,10 @@ const CustomerSection: FC<Props> = ({ navigateToTicket }) => {
                                 aviColor={theme.colors.tertiary}
                                 title={item.customer_name || ''}
                                 avatar={item.customer_name?.charAt(0).toLocaleUpperCase() || 'A'}
-                                onClick={() => navigateToTicket(item.customer_id)}
+                                onClick={() => {
+                                    navigateToTicket(item)
+                                    tabNav(0)
+                                }}
                                 onButtonClick={() => {
                                     setFocusedCustomer(item)
                                     setVisible(true);
