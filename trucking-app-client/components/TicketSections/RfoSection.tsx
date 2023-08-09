@@ -1,5 +1,5 @@
 import React, { FC, useState, useEffect } from 'react';
-import { FAB, Modal, Text, TextInput, useTheme, Snackbar } from 'react-native-paper';
+import { FAB, Modal, Text, TextInput, useTheme, Snackbar, Portal } from 'react-native-paper';
 import styled from 'styled-components/native';
 import { RFO, RFOQuery } from '../../models/RFO';
 import { RFOController } from '../../controllers/RfoController';
@@ -11,6 +11,8 @@ import RFOForm from '../Forms/RFOForm';
 import { RFOFormResult } from '../Forms/RFOForm';
 import { Operator } from '../../models/Operator';
 import moment from 'moment';
+import DispatchCard from '../Cards/DIspatchCard';
+import RFOCard from '../Cards/RFOCard';
 
 const StyledInput = styled(TextInput)`
     width: 90%;
@@ -37,6 +39,7 @@ const RFOSection: FC<Props> = ({ navigateToTicket, dispId, operators, }) => {
     const [search, setSearch] = useState<string>("");
     const showModal = () => setVisible(true);
     const hideModal = () => setVisible(false);
+    const [showRFOCard, setShowRFOCards] = useState<boolean>(false)
     const theme = useTheme();
 
     useEffect(() => {
@@ -155,6 +158,10 @@ const RFOSection: FC<Props> = ({ navigateToTicket, dispId, operators, }) => {
                                 onClick={() => navigateToTicket(item)}
                                 buttonClickIcon={"pencil"}
                                 onDelete={async (): Promise<boolean> => await handleDelete(item.rfo_id + "")}
+                                onAVIClick={() => {
+                                    setFocusedRFO(item)
+                                    setShowRFOCards(true)
+                                }}
                             />
                         );
                     }
@@ -186,6 +193,27 @@ const RFOSection: FC<Props> = ({ navigateToTicket, dispId, operators, }) => {
             >
                 {snackbarMessage}
             </Snackbar>
+
+            <Portal>
+                <Modal
+                    visible={showRFOCard}
+                    onDismiss={() => {
+                        setShowRFOCards(false);
+                        setFocusedRFO(undefined);
+                    }}
+                    contentContainerStyle={{ justifyContent: 'center', alignItems: 'center' }}>
+                    <RFOCard
+                        onClick={function () {
+                            setFocusedRFO(undefined)
+                            setShowRFOCards(false)
+                        }}
+                        onLongPress={function () {
+                            throw new Error('Function not implemented.');
+                        }} {...focusedRFO}
+                    />
+                </Modal>
+            </Portal>
+
             {
                 !visible &&
                 <FAB

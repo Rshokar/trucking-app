@@ -46,7 +46,6 @@ const BillSection: FC<Props> = ({ navigateToTicket, rfoId }) => {
     const getBills = async () => {
         const billController = new BillController();
         const billRes: Bill[] = await billController.getAll(query);
-        console.log(billRes);
 
         if (query.page === 0) {
             setBills(billRes);
@@ -68,6 +67,7 @@ const BillSection: FC<Props> = ({ navigateToTicket, rfoId }) => {
         try {
             const bC = new BillController();
             const res: Bill = await bC.create(data);
+            console.log('RETURNED BILL', res);
             setBills([...bills, res]);
             hideModal();
             return true;

@@ -103,7 +103,6 @@ const Tickets: FunctionComponent<Props> = ({ route }) => {
         run();
     }, [])
 
-    console.log("DISPATCH", dispatch, "\n\n\n", rfo);
 
     return (
         <BalanceContainer>

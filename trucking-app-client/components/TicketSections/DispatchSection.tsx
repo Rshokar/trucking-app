@@ -1,5 +1,5 @@
 import React, { FunctionComponent, useEffect, useState, useCallback } from 'react';
-import { TextInput, Modal, FAB, Snackbar } from 'react-native-paper';
+import { TextInput, Modal, FAB, Snackbar, Portal } from 'react-native-paper';
 import { DatePickerModal } from 'react-native-paper-dates';
 import moment from 'moment';
 import { Dispatch, DispatchQuery } from '../../models/Dispatch';
@@ -12,6 +12,7 @@ import { DispatchFormResult } from '../Forms/DispatchForm';
 import { CustomerQuery, Customer } from '../../models/Customer';
 import MyModal from '../Modal/MyModal';
 import { CustomerController } from '../../controllers/CustomerController';
+import DispatchCard from '../Cards/DIspatchCard';
 type Props = {
     navigateToTickets: (dispId: string) => void;
     customers: Customer[]
@@ -27,6 +28,7 @@ const DispatchSection: FunctionComponent<Props> = ({ navigateToTickets, customer
     const [visibleSnackbar, setVisibleSnackbar] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
     const [snackbarColor, setSnackbarColor] = useState('green');
+    const [showDispatchCard, setShowDispatchCard] = useState<boolean>(false)
 
     useEffect(() => {
         async function fetchDispatches() {
@@ -182,6 +184,10 @@ const DispatchSection: FunctionComponent<Props> = ({ navigateToTickets, customer
                             setFocusingDispatch(item);
                             setShowFormModal(true);
                         }}
+                        onAVIClick={() => {
+                            setFocusingDispatch(item)
+                            setShowDispatchCard(true)
+                        }}
                         buttonClickIcon={'pencil'}
                         onDelete={() => handleDelete(item.dispatch_id + "")}
                     />
@@ -201,6 +207,17 @@ const DispatchSection: FunctionComponent<Props> = ({ navigateToTickets, customer
                     setShowFormModal(true)
                 }}
             />
+            <Portal>
+                <Modal
+                    visible={showDispatchCard}
+                    onDismiss={() => {
+                        setShowDispatchCard(false);
+                        setFocusingDispatch(undefined);
+                    }}
+                    contentContainerStyle={{ justifyContent: 'center', alignItems: 'center' }}>
+                    <DispatchCard {...focusingDispatch} />
+                </Modal>
+            </Portal>
 
             <Snackbar
                 visible={visibleSnackbar}

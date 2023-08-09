@@ -34,10 +34,6 @@ const BillForm: FC<Props> = ({ onSubmit, defaultValues }) => {
             quality: 1,
         });
 
-
-
-        console.log(result);
-
         if (!result.canceled) {
             setImage(result.assets[0]);
         }
@@ -49,7 +45,6 @@ const BillForm: FC<Props> = ({ onSubmit, defaultValues }) => {
             validationSchema={BillFormSchema}
             onSubmit={async (values, { setSubmitting }) => {
                 if (!image && !defaultValues) {
-                    console.log("HELLO")
                     setImageError("Image is required");
                     return;
                 } else if (defaultValues) {

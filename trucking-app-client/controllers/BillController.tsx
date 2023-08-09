@@ -84,7 +84,7 @@ export class BillController {
         formData.append('rfo_id', model.rfo_id + '');
 
         try {
-            return await axios({
+            const res = await axios({
                 url: `http://10.0.0.134:5000/v1/billing_ticket`,
                 method: 'POST',
                 data: formData,
@@ -92,6 +92,7 @@ export class BillController {
                     'Content-Type': 'multipart/form-data',
                 },
             });
+            return res.data as Bill
         } catch (err: any) {
             if (isAxiosError(err))
                 throw new Error(err.response?.data);

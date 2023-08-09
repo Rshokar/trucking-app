@@ -152,6 +152,7 @@ const OperatorSection: FC<Props> = ({ navigateToTicket }) => {
                 {snackbarMessage}
             </Snackbar>
 
+
             {
                 !visible &&
                 <FAB icon="plus"
