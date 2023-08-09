@@ -19,9 +19,10 @@ const StyledInput = styled(TextInput)`
 
 type Props = {
     navigateToTicket: (operatorId: number) => void;
+    navigate: any
 };
 
-const OperatorSection: FC<Props> = ({ navigateToTicket }) => {
+const OperatorSection: FC<Props> = ({ navigateToTicket, navigate }) => {
     const [operators, setOperators] = useState<Operator[]>([]);
     const [query, setQuery] = useState<OperatorQuery>(new OperatorQuery());
     const [enablePaginate, setEnablePaginate] = useState<boolean>(false);
@@ -166,7 +167,9 @@ const OperatorSection: FC<Props> = ({ navigateToTicket }) => {
 
                         <RFOSection
                             navigateToTicket={function (rfo: RFO): void {
-                                throw new Error('Function not implemented.');
+                                setShowRfos(false)
+                                navigate("Tickets", { dispId: rfo.dispatch_id, rfoId: rfo.rfo_id })
+
                             }}
                             operators={operators}
                             operId={focusedOperator?.operator_id}

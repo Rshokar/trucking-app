@@ -166,9 +166,8 @@ const CustomerSection: FC<Props> = ({ navigateToTicket }) => {
                                 buttonClickIcon={"pencil"}
                                 onDelete={async (): Promise<boolean> => await handleDelete(item.customer_id + "")}
                                 onClick={function () {
-                                    console.log("HELLO WORLD");
-                                    navigateToTicket(item);
                                     tabNav(0);
+                                    navigateToTicket(item);
                                 }}
                             />
                         );

@@ -16,11 +16,12 @@ import { OperatorController } from '../../controllers/OperatorController'
 import { Operator, OperatorQuery } from '../../models/Operator'
 import { Snackbar } from 'react-native-paper'
 import { ScrollView } from 'react-native'
-import { RFO } from '../../models/RFO'
+import { RFO, RFOQuery } from '../../models/RFO'
 import { Bill } from '../../models/Bill'
 import DispatchCard from '../../components/Cards/DIspatchCard'
 import RFOCard from '../../components/Cards/RFOCard'
 import BillSection from '../../components/TicketSections/BillSection'
+import { RFOController } from '../../controllers/RfoController'
 
 
 const BalanceContainer = styled(Container)`
@@ -39,6 +40,8 @@ export interface TicketIds {
 }
 
 const Tickets: FunctionComponent<Props> = ({ route }) => {
+
+    console.log("ROUTE PARAMS", route.params)
 
     const [tickets, setTickets] = useState<TicketIds>({
         dispId: route.params.dispId,
@@ -82,6 +85,25 @@ const Tickets: FunctionComponent<Props> = ({ route }) => {
         };
         run();
     }, [tickets.dispId])
+
+
+    // If rfo_id exist then we want to load and set the rfo
+    useEffect(() => {
+        const run = async () => {
+            if (!tickets.rfoId && operators.length > 0) return;
+            const rC = new RFOController();
+            try {
+                const rfoQ = new RFOQuery();
+                rfoQ.rfo_id = tickets.rfoId;
+                const res: RFO = await rC.get(rfoQ);
+                res.operator = operators.find(o => o.operator_id === rfo?.operator_id);
+                setRFO(res);
+            } catch (err: any) {
+                console.log(err)
+            }
+        }
+        run()
+    }, [tickets.rfoId, operators])
 
     // Get Operators
     useEffect(() => {

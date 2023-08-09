@@ -77,6 +77,7 @@ const Home: FunctionComponent<Props> = ({ navigation }) => {
                 </TabScreen>
                 <TabScreen label="Operators">
                     <OperatorSection
+                        navigate={navigation.navigate}
                         navigateToTicket={ticketId => console.log("HELLO WORLD", ticketId)} />
                 </TabScreen>
             </Tabs>
