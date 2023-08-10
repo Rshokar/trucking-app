@@ -44,15 +44,15 @@ app.config['MAX_CONTENT_LENGTH'] = int(MAX_CONTENT_SIZE)  # 16 megabytes
 # Set secret key for auth session
 app.secret_key = 'fzV2T57K8JmQJ@C'
 
-# Initialize login manager
-login_manager = LoginManager(app)
-login_manager.init_app(app)
+# # Initialize login manager
+# login_manager = LoginManager(app)
+# login_manager.init_app(app)
 
 
-@login_manager.user_loader
-def load_user(user_id, callback=None):
-    session = Session()
-    return session.query(User).get(user_id)
+# @login_manager.user_loader
+# def load_user(user_id, callback=None):
+#     session = Session()
+#     return session.query(User).get(user_id)
 
 
 # Register all endpoints

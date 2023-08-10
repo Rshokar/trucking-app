@@ -2,21 +2,22 @@ from flask import Blueprint, g, request
 from controllers.operator_controller import OperatorController
 from utils import make_response
 from validations import operator_validation, operator_update
-from flask_login import login_required
 import jsonschema
+from middleware import firebase_required
+
 
 operators = Blueprint("operators", __name__)
 
 
 @operators.route("/<int:operator_id>", methods=["GET"])
-@login_required
+@firebase_required
 def get_operator(operator_id):
     session = g.session
     return OperatorController.get_operator(session, operator_id=operator_id)
 
 
 @operators.route("/", methods=["GET"])
-@login_required
+@firebase_required
 def get_all_operators():    # get query string parameters with defaults
     session = g.session
     limit = int(request.args.get('limit', 10))
@@ -26,7 +27,7 @@ def get_all_operators():    # get query string parameters with defaults
 
 
 @operators.route("/", methods=["POST"])
-@login_required
+@firebase_required
 def create_operator():
     session = g.session
     try:
@@ -38,7 +39,7 @@ def create_operator():
 
 
 @operators.route("/<int:operator_id>", methods=["PUT"])
-@login_required
+@firebase_required
 def update_operator(operator_id):
     session = g.session
     print(request.json)
@@ -50,7 +51,7 @@ def update_operator(operator_id):
 
 
 @operators.route("/<int:operator_id>", methods=["DELETE"])
-@login_required
+@firebase_required
 def delete_operator(operator_id):
     session = g.session
     return OperatorController.delete_operator(session=session, operator_id=operator_id)

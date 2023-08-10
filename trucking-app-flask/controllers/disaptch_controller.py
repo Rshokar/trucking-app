@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from flask import Response, jsonify
 from datetime import datetime, timedelta
 from utils import make_response
-from flask_login import current_user
+from flask import g
 
 
 class DispatchController:
@@ -22,7 +22,7 @@ class DispatchController:
             Response: 200 success 404 not found
         """
         dispatch = Dispatch.get_dispatch_by_id_and_owner(
-            session, dispatch_id, current_user.id)
+            session, dispatch_id, g.user["uid"])
 
         if dispatch is None:
             return make_response({'error': 'Dispatch not found'}, 404)
@@ -46,7 +46,8 @@ class DispatchController:
         dispatch_query = session.query(Dispatch, Customer.customer_name, func.count(RFO.rfo_id).label('rfo_count'))\
             .join(Company, Dispatch.company_id == Company.company_id)\
             .outerjoin(RFO, Dispatch.dispatch_id == RFO.dispatch_id)\
-            .join(Customer, Dispatch.customer_id == Customer.customer_id)
+            .join(Customer, Dispatch.customer_id == Customer.customer_id)\
+            .filter(Company.owner_id == g.user['uid'])
 
         if not customers:
             dispatch_query = dispatch_query.filter(
@@ -94,7 +95,7 @@ class DispatchController:
         date = request_data.get('date')
 
         customer = Customer.get_customer_by_id_and_owner(
-            session, customer_id, current_user.id)
+            session, customer_id, g.user["uid"])
 
         if customer is None:
             return make_response({'error': 'Customer not found'}, 404)
@@ -120,7 +121,7 @@ class DispatchController:
         data = request.json
 
         dispatch = Dispatch.get_dispatch_by_id_and_owner(
-            session, dispatch_id, current_user.id)
+            session, dispatch_id, g.user["uid"])
 
         if dispatch is None:
             return make_response({'error': 'Dispatch not found'}, 404)
@@ -143,7 +144,7 @@ class DispatchController:
             dispatch_id (int): Dispatch Id
         """
         dispatch = Dispatch.get_dispatch_by_id_and_owner(
-            session, dispatch_id, current_user.id)
+            session, dispatch_id, g.user["uid"])
 
         if dispatch is None:
             return make_response({'error': 'Dispatch not found'}, 404)

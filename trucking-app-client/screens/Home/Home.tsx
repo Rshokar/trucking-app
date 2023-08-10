@@ -7,12 +7,14 @@ import { Tabs, TabScreen, useTabNavigation } from 'react-native-paper-tabs'
 import { AuthController } from '../../controllers/AuthController'
 import { DispatchController } from '../../controllers/DispatchController'
 import { RoofStackParamList } from '../../navigators/RoofStack'
-import { Customer } from '../../models/Customer'
+import { Customer, CustomerQuery } from '../../models/Customer'
 import { Dispatch, DispatchQuery } from '../../models/Dispatch'
 
 import DispatchSection from '../../components/TicketSections/DispatchSection'
 import OperatorSection from '../../components/TicketSections/OperatorSection'
 import CustomerSection from '../../components/TicketSections/CustomerSection'
+import { CustomerController } from '../../controllers/CustomerController'
+import { number } from 'yup'
 
 const HomeContainer = styled.View`
     width: 100%; 
@@ -21,7 +23,7 @@ const HomeContainer = styled.View`
 
 export type Props = StackScreenProps<RoofStackParamList, "Home">
 
-const Home: FunctionComponent<Props> = ({ navigation }) => {
+const Home: FunctionComponent<Props> = ({ navigation, route }) => {
     const [customers, setCustomers] = useState<Customer[]>([])
     const [dispatches, setDispatches] = useState<Dispatch[]>([])
     const [filterCustomers, setFilteredCustomers] = useState<Set<Customer>>(new Set<Customer>());
@@ -45,7 +47,10 @@ const Home: FunctionComponent<Props> = ({ navigation }) => {
 
     useEffect(() => {
         async function fetchCustomers() {
-            const customerList = await AuthController.getCustomers()
+            const cC = new CustomerController();
+            const cQ = new CustomerQuery();
+            cQ.limit = 100
+            const customerList = await cC.getAll(cQ)
             setCustomers(customerList)
         }
         fetchCustomers()

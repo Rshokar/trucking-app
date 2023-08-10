@@ -3,14 +3,14 @@ from datetime import datetime
 from controllers import DispatchController
 from validations import dispatch_validation, dispatch_update
 from utils import make_response
-from flask_login import login_required
+from middleware import firebase_required
 import jsonschema
 
 dispatch = Blueprint("dispatch", __name__)
 
 
 @dispatch.route('/', methods=['GET'])
-@login_required
+@firebase_required
 def get_dispatch_all():
     session = g.session
 
@@ -26,14 +26,14 @@ def get_dispatch_all():
 
 
 @dispatch.route('/<int:dispatch_id>', methods=['GET'])
-@login_required
+@firebase_required
 def get_dispatch(dispatch_id):
     session = g.session
     return DispatchController.get_dispatch(session=session, dispatch_id=dispatch_id)
 
 
 @dispatch.route('/', methods=['POST'])
-@login_required
+@firebase_required
 def create_dispatch():
     session = g.session
     try:
@@ -45,7 +45,7 @@ def create_dispatch():
 
 
 @dispatch.route('/<int:dispatch_id>', methods=['PUT'])
-@login_required
+@firebase_required
 def update_dispatch(dispatch_id):
     session = g.session
     try:
@@ -57,7 +57,7 @@ def update_dispatch(dispatch_id):
 
 
 @dispatch.route('/<int:dispatch_id>', methods=['DELETE'])
-@login_required
+@firebase_required
 def delete_dispatch(dispatch_id):
     session = g.session
     return DispatchController.delete_dispatch(session, dispatch_id=dispatch_id)

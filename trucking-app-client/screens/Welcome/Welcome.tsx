@@ -14,7 +14,7 @@ import SwipeDownViewAnimation from '../../components/Animated/SwipeDownViewAnima
 import { AuthController } from '../../controllers/AuthController'
 import { User } from '../../models/User'
 import { FIREBASE_AUTH } from '../../config/firebaseConfig'
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth'
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth'
 
 
 // Custom Components
@@ -60,6 +60,10 @@ import { StackScreenProps } from '@react-navigation/stack'
 
 import background from '../../assets/welcome.png'
 import FlashAnimation from '../../components/Animated/FlashAnimation'
+import { CustomerController } from '../../controllers/CustomerController'
+import { CustomerQuery } from '../../models/Customer'
+import { Company } from '../../models/Company'
+import { CompanyController } from '../../controllers/CompanyController'
 
 
 
@@ -79,13 +83,32 @@ const Welcome: FunctionComponent<Props> = ({ navigation }) => {
     // We want to check if the current user is logged in
     // If they are logged in then we will redirect to home
     useEffect(() => {
-        const subscriber = onAuthStateChanged(FIREBASE_AUTH, async user => {
-            if (user) {
-                navigation.navigate("Home", { company: await AuthController.getCompany() });
+        async function checkTokenValidity() {
+            // Get the token from the AuthController
+            const token = await AuthController.getJWTToken();
+
+            if (!token) {
+                // No token available, perhaps redirect to login
+                return;
             }
-        });
-        return subscriber; // unsubscribe on unmount
+
+            // Use Firebase to verify the token
+            try {
+                const decodedToken = await FIREBASE_AUTH.currentUser?.getIdTokenResult();
+
+                if (!decodedToken) return;
+                AuthController.setJWTToken(decodedToken.token);
+
+                // If the token is valid, it will decode without throwing an error
+                navigation.navigate("Home", { company: await AuthController.getCompany() });
+            } catch (error) {
+                console.error("Token is not valid or expired:", error);
+            }
+        }
+
+        checkTokenValidity();
     }, []);
+
 
 
     const handleLogin = async (res: LoginFormResult): Promise<any> => {
@@ -95,12 +118,16 @@ const Welcome: FunctionComponent<Props> = ({ navigation }) => {
         u.password = res.password
         try {
             const res = await signInWithEmailAndPassword(FIREBASE_AUTH, u.email, u.password);
-            const user = await AuthController.login(u);
+            await AuthController.setJWTToken(await res.user.getIdToken())
+            const cC = new CompanyController();
+            const comp = await cC.get()
+            AuthController.saveCompany(comp)
             setFlashColor(colors.success)
             setFlashMessage("Successfully Loggd In")
             setFlashToggle(!flashToggle)
-            setTimeout(async () => navigation.navigate("Home", { company: await AuthController.getCompany() }), 2000)
+            setTimeout(async () => navigation.navigate("Home", { company: comp }), 2000)
         } catch (e: any) {
+            console.log(e)
             setFlashMessage(e.message)
             setFlashColor("red")
             setFlashToggle(!flashToggle)
@@ -118,11 +145,14 @@ const Welcome: FunctionComponent<Props> = ({ navigation }) => {
             console.log(await res.user.getIdToken())
             await AuthController.setJWTToken(await res.user.getIdToken())
             await AuthController.register(u, formResult.company, res.user.uid)
+            const cC = new CompanyController();
+            const comp = await cC.get()
+
+            AuthController.saveCompany(comp)
             setFlashColor(colors.success)
             setFlashMessage("Successfully Registered")
             setFlashToggle(!flashToggle)
-            setShowLogin(true);
-            setTimeout(async () => navigation.navigate("Home", { company: await AuthController.getCompany() }), 2000)
+            setTimeout(async () => navigation.navigate("Home", { company: comp }), 2000)
         } catch (e: any) {
             console.log(e.message)
             setFlashColor(colors.red)

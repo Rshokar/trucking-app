@@ -1,9 +1,7 @@
 from flask import jsonify, request, Blueprint, g
 import jsonschema
-from sqlalchemy.exc import IntegrityError
 from controllers import UserController
-from flask_login import login_required, current_user
-from models import User
+from middleware import firebase_required
 from utils import make_response
 from validations import account_validation
 
@@ -14,9 +12,9 @@ user = Blueprint('user', __name__)
 
 # GET operation (get user by ID)
 @user.route('/<int:user_id>', methods=['GET'])
-@login_required
+@firebase_required
 def get_user(user_id):
-    if current_user.id != user_id:
+    if g.user["uid"] != user_id:
         return jsonify({"error": "You are not authorized to view this user"}), 403
 
     session = g.session
@@ -32,9 +30,9 @@ def create_user():
 
 # PUT operation (update user by ID)
 @user.route('/<int:user_id>', methods=['PUT'])
-@login_required
+@firebase_required
 def update_user(user_id):
-    if current_user.id != user_id:
+    if g.user["uid"] != user_id:
         return jsonify({"error": "You are not authorized to update this user"}), 403
     session = g.session
     return UserController.update_user(session=session, request=request, user_id=user_id)
@@ -43,16 +41,16 @@ def update_user(user_id):
 
 
 @user.route('/<int:user_id>', methods=['DELETE'])
-@login_required
+@firebase_required
 def delete_user(user_id):
-    if current_user.id != user_id:
+    if g.user["uid"] != user_id:
         return jsonify({"error": "You are not authorized to delete this user"}), 403
     session = g.session
     return UserController.delete_user(session=session, user_id=user_id)
 
 
 @user.route('/account', methods=["PUT"])
-@login_required
+@firebase_required
 def update_profile():
     print(request.json)
     try:

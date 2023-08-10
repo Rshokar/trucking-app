@@ -1,6 +1,6 @@
 from sqlalchemy.exc import IntegrityError
 from utils import make_response
-from flask_login import current_user
+from flask import g
 from sqlalchemy import and_
 from models import Company, Customer
 
@@ -10,7 +10,7 @@ class CustomerController:
     def get_customer(session, customer_id):
         # get the customer
         customer = Customer.get_customer_by_id_and_owner(
-            session, customer_id, current_user.id)
+            session, customer_id, g.user["uid"])
 
         # See if the customer exists
         if not customer:
@@ -37,7 +37,7 @@ class CustomerController:
         # Query all customers owned by the current user
         customers = session.query(Customer)\
             .join(Company, Company.company_id == Customer.company_id)\
-            .filter(Company.owner_id == current_user.id)\
+            .filter(Company.owner_id == g.user["uid"])\
             .order_by(Customer.customer_id)\
             .offset(offset).limit(limit).all()
 
@@ -52,12 +52,12 @@ class CustomerController:
         data = request.get_json()
         company_id = data.get("company_id")
         customer_name = data.get("customer_name")
-
+        print(data)
         # See if the currently logged in user owns the company
         comp = session.query(Company).filter_by(
-            owner_id=current_user.id).first()
-
-        if not comp or comp.company_id != company_id:
+            owner_id=g.user["uid"]).first()
+        print(comp)
+        if not comp:
             return make_response({"message": "Company not found"}, 404)
 
         # create the customer
@@ -76,7 +76,7 @@ class CustomerController:
 
         # get the customer
         customer = Customer.get_customer_by_id_and_owner(
-            session, customer_id, current_user.id)
+            session, customer_id, g.user["uid"])
 
         # See if the customer exists
         if not customer:
@@ -102,7 +102,7 @@ class CustomerController:
 
         # Get the customer
         customer = Customer.get_customer_by_id_and_owner(
-            session, customer_id, current_user.id)
+            session, customer_id, g.user["uid"])
 
         if not customer:
             return make_response({"message": "Customer not found"}, 404)

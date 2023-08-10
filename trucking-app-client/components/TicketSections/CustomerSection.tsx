@@ -1,5 +1,5 @@
 import React, { FC, useState, useEffect } from 'react';
-import { Button, FAB, Modal, Portal, Text, TextInput, useTheme, Snackbar } from 'react-native-paper';
+import { FAB, TextInput, useTheme, Snackbar } from 'react-native-paper';
 import { useTabNavigation } from 'react-native-paper-tabs';
 import styled from 'styled-components/native';
 import { Customer, CustomerQuery } from '../../models/Customer';
@@ -10,7 +10,6 @@ import TicketSection from '../Tickets/TicketSection';
 import CustomerForm from '../Forms/CustomerForm';
 import { CustomerFormResult } from '../Forms/types';
 import MyModal from '../Modal/MyModal';
-import { bool } from 'prop-types';
 
 const StyledInput = styled(TextInput)`
     width: 90%;
@@ -70,7 +69,7 @@ const CustomerSection: FC<Props> = ({ navigateToTicket }) => {
     const handleAddCustomer = async (data: Customer): Promise<boolean> => {
         try {
             const cC = new CustomerController();
-            const res: Customer = await cC.create<Customer>(data as Customer);
+            const res: Customer = await cC.create(data as Customer);
             setCustomers([...customers, res]);
             hideModal();
             return true;
@@ -87,7 +86,7 @@ const CustomerSection: FC<Props> = ({ navigateToTicket }) => {
             const cC = new CustomerController();
             const q = new CustomerQuery();
             q.customer_id = parseFloat(id);
-            const res: Customer = await cC.update<Customer>(id, data as Customer);
+            const res: Customer = await cC.update(id, data as Customer);
             const index = customers.findIndex(cus => (cus.customer_id + "") === id);
             customers[index] = res;
             setCustomers([...customers]);
@@ -103,9 +102,9 @@ const CustomerSection: FC<Props> = ({ navigateToTicket }) => {
     }
     const handleFormSubmit = async (formData: CustomerFormResult, id?: string): Promise<boolean> => {
         if (id) {
-            return await handleAddCustomer(formData as Customer);
-        } else {
             return await handleEditCustomer(formData as Customer, focusedCustomers?.customer_id + "")
+        } else {
+            return await handleAddCustomer(formData as Customer);
         }
     };
 

@@ -1,12 +1,10 @@
-from flask import Response, current_app as app
+from flask import current_app as app, g
 from models import RFO, Dispatch, Operator, Company, Customer
 from sqlalchemy import and_
 from utils import make_response, send_operator_rfo
 from datetime import datetime
-from flask_login import current_user
 from itsdangerous import BadTimeSignature, SignatureExpired, URLSafeTimedSerializer
 from flask_mail import Mail
-import json
 import os
 
 SEND_OPERATOR_RFO_TOKEN_SECRET = os.environ.get(
@@ -34,7 +32,7 @@ class RfoController:
         if (dispatch_id is not None):
             disp = session.query(Dispatch)\
                 .join(Company, Dispatch.company_id == Company.company_id)\
-                .where(Company.owner_id == current_user.id)\
+                .where(Company.owner_id == g.user["uid"])\
                 .first()
             # if it does not, return a 404
             if (disp is None):
@@ -74,7 +72,7 @@ class RfoController:
             return make_response({'error': 'Dispatch not found'}, 404)
 
         comp = session.query(Company).filter_by(
-            owner_id=current_user.id).first()
+            owner_id=g.user["uid"]).first()
 
         if comp is None:
             return make_response({'error': 'Company not found'}, 404)
@@ -128,7 +126,7 @@ class RfoController:
 
         # Get Company
         comp = session.query(Company).filter_by(
-            owner_id=current_user.id).first()
+            owner_id=g.user["uid"]).first()
         if comp is None:
             return make_response({'error': 'Company not found'}, 404)
 
@@ -165,7 +163,7 @@ class RfoController:
         rfo = session.query(RFO)\
             .join(Dispatch, RFO.dispatch_id == Dispatch.dispatch_id)\
             .join(Company, Dispatch.company_id == Company.company_id)\
-            .filter(and_(RFO.rfo_id == rfo_id, Company.owner_id == current_user.id))\
+            .filter(and_(RFO.rfo_id == rfo_id, Company.owner_id == g.user["uid"]))\
             .first()
 
         if rfo is None:
@@ -238,7 +236,7 @@ class RfoController:
             return make_response({'error': 'Operator not found'}, 404)
 
         company = session.query(Company).filter_by(
-            company_id=operator.company_id, owner_id=current_user.id).first()
+            company_id=operator.company_id, owner_id=g.user["uid"]).first()
         if company is None:
             return make_response({'error': 'Company not found'}, 404)
 

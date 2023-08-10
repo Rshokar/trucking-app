@@ -1,22 +1,24 @@
 import qs from 'qs'
-
 import { Dispatch, DispatchQuery } from "../models/Dispatch";
-import { Request, Method } from "../utils/Request";
-import moment from 'moment';
 import { AuthController } from './AuthController';
-
+import axios, { isAxiosError } from 'axios';
+import myAxios from '../config/myAxios';
 
 export class DispatchController {
 
     async get<Dispatch>(query: DispatchQuery): Promise<Dispatch> {
         try {
-            const results = await Request.request<Dispatch>({
-                url: `/dispatch/${query.dispatch_id}`,
-                method: Method.GET,
+            const response = await myAxios.get<Dispatch>(`/dispatch/${query.dispatch_id}`, {
+                headers: {
+                    Authorization: `Bearer ${await AuthController.getJWTToken()}`
+                }
             });
-            return results;
-        } catch (err: any) {
-            throw err;
+            return response.data;
+        } catch (error) {
+            if (isAxiosError(error)) {
+                throw new Error(error.response?.data)
+            }
+            throw new Error("Error getting dispatch");
         }
     }
 
@@ -27,32 +29,37 @@ export class DispatchController {
 
         query.customers?.forEach((item: number) => {
             customers += `&customers=${item}`;
-        })
+        });
 
         const queryString = qs.stringify(q) + customers;
 
-        let res: Dispatch[] = [];
         try {
-            res = await Request.request<Dispatch[]>({
-                url: `/dispatch?${queryString}`,
-                method: Method.GET,
+            const response = await myAxios.get<Dispatch[]>(`/dispatch?${queryString}`, {
+                headers: {
+                    Authorization: `Bearer ${await AuthController.getJWTToken()}`
+                }
             });
-        } catch (err: any) {
-            console.log(err.message);
-            throw err;
+            return response.data;
+        } catch (error) {
+            if (isAxiosError(error)) {
+                throw new Error(error.response?.data)
+            }
+            throw new Error("Error getting dispatches");
         }
-
-        return res;
     }
 
     async delete(id: string): Promise<void> {
         try {
-            await Request.request({
-                url: `/dispatch/${id}`,
-                method: Method.DELETE,
+            await myAxios.delete(`/dispatch/${id}`, {
+                headers: {
+                    Authorization: `Bearer ${await AuthController.getJWTToken()}`
+                }
             });
-        } catch (err: any) {
-            throw err;
+        } catch (error) {
+            if (isAxiosError(error)) {
+                throw new Error(error.response?.data)
+            }
+            throw new Error("Error deleting dispatch");
         }
     }
 
@@ -63,14 +70,17 @@ export class DispatchController {
             customer_id: model.customer_id,
         }
         try {
-            const updatedDispatch = await Request.request<Dispatch>({
-                url: `/dispatch/${id}`,
-                method: Method.PUT,
-                data: data
+            const response = await myAxios.put<Dispatch>(`/dispatch/${id}`, data, {
+                headers: {
+                    Authorization: `Bearer ${await AuthController.getJWTToken()}`
+                }
             });
-            return updatedDispatch;
-        } catch (err: any) {
-            throw err;
+            return response.data;
+        } catch (error) {
+            if (isAxiosError(error)) {
+                throw new Error(error.response?.data)
+            }
+            throw new Error("Error updating dispatch");
         }
     }
 
@@ -78,15 +88,18 @@ export class DispatchController {
         try {
             const company = await AuthController.getCompany();
             model.company_id = company.company_id;
-            const createdDispatch = await Request.request<Dispatch>({
-                url: `/dispatch`,
-                method: Method.POST,
-                data: model
+
+            const response = await myAxios.post<Dispatch>(`/dispatch`, model, {
+                headers: {
+                    Authorization: `Bearer ${await AuthController.getJWTToken()}`
+                }
             });
-            return createdDispatch;
-        } catch (err: any) {
-            console.log(err);
-            throw err;
+            return response.data;
+        } catch (error) {
+            if (isAxiosError(error)) {
+                throw new Error(error.response?.data)
+            }
+            throw new Error("Error creating dispatch");
         }
     }
 }

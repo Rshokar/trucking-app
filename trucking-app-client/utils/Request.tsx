@@ -25,6 +25,8 @@ export class Request {
     static readonly API_URL = "http://10.0.0.134:5000/v1";
 
     static async request<T>(config: RequestConfig): Promise<T> {
+        console.log("\n\nREQUEST\n\n")
+
         try {
             const response = await axios[config.method]<T>(`${this.API_URL}${config.url}`, {
                 ...config.data,
@@ -42,19 +44,28 @@ export class Request {
     }
 
     static async authedRequest<T>(config: RequestConfig): Promise<T> {
+        console.log("\n\nAUTHED REQUEST\n\n")
 
         try {
             const token = await AuthController.getJWTToken();
             if (!token) throw Error("Auth token not found");
 
-            if (!config.headers) config.headers = {};
-            config.headers.authorization = `Bearer ${token}`
+            console.log("TOKEN \n\n", token)
 
-            const response = await axios[config.method]<T>(`${this.API_URL}${config.url}`, {
-                ...config.data,
-            }, { headers: { ...config.headers } });
+            const response = await axios[config.method]<T>(`${this.API_URL}${config.url}`,
+                {
+                    ...config.data,
+                },
+                {
+                    headers: {
+                        ...config.headers,
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+            );
             return response.data;
         } catch (error: any) {
+            console.log(error)
             if (axios.isAxiosError(error)) {
                 throw new RequestError(
                     error.response?.data.error,

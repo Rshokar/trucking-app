@@ -4,9 +4,7 @@ import * as yup from 'yup';
 import { TextInput, Button, Text, useTheme } from 'react-native-paper';
 import { CustomerFormResult, FormProps } from './types';
 import { Customer } from '../../models/Customer';
-import styled from 'styled-components/native';
 import { InputBox } from './styles';
-import RegularButton from '../Buttons/RegularButton';
 
 // Define validation schema with Yup
 const validationSchema = yup.object().shape({
@@ -24,8 +22,8 @@ const CustomerForm: FC<FormProps<CustomerFormResult>> = (props) => {
             validationSchema={validationSchema}
             onSubmit={async (data: CustomerFormResult) => {
                 setSubmitting(true)
-                const res = await props.onSubmit(data);
-                setSubmitting(!res);
+                await props.onSubmit(data);
+                setSubmitting(false);
             }}
             enableReinitialize
         >
@@ -43,9 +41,12 @@ const CustomerForm: FC<FormProps<CustomerFormResult>> = (props) => {
                         {touched.customer_name && <Text>{errors.customer_name}</Text>}
                     </InputBox>
 
-                    <RegularButton onPress={(e) => handleSubmit()} disabled={submitting} btnStyles={{ backgroundColor: submitting ? theme.colors.onSurfaceDisabled : theme.colors.primary }}>
-                        {submitting ? "Loading..." : "Submit"}
-                    </RegularButton>
+                    <Button onPress={(e) => handleSubmit()} disabled={submitting}
+                        style={{ backgroundColor: submitting ? theme.colors.onSurfaceDisabled : theme.colors.primary }}                  >
+                        <Text style={{ color: 'white' }}>
+                            {submitting ? "Loading..." : "Submit"}
+                        </Text>
+                    </Button>
                 </>
             )}
         </Formik>

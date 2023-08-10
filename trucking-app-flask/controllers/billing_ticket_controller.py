@@ -1,5 +1,3 @@
-from flask import send_file
-import json
 from flask_login import current_user
 from itsdangerous import BadTimeSignature, SignatureExpired, URLSafeTimedSerializer
 from utils import make_response
@@ -7,11 +5,8 @@ from config import s3, create_unique_image_key
 from models import BillingTickets, RFO, Dispatch, Company
 from sqlalchemy import and_
 import os
-import botocore
 from botocore.exceptions import ClientError
-
-import boto3
-from io import BytesIO
+from flask import g
 
 S3_BUCKET_NAME = os.environ.get('S3_BUCKET_NAME')
 
@@ -35,7 +30,7 @@ class BillingTicketController:
             .join(RFO, RFO.rfo_id == BillingTickets.rfo_id)\
             .join(Dispatch, Dispatch.dispatch_id == RFO.dispatch_id)\
             .join(Company, Company.company_id == Dispatch.company_id)\
-            .filter(and_(BillingTickets.bill_id == bill_id, Company.owner_id == current_user.id))\
+            .filter(and_(BillingTickets.bill_id == bill_id, Company.owner_id == g.user["uid"]))\
             .first()
         if bill is None:
             return make_response({"error": "Billing ticket not found"}, 404)
@@ -60,7 +55,7 @@ class BillingTicketController:
         rfo = session.query(RFO)\
             .join(Dispatch, RFO.dispatch_id == Dispatch.dispatch_id)\
             .join(Company, Company.company_id == Dispatch.company_id)\
-            .where(Company.owner_id == current_user.id)\
+            .where(Company.owner_id == g.user["uid"])\
             .first()
 
         if (rfo is None):
@@ -93,7 +88,7 @@ class BillingTicketController:
         rfo = session.query(RFO)\
             .join(Dispatch, RFO.dispatch_id == Dispatch.dispatch_id)\
             .join(Company, Dispatch.company_id == Company.company_id)\
-            .filter(and_(RFO.rfo_id == rfo_id, Company.owner_id == current_user.id))\
+            .filter(and_(RFO.rfo_id == rfo_id, Company.owner_id == g.user["uid"]))\
             .first()
 
         if rfo is None:
@@ -144,7 +139,7 @@ class BillingTicketController:
             .join(RFO, RFO.rfo_id == BillingTickets.rfo_id)\
             .join(Dispatch, Dispatch.dispatch_id == RFO.dispatch_id)\
             .join(Company, Company.company_id == Dispatch.company_id)\
-            .filter(and_(BillingTickets.bill_id == bill_id, Company.owner_id == current_user.id))\
+            .filter(and_(BillingTickets.bill_id == bill_id, Company.owner_id == g.user["uid"]))\
             .first()
 
         if bill is None:
@@ -196,7 +191,7 @@ class BillingTicketController:
             .join(RFO, RFO.rfo_id == BillingTickets.rfo_id)\
             .join(Dispatch, Dispatch.dispatch_id == RFO.dispatch_id)\
             .join(Company, Company.company_id == Dispatch.company_id)\
-            .filter(and_(BillingTickets.bill_id == bill_id, Company.owner_id == current_user.id))\
+            .filter(and_(BillingTickets.bill_id == bill_id, Company.owner_id == g.user["uid"]))\
             .first()
 
         if bill is None:

@@ -3,15 +3,15 @@ from datetime import datetime
 from controllers.rfo_controller import RfoController
 from validations import rfo_update, rfo_validation
 from utils import make_response
-from flask_login import login_required
 import jsonschema
+from middleware import firebase_required
 
 
 rfo = Blueprint("rfo", __name__)
 
 
 @rfo.route("/", methods=["GET"])
-@login_required
+@firebase_required
 def GET_ALL():
     # Getquery string parameter and replae with default
     limit = int(request.args.get('limit', 10))
@@ -22,13 +22,13 @@ def GET_ALL():
 
 
 @rfo.route("/<int:rfo_id>", methods=["GET"])
-@login_required
+@firebase_required
 def GET(rfo_id):
     return RfoController.get_rfo(g.session, rfo_id)
 
 
 @rfo.route("/", methods=["POST"])
-@login_required
+@firebase_required
 def create_rfo():
     session = g.session
     try:
@@ -40,7 +40,7 @@ def create_rfo():
 
 
 @rfo.route("/<int:rfo_id>", methods=["PUT"])
-@login_required
+@firebase_required
 def edit_rfo(rfo_id):
     session = g.session
     try:
@@ -52,13 +52,13 @@ def edit_rfo(rfo_id):
 
 
 @rfo.route("/<int:rfo_id>", methods=["DELETE"])
-@login_required
+@firebase_required
 def delete_rfo(rfo_id):
     return RfoController.delete_rfo(g.session, rfo_id)
 
 
 @rfo.route("/send_operator_email/<int:rfo_id>", methods=["GET"])
-@login_required
+@firebase_required
 def send_operator_email(rfo_id):
     return RfoController.send_operator_rfo_email(g.session, rfo_id)
 

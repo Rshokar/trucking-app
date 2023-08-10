@@ -3,21 +3,21 @@ from models.company import Company
 from controllers import CompanyController
 from validations import company_validation, company_update
 from utils import make_response
-from flask_login import login_required
+from middleware import firebase_required
 import jsonschema
 
 company = Blueprint('company', __name__)
 
 
-@company.route('/<int:company_id>', methods=['GET'])
-@login_required
-def get_company(company_id):
+@company.route('/', methods=['GET'])
+@firebase_required
+def get_company():
     session = g.session
-    return CompanyController.get_copmany(session=session, company_id=company_id)
+    return CompanyController.get_copmany(session=session)
 
 
 @company.route('/', methods=['POST'])
-@login_required
+@firebase_required
 def create_company():
     session = g.session
     try:
@@ -28,7 +28,7 @@ def create_company():
 
 
 @company.route('/<int:company_id>', methods=['PUT'])
-@login_required
+@firebase_required
 def update_company(company_id):
     session = g.session
     try:
@@ -39,7 +39,7 @@ def update_company(company_id):
 
 
 @company.route('/<int:company_id>', methods=['DELETE'])
-@login_required
+@firebase_required
 def delete_company(company_id):
     session = g.session
     return CompanyController.delete_company(session=session, company_id=company_id)

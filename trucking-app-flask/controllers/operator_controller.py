@@ -5,7 +5,7 @@ from utils import make_response, send_verification_email, send_operator_auth_tok
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadTimeSignature
 from flask_login import current_user
 from sqlalchemy import and_
-from flask import current_app as app
+from flask import current_app as app, g
 from flask_mail import Mail
 import os
 
@@ -32,7 +32,7 @@ class OperatorController:
         """
         operators = session.query(Operator)\
             .join(Company, Company.company_id == Operator.company_id)\
-            .filter(Company.owner_id == current_user.id)\
+            .filter(Company.owner_id == g.user["uid"])\
             .limit(limit).offset(page * limit).all()
 
         operators_dict = [operator.to_dict() for operator in operators]
@@ -51,7 +51,7 @@ class OperatorController:
             Responses: 200 OK if successful, 404 if not successful
         '''
         operator = Operator.get_operator_by_id_and_owner(
-            session, operator_id, current_user.id)
+            session, operator_id, g.user["uid"])
         if operator is None:
             return make_response({'error': 'Operator not found.'}, 404)
         return make_response(operator.to_dict(), 200)  # 200 OK
@@ -74,7 +74,7 @@ class OperatorController:
         email = req.get('operator_email')
 
         company = session.query(Company).filter_by(
-            company_id=company_id, owner_id=current_user.id).first()
+            company_id=company_id, owner_id=g.user["uid"]).first()
 
         if company is None:
             return make_response(
@@ -113,7 +113,7 @@ class OperatorController:
             Responses: 201 Created
         '''
         operator = Operator.get_operator_by_id_and_owner(
-            session, operator_id, current_user.id)
+            session, operator_id, g.user["uid"])
 
         if operator is None:
             return make_response({"error": "Operator not found"}, 404)
@@ -143,7 +143,7 @@ class OperatorController:
         name = req.get("operator_name")
 
         operator = Operator.get_operator_by_id_and_owner(
-            session, operator_id, current_user.id)
+            session, operator_id, g.user["uid"])
 
         # Return early if invalid operator id provided
         if operator is None:

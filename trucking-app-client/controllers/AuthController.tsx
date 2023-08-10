@@ -1,54 +1,29 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
-import { Controller } from "./Controller";
 import { User } from "../models/User";
-import { Request, Method } from "../utils/Request";
+import { AuthController as Auth } from './AuthController'; // Self reference for JWT
+import myAxios from '../config/myAxios';
 import { Company } from "../models/Company";
+import { isAxiosError } from 'axios';
 import { Customer } from "../models/Customer";
 
+export class AuthController {
 
-export class AuthController implements Controller {
-
-    static authenticate() {
-
-    }
-
-    static async login({ email, password }: User): Promise<{ user: User, company: Company }> {
-        const { user, company } = await Request.request<{ user: User, company: Company }>({
-            method: Method.POST,
-            data: { email, password },
-            url: "/auth/login"
-        })
-
-        await this.saveUser(user)
-        await this.saveCustomers(company.customers)
-        await this.saveCompany(company)
-
-        return { user, company };
-    }
-
-    static async logOut(): Promise<{ message: string }> {
-        return await Request.authedRequest<{ message: string }>({
-            url: "/auth/logout",
-            method: Method.DELETE
-        })
-    }
 
     static async register(u: User, company: string, userId: string): Promise<{ user: User, company: Company }> {
-        return await Request.authedRequest<{ user: User, company: Company }>(
-            {
-                method: Method.POST,
-                data: { company, user_id: userId },
-                url: "/auth/register"
+        const data = { company, user_id: userId };
+        try {
+            const response = await myAxios.post<{ user: User, company: Company }>('/auth/register', data, {
+                headers: {
+                    Authorization: `Bearer ${await Auth.getJWTToken()}`
+                }
+            });
+            return response.data;
+        } catch (error) {
+            if (isAxiosError(error)) {
+                throw new Error(error.response?.data);
             }
-        );
-    }
-
-    static async isUserAuthed() {
-        return await Request.request({
-            method: Method.GET,
-            url: "/auth/check_auth"
-        })
+            throw new Error("Error during registration");
+        }
     }
 
 
@@ -129,7 +104,9 @@ export class AuthController implements Controller {
     }
 
     static async getJWTToken(): Promise<string | null> {
-        return await AsyncStorage.getItem('token');
+        const token = await AsyncStorage.getItem('token');
+        if (!token) throw Error("Auth token not found")
+        return token
     }
 
 }

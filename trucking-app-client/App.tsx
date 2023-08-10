@@ -26,6 +26,7 @@ export default function App() {
 
 
   let [fontsLoaded] = useFonts({
+
     "Lato-Bold": require("./assets/fonts/Lato-Black.ttf"),
     "Lato-Regular": require("./assets/fonts/Lato-Regular.ttf"),
   })
