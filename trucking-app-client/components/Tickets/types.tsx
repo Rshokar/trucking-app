@@ -10,6 +10,7 @@ export interface TicketSectionProps {
     style?: StyleProps
     paginate?: () => void;
     more: boolean;
+    loading: boolean
     title?: string;
     onRefresh?: () => Promise<any>;
 }

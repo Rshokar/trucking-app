@@ -107,7 +107,7 @@ class DispatchController:
 
         session.add(dispatch)
         session.commit()
-        return make_response(dispatch.to_dict(), 201)
+        return make_response(dispatch.to_dict(True), 201)
 
     def update_dispatch(session, request, dispatch_id):
         """_summary_

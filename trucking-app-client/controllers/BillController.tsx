@@ -1,9 +1,10 @@
-import qs from 'qs'
+import * as qs from 'qs'
 import { Bill, BillQuery } from "../models/Bill";
 import { Request } from "../utils/Request";
 import { Method } from "../utils/Request";
 import axios, { isAxiosError } from 'axios';
-
+import * as mime from 'mime'
+import { Platform } from 'react-native';
 
 export class BillController {
 
@@ -70,33 +71,53 @@ export class BillController {
     }
 
     async create(model: Bill): Promise<Bill> {
-        // Create a new instance of FormData
         const formData = new FormData();
 
-        model.file && formData.append('file', {
-            uri: model.file.uri,
-            type: model.file.type,
-            name: model.file.fileName || 'uploaded-image.jpg' // Use original filename if available
-        } as any);
+        if (model.file) {
+            const uri = Platform.select({
+                ios: model.file.uri.replace("file://", ""),
+                android: model.file.uri,
+            });
 
+            model.file && formData.append('file', {
+                uri: uri,
+                type: mime.getType(model.file.uri),
+                name: 'uploaded-image.jpg'
+            } as any);
+        }
 
         formData.append('ticket_number', model.ticket_number + '');
         formData.append('rfo_id', model.rfo_id + '');
 
         try {
-            const res = await axios({
-                url: `http://10.0.0.134:5000/v1/billing_ticket`,
+            const response = await fetch('http://10.0.0.134:5000/v1/billing_ticket/', {
                 method: 'POST',
-                data: formData,
+                body: formData,
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
             });
-            return res.data as Bill
+
+            if (!response.ok) {
+                const responseData = await response.json();
+                console.error('Data:', responseData);
+                console.error('Status:', response.status);
+                console.error('Headers:', response.headers);
+                throw new Error(responseData || `Server responded with a ${response.status} status.`);
+            }
+
+            return await response.json() as Bill;
         } catch (err: any) {
-            if (isAxiosError(err))
-                throw new Error(err.response?.data);
-            throw new Error("Error adding bill");
+            console.log(err);
+
+            if (!err.response) {
+                // The request was made but no response was received
+                console.error('No response received:', err.request);
+                throw new Error('No response received from server.');
+            } else {
+                // Something else caused the error
+                throw new Error(err.message || "Error adding bill");
+            }
         }
     }
 

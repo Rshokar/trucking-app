@@ -36,7 +36,7 @@ const BillSection: FC<Props> = ({ navigateToTicket, rfoId }) => {
     const [search, setSearch] = useState<string>("");
     const theme = useTheme();
     const [showBill, setShowBill] = useState<boolean>(false);
-
+    const [loading, setLoading] = useState<boolean>(false);
     const showModal = () => setVisible(true);
     const hideModal = () => setVisible(false);
 
@@ -46,6 +46,7 @@ const BillSection: FC<Props> = ({ navigateToTicket, rfoId }) => {
 
     const getBills = async () => {
         const billController = new BillController();
+        if (query.page === 0) setLoading(true);
         const billRes: Bill[] = await billController.getAll(query);
 
         if (query.page === 0) {
@@ -53,7 +54,7 @@ const BillSection: FC<Props> = ({ navigateToTicket, rfoId }) => {
         } else {
             setBills([...bills, ...billRes]);
         }
-
+        setLoading(false)
         setEnablePaginate(billRes.length === query.limit);
     };
 
@@ -68,6 +69,7 @@ const BillSection: FC<Props> = ({ navigateToTicket, rfoId }) => {
         try {
             const bC = new BillController();
             const res: Bill = await bC.create(data);
+            console.log("HELLO WORLD")
             console.log('RETURNED BILL', res);
             setBills([...bills, res]);
             hideModal();
@@ -148,6 +150,7 @@ const BillSection: FC<Props> = ({ navigateToTicket, rfoId }) => {
                 title={'Bills'}
                 more={enablePaginate}
                 data={bills}
+                loading={loading}
                 onRefresh={handleRefresh}
                 render={({ item }: { item: Bill }) => {
                     if (item.ticket_number?.toString().includes(search)) {

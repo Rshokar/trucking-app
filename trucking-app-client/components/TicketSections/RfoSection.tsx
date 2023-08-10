@@ -35,6 +35,7 @@ const RFOSection: FC<Props> = ({ navigateToTicket, dispId, operId, operators }) 
     const [visible, setVisible] = useState(false);
     const [focusedRFO, setFocusedRFO] = useState<RFO>();
     const [search, setSearch] = useState<string>("");
+    const [loading, setLoading] = useState<boolean>(false);
     const showModal = () => setVisible(true);
     const hideModal = () => setVisible(false);
     const [showRFOCard, setShowRFOCards] = useState<boolean>(false)
@@ -46,6 +47,7 @@ const RFOSection: FC<Props> = ({ navigateToTicket, dispId, operId, operators }) 
 
     const getRFOs = async () => {
         const rfoController = new RFOController();
+        if (query.page === 0) setLoading(true);
         const rfoRes: RFO[] = await rfoController.getAll(query);
 
         if (query.page === 0) {
@@ -54,6 +56,7 @@ const RFOSection: FC<Props> = ({ navigateToTicket, dispId, operId, operators }) 
             setRFOs([...rfos, ...rfoRes]);
         }
 
+        setLoading(false)
         setEnablePaginate(rfoRes.length === query.limit);
     };
 
@@ -149,6 +152,7 @@ const RFOSection: FC<Props> = ({ navigateToTicket, dispId, operId, operators }) 
                 more={enablePaginate}
                 data={rfos}
                 onRefresh={handleRefresh}
+                loading={loading}
                 render={({ item }: { item: RFO }) => {
                     if (item.operator?.operator_name?.match(search || '')) {
                         return (

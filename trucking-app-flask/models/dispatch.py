@@ -25,7 +25,7 @@ class Dispatch(Base):
     def __repr__(self):
         return f"DISPATCH: ({self.dispatch_id}) {self.company_id} {self.customer_id} {self.date}"
 
-    def to_dict(self, customer):
+    def to_dict(self, customer=False):
         dispatch_dict = {
             "dispatch_id": self.dispatch_id,
             "company_id": self.company_id,

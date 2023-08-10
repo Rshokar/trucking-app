@@ -12,6 +12,7 @@ import MyModal from '../Modal/MyModal';
 import RFOSection from './RfoSection';
 import { RFO } from '../../models/RFO';
 import { View } from 'react-native';
+import { set } from 'react-native-reanimated';
 
 const StyledInput = styled(TextInput)`
     width: 90%;
@@ -22,7 +23,7 @@ type Props = {
     navigate: any
 };
 
-const OperatorSection: FC<Props> = ({ navigateToTicket, navigate }) => {
+const OperatorSection: FC<Props> = ({ navigate }) => {
     const [operators, setOperators] = useState<Operator[]>([]);
     const [query, setQuery] = useState<OperatorQuery>(new OperatorQuery());
     const [enablePaginate, setEnablePaginate] = useState<boolean>(false);
@@ -32,6 +33,7 @@ const OperatorSection: FC<Props> = ({ navigateToTicket, navigate }) => {
     const [snackbarMessage, setSnackbarMessage] = useState('');
     const [showRfos, setShowRfos] = useState<boolean>(false)
     const theme = useTheme();
+    const [loading, setLoading] = useState<boolean>(false);
     const showModal = () => setVisible(true);
     const hideModal = () => setVisible(false);
 
@@ -42,13 +44,14 @@ const OperatorSection: FC<Props> = ({ navigateToTicket, navigate }) => {
     const getOperators = async () => {
         const operatorController = new OperatorController();
         const opRes: Operator[] = await operatorController.getAll(query);
+        if (query.page === 0) setLoading(true);
 
         if (query.page === 0) {
             setOperators(opRes);
         } else {
             setOperators([...operators, ...opRes]);
         }
-
+        setLoading(false)
         setEnablePaginate(opRes.length === query.limit);
     };
 
@@ -120,6 +123,7 @@ const OperatorSection: FC<Props> = ({ navigateToTicket, navigate }) => {
                 />
             </StyledHeader>
             <TicketSection
+                loading={loading}
                 title={'Operators'}
                 more={enablePaginate}
                 data={operators}

@@ -32,6 +32,7 @@ const DispatchSection: FunctionComponent<Props> = ({ navigateToTickets, customer
     const [snackbarMessage, setSnackbarMessage] = useState('');
     const [snackbarColor, setSnackbarColor] = useState('green');
     const [showDispatchCard, setShowDispatchCard] = useState<boolean>(false)
+    const [loading, setLoading] = useState<boolean>(true);
     const theme = useTheme();
 
     useEffect(() => {
@@ -43,6 +44,7 @@ const DispatchSection: FunctionComponent<Props> = ({ navigateToTickets, customer
 
     useEffect(() => {
         async function fetchDispatches() {
+            if (query.page === 0) setLoading(true);
             const dispatchController = new DispatchController();
             const disRes: Dispatch[] = await dispatchController.getAll(query);
             if (query.page === 0) {
@@ -50,6 +52,7 @@ const DispatchSection: FunctionComponent<Props> = ({ navigateToTickets, customer
             } else {
                 setDispatches([...dispatches, ...disRes]);
             }
+            setLoading(false)
             setEnablePaginate(disRes.length === query.limit);
         }
         fetchDispatches();
@@ -92,8 +95,7 @@ const DispatchSection: FunctionComponent<Props> = ({ navigateToTickets, customer
             const res: Dispatch = await dC.create(data);
             res.customer = customers.find(c => c.customer_id === data.customer_id);
             res.rfo_count = 0;
-            dispatches.push(res)
-            setDispatches([...dispatches]);
+            setDispatches([res, ...dispatches]);
             setSnackbarColor('green');
             setSnackbarMessage('Dispatch created successfully');
             setVisibleSnackbar(true);
@@ -165,6 +167,8 @@ const DispatchSection: FunctionComponent<Props> = ({ navigateToTickets, customer
         setQuery(q);
     }
 
+    console.log("LOADING", loading)
+
     return (
         <StyledSection>
             <StyledHeader>
@@ -187,7 +191,7 @@ const DispatchSection: FunctionComponent<Props> = ({ navigateToTickets, customer
                     alignItems: 'center',
                     flexDirection: 'row',
                     flexWrap: 'wrap',
-                    gap: 10,
+                    gap: "10px",
                     padding: 20
                 }}>
                     {Array.from(filteringCustomers).map((customer, index) => (
@@ -214,6 +218,7 @@ const DispatchSection: FunctionComponent<Props> = ({ navigateToTickets, customer
                 more={enablePaginate}
                 data={dispatches}
                 onRefresh={handleRefresh}
+                loading={loading}
                 render={({ item }: { item: Dispatch }) => {
                     return <TicketItem
                         title={item.customer?.customer_name || ''}

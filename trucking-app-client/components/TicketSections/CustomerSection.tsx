@@ -38,6 +38,7 @@ const CustomerSection: FC<Props> = ({ navigateToTicket }) => {
     const [focusedCustomers, setFocusedCustomer] = useState<Customer>();
     const showModal = () => setVisible(true);
     const hideModal = () => setVisible(false);
+    const [loading, setLoading] = useState<boolean>(false)
     const theme = useTheme();
     const tabNav = useTabNavigation();
     useEffect(() => {
@@ -46,6 +47,8 @@ const CustomerSection: FC<Props> = ({ navigateToTicket }) => {
 
     const getCustomers = async () => {
         const customerController = new CustomerController();
+        if (query.page === 0) setLoading(true);
+
         const cusRes: Customer[] = await customerController.getAll(query);
 
         if (query.page === 0) {
@@ -53,7 +56,7 @@ const CustomerSection: FC<Props> = ({ navigateToTicket }) => {
         } else {
             setCustomers([...customers, ...cusRes]);
         }
-
+        setLoading(false);
         setEnablePaginate(cusRes.length === query.limit);
     };
 
@@ -148,6 +151,7 @@ const CustomerSection: FC<Props> = ({ navigateToTicket }) => {
                 />
             </StyledHeader>
             <TicketSection
+                loading={loading}
                 title={'Customers'}
                 more={enablePaginate}
                 data={customers}

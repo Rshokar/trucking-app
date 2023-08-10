@@ -1,7 +1,7 @@
 import React, { FunctionComponent, useEffect, useState } from 'react';
 import styled from 'styled-components/native';
 import { Ionicons } from "@expo/vector-icons";
-import { ActivityIndicator, RefreshControl } from 'react-native';
+import { ActivityIndicator, RefreshControl, View, Text } from 'react-native';
 
 import SmallText from '../Texts/SmallText'
 import { colors } from '../colors'
@@ -45,8 +45,6 @@ const TicketSection: FunctionComponent<TicketSectionProps> = (props) => {
 
     const handleRefresh = async () => props.onRefresh && await props.onRefresh();
 
-
-
     return (
         <TicketSectionBackground style={props.style}>
             <TicketRow style={{ marginBottom: 10 }}>
@@ -58,34 +56,36 @@ const TicketSection: FunctionComponent<TicketSectionProps> = (props) => {
                     <Ionicons name="caret-down" size={13} color={colors.graydark} />
                 </SmallText>
             </TicketRow>
-            {props.data.length === 0 ? (
-                <LoadingIndicator size="large" color={colors.tertiary} />
-            ) : (
-                <>
-                    <TicketList
-                        data={props.data}
-                        showsVerticalScrollIndicator={false}
-                        keyExtractor={(item: unknown, index: number) => index + ""}
-                        renderItem={props.render}
-                        ListFooterComponent={props.more ? <Button mode="contained" onPress={() => {
-                            if (props.paginate) {
-                                props.paginate();
-                                setPaginating(true);
-                            }
-                        }}>
-                            Load More
-                        </Button> : undefined}
-                        refreshControl={
-                            <RefreshControl
-                                refreshing={refreshing}
-                                onRefresh={handleRefresh}
-                                tintColor={theme.colors.primary}
-                            />
+            {props.loading && <LoadingIndicator size="large" color={colors.tertiary} />}
+
+            {props.data.length > 0 && <>
+                <TicketList
+                    data={props.data}
+                    showsVerticalScrollIndicator={false}
+                    keyExtractor={(item: unknown, index: number) => index + ""}
+                    renderItem={props.render}
+                    ListFooterComponent={props.more ? <Button mode="contained" onPress={() => {
+                        if (props.paginate) {
+                            props.paginate();
+                            setPaginating(true);
                         }
-                    />
-                    {paginating && <LoadingIndicator size="large" color={colors.primary} />}
-                </>
-            )}
+                    }}>
+                        Load More
+                    </Button> : undefined}
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={refreshing}
+                            onRefresh={handleRefresh}
+                            tintColor={theme.colors.primary}
+                        />
+                    }
+                />
+                {paginating && <LoadingIndicator size="large" color={colors.primary} />}
+            </>
+            }
+
+            {(!props.loading && props.data.length === 0) && <View><Text>No Tickets Found</Text></View>}
+
         </TicketSectionBackground>
     );
 }
