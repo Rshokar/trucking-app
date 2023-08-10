@@ -59,7 +59,6 @@ const Home: FunctionComponent<Props> = ({ navigation }) => {
         setFilteredCustomers(new Set<Customer>(filterCustomers))
     }
 
-    console.log(filterCustomers)
     return (
         <HomeContainer>
             <Tabs>

@@ -1,5 +1,5 @@
 import React, { FunctionComponent, useEffect, useState, useCallback } from 'react';
-import { TextInput, Modal, FAB, Snackbar, Portal, Chip, useTheme } from 'react-native-paper';
+import { TextInput, Modal, FAB, Snackbar, Portal, Chip, useTheme, Text } from 'react-native-paper';
 import { DatePickerModal } from 'react-native-paper-dates';
 import moment from 'moment';
 import { Dispatch, DispatchQuery } from '../../models/Dispatch';
@@ -191,13 +191,13 @@ const DispatchSection: FunctionComponent<Props> = ({ navigateToTickets, customer
                     alignItems: 'center',
                     flexDirection: 'row',
                     flexWrap: 'wrap',
-                    gap: "10px",
-                    padding: 20
+                    gap: 10,
+                    padding: 20,
                 }}>
                     {Array.from(filteringCustomers).map((customer, index) => (
                         <Chip
                             key={index}
-                            style={{ backgroundColor: theme.colors.secondary }}
+                            style={{ backgroundColor: theme.colors.secondary, height: 40 }}
                             textStyle={{ color: 'white' }}
                             onPress={() => removeCustomerFilter(customer)}
                         >

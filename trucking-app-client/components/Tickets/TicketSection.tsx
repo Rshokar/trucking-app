@@ -58,7 +58,7 @@ const TicketSection: FunctionComponent<TicketSectionProps> = (props) => {
             </TicketRow>
             {props.loading && <LoadingIndicator size="large" color={colors.tertiary} />}
 
-            {props.data.length > 0 && <>
+            {(props.data.length > 0 && !props.loading) && <>
                 <TicketList
                     data={props.data}
                     showsVerticalScrollIndicator={false}
