@@ -33,7 +33,7 @@ const AnimatedView = styled.View<{ show: boolean }>`
 const RegisterForm: FunctionComponent<FormProps<RegisterFormResult>> = (props) => {
     const theme = useTheme();
     const [step, setStep] = useState<number>(1)
-    const [results, setResults] = useState({});
+    const [results, setResults] = useState<any>({});
 
     const StepOneSchema = Yup.object().shape({
         email: Yup.string().email('Invalid email address').required('Email is required'),
@@ -116,7 +116,10 @@ const RegisterForm: FunctionComponent<FormProps<RegisterFormResult>> = (props) =
             <Formik
                 initialValues={initialValues}
                 onSubmit={(res: RegisterFormResult) => {
-                    props.onSubmit({ ...res, ...results })
+                    console.log("REGISTER FORM RESULTS", res);
+                    res.email = results.email;
+                    res.password = results.password;
+                    props.onSubmit(res)
                 }}
                 validationSchema={StepTwoSchema}
             >

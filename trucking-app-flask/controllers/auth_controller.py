@@ -57,14 +57,13 @@ class AuthController:
         """
         data = request.get_json()
 
-        existingUser = session.query(User).filter_by(
-            email=data.get('email').lower()).first()
-        if existingUser:
-            return make_response({"error": "Email already used."}, 409)
+        # existingUser = session.query(User).filter_by(
+        #     email=data.get('email').lower()).first()
+        # if existingUser:
+        #     return make_response({"error": "Email already used."}, 409)
 
         try:
-            user = User(role=data.get("role"), email=data.get(
-                'email'), password=data.get('password'))
+            user = User(id=data.get('user_id'))
             session.add(user)
             session.commit()
 
@@ -78,6 +77,7 @@ class AuthController:
             return make_response(combined_dict, 201)
 
         except ValueError as e:
+            print(e)
             return make_response({"error": str(e)}, 400)
         except IntegrityError as e:
             return make_response({"error": "Email already used."}, 409)

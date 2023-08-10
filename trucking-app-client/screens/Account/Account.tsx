@@ -9,6 +9,8 @@ import { User } from '../../models/User'
 import { AuthController } from '../../controllers/AuthController'
 import UserCompanyForm, { UserCompanyFormResults } from '../../components/Forms/UserCompanyForm';
 import UserController from '../../controllers/UserController'
+import { signOut } from 'firebase/auth'
+import { FIREBASE_AUTH } from '../../config/firebaseConfig'
 
 export type Props = StackScreenProps<RoofStackParamList, "Account">
 
@@ -58,7 +60,7 @@ const Account: FC<Props> = (props) => {
 
     const handleLogout = async () => {
         try {
-            await AuthController.logOut();
+            await signOut(FIREBASE_AUTH);
             props.navigation.navigate('Welcome')
         } catch (err: any) {
             setSnackbarMessage(err.message);

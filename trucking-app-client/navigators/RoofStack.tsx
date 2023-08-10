@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from 'react'
+import React, { FunctionComponent, useEffect } from 'react'
 import { Text } from 'react-native'
 import Welcome from '../screens/Welcome/Welcome'
 import Home from '../screens/Home/Home'
@@ -40,6 +40,7 @@ const Stack = createStackNavigator<RoofStackParamList>();
 
 const RoofStack: FunctionComponent = () => {
     const theme = useTheme();
+
 
     return (
         <NavigationContainer>

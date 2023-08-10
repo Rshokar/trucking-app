@@ -28,17 +28,17 @@ export class AuthController implements Controller {
     }
 
     static async logOut(): Promise<{ message: string }> {
-        return await Request.request<{ message: string }>({
+        return await Request.authedRequest<{ message: string }>({
             url: "/auth/logout",
             method: Method.DELETE
         })
     }
 
-    static async register(u: User, company: string): Promise<{ user: User, company: Company }> {
-        return await Request.request<{ user: User, company: Company }>(
+    static async register(u: User, company: string, userId: string): Promise<{ user: User, company: Company }> {
+        return await Request.authedRequest<{ user: User, company: Company }>(
             {
                 method: Method.POST,
-                data: { ...u, company },
+                data: { company, user_id: userId },
                 url: "/auth/register"
             }
         );
@@ -121,6 +121,15 @@ export class AuthController implements Controller {
         } catch (error: any) {
             throw new Error(`Failed to get customer data: ${error.message}`);
         }
+    }
+
+
+    static async setJWTToken(token: string): Promise<void> {
+        await AsyncStorage.setItem('token', token);
+    }
+
+    static async getJWTToken(): Promise<string | null> {
+        return await AsyncStorage.getItem('token');
     }
 
 }

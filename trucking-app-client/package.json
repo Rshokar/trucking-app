@@ -27,6 +27,7 @@
     "expo-font": "~11.1.1",
     "expo-image-picker": "~14.1.1",
     "expo-status-bar": "~1.4.4",
+    "firebase": "^10.1.0",
     "formik": "^2.2.9",
     "formik-material-ui": "^4.0.0-alpha.2",
     "mime": "^3.0.0",

@@ -1,11 +1,9 @@
 import re
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, String
 from sqlalchemy.orm import validates, relationship
 from models.model import Base
 from config import db
 from enum import Enum
-from werkzeug.security import generate_password_hash, check_password_hash
-from flask import session
 
 
 class UserRole(str, Enum):
@@ -14,22 +12,8 @@ class UserRole(str, Enum):
 
 class User(Base):
     __tablename__ = 'users'
-    id = Column("id", Integer, primary_key=True, autoincrement=True)
+    id = Column("id", String(50), primary_key=True)
     role = Column("role", String(20))
-    password_hash = Column("password_hash", String(200))
-    email = Column("email", String(100), unique=True)
-
-    @validates("email")
-    def validate_email(self, key, address):
-        if not re.match(r"[^@]+@[^@]+\.[^@]+", address):
-            raise ValueError(f"Invalid email address: {address}")
-        return address
-
-    @validates("password")
-    def validate_password(self, key, password):
-        if not re.match(r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)[a-zA-Z\d]{8,}$', password):
-            raise ValueError(f"Invalid password")
-        return password
 
     @validates("role")
     def validate_role(self, key, role):
@@ -40,29 +24,15 @@ class User(Base):
     company = relationship("Company", backref="owner",
                            lazy=True, cascade="delete", uselist=False)
 
-    def __init__(self, email, password, role=UserRole.DISPATCHER.value):
+    def __init__(self, id, role=UserRole.DISPATCHER.value):
         self.role = role
-        self.email = email
-        self.password_hash = generate_password_hash(password)
+        self.id = id
 
     def __repr__(self):
-        return f"USER: ({self.id}) {self.role} {self.email} {self.password_hash}"
+        return f"USER: ({self.id}) {self.role}"
 
     def to_dict(self):
         return {
             "id": self.id,
             "role": self.role,
-            "email": self.email,
         }
-
-    def check_password(self, password):
-        return check_password_hash(self.password_hash, password)
-
-    def is_active(self):
-        return self.active
-
-    def get_id(self):
-        return self.id
-
-    def is_authenticated(self):
-        return self.id in session

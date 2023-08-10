@@ -6,7 +6,6 @@ import { Button, Snackbar, Text } from 'react-native-paper'
 
 import BigText from '../../components/Texts/BigText'
 import SmallText from '../../components/Texts/SmallText'
-import RegularButton from '../../components/Buttons/RegularButton'
 import { LoginFormResult, RegisterFormResult } from '../../components/Forms/types'
 import Form from '../../components/Forms/Form'
 import LoginForm from '../../components/Forms/LoginForm'
@@ -14,6 +13,9 @@ import RegisterForm from '../../components/Forms/RegisterForm'
 import SwipeDownViewAnimation from '../../components/Animated/SwipeDownViewAnimation'
 import { AuthController } from '../../controllers/AuthController'
 import { User } from '../../models/User'
+import { FIREBASE_AUTH } from '../../config/firebaseConfig'
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth'
+
 
 // Custom Components
 import { colors } from '../../components/colors'
@@ -77,21 +79,22 @@ const Welcome: FunctionComponent<Props> = ({ navigation }) => {
     // We want to check if the current user is logged in
     // If they are logged in then we will redirect to home
     useEffect(() => {
-        const run = async () => {
-            try {
-                await AuthController.isUserAuthed();
-                navigation.navigate("Home", { company: await AuthController.getCompany() })
-            } catch (err: any) {
+        const subscriber = onAuthStateChanged(FIREBASE_AUTH, async user => {
+            if (user) {
+                navigation.navigate("Home", { company: await AuthController.getCompany() });
             }
-        }
-        run();
-    }, [])
+        });
+        return subscriber; // unsubscribe on unmount
+    }, []);
+
 
     const handleLogin = async (res: LoginFormResult): Promise<any> => {
+
         let u: User = new User()
         u.email = res.email
         u.password = res.password
         try {
+            const res = await signInWithEmailAndPassword(FIREBASE_AUTH, u.email, u.password);
             const user = await AuthController.login(u);
             setFlashColor(colors.success)
             setFlashMessage("Successfully Loggd In")
@@ -104,26 +107,28 @@ const Welcome: FunctionComponent<Props> = ({ navigation }) => {
         }
     }
 
-    const handleRegister = async (res: RegisterFormResult): Promise<any> => {
+    const handleRegister = async (formResult: RegisterFormResult): Promise<any> => {
         let u: User = new User()
-        u.role = res.acType;
-        u.password = res.password;
-        u.email = res.email;
+        u.role = formResult.acType;
+        u.password = formResult.password;
+        u.email = formResult.email;
+        console.log(formResult)
         try {
-            await AuthController.register(u, res.company)
+            const res = await createUserWithEmailAndPassword(FIREBASE_AUTH, u.email, u.password);
+            console.log(await res.user.getIdToken())
+            await AuthController.setJWTToken(await res.user.getIdToken())
+            await AuthController.register(u, formResult.company, res.user.uid)
             setFlashColor(colors.success)
-            setFlashMessage("Registered. Please Login. ")
+            setFlashMessage("Successfully Registered")
             setFlashToggle(!flashToggle)
             setShowLogin(true);
-
+            setTimeout(async () => navigation.navigate("Home", { company: await AuthController.getCompany() }), 2000)
         } catch (e: any) {
             console.log(e.message)
             setFlashColor(colors.red)
             setFlashMessage(e.message)
             setFlashToggle(!flashToggle)
             // Deal with errors
-        } finally {
-
         }
     }
 

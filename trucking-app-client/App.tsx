@@ -2,7 +2,7 @@ import { useFonts } from 'expo-font';
 import AppLoading from 'expo-app-loading';
 import { PaperProvider, DefaultTheme } from 'react-native-paper';
 import RoofStack from "./navigators/RoofStack";
-import React from 'react';
+import React, { useEffect } from 'react';
 
 
 const theme = {
@@ -29,7 +29,6 @@ export default function App() {
     "Lato-Bold": require("./assets/fonts/Lato-Black.ttf"),
     "Lato-Regular": require("./assets/fonts/Lato-Regular.ttf"),
   })
-
 
   if (!fontsLoaded) {
     return <AppLoading />;

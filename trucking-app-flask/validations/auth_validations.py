@@ -12,11 +12,10 @@ auth_validation = {
 register_validation = {
     "type": "object",
     "properties": {
-        "email": {"type": "string"},
-        "password": {"type": "string"},
         "role": {"type": "string"},
         "company": {"type": "string"},
+        "user_id": {"type": "string"},
     },
-    "required": ["email", "password", "role", "company"],
+    "required": ["company", "user_id"],
     "additionalProperties": False
 }

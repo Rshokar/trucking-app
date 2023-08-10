@@ -17,7 +17,8 @@ def loadDB(num_users):
 
     for index in range(num_users):
         user = UserFactory.create(
-            role="dispatcher", email="test@demo.com", password="Testing1")
+            id=f"{index}",
+            role="dispatcher")
 
         print(f"USER --|--: \n: {user}")
 
@@ -66,8 +67,6 @@ class UserFactory(SQLAlchemyModelFactory):
         sqlalchemy_session_persistence = 'commit'
 
     role = FuzzyChoice([UserRole.DISPATCHER.value])
-    email = Faker('email')
-    password = "Testing1"
 
 
 class CompanyFactory(SQLAlchemyModelFactory):

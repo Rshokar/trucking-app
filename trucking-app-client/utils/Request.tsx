@@ -1,4 +1,5 @@
 import axios, { AxiosRequestConfig, AxiosError } from "axios";
+import { AuthController } from "../controllers/AuthController";
 
 export enum Method {
     GET = 'get',
@@ -25,6 +26,30 @@ export class Request {
 
     static async request<T>(config: RequestConfig): Promise<T> {
         try {
+            const response = await axios[config.method]<T>(`${this.API_URL}${config.url}`, {
+                ...config.data,
+            }, { headers: { ...config.headers } });
+            return response.data;
+        } catch (error: any) {
+            if (axios.isAxiosError(error)) {
+                throw new RequestError(
+                    error.response?.data.error,
+                    error.response?.status
+                )
+            }
+            throw new RequestError("Error making request", 500)
+        }
+    }
+
+    static async authedRequest<T>(config: RequestConfig): Promise<T> {
+
+        try {
+            const token = await AuthController.getJWTToken();
+            if (!token) throw Error("Auth token not found");
+
+            if (!config.headers) config.headers = {};
+            config.headers.authorization = `Bearer ${token}`
+
             const response = await axios[config.method]<T>(`${this.API_URL}${config.url}`, {
                 ...config.data,
             }, { headers: { ...config.headers } });

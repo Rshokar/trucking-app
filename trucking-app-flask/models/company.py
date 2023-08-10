@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, CHAR
+from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
 from models.model import Base
 
@@ -7,7 +7,8 @@ class Company(Base):
     __tablename__ = 'company'
     company_id = Column('company_id', Integer,
                         primary_key=True)
-    owner_id = Column('owner_id', Integer, ForeignKey("users.id"), unique=True)
+    owner_id = Column('owner_id', String(
+        50), ForeignKey("users.id"), unique=True)
     company_name = Column("company_name", String(200))
 
     customers = relationship(
