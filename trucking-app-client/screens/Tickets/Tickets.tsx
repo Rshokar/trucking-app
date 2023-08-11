@@ -67,18 +67,15 @@ const Tickets: FunctionComponent<Props> = ({ route }) => {
             // Get promises
             const dCPromise = dC.get(dQ);
             const compPromise = AuthController.getCompany();
-            const custPromise = AuthController.getCustomers();
 
             // Await all of them
-            let [dispRes, compRes, custRes]: any[] = await Promise.all([dCPromise, compPromise, custPromise]);
+            let [dispRes, compRes]: any[] = await Promise.all([dCPromise, compPromise]);
 
             compRes = compRes as Company;
-            custRes = custRes as Customer[];
             dispRes = dispRes as Dispatch;
 
             // Set customers nad company
             dispRes.company = compRes
-            dispRes.customer = custRes.find((c: Customer) => c.customer_id === dispRes.customer_id);
 
             // Set Dispatch
             setDispatch(dispRes as Dispatch);
@@ -90,7 +87,7 @@ const Tickets: FunctionComponent<Props> = ({ route }) => {
     // If rfo_id exist then we want to load and set the rfo
     useEffect(() => {
         const run = async () => {
-            if (!tickets.rfoId && operators.length > 0) return;
+            if (!tickets.rfoId) return;
             const rC = new RFOController();
             try {
                 const rfoQ = new RFOQuery();
@@ -124,6 +121,8 @@ const Tickets: FunctionComponent<Props> = ({ route }) => {
         }
         run();
     }, [])
+
+    console.log(rfo)
 
 
     return (

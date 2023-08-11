@@ -46,14 +46,18 @@ const DispatchSection: FunctionComponent<Props> = ({ navigateToTickets, customer
         async function fetchDispatches() {
             if (query.page === 0) setLoading(true);
             const dispatchController = new DispatchController();
-            const disRes: Dispatch[] = await dispatchController.getAll(query);
-            if (query.page === 0) {
-                setDispatches(disRes);
-            } else {
-                setDispatches([...dispatches, ...disRes]);
+            try {
+                const disRes: Dispatch[] = await dispatchController.getAll(query);
+                if (query.page === 0) {
+                    setDispatches(disRes);
+                } else {
+                    setDispatches([...dispatches, ...disRes]);
+                }
+                setLoading(false)
+                setEnablePaginate(disRes.length === query.limit);
+            } catch (err: any) {
+                console.log(err.message);
             }
-            setLoading(false)
-            setEnablePaginate(disRes.length === query.limit);
         }
         fetchDispatches();
     }, [query]);
@@ -215,10 +219,16 @@ const DispatchSection: FunctionComponent<Props> = ({ navigateToTickets, customer
                 />
             </MyModal>
             <TicketSection
+
                 more={enablePaginate}
                 data={dispatches}
                 onRefresh={handleRefresh}
                 loading={loading}
+                onNoTicketsFound={() => {
+                    setFocusingDispatch(undefined)
+                    setShowFormModal(true)
+                }}
+                noTicketFoundMessage={"No Dispatches Found!"}
                 render={({ item }: { item: Dispatch }) => {
                     return <TicketItem
                         title={item.customer?.customer_name || ''}

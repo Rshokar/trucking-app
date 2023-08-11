@@ -3,6 +3,7 @@ import { Dispatch, DispatchQuery } from "../models/Dispatch";
 import { AuthController } from './AuthController';
 import axios, { isAxiosError } from 'axios';
 import myAxios from '../config/myAxios';
+import { getAuthHeader } from "../utils/authHeader";
 
 export class DispatchController {
 
@@ -10,7 +11,7 @@ export class DispatchController {
         try {
             const response = await myAxios.get<Dispatch>(`/dispatch/${query.dispatch_id}`, {
                 headers: {
-                    Authorization: `Bearer ${await AuthController.getJWTToken()}`
+                    ...await getAuthHeader()
                 }
             });
             return response.data;
@@ -32,11 +33,11 @@ export class DispatchController {
         });
 
         const queryString = qs.stringify(q) + customers;
-
+        const token = await AuthController.getJWTToken();
         try {
             const response = await myAxios.get<Dispatch[]>(`/dispatch?${queryString}`, {
                 headers: {
-                    Authorization: `Bearer ${await AuthController.getJWTToken()}`
+                    ...await getAuthHeader()
                 }
             });
             return response.data;
@@ -52,7 +53,7 @@ export class DispatchController {
         try {
             await myAxios.delete(`/dispatch/${id}`, {
                 headers: {
-                    Authorization: `Bearer ${await AuthController.getJWTToken()}`
+                    ...await getAuthHeader()
                 }
             });
         } catch (error) {
@@ -72,7 +73,7 @@ export class DispatchController {
         try {
             const response = await myAxios.put<Dispatch>(`/dispatch/${id}`, data, {
                 headers: {
-                    Authorization: `Bearer ${await AuthController.getJWTToken()}`
+                    ...await getAuthHeader()
                 }
             });
             return response.data;
@@ -91,7 +92,7 @@ export class DispatchController {
 
             const response = await myAxios.post<Dispatch>(`/dispatch`, model, {
                 headers: {
-                    Authorization: `Bearer ${await AuthController.getJWTToken()}`
+                    ...await getAuthHeader()
                 }
             });
             return response.data;

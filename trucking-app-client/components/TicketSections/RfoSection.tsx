@@ -70,7 +70,7 @@ const RFOSection: FC<Props> = ({ navigateToTicket, dispId, operId, operators }) 
     const handleAddRFO = async (data: RFO): Promise<boolean> => {
         try {
             const rC = new RFOController();
-            const res: RFO = await rC.create<RFO>(data as RFO);
+            const res: RFO = await rC.create(data as RFO);
             setRFOs([...rfos, res]);
             hideModal();
             return true;
@@ -87,7 +87,7 @@ const RFOSection: FC<Props> = ({ navigateToTicket, dispId, operId, operators }) 
             const rC = new RFOController();
             const q = new RFOQuery();
             q.rfo_id = parseFloat(id);
-            const res: RFO = await rC.update<RFO>(id, data as RFO);
+            const res: RFO = await rC.update(id, data as RFO);
             res.operator = focusedRFO?.operator;
             const index = rfos.findIndex(rfo => (rfo.rfo_id + "") === id);
             rfos[index] = res;
@@ -153,6 +153,11 @@ const RFOSection: FC<Props> = ({ navigateToTicket, dispId, operId, operators }) 
                 data={rfos}
                 onRefresh={handleRefresh}
                 loading={loading}
+                onNoTicketsFound={() => {
+                    setFocusedRFO(undefined);
+                    showModal();
+                }}
+                noTicketFoundMessage={"No Billing Tickets Found!"}
                 render={({ item }: { item: RFO }) => {
                     if (item.operator?.operator_name?.match(search || '')) {
                         return (

@@ -26,6 +26,7 @@ class DispatchController:
 
         if dispatch is None:
             return make_response({'error': 'Dispatch not found'}, 404)
+
         return make_response(dispatch.to_dict(True), 200)
 
     def get_dispatch_all(session: Session, limit: int, page: int, startDate: Optional[datetime], endDate: Optional[datetime], customers: Optional[List[int]]) -> Response:
@@ -75,7 +76,6 @@ class DispatchController:
                 "customer": {"customer_name": customer},
                 "rfo_count": rfo_count,
             })
-
         return make_response(result, 200)
 
     def create_dispatch(session, request):

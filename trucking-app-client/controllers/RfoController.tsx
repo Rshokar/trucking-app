@@ -1,83 +1,93 @@
-import qs from 'qs'
-
+import qs from 'qs';
 import { RFO, RFOQuery } from "../models/RFO";
-import { Request } from "../utils/Request";
-import { Method } from "../utils/Request";
+import myAxios from '../config/myAxios';
 import { isAxiosError } from 'axios';
+import { AuthController } from './AuthController'; // For JWT
 
 export class RFOController {
 
-    async get<RFO>(query: RFOQuery): Promise<RFO> {
+    async get(query: RFOQuery): Promise<RFO> {
         try {
-            const results = await Request.request<RFO>({
-                url: `/rfo/${query.rfo_id}`,
-                method: Method.GET,
+            const response = await myAxios.get<RFO>(`/rfo/${query.rfo_id}`, {
+                headers: {
+                    Authorization: `Bearer ${await AuthController.getJWTToken()}`
+                }
             });
-            return results;
-        } catch (err: any) {
-            throw err;
+            return response.data;
+        } catch (error) {
+            if (isAxiosError(error)) {
+                throw new Error(error.response?.data);
+            }
+            throw new Error("Error getting RFO");
         }
     }
 
-    async getAll<RFO>(query: RFOQuery): Promise<RFO[]> {
-        // Build query string using rfo query
+    async getAll(query: RFOQuery): Promise<RFO[]> {
         const q: any = { ...query };
 
         q.startDate = q.startDateTime?.dateString;
         q.endDate = q.endDateTime?.dateString;
         const queryString = qs.stringify(q);
 
-        let res: RFO[] = [];
         try {
-            res = await Request.request<RFO[]>({
-                url: `/rfo?${queryString}`,
-                method: Method.GET,
+            const response = await myAxios.get<RFO[]>(`/rfo?${queryString}`, {
+                headers: {
+                    Authorization: `Bearer ${await AuthController.getJWTToken()}`
+                }
             });
-        } catch (err: any) {
-            console.log(err.message);
-            throw err;
-        }
-        return res;
-    }
-
-    async delete<RFO>(id: string): Promise<void> {
-        try {
-            await Request.request<void>({
-                url: `/rfo/${id}`,
-                method: Method.DELETE
-            })
-        } catch (err: any) {
-            if (isAxiosError(err))
-                throw new Error(err.message);
-            throw new Error("Error deleting message");
+            return response.data;
+        } catch (error) {
+            if (isAxiosError(error)) {
+                throw new Error(error.response?.data);
+            }
+            throw new Error("Error getting RFOs");
         }
     }
 
-    async update<RFO>(id: string, model: RFO): Promise<RFO> {
+    async delete(id: string): Promise<void> {
         try {
-            return await Request.request<RFO>({
-                url: `/rfo/${id}`,
-                method: Method.PUT,
-                data: model,
+            await myAxios.delete(`/rfo/${id}`, {
+                headers: {
+                    Authorization: `Bearer ${await AuthController.getJWTToken()}`
+                }
             });
-        } catch (err: any) {
-            if (isAxiosError(err))
-                throw new Error(err.response?.data);
+        } catch (error) {
+            if (isAxiosError(error)) {
+                throw new Error(error.response?.data);
+            }
+            throw new Error("Error deleting RFO");
+        }
+    }
+
+    async update(id: string, model: RFO): Promise<RFO> {
+        try {
+            const response = await myAxios.put<RFO>(`/rfo/${id}`, model, {
+                headers: {
+                    Authorization: `Bearer ${await AuthController.getJWTToken()}`
+                }
+            });
+            return response.data;
+        } catch (error) {
+            if (isAxiosError(error)) {
+                throw new Error(error.response?.data);
+            }
             throw new Error("Error updating RFO");
         }
     }
 
-    async create<RFO>(model: RFO): Promise<RFO> {
+    async create(model: RFO): Promise<RFO> {
         try {
-            return await Request.request<RFO>({
-                url: `/rfo`,
-                method: Method.POST,
-                data: model,
-            })
-        } catch (err: any) {
-            if (isAxiosError(err))
-                throw new Error(err.response?.data);
-            throw new Error("Error adding RFO");
+            const response = await myAxios.post<RFO>(`/rfo`, model, {
+                headers: {
+                    Authorization: `Bearer ${await AuthController.getJWTToken()}`
+                }
+            });
+            return response.data;
+        } catch (error) {
+            if (isAxiosError(error)) {
+                throw new Error(error.response?.data);
+            }
+            throw new Error("Error creating RFO");
         }
     }
 }

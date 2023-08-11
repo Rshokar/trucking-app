@@ -8,7 +8,7 @@ export class Operator implements Model {
     company_id?: number;
     operator_name?: string;
     operator_email?: string;
-    confirmed?: boolean = false
+    confirmed?: boolean;
 
     getId?(): number {
         return this.operator_id ?? 0;

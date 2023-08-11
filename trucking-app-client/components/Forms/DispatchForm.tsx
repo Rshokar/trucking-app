@@ -104,9 +104,11 @@ const DispatchForm: FC<Props> = ({ onSubmit, defaultValues, customers }) => {
                             error={errors.notes ? true : false}
                         />
                     </InputBox>
-                    <RegularButton onPress={() => handleSubmit()} disabled={isSubmitting} btnStyles={{ backgroundColor: isSubmitting ? theme.colors.onSurfaceDisabled : theme.colors.primary }} >
-                        {isSubmitting ? "Submitting...." : "Submit"}
-                    </RegularButton>
+                    <Button onPress={() => handleSubmit()} disabled={isSubmitting} style={{ backgroundColor: isSubmitting ? theme.colors.onSurfaceDisabled : theme.colors.primary }} >
+                        <Text style={{ color: 'white' }}>
+                            {isSubmitting ? "Submitting...." : "Submit"}
+                        </Text>
+                    </Button>
                 </>
             }}
         </Formik>

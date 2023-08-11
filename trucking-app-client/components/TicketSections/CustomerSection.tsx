@@ -15,14 +15,6 @@ const StyledInput = styled(TextInput)`
     width: 90%;
 `;
 
-const FabContainer = styled.View`
-  flex: 1;
-  justify-content: flex-end;
-  align-items: flex-end;
-  margin-bottom: 20px;
-  margin-right: 20px;
-`;
-
 type Props = {
     navigateToTicket: (cus: Customer) => void;
 };
@@ -101,7 +93,7 @@ const CustomerSection: FC<Props> = ({ navigateToTicket }) => {
         }
     }
     const handleFormSubmit = async (formData: CustomerFormResult, id?: string): Promise<boolean> => {
-        if (id) {
+        if (focusedCustomers) {
             return await handleEditCustomer(formData as Customer, focusedCustomers?.customer_id + "")
         } else {
             return await handleAddCustomer(formData as Customer);
@@ -150,11 +142,16 @@ const CustomerSection: FC<Props> = ({ navigateToTicket }) => {
                 />
             </StyledHeader>
             <TicketSection
+                noTicketFoundMessage={"No customers found!"}
                 loading={loading}
                 title={'Customers'}
                 more={enablePaginate}
                 data={customers}
                 onRefresh={handleRefresh}
+                onNoTicketsFound={() => {
+                    setFocusedCustomer(undefined)
+                    showModal();
+                }}
                 render={({ item }: { item: Customer }) => {
                     if (item.customer_name?.match(query.customer_name || '')) {
                         return (

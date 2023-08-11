@@ -1,13 +1,14 @@
 import React, { FunctionComponent, useEffect, useState } from 'react';
 import styled from 'styled-components/native';
 import { Ionicons } from "@expo/vector-icons";
-import { ActivityIndicator, RefreshControl, View, Text } from 'react-native';
+import { ActivityIndicator, RefreshControl, View } from 'react-native';
+import DumpTruck from '../../assets/svgs/DumpTruck'
 
 import SmallText from '../Texts/SmallText'
 import { colors } from '../colors'
 import { TicketSectionProps } from './types'
 import RegularText from '../Texts/RegularText'
-import { Button, useTheme } from 'react-native-paper';
+import { Button, useTheme, Text } from 'react-native-paper';
 
 const TicketSectionBackground = styled.View`
     padding-horizontal: 25px;
@@ -30,8 +31,11 @@ const TicketList = styled.FlatList`
 const LoadingIndicator = styled(ActivityIndicator)`
 `
 
-const LoadingText = styled(SmallText)`
-    margin-vertical: 20px;
+const NoTicketsContainer = styled.View`
+    height: 90%; 
+    justify-content: center; 
+    align-items: center; 
+    gap: 20px; 
 `
 
 const TicketSection: FunctionComponent<TicketSectionProps> = (props) => {
@@ -84,7 +88,16 @@ const TicketSection: FunctionComponent<TicketSectionProps> = (props) => {
             </>
             }
 
-            {(!props.loading && props.data.length === 0) && <View><Text>No Tickets Found</Text></View>}
+            {(!props.loading && props.data.length === 0) && <NoTicketsContainer>
+
+                {props.noTicketFoundSVG ?? <DumpTruck width={125} height={125} stroke={'black'} fill={'black'} />}
+                <Text variant='titleLarge'>{props.noTicketFoundMessage}</Text>
+                <Button style={{ backgroundColor: theme.colors.secondary, width: 150 }} onPress={props.onNoTicketsFound}>
+                    <Text style={{ color: 'white' }}>
+                        Add
+                    </Text>
+                </Button>
+            </NoTicketsContainer>}
 
         </TicketSectionBackground>
     );

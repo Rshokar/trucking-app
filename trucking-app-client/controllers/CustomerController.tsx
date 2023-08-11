@@ -3,6 +3,7 @@ import { Customer, CustomerQuery } from "../models/Customer";
 import { isAxiosError } from 'axios';
 import myAxios from '../config/myAxios';
 import { AuthController } from './AuthController';
+import { getAuthHeader } from '../utils/authHeader';
 
 export class CustomerController {
 
@@ -10,7 +11,7 @@ export class CustomerController {
         try {
             const response = await myAxios.get<Customer>(`/company/customers/${query.customer_id}`, {
                 headers: {
-                    Authorization: `Bearer ${await AuthController.getJWTToken()}`
+                    ...await getAuthHeader()
                 }
             });
             return response.data;
@@ -28,7 +29,7 @@ export class CustomerController {
         try {
             const response = await myAxios.get<Customer[]>(`/company/customers?${qs.stringify(q)}`, {
                 headers: {
-                    Authorization: `Bearer ${await AuthController.getJWTToken()}`
+                    ...await getAuthHeader()
                 }
             });
             return response.data;
@@ -44,7 +45,7 @@ export class CustomerController {
         try {
             const response = await myAxios.delete(`/company/customers/${id}`, {
                 headers: {
-                    Authorization: `Bearer ${await AuthController.getJWTToken()}`
+                    ...await getAuthHeader()
                 }
             });
             return response.status === 200;
@@ -60,7 +61,7 @@ export class CustomerController {
         try {
             const response = await myAxios.put<Customer>(`/company/customers/${id}`, model, {
                 headers: {
-                    Authorization: `Bearer ${await AuthController.getJWTToken()}`
+                    ...await getAuthHeader()
                 }
             });
             return response.data;
@@ -79,7 +80,7 @@ export class CustomerController {
 
             const response = await myAxios.post<Customer>(`/company/customers`, model, {
                 headers: {
-                    Authorization: `Bearer ${await AuthController.getJWTToken()}`
+                    ...await getAuthHeader()
                 }
             });
             return response.data;

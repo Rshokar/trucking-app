@@ -1,72 +1,77 @@
-import * as qs from 'qs'
+import qs from 'qs';
 import { Bill, BillQuery } from "../models/Bill";
-import { Request } from "../utils/Request";
-import { Method } from "../utils/Request";
-import axios, { isAxiosError } from 'axios';
+import myAxios from '../config/myAxios';
+import { isAxiosError } from 'axios';
+import { AuthController } from './AuthController';
 import * as mime from 'mime'
 import { Platform } from 'react-native';
 
 export class BillController {
 
-    async get<Bill>(query: BillQuery): Promise<Bill> {
+    async get(query: BillQuery): Promise<Bill> {
         try {
-            const results = await Request.request<Bill>({
-                url: `/billing_ticket/${query.bill_id}`,
-                method: Method.GET,
+            const response = await myAxios.get<Bill>(`/billing_ticket/${query.bill_id}`, {
+                headers: {
+                    Authorization: `Bearer ${await AuthController.getJWTToken()}`
+                }
             });
-            return results;
-        } catch (err: any) {
-            throw err;
+            return response.data;
+        } catch (error) {
+            if (isAxiosError(error)) {
+                throw new Error(error.response?.data);
+            }
+            throw new Error("Error getting bill");
         }
     }
 
-    async getAll<Bill>(query: BillQuery): Promise<Bill[]> {
-        // Build query string using billing_ticket query
+    async getAll(query: BillQuery): Promise<Bill[]> {
         const q: any = { ...query };
+        const queryString = qs.stringify(q);
 
-        const queryString = qs.stringify(q)
-
-        // Customers have to be sent to server 
-        // with the format of customers=1,2,3
-
-        let res: Bill[] = [];
         try {
-            res = await Request.request<Bill[]>({
-                url: `/billing_ticket?${queryString}`,
-                method: Method.GET,
+            const response = await myAxios.get<Bill[]>(`/billing_ticket?${queryString}`, {
+                headers: {
+                    Authorization: `Bearer ${await AuthController.getJWTToken()}`
+                }
             });
-        } catch (err: any) {
-            console.log(err.message);
-            throw err;
+            return response.data;
+        } catch (error) {
+            if (isAxiosError(error)) {
+                throw new Error(error.response?.data);
+            }
+            throw new Error("Error getting bills");
         }
-
-
-
-        return res;
     }
-    async delete<Bill>(id: string): Promise<void> {
+
+    async delete(id: string): Promise<void> {
         try {
-            await Request.request<void>({
-                url: `/billing_ticket/${id}`,
-                method: Method.DELETE
-            })
-        } catch (err: any) {
-            if (isAxiosError(err))
-                throw new Error(err.message);
+            await myAxios.delete(`/billing_ticket/${id}`, {
+                headers: {
+                    Authorization: `Bearer ${await AuthController.getJWTToken()}`
+                }
+            });
+        } catch (error) {
+            if (isAxiosError(error)) {
+                throw new Error(error.response?.data);
+            }
             throw new Error("Error deleting bill");
         }
     }
 
-    async update<Bill>(id: string, model: Bill): Promise<Bill> {
+    async update(id: string, model: Bill): Promise<Bill> {
         try {
-            return await Request.request<Bill>({
-                url: `/billing_ticket/${id}`,
-                method: Method.PUT,
-                data: model,
-                headers: { 'Content-Type': 'multipart/form-data' }
+            const response = await myAxios.put<Bill>(`/billing_ticket/${id}`, model, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    Authorization: `Bearer ${await AuthController.getJWTToken()}`
+                }
             });
-        } catch (err: any) {
-            throw err
+            return response.data;
+        } catch (error) {
+            if (isAxiosError(error)) {
+                throw new Error(error.response?.data);
+            }
+            throw new Error("Error updating bill");
         }
     }
 
@@ -90,48 +95,34 @@ export class BillController {
         formData.append('rfo_id', model.rfo_id + '');
 
         try {
-            const response = await fetch('http://10.0.0.134:5000/v1/billing_ticket/', {
-                method: 'POST',
-                body: formData,
+            const response = await myAxios.post<Bill>(`/billing_ticket/`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
-                },
+                    Authorization: `Bearer ${await AuthController.getJWTToken()}`
+                }
             });
-
-            if (!response.ok) {
-                const responseData = await response.json();
-                console.error('Data:', responseData);
-                console.error('Status:', response.status);
-                console.error('Headers:', response.headers);
-                throw new Error(responseData || `Server responded with a ${response.status} status.`);
+            return response.data;
+        } catch (error) {
+            if (isAxiosError(error)) {
+                throw new Error(error.response?.data);
             }
-
-            return await response.json() as Bill;
-        } catch (err: any) {
-            console.log(err);
-
-            if (!err.response) {
-                // The request was made but no response was received
-                console.error('No response received:', err.request);
-                throw new Error('No response received from server.');
-            } else {
-                // Something else caused the error
-                throw new Error(err.message || "Error adding bill");
-            }
+            throw new Error("Error creating bill");
         }
     }
 
     async getImageUrl(id: string): Promise<string> {
         try {
-            const res = await Request.request({
-                url: `/billing_ticket/${id}/image`,
-                method: Method.GET
-            })
-
-            return res as string;
-        } catch (err: any) {
-            throw err;
+            const response = await myAxios.get<string>(`/billing_ticket/${id}/image`, {
+                headers: {
+                    Authorization: `Bearer ${await AuthController.getJWTToken()}`
+                }
+            });
+            return response.data;
+        } catch (error) {
+            if (isAxiosError(error)) {
+                throw new Error(error.response?.data);
+            }
+            throw new Error("Error getting bill image URL");
         }
     }
-
 }

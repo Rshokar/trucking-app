@@ -67,7 +67,7 @@ class OperatorController:
         Returns:
             Responses: 201 Created
         '''
-        mail = Mail(app)
+        # mail = Mail(app)
         req = request.get_json()
         company_id = req.get('company_id')
         name = req.get('operator_name')
@@ -96,7 +96,7 @@ class OperatorController:
         session.commit()
 
         # Send verification email to the new operator
-        send_verification_email(mail, email, token, name)
+        # send_verification_email(mail, email, token, name)
 
         return make_response(new_operator.to_dict(), 201)
 

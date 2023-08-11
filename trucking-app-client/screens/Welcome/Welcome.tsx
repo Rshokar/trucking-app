@@ -112,7 +112,6 @@ const Welcome: FunctionComponent<Props> = ({ navigation }) => {
 
 
     const handleLogin = async (res: LoginFormResult): Promise<any> => {
-
         let u: User = new User()
         u.email = res.email
         u.password = res.password
@@ -158,7 +157,6 @@ const Welcome: FunctionComponent<Props> = ({ navigation }) => {
             setFlashColor(colors.red)
             setFlashMessage(e.message)
             setFlashToggle(!flashToggle)
-            // Deal with errors
         }
     }
 

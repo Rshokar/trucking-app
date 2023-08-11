@@ -152,6 +152,11 @@ const BillSection: FC<Props> = ({ navigateToTicket, rfoId }) => {
                 data={bills}
                 loading={loading}
                 onRefresh={handleRefresh}
+                onNoTicketsFound={() => {
+                    setFocusedBill(undefined);
+                    showModal();
+                }}
+                noTicketFoundMessage={"No Billing Tickets Found!"}
                 render={({ item }: { item: Bill }) => {
                     if (item.ticket_number?.toString().includes(search)) {
                         return (

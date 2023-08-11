@@ -5,16 +5,18 @@ import myAxios from '../config/myAxios';
 import { Company } from "../models/Company";
 import { isAxiosError } from 'axios';
 import { Customer } from "../models/Customer";
+import { getAuthHeader } from "../utils/authHeader";
 
 export class AuthController {
 
 
     static async register(u: User, company: string, userId: string): Promise<{ user: User, company: Company }> {
         const data = { company, user_id: userId };
+
         try {
             const response = await myAxios.post<{ user: User, company: Company }>('/auth/register', data, {
                 headers: {
-                    Authorization: `Bearer ${await Auth.getJWTToken()}`
+                    ...await getAuthHeader()
                 }
             });
             return response.data;

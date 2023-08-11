@@ -19,9 +19,9 @@ firebase_admin.initialize_app(cred)
 def firebase_required(fn):
     @wraps(fn)
     def wrapper(*args, **kwargs):
-        print("REQUEST HEADERS", request.headers)
-        authHead = request.headers.get("Authorization", None)
+        authHead = request.headers.get("Authorization-Fake-X", None)
 
+        print(request.headers)
         if authHead is None:
             return make_response({"error": "Auth header missing"}, 401)
 
@@ -33,7 +33,7 @@ def firebase_required(fn):
             # Save user data in the Flask's g object
             g.user = user
         except Exception as e:
-            print(f"AUTH ERROR \n\n{e}")
+            print(e)
             return make_response({"error": "Authentication failed"}, 401)
         return fn(*args, **kwargs)
     return wrapper

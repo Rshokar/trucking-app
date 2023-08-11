@@ -15,6 +15,7 @@ import OperatorSection from '../../components/TicketSections/OperatorSection'
 import CustomerSection from '../../components/TicketSections/CustomerSection'
 import { CustomerController } from '../../controllers/CustomerController'
 import { number } from 'yup'
+import { View, Text } from 'react-native'
 
 const HomeContainer = styled.View`
     width: 100%; 
@@ -25,25 +26,8 @@ export type Props = StackScreenProps<RoofStackParamList, "Home">
 
 const Home: FunctionComponent<Props> = ({ navigation, route }) => {
     const [customers, setCustomers] = useState<Customer[]>([])
-    const [dispatches, setDispatches] = useState<Dispatch[]>([])
     const [filterCustomers, setFilteredCustomers] = useState<Set<Customer>>(new Set<Customer>());
-    const [query] = useState<DispatchQuery>(new DispatchQuery())
-    const [paginate, setEnablePaginate] = useState<boolean>(false)
 
-
-    useEffect(() => {
-        async function fetchDispatches() {
-            const dispatchController = new DispatchController()
-            const disRes: Dispatch[] = await dispatchController.getAll(query)
-            if (query.page === 0) {
-                setDispatches(disRes)
-            } else {
-                setDispatches([...dispatches, ...disRes])
-            }
-            setEnablePaginate(disRes.length === query.limit)
-        }
-        fetchDispatches()
-    }, [query])
 
     useEffect(() => {
         async function fetchCustomers() {
@@ -64,6 +48,7 @@ const Home: FunctionComponent<Props> = ({ navigation, route }) => {
         setFilteredCustomers(new Set<Customer>(filterCustomers))
     }
 
+
     return (
         <HomeContainer>
             <Tabs>
@@ -80,6 +65,7 @@ const Home: FunctionComponent<Props> = ({ navigation, route }) => {
                         navigateToTicket={handleCustomerFilter} />
                 </TabScreen>
                 <TabScreen label="Operators">
+
                     <OperatorSection
                         navigate={navigation.navigate}
                         navigateToTicket={ticketId => console.log("HELLO WORLD", ticketId)} />

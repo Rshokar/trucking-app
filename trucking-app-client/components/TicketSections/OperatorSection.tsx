@@ -68,11 +68,11 @@ const OperatorSection: FC<Props> = ({ navigate }) => {
             const operatorController = new OperatorController();
             let res: Operator;
             if (focusedOperator) { // If we have focused on an operator we are going to edit it
-                res = await operatorController.update<Operator>(focusedOperator.operator_id + "", formData as Operator);
+                res = await operatorController.update(focusedOperator.operator_id + "", formData as Operator);
                 const index = operators.findIndex(op => op.operator_id === focusedOperator.operator_id);
                 operators[index] = res;
             } else {
-                res = await operatorController.create<Operator>(formData as Operator);
+                res = await operatorController.create(formData as Operator);
                 operators.push(res);
             }
             setOperators([...operators]);
@@ -123,12 +123,13 @@ const OperatorSection: FC<Props> = ({ navigate }) => {
                 />
             </StyledHeader>
             <TicketSection
+
                 loading={loading}
                 title={'Operators'}
                 more={enablePaginate}
                 data={operators}
                 onRefresh={handleRefresh}
-                render={({ item }: { item: Operator }) => {
+                render={({ item }: { item: Operator; }) => {
                     if (item.operator_name?.match(query.operator_name || '')) {
                         return (
                             <TicketItem
@@ -138,17 +139,20 @@ const OperatorSection: FC<Props> = ({ navigate }) => {
                                 avatar={item.operator_name?.charAt(0).toLocaleUpperCase() || 'A'}
                                 onLongpress={() => showOperatorsRfos(item)}
                                 onButtonClick={() => {
-                                    setFocusedOperator(item)
+                                    setFocusedOperator(item);
                                     setVisible(true);
                                 }}
                                 buttonClickIcon={"pencil"}
-                                onDelete={() => handleDelete(item.operator_id ?? 0)}
-                            />
+                                onDelete={() => handleDelete(item.operator_id ?? 0)} />
                         );
                     }
                 }}
                 paginate={paginate}
-            />
+                onNoTicketsFound={function () {
+                    setFocusedOperator(undefined);
+                    showModal()
+                }}
+                noTicketFoundMessage={'No Operators Found!'} />
             <MyModal
                 visible={visible}
                 onDismiss={hideModal}

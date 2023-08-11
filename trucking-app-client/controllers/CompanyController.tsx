@@ -3,6 +3,7 @@ import { Company } from "../models/Company";
 import { isAxiosError } from 'axios';
 import { Customer } from "../models/Customer";
 import { AuthController } from "./AuthController";
+import { getAuthHeader } from '../utils/authHeader';
 export class CompanyController {
 
 
@@ -10,7 +11,7 @@ export class CompanyController {
         try {
             const response = await myAxios.get<Company>(`/company/`, {
                 headers: {
-                    Authorization: `Bearer ${await AuthController.getJWTToken()}`
+                    ...await getAuthHeader()
                 }
             });
             return response.data;

@@ -54,7 +54,10 @@ const OperatorForm: FC<FormProps<OperatorFormResult>> = (props) => {
                     </InputBox>
 
                     <Button onPress={(e) => handleSubmit()} disabled={submitting} style={{ backgroundColor: submitting ? theme.colors.onSurfaceDisabled : theme.colors.primary }}>
-                        {submitting ? "Loading..." : "Submit"}
+                        <Text style={{ color: 'white' }}>
+                            {submitting ? "Loading..." : "Submit"}
+
+                        </Text>
                     </Button>
                 </>
             )}
