@@ -10,6 +10,7 @@ import TicketSection from '../Tickets/TicketSection';
 import CustomerForm from '../Forms/CustomerForm';
 import { CustomerFormResult } from '../Forms/types';
 import MyModal from '../Modal/MyModal';
+import Excavator from '../../assets/svgs/Excavator';
 
 const StyledInput = styled(TextInput)`
     width: 90%;
@@ -143,6 +144,7 @@ const CustomerSection: FC<Props> = ({ navigateToTicket }) => {
             </StyledHeader>
             <TicketSection
                 noTicketFoundMessage={"No customers found!"}
+                noTicketFoundSVG={<Excavator width={125} height={125} stroke={'black'} />}
                 loading={loading}
                 title={'Customers'}
                 more={enablePaginate}

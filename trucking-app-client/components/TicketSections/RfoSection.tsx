@@ -11,6 +11,7 @@ import { RFOFormResult } from '../Forms/RFOForm';
 import { Operator } from '../../models/Operator';
 import moment from 'moment';
 import RFOCard from '../Cards/RFOCard';
+import Contract from '../../assets/svgs/Contract';
 
 type Props = {
     navigateToTicket: (rfo: RFO) => void;
@@ -157,7 +158,8 @@ const RFOSection: FC<Props> = ({ navigateToTicket, dispId, operId, operators }) 
                     setFocusedRFO(undefined);
                     showModal();
                 }}
-                noTicketFoundMessage={"No Billing Tickets Found!"}
+                noTicketFoundMessage={"No Request For Operators Found!"}
+                noTicketFoundSVG={<Contract width={125} height={125} stroke={'black'} fill={'black'} />}
                 render={({ item }: { item: RFO }) => {
                     if (item.operator?.operator_name?.match(search || '')) {
                         return (

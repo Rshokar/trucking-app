@@ -13,6 +13,7 @@ import RFOSection from './RfoSection';
 import { RFO } from '../../models/RFO';
 import { View } from 'react-native';
 import { set } from 'react-native-reanimated';
+import ConstructionWorker from '../../assets/svgs/ConstructionWorket';
 
 const StyledInput = styled(TextInput)`
     width: 90%;
@@ -129,6 +130,7 @@ const OperatorSection: FC<Props> = ({ navigate }) => {
                 more={enablePaginate}
                 data={operators}
                 onRefresh={handleRefresh}
+                noTicketFoundSVG={<ConstructionWorker width={125} height={125} stroke={'black'} />}
                 render={({ item }: { item: Operator; }) => {
                     if (item.operator_name?.match(query.operator_name || '')) {
                         return (

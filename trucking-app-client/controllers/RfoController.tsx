@@ -2,7 +2,7 @@ import qs from 'qs';
 import { RFO, RFOQuery } from "../models/RFO";
 import myAxios from '../config/myAxios';
 import { isAxiosError } from 'axios';
-import { AuthController } from './AuthController'; // For JWT
+import { getAuthHeader } from '../utils/authHeader';
 
 export class RFOController {
 
@@ -10,7 +10,7 @@ export class RFOController {
         try {
             const response = await myAxios.get<RFO>(`/rfo/${query.rfo_id}`, {
                 headers: {
-                    Authorization: `Bearer ${await AuthController.getJWTToken()}`
+                    ...await getAuthHeader()
                 }
             });
             return response.data;
@@ -32,7 +32,7 @@ export class RFOController {
         try {
             const response = await myAxios.get<RFO[]>(`/rfo?${queryString}`, {
                 headers: {
-                    Authorization: `Bearer ${await AuthController.getJWTToken()}`
+                    ...await getAuthHeader()
                 }
             });
             return response.data;
@@ -48,7 +48,7 @@ export class RFOController {
         try {
             await myAxios.delete(`/rfo/${id}`, {
                 headers: {
-                    Authorization: `Bearer ${await AuthController.getJWTToken()}`
+                    ...await getAuthHeader()
                 }
             });
         } catch (error) {
@@ -63,7 +63,7 @@ export class RFOController {
         try {
             const response = await myAxios.put<RFO>(`/rfo/${id}`, model, {
                 headers: {
-                    Authorization: `Bearer ${await AuthController.getJWTToken()}`
+                    ...await getAuthHeader()
                 }
             });
             return response.data;
@@ -79,7 +79,7 @@ export class RFOController {
         try {
             const response = await myAxios.post<RFO>(`/rfo`, model, {
                 headers: {
-                    Authorization: `Bearer ${await AuthController.getJWTToken()}`
+                    ...await getAuthHeader()
                 }
             });
             return response.data;

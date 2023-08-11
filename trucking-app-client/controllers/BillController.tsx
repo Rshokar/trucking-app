@@ -5,6 +5,7 @@ import { isAxiosError } from 'axios';
 import { AuthController } from './AuthController';
 import * as mime from 'mime'
 import { Platform } from 'react-native';
+import { getAuthHeader } from '../utils/authHeader';
 
 export class BillController {
 
@@ -12,7 +13,7 @@ export class BillController {
         try {
             const response = await myAxios.get<Bill>(`/billing_ticket/${query.bill_id}`, {
                 headers: {
-                    Authorization: `Bearer ${await AuthController.getJWTToken()}`
+                    ... await getAuthHeader()
                 }
             });
             return response.data;
@@ -31,7 +32,7 @@ export class BillController {
         try {
             const response = await myAxios.get<Bill[]>(`/billing_ticket?${queryString}`, {
                 headers: {
-                    Authorization: `Bearer ${await AuthController.getJWTToken()}`
+                    ... await getAuthHeader()
                 }
             });
             return response.data;
@@ -47,7 +48,7 @@ export class BillController {
         try {
             await myAxios.delete(`/billing_ticket/${id}`, {
                 headers: {
-                    Authorization: `Bearer ${await AuthController.getJWTToken()}`
+                    ... await getAuthHeader()
                 }
             });
         } catch (error) {
@@ -63,7 +64,7 @@ export class BillController {
             const response = await myAxios.put<Bill>(`/billing_ticket/${id}`, model, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
-                    Authorization: `Bearer ${await AuthController.getJWTToken()}`
+                    ... await getAuthHeader()
                 }
             });
             return response.data;
@@ -98,7 +99,7 @@ export class BillController {
             const response = await myAxios.post<Bill>(`/billing_ticket/`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
-                    Authorization: `Bearer ${await AuthController.getJWTToken()}`
+                    ... await getAuthHeader()
                 }
             });
             return response.data;
@@ -114,7 +115,7 @@ export class BillController {
         try {
             const response = await myAxios.get<string>(`/billing_ticket/${id}/image`, {
                 headers: {
-                    Authorization: `Bearer ${await AuthController.getJWTToken()}`
+                    ... await getAuthHeader()
                 }
             });
             return response.data;

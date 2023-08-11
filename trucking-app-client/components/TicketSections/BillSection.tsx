@@ -10,6 +10,7 @@ import MyModal from '../Modal/MyModal';
 import BillForm from '../Forms/BillForm';
 import { BillFormResult } from '../Forms/BillForm';
 import BillCard from '../Cards/BillCard';
+import BillSVG from '../../assets/svgs/BillSVG';
 
 const StyledInput = styled(TextInput)`
     width: 90%;
@@ -156,6 +157,7 @@ const BillSection: FC<Props> = ({ navigateToTicket, rfoId }) => {
                     setFocusedBill(undefined);
                     showModal();
                 }}
+                noTicketFoundSVG={<BillSVG width={125} height={125} stroke={'black'} />}
                 noTicketFoundMessage={"No Billing Tickets Found!"}
                 render={({ item }: { item: Bill }) => {
                     if (item.ticket_number?.toString().includes(search)) {
