@@ -1,21 +1,17 @@
 import React, { FunctionComponent, useEffect, useState } from 'react'
 import { StackScreenProps } from '@react-navigation/stack'
 import styled from 'styled-components/native'
+import { Image } from 'react-native'
 
-import { Tabs, TabScreen, useTabNavigation } from 'react-native-paper-tabs'
+import { Tabs, TabScreen } from 'react-native-paper-tabs'
 
-import { AuthController } from '../../controllers/AuthController'
-import { DispatchController } from '../../controllers/DispatchController'
 import { RoofStackParamList } from '../../navigators/RoofStack'
 import { Customer, CustomerQuery } from '../../models/Customer'
-import { Dispatch, DispatchQuery } from '../../models/Dispatch'
 
 import DispatchSection from '../../components/TicketSections/DispatchSection'
 import OperatorSection from '../../components/TicketSections/OperatorSection'
 import CustomerSection from '../../components/TicketSections/CustomerSection'
 import { CustomerController } from '../../controllers/CustomerController'
-import { number } from 'yup'
-import { View, Text } from 'react-native'
 
 const HomeContainer = styled.View`
     width: 100%; 
@@ -52,7 +48,7 @@ const Home: FunctionComponent<Props> = ({ navigation, route }) => {
     return (
         <HomeContainer>
             <Tabs>
-                <TabScreen label="Dispatches">
+                <TabScreen label={""} icon={'book'}>
                     <DispatchSection
                         removeCustomerFilter={handleCustomerFilter}
                         filteringCustomers={filterCustomers}
@@ -60,11 +56,11 @@ const Home: FunctionComponent<Props> = ({ navigation, route }) => {
                         navigateToTickets={(dispId: string): void => navigation.navigate("Tickets", { dispId: parseFloat(dispId) })}
                     />
                 </TabScreen>
-                <TabScreen label="Customers">
+                <TabScreen label="" icon="excavator">
                     <CustomerSection
                         navigateToTicket={handleCustomerFilter} />
                 </TabScreen>
-                <TabScreen label="Operators">
+                <TabScreen label="" icon={'account-hard-hat'} >
 
                     <OperatorSection
                         navigate={navigation.navigate}
