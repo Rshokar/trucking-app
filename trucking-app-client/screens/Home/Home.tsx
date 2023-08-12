@@ -12,6 +12,7 @@ import DispatchSection from '../../components/TicketSections/DispatchSection'
 import OperatorSection from '../../components/TicketSections/OperatorSection'
 import CustomerSection from '../../components/TicketSections/CustomerSection'
 import Cache from '../../utils/Cache'
+import { Operator } from '../../models/Operator';
 
 const HomeContainer = styled.View`
     width: 100%; 
@@ -28,12 +29,17 @@ const Home: FunctionComponent<Props> = ({ navigation, route }) => {
 
     useEffect(() => {
         const customerCache = Cache.getInstance(Customer);
+        const operatorCache = Cache.getInstance(Operator);
         setCustomers([...customerCache.getData()])
         customerCache.subscribe({
             id: customerCacheId,
-            onChange: (data: Customer[]) => {
+            onChange: setCustomers
+        })
+
+        operatorCache.subscribe({
+            id: customerCacheId,
+            onChange: (data: Operator[]) => {
                 console.log("CHANGE", data);
-                setCustomers(data)
             }
         })
     }, [])

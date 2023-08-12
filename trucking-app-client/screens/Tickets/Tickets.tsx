@@ -15,14 +15,14 @@ import RfoSection from '../../components/TicketSections/RfoSection'
 import { OperatorController } from '../../controllers/OperatorController'
 import { Operator, OperatorQuery } from '../../models/Operator'
 import { Snackbar } from 'react-native-paper'
-import { ScrollView } from 'react-native'
 import { RFO, RFOQuery } from '../../models/RFO'
 import { Bill } from '../../models/Bill'
 import DispatchCard from '../../components/Cards/DIspatchCard'
 import RFOCard from '../../components/Cards/RFOCard'
 import BillSection from '../../components/TicketSections/BillSection'
 import { RFOController } from '../../controllers/RfoController'
-
+import Cache from '../../utils/Cache'
+import uuid from 'react-native-uuid'
 
 const BalanceContainer = styled(Container)`
     background-color: ${colors.graylight}; 
@@ -52,9 +52,10 @@ const Tickets: FunctionComponent<Props> = ({ route }) => {
     const [dispatch, setDispatch] = useState<Dispatch>();
     const [rfo, setRFO] = useState<RFO>();
     const [bill, setBill] = useState<Bill>();
-    const [operators, setOperators] = useState<Operator[]>([]);
+    const [operators, setOperators] = useState<Operator[]>(Cache.getInstance(Operator).getData());
     const [snackbarMessage, setSnackbarMessage] = useState("");
     const [showSnackBar, setShowSnackBar] = useState<boolean>(false);
+    const [operatorCacheId] = useState<string>(uuid.v4() as string)
 
     // Gets dispatch and updates companies and customers saved in local storage
     useEffect(() => {
@@ -102,24 +103,13 @@ const Tickets: FunctionComponent<Props> = ({ route }) => {
         run()
     }, [tickets.rfoId, operators])
 
-    // Get Operators
+    // Set Operator subscriber
     useEffect(() => {
-        const run = async () => {
-            try {
-                // Get company from local storage
-                const comp = await AuthController.getCompany();
-                const oC = new OperatorController();
-                const oQ = new OperatorQuery();
-                oQ.company_id = comp.company_id;
-                oQ.limit = 100;
-                const opers: Operator[] = await oC.getAll(oQ);
-                setOperators(opers);
-            } catch (err: any) {
-                setSnackbarMessage(err.message);
-                setShowSnackBar(true)
-            }
-        }
-        run();
+        const cache = Cache.getInstance(Operator);
+        cache.subscribe({
+            id: operatorCacheId,
+            onChange: setOperators
+        })
     }, [])
 
     console.log(rfo)
