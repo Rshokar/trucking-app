@@ -15,6 +15,11 @@ export class Customer implements Model {
 
 
 export class CustomerQuery implements Query {
+
+    constructor(limit?: number) {
+        this.limit = limit ?? 20;
+    }
+
     customer_id: number = 0;
     customer_name?: string;
     page: number = 0;

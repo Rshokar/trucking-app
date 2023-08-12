@@ -15,6 +15,7 @@ import { AuthController } from '../../controllers/AuthController'
 import { User } from '../../models/User'
 import { FIREBASE_AUTH } from '../../config/firebaseConfig'
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth'
+import Cache from '../../utils/Cache'
 
 
 // Custom Components
@@ -61,9 +62,11 @@ import { StackScreenProps } from '@react-navigation/stack'
 import background from '../../assets/welcome.png'
 import FlashAnimation from '../../components/Animated/FlashAnimation'
 import { CustomerController } from '../../controllers/CustomerController'
-import { CustomerQuery } from '../../models/Customer'
+import { Customer, CustomerQuery } from '../../models/Customer'
 import { Company } from '../../models/Company'
 import { CompanyController } from '../../controllers/CompanyController'
+import { Operator, OperatorQuery } from '../../models/Operator'
+import { OperatorController } from '../../controllers/OperatorController'
 
 
 
@@ -99,6 +102,9 @@ const Welcome: FunctionComponent<Props> = ({ navigation }) => {
                 if (!decodedToken) return;
                 AuthController.setJWTToken(decodedToken.token);
 
+                // This does not need to happen syncronusly
+                await loadCache();
+
                 // If the token is valid, it will decode without throwing an error
                 navigation.navigate("Home", { company: await AuthController.getCompany() });
             } catch (error) {
@@ -108,6 +114,23 @@ const Welcome: FunctionComponent<Props> = ({ navigation }) => {
 
         checkTokenValidity();
     }, []);
+
+    const loadCache = async () => {
+        // First get the customer and operator caches
+        const customerCache = Cache.getInstance(Customer);
+        const operatorCache = Cache.getInstance(Operator);
+        const cC = new CustomerController()
+        const oC = new OperatorController();
+        const cQ = new CustomerQuery(100);
+        const oQ = new OperatorQuery(100);
+
+        const cPromise = cC.getAll(cQ);
+        const oPromise = oC.getAll(oQ);
+
+        const [operators, customers] = await Promise.all([oPromise, cPromise]);
+        customerCache.setData(customers);
+        operatorCache.setData(operators);
+    }
 
 
 
@@ -119,7 +142,7 @@ const Welcome: FunctionComponent<Props> = ({ navigation }) => {
             const res = await signInWithEmailAndPassword(FIREBASE_AUTH, u.email, u.password);
             await AuthController.setJWTToken(await res.user.getIdToken())
             const cC = new CompanyController();
-            const comp = await cC.get()
+            const [comp] = await Promise.all([cC.get(), loadCache()]);
             AuthController.saveCompany(comp)
             setFlashColor(colors.success)
             setFlashMessage("Successfully Loggd In")
@@ -145,8 +168,7 @@ const Welcome: FunctionComponent<Props> = ({ navigation }) => {
             await AuthController.setJWTToken(await res.user.getIdToken())
             await AuthController.register(u, formResult.company, res.user.uid)
             const cC = new CompanyController();
-            const comp = await cC.get()
-
+            const [comp] = await Promise.all([cC.get(), loadCache()]);
             AuthController.saveCompany(comp)
             setFlashColor(colors.success)
             setFlashMessage("Successfully Registered")

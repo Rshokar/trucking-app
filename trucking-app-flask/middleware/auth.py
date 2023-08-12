@@ -21,7 +21,7 @@ def firebase_required(fn):
     def wrapper(*args, **kwargs):
         authHead = request.headers.get("Authorization-Fake-X", None)
 
-        print(request.headers)
+        # print(request.headers)
         if authHead is None:
             return make_response({"error": "Auth header missing"}, 401)
 

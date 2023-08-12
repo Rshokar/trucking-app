@@ -7,17 +7,17 @@ const myAxios = axios.create({
     baseURL: `${API_URL}`,
 });
 
-// Add a request interceptor
-myAxios.interceptors.request.use(function (config) {
-    // Log the headers
-    console.log('Axios Request Headers:', config.headers);
-    console.log('Axios Request URI:', config.url);
+// // Add a request interceptor
+// myAxios.interceptors.request.use(function (config) {
+//     // Log the headers
+//     console.log('Axios Request Headers:', config.headers);
+//     console.log('Axios Request URI:', config.url);
 
-    // Return the config so the request can proceed
-    return config;
-}, function (error) {
-    // If there's an error, you can handle it here
-    return Promise.reject(error);
-});
+//     // Return the config so the request can proceed
+//     return config;
+// }, function (error) {
+//     // If there's an error, you can handle it here
+//     return Promise.reject(error);
+// });
 
 export default myAxios;

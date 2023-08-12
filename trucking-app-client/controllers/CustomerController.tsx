@@ -4,6 +4,7 @@ import { isAxiosError } from 'axios';
 import myAxios from '../config/myAxios';
 import { AuthController } from './AuthController';
 import { getAuthHeader } from '../utils/authHeader';
+import Cache from '../utils/Cache';
 
 export class CustomerController {
 
@@ -48,6 +49,8 @@ export class CustomerController {
                     ...await getAuthHeader()
                 }
             });
+            const cache = Cache.getInstance(Customer);
+            cache.setData([...cache.getData().filter(c => ("" + c.customer_id) !== id)])
             return response.status === 200;
         } catch (error) {
             if (isAxiosError(error)) {
@@ -64,6 +67,18 @@ export class CustomerController {
                     ...await getAuthHeader()
                 }
             });
+
+            const cCache = Cache.getInstance(Customer);
+
+            const index = cCache.getData().findIndex(c => c.customer_id.toString() === id);
+
+            // if not found in cache insert
+            if (index === -1) cCache.setData([...cCache.getData(), response.data]);
+            else {
+                const cache = cCache.getData();
+                cache[index] = response.data;
+                cCache.setData([...cache]);
+            }
             return response.data;
         } catch (error) {
             if (isAxiosError(error)) {
@@ -83,6 +98,8 @@ export class CustomerController {
                     ...await getAuthHeader()
                 }
             });
+            const cCache = Cache.getInstance(Customer);
+            cCache.setData([...cCache.getData(), response.data]);
             return response.data;
         } catch (error) {
             if (isAxiosError(error)) {

@@ -16,6 +16,10 @@ export class Operator implements Model {
 }
 
 export class OperatorQuery implements Query {
+
+    constructor(limit?: number) {
+        this.limit = limit ?? 10;
+    }
     operator_id?: number;
     company_id?: number;
     operator_name?: string;

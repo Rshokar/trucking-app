@@ -1,17 +1,17 @@
 import React, { FunctionComponent, useEffect, useState } from 'react'
 import { StackScreenProps } from '@react-navigation/stack'
 import styled from 'styled-components/native'
-import { Image } from 'react-native'
+import uuid from 'react-native-uuid';
 
 import { Tabs, TabScreen } from 'react-native-paper-tabs'
 
 import { RoofStackParamList } from '../../navigators/RoofStack'
-import { Customer, CustomerQuery } from '../../models/Customer'
+import { Customer } from '../../models/Customer'
 
 import DispatchSection from '../../components/TicketSections/DispatchSection'
 import OperatorSection from '../../components/TicketSections/OperatorSection'
 import CustomerSection from '../../components/TicketSections/CustomerSection'
-import { CustomerController } from '../../controllers/CustomerController'
+import Cache from '../../utils/Cache'
 
 const HomeContainer = styled.View`
     width: 100%; 
@@ -23,17 +23,19 @@ export type Props = StackScreenProps<RoofStackParamList, "Home">
 const Home: FunctionComponent<Props> = ({ navigation, route }) => {
     const [customers, setCustomers] = useState<Customer[]>([])
     const [filterCustomers, setFilteredCustomers] = useState<Set<Customer>>(new Set<Customer>());
+    const [customerCacheId] = useState<string>(uuid.v4() as string)
 
 
     useEffect(() => {
-        async function fetchCustomers() {
-            const cC = new CustomerController();
-            const cQ = new CustomerQuery();
-            cQ.limit = 100
-            const customerList = await cC.getAll(cQ)
-            setCustomers(customerList)
-        }
-        fetchCustomers()
+        const customerCache = Cache.getInstance(Customer);
+        setCustomers([...customerCache.getData()])
+        customerCache.subscribe({
+            id: customerCacheId,
+            onChange: (data: Customer[]) => {
+                console.log("CHANGE", data);
+                setCustomers(data)
+            }
+        })
     }, [])
 
     // Here we will add or remove the customer from the set. 
