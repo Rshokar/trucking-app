@@ -70,13 +70,11 @@ const BillSection: FC<Props> = ({ navigateToTicket, rfoId }) => {
         try {
             const bC = new BillController();
             const res: Bill = await bC.create(data);
-            console.log("HELLO WORLD")
-            console.log('RETURNED BILL', res);
             setBills([...bills, res]);
             hideModal();
             return true;
         } catch (err: any) {
-            console.log(err);
+            console.log("ERROR", err.message);
             setSnackbarMessage(err.message);
             setSnackbarVisible(true);
             return false;

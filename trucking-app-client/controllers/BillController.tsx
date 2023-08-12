@@ -2,10 +2,10 @@ import qs from 'qs';
 import { Bill, BillQuery } from "../models/Bill";
 import myAxios from '../config/myAxios';
 import { isAxiosError } from 'axios';
-import { AuthController } from './AuthController';
 import * as mime from 'mime'
 import { Platform } from 'react-native';
 import { getAuthHeader } from '../utils/authHeader';
+import MyImageCompressor from '../utils/ImageCompressor';
 
 export class BillController {
 
@@ -85,8 +85,10 @@ export class BillController {
                 android: model.file.uri,
             });
 
+            if (!uri) throw Error("Image uri is undefined");
+
             model.file && formData.append('file', {
-                uri: uri,
+                uri: await MyImageCompressor.compressImage(model.file),
                 type: mime.getType(model.file.uri),
                 name: 'uploaded-image.jpg'
             } as any);
@@ -94,7 +96,7 @@ export class BillController {
 
         formData.append('ticket_number', model.ticket_number + '');
         formData.append('rfo_id', model.rfo_id + '');
-
+        console.log("SEND CREATE BILL REQUEST");
         try {
             const response = await myAxios.post<Bill>(`/billing_ticket/`, formData, {
                 headers: {
