@@ -10,7 +10,6 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 
 import { colors } from '../colors';
 import { AnimationProps } from './types';
-import Break from '../Break/Break';
 
 const DEFAULT_VH: number = .85;
 const { height: screenHeight } = Dimensions.get('window');
@@ -85,9 +84,8 @@ const SwipeDownViewAnimation: FunctionComponent<SwipeDownViewAnimationProps> = (
             ]}
             {...panResponder.panHandlers}
         >
-            <Break innerRef={breakRef} >
-                <Ionicons name="caret-down-outline" size={20} color={colors.secondary} />
-            </Break>
+            <Ionicons name="caret-down-outline" size={20} color={colors.secondary} />
+
             {props.children}
         </Animated.View>
     );

@@ -4,7 +4,6 @@ export class Customer implements Model {
     customer_id: number = 0;
     company_id?: number;
     customer_name?: string
-    deleted?: boolean
 
 
     getId(): number {

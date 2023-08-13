@@ -11,7 +11,6 @@ class Customer(Base):
         'company.company_id'), nullable=False)
     customer_name = Column('customer_name', String(
         50), nullable=False)
-    deleted = Column('deleted', Boolean(), default=False, nullable=False)
 
     @validates("customer_name")
     def validate_customer_name(self, key, customer_name):
@@ -40,7 +39,6 @@ class Customer(Base):
             "customer_id": self.customer_id,
             "customer_name": self.customer_name,
             "company_id": self.company_id,
-            "deleted": self.deleted,
         }
 
     def get_customer_by_id(session, customer_id):

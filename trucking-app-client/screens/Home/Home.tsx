@@ -29,18 +29,10 @@ const Home: FunctionComponent<Props> = ({ navigation, route }) => {
 
     useEffect(() => {
         const customerCache = Cache.getInstance(Customer);
-        const operatorCache = Cache.getInstance(Operator);
         setCustomers([...customerCache.getData()])
         customerCache.subscribe({
             id: customerCacheId,
             onChange: setCustomers
-        })
-
-        operatorCache.subscribe({
-            id: customerCacheId,
-            onChange: (data: Operator[]) => {
-                console.log("CHANGE", data);
-            }
         })
     }, [])
 

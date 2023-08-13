@@ -42,23 +42,15 @@ export class CustomerController {
         }
     }
 
-    async delete(id: string): Promise<boolean> {
+    async delete(id: string): Promise<void> {
         try {
-            const response = await myAxios.delete(`/company/customers/${id}`, {
+            await myAxios.delete(`/company/customers/${id}`, {
                 headers: {
                     ...await getAuthHeader()
                 }
             });
             const cache = Cache.getInstance(Customer);
-
-            // If returns a 200 then there are related dispatches
-            if (response.status === 201) {
-                cache.setData([...cache.getData().filter(c => ("" + c.customer_id) !== id)])
-                return true;
-            }
-
-            // Return true if deleted
-            return false;
+            cache.setData([...cache.getData().filter(c => ("" + c.customer_id) !== id)])
         } catch (error) {
             if (isAxiosError(error)) {
                 throw new Error(error.response?.data)

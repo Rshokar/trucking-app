@@ -66,7 +66,7 @@ const CustomerSection: FC<Props> = ({ navigateToTicket }) => {
             const res: Customer = await cC.create(data as Customer);
             setCustomers([...customers, res]);
             showSnackbar({
-                message: 'Created Customer',
+                message: 'Customer created successfully',
                 color: theme.colors.primary,
                 onClickText: 'Ok'
             })
@@ -121,26 +121,13 @@ const CustomerSection: FC<Props> = ({ navigateToTicket }) => {
     const handleDelete = async (id: string): Promise<boolean> => {
         try {
             const cC = new CustomerController();
-            const res = await cC.delete(id);
-
-            // if true customer was deleted otherwise flagged deleted
-            if (res) {
-                showSnackbar({
-                    message: 'Customer deleted.',
-                    color: theme.colors.primary,
-                    onClickText: 'Ok'
-                })
-                setCustomers([...customers.filter(c => (c.customer_id + "") !== id)])
-            } else {
-                showSnackbar({
-                    message: 'Customer marked deleted',
-                    color: theme.colors.primary,
-                    onClickText: 'Ok'
-                })
-                let index = customers.findIndex(c => c.customer_id.toString() === id);
-                customers[index].deleted = true;
-                setCustomers([...customers]);
-            }
+            await cC.delete(id);
+            showSnackbar({
+                message: 'Customer deleted.',
+                color: theme.colors.primary,
+                onClickText: 'Ok'
+            })
+            setCustomers([...customers.filter(c => (c.customer_id + "") !== id)])
             return true;
         } catch (err: any) {
             console.log(err);
@@ -188,7 +175,6 @@ const CustomerSection: FC<Props> = ({ navigateToTicket }) => {
                             <TicketItem
                                 aviColor={theme.colors.tertiary}
                                 title={item.customer_name || ''}
-                                subtitle={item.deleted ? "Deleted" : undefined}
                                 avatar={item.customer_name?.charAt(0).toLocaleUpperCase() || 'A'}
                                 onButtonClick={() => {
                                     setFocusedCustomer(item);

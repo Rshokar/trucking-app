@@ -78,13 +78,6 @@ class CustomerController:
         if not customer:
             return make_response("Customer not found", 404)
 
-        # check if the customer has any dispatches
-        if customer.dispatches:
-            # if there are related dispatches, mark the customer as deleted
-            customer.deleted = True
-            session.commit()
-            return make_response(f"Customer {customer_id} deleted (marked as deleted due to dependent dispatches)", 200)
-
         # delete the customer
         try:
             session.delete(customer)
