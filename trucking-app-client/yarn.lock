@@ -8497,7 +8497,7 @@ react-native-paper-dates@^0.18.12:
 
 react-native-paper-dropdown@^1.0.7:
   version "1.0.7"
-  resolved "https://registry.npmjs.org/react-native-paper-dropdown/-/react-native-paper-dropdown-1.0.7.tgz"
+  resolved "https://registry.yarnpkg.com/react-native-paper-dropdown/-/react-native-paper-dropdown-1.0.7.tgz#64fe004b05b73ca5c781873d800ac5062b35bdc9"
   integrity sha512-St0rZFw5sC7mbXtFCOGsyEa0fIBaG6Cfz78RsjFNzTj+rKd1i9qlDY2O7eOa2zAUEnFlL+C7FXdXUY9RUNELNw==
 
 react-native-paper-tabs@^0.7.0:

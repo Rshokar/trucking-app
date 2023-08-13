@@ -61,9 +61,9 @@ const RFOForm: FC<Props> = ({ onSubmit, defaultValues, operators }) => {
     const [operatorDropdownVisible, setOperatorDropdownVisible] = useState(false);
     const [truckDropdownVisible, setTruckDropdownVisible] = useState(false);
     const [trailerDropdownVisible, setTrailerDropdownVisible] = useState(false);
-
     const operatorList = operators.map(operator => ({ label: operator.operator_name + "", value: operator.operator_id ?? 0 }));
 
+    console.log('OPERATORS', operators);
 
     const iv: any = { ...defaultValues };
 

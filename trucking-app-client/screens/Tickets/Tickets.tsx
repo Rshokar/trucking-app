@@ -51,10 +51,7 @@ const Tickets: FunctionComponent<Props> = ({ route }) => {
 
     const [dispatch, setDispatch] = useState<Dispatch>();
     const [rfo, setRFO] = useState<RFO>();
-    const [bill, setBill] = useState<Bill>();
     const [operators, setOperators] = useState<Operator[]>(Cache.getInstance(Operator).getData());
-    const [snackbarMessage, setSnackbarMessage] = useState("");
-    const [showSnackBar, setShowSnackBar] = useState<boolean>(false);
     const [operatorCacheId] = useState<string>(uuid.v4() as string)
 
     // Gets dispatch and updates companies and customers saved in local storage
@@ -112,7 +109,7 @@ const Tickets: FunctionComponent<Props> = ({ route }) => {
         })
     }, [])
 
-    console.log(rfo)
+    console.log("OPERATROS", operators);
 
 
     return (
@@ -138,13 +135,6 @@ const Tickets: FunctionComponent<Props> = ({ route }) => {
                     console.log('SHOW BILL IMAGE')
                 }} />
             }
-            <Snackbar
-                visible={showSnackBar}
-                onDismiss={function (): void {
-                    setShowSnackBar(false);
-                }}>
-                {snackbarMessage}
-            </Snackbar>
         </BalanceContainer>
     )
 }
