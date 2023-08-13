@@ -1,6 +1,5 @@
 from sqlalchemy.exc import IntegrityError
-from utils import make_response
-from flask import g
+from flask import g, make_response
 from sqlalchemy import and_
 from models import Company, Customer
 
@@ -14,7 +13,7 @@ class CustomerController:
 
         # See if the customer exists
         if not customer:
-            return make_response({"message": "Customer not found"}, 404)
+            return make_response("Customer not found", 404)
 
         # return the customer
         return make_response(customer.to_dict(), 200)
@@ -52,13 +51,11 @@ class CustomerController:
         data = request.get_json()
         company_id = data.get("company_id")
         customer_name = data.get("customer_name")
-        print(data)
         # See if the currently logged in user owns the company
         comp = session.query(Company).filter_by(
             owner_id=g.user["uid"]).first()
-        print(comp)
         if not comp:
-            return make_response({"message": "Company not found"}, 404)
+            return make_response("Company not found", 404)
 
         # create the customer
         customer = Customer(company_id=comp.company_id,
@@ -68,9 +65,8 @@ class CustomerController:
             session.add(customer)
             session.commit()
             return make_response(customer.to_dict(), 201)
-        except IntegrityError as e:
-            print("Exception tyoe: ", type(e))
-            return make_response({"message": "Customer already exists"}, 400)
+        except IntegrityError:
+            return make_response("Customer already exists", 400)
 
     def delete_customer(session, customer_id):
 
@@ -80,23 +76,23 @@ class CustomerController:
 
         # See if the customer exists
         if not customer:
-            return make_response({"message": "Customer not found"}, 404)
+            return make_response("Customer not found", 404)
 
         # check if the customer has any dispatches
         if customer.dispatches:
             # if there are related dispatches, mark the customer as deleted
             customer.deleted = True
             session.commit()
-            return make_response({"message": f"Customer {customer_id} deleted (marked as deleted due to dependent dispatches)"}, 200)
+            return make_response(f"Customer {customer_id} deleted (marked as deleted due to dependent dispatches)", 200)
 
         # delete the customer
         try:
             session.delete(customer)
             session.commit()
-            return make_response({"message": f"Customer {customer_id} deleted"}, 201)
+            return make_response(f"Customer {customer_id} deleted", 201)
         except IntegrityError:
             session.rollback()
-            return make_response({"error": "Cannot delete customer because of dependent records"}, 400)
+            return make_response("Cannot delete customer because of dependent records", 400)
 
     def update_customer(session, request, customer_id):
 
@@ -105,7 +101,7 @@ class CustomerController:
             session, customer_id, g.user["uid"])
 
         if not customer:
-            return make_response({"message": "Customer not found"}, 404)
+            return make_response("Customer not found", 404)
 
         # Get the attributes from the request
         data = request.get_json()
@@ -119,4 +115,4 @@ class CustomerController:
             return make_response(customer.to_dict(), 201)
         except IntegrityError as e:
             session.rollback()
-            return make_response({"error", "Customer name already exist"}, 400)
+            return make_response("Customer name already exist", 400)

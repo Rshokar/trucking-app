@@ -1,5 +1,5 @@
 import React, { FC, useState, useEffect } from 'react';
-import { FAB, TextInput, useTheme, Snackbar } from 'react-native-paper';
+import { FAB, TextInput, useTheme } from 'react-native-paper';
 import { useTabNavigation } from 'react-native-paper-tabs';
 import styled from 'styled-components/native';
 import { Customer, CustomerQuery } from '../../models/Customer';
@@ -11,6 +11,7 @@ import CustomerForm from '../Forms/CustomerForm';
 import { CustomerFormResult } from '../Forms/types';
 import MyModal from '../Modal/MyModal';
 import Excavator from '../../assets/svgs/Excavator';
+import useSnackbar from '../../hooks/useSnackbar';
 
 const StyledInput = styled(TextInput)`
     width: 90%;
@@ -24,8 +25,6 @@ const CustomerSection: FC<Props> = ({ navigateToTicket }) => {
     const [customers, setCustomers] = useState<Customer[]>([]);
     const [query, setQuery] = useState<CustomerQuery>(new CustomerQuery());
     const [enablePaginate, setEnablePaginate] = useState<boolean>(false);
-    const [snackbarVisible, setSnackbarVisible] = useState(false);
-    const [snackbarMessage, setSnackbarMessage] = useState('');
     const [visible, setVisible] = useState(false);
     const [focusedCustomers, setFocusedCustomer] = useState<Customer>();
     const showModal = () => setVisible(true);
@@ -33,6 +32,8 @@ const CustomerSection: FC<Props> = ({ navigateToTicket }) => {
     const [loading, setLoading] = useState<boolean>(false)
     const theme = useTheme();
     const tabNav = useTabNavigation();
+    const { showSnackbar } = useSnackbar();
+
     useEffect(() => {
         getCustomers();
     }, [query]);
@@ -64,12 +65,20 @@ const CustomerSection: FC<Props> = ({ navigateToTicket }) => {
             const cC = new CustomerController();
             const res: Customer = await cC.create(data as Customer);
             setCustomers([...customers, res]);
+            showSnackbar({
+                message: 'Created Customer',
+                color: theme.colors.primary,
+                onClickText: 'Ok'
+            })
             hideModal();
             return true;
         } catch (err: any) {
             console.log(err);
-            setSnackbarMessage(err.message);
-            setSnackbarVisible(true);
+            showSnackbar({
+                message: err.message,
+                color: theme.colors.error,
+                onClickText: 'Ok'
+            })
             return false;
         }
     }
@@ -84,12 +93,20 @@ const CustomerSection: FC<Props> = ({ navigateToTicket }) => {
             customers[index] = res;
             setCustomers([...customers]);
             setFocusedCustomer(undefined);
+            showSnackbar({
+                message: 'Customer successfully edited',
+                color: theme.colors.primary,
+                onClickText: 'Ok'
+            })
             hideModal();
             return true;
         } catch (err: any) {
             console.log(err);
-            setSnackbarMessage(err.message);
-            setSnackbarVisible(true);
+            showSnackbar({
+                message: err.message,
+                color: theme.colors.error,
+                onClickText: 'Ok'
+            })
             return false;
         }
     }
@@ -108,19 +125,30 @@ const CustomerSection: FC<Props> = ({ navigateToTicket }) => {
 
             // if true customer was deleted otherwise flagged deleted
             if (res) {
+                showSnackbar({
+                    message: 'Customer deleted.',
+                    color: theme.colors.primary,
+                    onClickText: 'Ok'
+                })
                 setCustomers([...customers.filter(c => (c.customer_id + "") !== id)])
             } else {
+                showSnackbar({
+                    message: 'Customer marked deleted',
+                    color: theme.colors.primary,
+                    onClickText: 'Ok'
+                })
                 let index = customers.findIndex(c => c.customer_id.toString() === id);
                 customers[index].deleted = true;
                 setCustomers([...customers]);
             }
-            setSnackbarMessage('Customer deleted successfully');
-            setSnackbarVisible(true);
             return true;
         } catch (err: any) {
             console.log(err);
-            setSnackbarMessage(err.message);
-            setSnackbarVisible(true);
+            showSnackbar({
+                message: err.message,
+                color: theme.colors.error,
+                onClickText: 'Ok'
+            })
             return false;
         }
     }
@@ -160,6 +188,7 @@ const CustomerSection: FC<Props> = ({ navigateToTicket }) => {
                             <TicketItem
                                 aviColor={theme.colors.tertiary}
                                 title={item.customer_name || ''}
+                                subtitle={item.deleted ? "Deleted" : undefined}
                                 avatar={item.customer_name?.charAt(0).toLocaleUpperCase() || 'A'}
                                 onButtonClick={() => {
                                     setFocusedCustomer(item);
@@ -188,20 +217,6 @@ const CustomerSection: FC<Props> = ({ navigateToTicket }) => {
                     onSubmit={handleFormSubmit}
                     defaultValues={focusedCustomers as CustomerFormResult} />
             </MyModal>
-
-            <Snackbar
-                visible={snackbarVisible}
-                onDismiss={() => setSnackbarVisible(false)}
-                action={{
-                    label: 'Dismiss',
-                    onPress: () => {
-                        setSnackbarVisible(false);
-                    },
-                }}
-            >
-                {snackbarMessage}
-            </Snackbar>
-
             {
                 !visible &&
                 <FAB icon="plus"

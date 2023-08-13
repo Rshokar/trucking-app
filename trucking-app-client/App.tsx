@@ -2,6 +2,7 @@ import { useFonts } from 'expo-font';
 import AppLoading from 'expo-app-loading';
 import { PaperProvider, DefaultTheme } from 'react-native-paper';
 import RoofStack from "./navigators/RoofStack";
+import { SnackbarProvider } from './providers/SnackBarProvider';
 import React, { useEffect } from 'react';
 
 
@@ -36,6 +37,8 @@ export default function App() {
   }
 
   return <PaperProvider theme={theme}>
-    <RoofStack />
+    <SnackbarProvider>
+      <RoofStack />
+    </SnackbarProvider>
   </PaperProvider>
 }

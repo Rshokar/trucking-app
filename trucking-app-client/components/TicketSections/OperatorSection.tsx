@@ -1,5 +1,5 @@
 import React, { FC, useState, useEffect } from 'react';
-import { TextInput, useTheme, FAB, Modal, Snackbar, Portal } from 'react-native-paper';
+import { TextInput, useTheme, FAB, Modal, Portal } from 'react-native-paper';
 import styled from 'styled-components/native';
 import { Operator, OperatorQuery } from '../../models/Operator';
 import { OperatorController } from '../../controllers/OperatorController';
@@ -12,7 +12,7 @@ import MyModal from '../Modal/MyModal';
 import RFOSection from './RfoSection';
 import { RFO } from '../../models/RFO';
 import { View } from 'react-native';
-import { set } from 'react-native-reanimated';
+import useSnackbar from '../../hooks/useSnackbar';
 import ConstructionWorker from '../../assets/svgs/ConstructionWorket';
 
 const StyledInput = styled(TextInput)`
@@ -30,13 +30,12 @@ const OperatorSection: FC<Props> = ({ navigate }) => {
     const [enablePaginate, setEnablePaginate] = useState<boolean>(false);
     const [visible, setVisible] = useState(false);
     const [focusedOperator, setFocusedOperator] = useState<Operator>();
-    const [snackbarVisible, setSnackbarVisible] = useState(false);
-    const [snackbarMessage, setSnackbarMessage] = useState('');
     const [showRfos, setShowRfos] = useState<boolean>(false)
     const theme = useTheme();
     const [loading, setLoading] = useState<boolean>(false);
     const showModal = () => setVisible(true);
     const hideModal = () => setVisible(false);
+    const { showSnackbar } = useSnackbar();
 
     useEffect(() => {
         getOperators();
@@ -72,18 +71,30 @@ const OperatorSection: FC<Props> = ({ navigate }) => {
                 res = await operatorController.update(focusedOperator.operator_id + "", formData as Operator);
                 const index = operators.findIndex(op => op.operator_id === focusedOperator.operator_id);
                 operators[index] = res;
+                showSnackbar({
+                    message: 'Operator successfuly edited',
+                    color: theme.colors.primary,
+                    onClickText: 'Ok'
+                })
             } else {
                 res = await operatorController.create(formData as Operator);
                 operators.push(res);
+                showSnackbar({
+                    message: 'Customer successfuly added',
+                    color: theme.colors.primary,
+                    onClickText: 'Ok'
+                })
             }
             setOperators([...operators]);
             setFocusedOperator(undefined);
             hideModal();
             return true;
         } catch (err: any) {
-            console.log(err);
-            setSnackbarMessage(err.message);
-            setSnackbarVisible(true);
+            showSnackbar({
+                message: err.message,
+                color: theme.colors.error,
+                onClickText: 'Ok'
+            })
             return true;
         }
     };
@@ -93,11 +104,18 @@ const OperatorSection: FC<Props> = ({ navigate }) => {
             const operatorController = new OperatorController();
             await operatorController.delete(operatorId + "");
             setOperators(operators.filter(op => op.operator_id !== operatorId));
+            showSnackbar({
+                message: 'Operator successfuly deleted.',
+                color: theme.colors.primary,
+                onClickText: 'Ok'
+            })
             return true
         } catch (err: any) {
-            console.log(err);
-            setSnackbarMessage(err.message);
-            setSnackbarVisible(true);
+            showSnackbar({
+                message: err.message,
+                color: theme.colors.error,
+                onClickText: 'Ok'
+            })
             return true
         }
     };
@@ -187,21 +205,6 @@ const OperatorSection: FC<Props> = ({ navigate }) => {
                     </View>
                 </Modal>
             </Portal>
-
-            <Snackbar
-                visible={snackbarVisible}
-                onDismiss={() => setSnackbarVisible(false)}
-                action={{
-                    label: 'Dismiss',
-                    onPress: () => {
-                        setSnackbarVisible(false);
-                    },
-                }}
-            >
-                {snackbarMessage}
-            </Snackbar>
-
-
             {
                 !visible &&
                 <FAB icon="plus"

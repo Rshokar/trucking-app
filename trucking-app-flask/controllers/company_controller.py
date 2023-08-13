@@ -11,11 +11,11 @@ class CompanyController:
             owner_id=g.user["uid"]).first()
 
         if not company:
-            return make_response({"error": "Company not found."}, 404)
+            return make_response("Company not found.", 404)
 
         # check if user is authorized to view company
         if not company.owner_id == g.user["uid"]:
-            return make_response({"error": "Unauthorized."}, 403)
+            return make_response("Unauthorized.", 403)
 
         return make_response(company.to_dict(), 200)
 
@@ -28,19 +28,19 @@ class CompanyController:
             session.commit()
             return make_response(company.to_dict(), 200)
         except ValueError as e:
-            return make_response({"error": str(e)}, 400)
+            return make_response(str(e), 400)
         except IntegrityError as e:
-            return make_response({"error": "Company already exists."}, 409)
+            return make_response("Company already exists.", 409)
 
     def update_company(session, request, company_id):
         company = session.query(Company).filter_by(
             company_id=company_id).first()
         if not company:
-            return make_response({"error": "Company not found."}, 404)
+            return make_response("Company not found.", 404)
 
         # check if user is authorized to update company
         if not company.owner_id == g.user["uid"]:
-            return make_response({"error": "Unauthorized."}, 403)
+            return make_response("Unauthorized.", 403)
 
         company.company_name = request.json.get(
             'company_name', company.company_name)
@@ -52,12 +52,12 @@ class CompanyController:
         company = session.query(Company).filter_by(
             company_id=company_id).first()
         if not company:
-            return make_response({"error": "Company not found."}, 404)
+            return make_response("Company not found.", 404)
 
         # check if user is authorized to delete company
         if not company.owner_id == g.user["uid"]:
-            return make_response({"error": "Unauthorized."}, 403)
+            return make_response("Unauthorized.", 403)
 
         session.delete(company)
         session.commit()
-        return make_response({"message": "Company deleted."}, 200)
+        return make_response("Company deleted.", 200)

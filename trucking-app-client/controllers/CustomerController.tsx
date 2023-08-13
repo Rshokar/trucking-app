@@ -50,8 +50,15 @@ export class CustomerController {
                 }
             });
             const cache = Cache.getInstance(Customer);
-            cache.setData([...cache.getData().filter(c => ("" + c.customer_id) !== id)])
-            return response.status === 200;
+
+            // If returns a 200 then there are related dispatches
+            if (response.status === 201) {
+                cache.setData([...cache.getData().filter(c => ("" + c.customer_id) !== id)])
+                return true;
+            }
+
+            // Return true if deleted
+            return false;
         } catch (error) {
             if (isAxiosError(error)) {
                 throw new Error(error.response?.data)
@@ -103,7 +110,6 @@ export class CustomerController {
             return response.data;
         } catch (error) {
             if (isAxiosError(error)) {
-                console.log(error.response?.data)
                 throw new Error(error.response?.data)
             }
             throw new Error("Error creating customer");

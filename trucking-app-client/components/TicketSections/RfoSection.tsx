@@ -12,6 +12,8 @@ import { Operator } from '../../models/Operator';
 import moment from 'moment';
 import RFOCard from '../Cards/RFOCard';
 import Contract from '../../assets/svgs/Contract';
+import useSnackbar from '../../hooks/useSnackbar';
+import Cache from '../../utils/Cache';
 
 type Props = {
     navigateToTicket: (rfo: RFO) => void;
@@ -41,6 +43,7 @@ const RFOSection: FC<Props> = ({ navigateToTicket, dispId, operId, operators }) 
     const hideModal = () => setVisible(false);
     const [showRFOCard, setShowRFOCards] = useState<boolean>(false)
     const theme = useTheme();
+    const { showSnackbar } = useSnackbar();
 
     useEffect(() => {
         getRFOs();
@@ -74,11 +77,18 @@ const RFOSection: FC<Props> = ({ navigateToTicket, dispId, operId, operators }) 
             const res: RFO = await rC.create(data as RFO);
             setRFOs([...rfos, res]);
             hideModal();
+            showSnackbar({
+                message: 'RFO successfuly added',
+                color: theme.colors.primary,
+                onClickText: 'Ok'
+            })
             return true;
         } catch (err: any) {
-            console.log(err);
-            setSnackbarMessage(err.message);
-            setSnackbarVisible(true);
+            showSnackbar({
+                message: err.message,
+                color: theme.colors.error,
+                onClickText: 'Ok'
+            })
             return false;
         }
     };
@@ -89,17 +99,24 @@ const RFOSection: FC<Props> = ({ navigateToTicket, dispId, operId, operators }) 
             const q = new RFOQuery();
             q.rfo_id = parseFloat(id);
             const res: RFO = await rC.update(id, data as RFO);
-            res.operator = focusedRFO?.operator;
+            res.operator = Cache.getInstance(Operator).getData().find(o => o.operator_id === res.operator_id);
             const index = rfos.findIndex(rfo => (rfo.rfo_id + "") === id);
             rfos[index] = res;
             setRFOs([...rfos]);
             setFocusedRFO(undefined);
+            showSnackbar({
+                message: 'RFO successfuly edited',
+                color: theme.colors.primary,
+                onClickText: 'Ok'
+            })
             hideModal();
             return true;
         } catch (err: any) {
-            console.log(err);
-            setSnackbarMessage(err.message);
-            setSnackbarVisible(true);
+            showSnackbar({
+                message: err.message,
+                color: theme.colors.error,
+                onClickText: 'Ok'
+            })
             return false;
         }
     };
@@ -128,13 +145,19 @@ const RFOSection: FC<Props> = ({ navigateToTicket, dispId, operId, operators }) 
             const rC = new RFOController();
             await rC.delete(id);
             setRFOs([...rfos.filter(r => (r.rfo_id + "") !== id)])
-            setSnackbarMessage('RFO deleted successfully');
-            setSnackbarVisible(true);
+            showSnackbar({
+                message: 'RFO successfuly deleted.',
+                color: theme.colors.primary,
+                onClickText: 'Ok'
+            })
             return true;
         } catch (err: any) {
             console.log(err);
-            setSnackbarMessage(err.message);
-            setSnackbarVisible(true);
+            showSnackbar({
+                message: err.message,
+                color: theme.colors.error,
+                onClickText: 'Ok'
+            })
             return false;
         }
     };
@@ -195,22 +218,9 @@ const RFOSection: FC<Props> = ({ navigateToTicket, dispId, operId, operators }) 
             >
                 <RFOForm
                     onSubmit={handleFormSubmit}
-                    defaultValues={focusedRFO as RFOFormResult}
+                    defaultValues={(rfos.length > 0 && !focusedRFO) ? rfos[rfos.length - 1] : focusedRFO as RFOFormResult}
                     operators={operators} />
             </MyModal>
-            <Snackbar
-                visible={snackbarVisible}
-                onDismiss={() => setSnackbarVisible(false)}
-                action={{
-                    label: 'Dismiss',
-                    onPress: () => {
-                        setSnackbarVisible(false);
-                    },
-                }}
-            >
-                {snackbarMessage}
-            </Snackbar>
-
             <Portal>
                 <Modal
                     visible={showRFOCard}

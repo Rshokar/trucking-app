@@ -11,6 +11,7 @@ import BillForm from '../Forms/BillForm';
 import { BillFormResult } from '../Forms/BillForm';
 import BillCard from '../Cards/BillCard';
 import BillSVG from '../../assets/svgs/BillSVG';
+import useSnackbar from '../../hooks/useSnackbar';
 
 const StyledInput = styled(TextInput)`
     width: 90%;
@@ -40,6 +41,7 @@ const BillSection: FC<Props> = ({ navigateToTicket, rfoId }) => {
     const [loading, setLoading] = useState<boolean>(false);
     const showModal = () => setVisible(true);
     const hideModal = () => setVisible(false);
+    const { showSnackbar } = useSnackbar();
 
     useEffect(() => {
         getBills();
@@ -72,11 +74,18 @@ const BillSection: FC<Props> = ({ navigateToTicket, rfoId }) => {
             const res: Bill = await bC.create(data);
             setBills([...bills, res]);
             hideModal();
+            showSnackbar({
+                message: 'Bill created successfully',
+                color: theme.colors.primary,
+                onClickText: 'Ok'
+            })
             return true;
         } catch (err: any) {
-            console.log("ERROR", err.message);
-            setSnackbarMessage(err.message);
-            setSnackbarVisible(true);
+            showSnackbar({
+                message: err.message,
+                color: theme.colors.error,
+                onClickText: 'Ok'
+            })
             return false;
         }
     };
@@ -84,17 +93,24 @@ const BillSection: FC<Props> = ({ navigateToTicket, rfoId }) => {
     const handleEditBill = async (data: Bill, id: string): Promise<boolean> => {
         try {
             const bC = new BillController();
-            const res: Bill = await bC.update<Bill>(id, data);
+            const res: Bill = await bC.update(id, data);
             const index = bills.findIndex(bill => (bill.bill_id + "") === id);
             bills[index] = res;
             setBills([...bills]);
             setFocusedBill(undefined);
             hideModal();
+            showSnackbar({
+                message: 'Bill successfully edited',
+                color: theme.colors.primary,
+                onClickText: 'Ok'
+            })
             return true;
         } catch (err: any) {
-            console.log(err);
-            setSnackbarMessage(err.message);
-            setSnackbarVisible(true);
+            showSnackbar({
+                message: err.message,
+                color: theme.colors.error,
+                onClickText: 'Ok'
+            })
             return false;
         }
     };
@@ -114,13 +130,18 @@ const BillSection: FC<Props> = ({ navigateToTicket, rfoId }) => {
             const bC = new BillController();
             await bC.delete(id);
             setBills([...bills.filter(b => (b.bill_id + "") !== id)]);
-            setSnackbarMessage('Bill deleted successfully');
-            setSnackbarVisible(true);
+            showSnackbar({
+                message: 'Bill successfully deleted',
+                color: theme.colors.primary,
+                onClickText: 'Ok'
+            })
             return true;
         } catch (err: any) {
-            console.log(err);
-            setSnackbarMessage(err.message);
-            setSnackbarVisible(true);
+            showSnackbar({
+                message: err.message,
+                color: theme.colors.error,
+                onClickText: 'Ok'
+            })
             return false;
         }
     };
@@ -170,7 +191,7 @@ const BillSection: FC<Props> = ({ navigateToTicket, rfoId }) => {
                                     setVisible(true);
                                 }}
                                 onLongpress={() => handleShowBill(item)}
-                                onClick={() => navigateToTicket(item)}
+                                onClick={() => handleShowBill(item)}
                                 buttonClickIcon={"pencil"}
                                 onDelete={async (): Promise<boolean> => await handleDelete(item.bill_id + "")}
                             />
@@ -207,12 +228,6 @@ const BillSection: FC<Props> = ({ navigateToTicket, rfoId }) => {
                     />
                 </Modal>
             </Portal>
-            <Snackbar
-                visible={snackbarVisible}
-                onDismiss={() => setSnackbarVisible(false)}
-            >
-                {snackbarMessage}
-            </Snackbar>
             <FAB
                 style={{
                     position: 'absolute',

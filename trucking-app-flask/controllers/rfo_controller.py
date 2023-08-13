@@ -1,6 +1,7 @@
 from flask import current_app as app, g
 from models import RFO, Dispatch, Operator, Company, Customer
 from sqlalchemy import and_
+from sqlalchemy.exc import IntegrityError
 from utils import make_response, send_operator_rfo
 from datetime import datetime
 from itsdangerous import BadTimeSignature, SignatureExpired, URLSafeTimedSerializer
@@ -21,7 +22,7 @@ class RfoController:
         try:
             rfo = session.query(RFO).filter_by(rfo_id=rfo_id).first()
             if rfo is None:
-                return make_response({'error': 'RFO not found'}, 404)
+                return make_response('RFO not found', 404)
             return make_response(rfo.to_dict(), 200)
         except Exception as e:
             print(e)
@@ -36,7 +37,7 @@ class RfoController:
                 .first()
             # if it does not, return a 404
             if (disp is None):
-                return make_response({"error": "Dispatch not found"}, 404)
+                return make_response("Dispatch not found", 404)
 
         rfos = session.query(RFO, Operator)\
             .join(Operator, Operator.operator_id == RFO.operator_id)\
@@ -69,23 +70,23 @@ class RfoController:
         # Check if dispatch exist
         disp = session.query(Dispatch).filter_by(dispatch_id=disp_id).first()
         if disp is None:
-            return make_response({'error': 'Dispatch not found'}, 404)
+            return make_response('Dispatch not found', 404)
 
         comp = session.query(Company).filter_by(
             owner_id=g.user["uid"]).first()
 
         if comp is None:
-            return make_response({'error': 'Company not found'}, 404)
+            return make_response('Company not found', 404)
 
         if comp.company_id != disp.company_id:
-            return make_response({"error": "Dispatch not found"}, 404)
+            return make_response("Dispatch not found", 404)
 
         oper_id = data['operator_id']
         # Check if operator exist
         oper = session.query(Operator).filter_by(
             operator_id=oper_id, company_id=comp.company_id).first()
         if oper is None:
-            return make_response({'error': 'Operator not found'}, 404)
+            return make_response('Operator not found', 404)
 
         rfo = RFO(
             dispatch_id=disp_id,
@@ -122,25 +123,25 @@ class RfoController:
 
         rfo = session.query(RFO).filter_by(rfo_id=rfo_id).first()
         if rfo is None:
-            return make_response({'error': 'RFO not found'}, 404)
+            return make_response('RFO not found', 404)
 
         # Get Company
         comp = session.query(Company).filter_by(
             owner_id=g.user["uid"]).first()
         if comp is None:
-            return make_response({'error': 'Company not found'}, 404)
+            return make_response('Company not found', 404)
 
         if operator_id != rfo.operator_id:
             oper = session.query(Operator).filter_by(
                 operator_id=operator_id, company_id=comp.company_id).first()
             if oper is None:
-                return make_response({'error': 'Operator not found'}, 404)
+                return make_response('Operator not found', 404)
 
         disp = session.query(Dispatch).filter_by(
             dispatch_id=rfo.dispatch_id, company_id=comp.company_id).first()
 
         if disp is None:
-            return make_response({'error': 'Dispatch not found'}, 404)
+            return make_response('Dispatch not found', 404)
 
         rfo.operator_id = operator_id
         rfo.load_location = load_location
@@ -167,11 +168,14 @@ class RfoController:
             .first()
 
         if rfo is None:
-            return make_response({'error': 'RFO not found'}, 404)
-
-        session.delete(rfo)
-        session.commit()
-        return make_response({'message': 'RFO deleted'}, 200)
+            return make_response('RFO not found', 404)
+        try:
+            session.delete(rfo)
+            session.commit()
+            return make_response('RFO deleted', 200)
+        except IntegrityError:
+            session.rollback()
+            return make_response("RFO has tickets refrencing it, cannot be deleted", 400)
 
     def operator_get_rfo(session, token):
         '''
@@ -189,9 +193,9 @@ class RfoController:
         try:
             data = s.loads(token, max_age=86400)  # Token valid for 24 hours
         except SignatureExpired:
-            return make_response({'error': 'Token expired.'}, 400)
+            return make_response('Token expired.', 400)
         except BadTimeSignature:
-            return make_response({'error': 'Invalid token.'}, 400)
+            return make_response('Invalid token.', 400)
 
         result = session.query(RFO, Dispatch, Company, Customer)\
             .join(Dispatch, RFO.dispatch_id == Dispatch.dispatch_id)\
@@ -200,7 +204,7 @@ class RfoController:
             .filter(RFO.rfo_id == data['rfo_id']).first()
 
         if result is None:
-            return make_response({'error': 'RFO not found.'}, 404)
+            return make_response('RFO not found.', 404)
 
         rfo, dispatch, company, customer = result
 
@@ -228,27 +232,27 @@ class RfoController:
         rfo = session.query(RFO).filter_by(rfo_id=rfo_id).first()
 
         if rfo is None:
-            return make_response({'error': 'RFO not found'}, 404)
+            return make_response('RFO not found', 404)
 
         operator = session.query(Operator).filter_by(
             operator_id=rfo.operator_id).first()
         if operator is None:
-            return make_response({'error': 'Operator not found'}, 404)
+            return make_response('Operator not found', 404)
 
         company = session.query(Company).filter_by(
             company_id=operator.company_id, owner_id=g.user["uid"]).first()
         if company is None:
-            return make_response({'error': 'Company not found'}, 404)
+            return make_response('Company not found', 404)
 
         dispatch = session.query(Dispatch).filter_by(
             dispatch_id=rfo.dispatch_id).first()
         if dispatch is None:
-            return make_response({'error': 'Dispatch not found'}, 404)
+            return make_response('Dispatch not found', 404)
 
         customer = session.query(Customer).filter_by(
             customer_id=dispatch.customer_id).first()
         if customer is None:
-            return make_response({'error': 'Customer not found'}, 404)
+            return make_response('Customer not found', 404)
         s = URLSafeTimedSerializer(SEND_OPERATOR_RFO_TOKEN_SECRET)
         token_data = {"operator_id": operator.operator_id,
                       "rfo_id": rfo.rfo_id}
@@ -260,6 +264,6 @@ class RfoController:
             send_operator_rfo(Mail(app), operator.operator_email,
                               rfo, operator, company, customer, dispatch, token)
         except Exception as e:
-            return make_response({'error': 'Failed to send email. ' + str(e)}, 500)
+            return make_response('Failed to send email. ' + str(e), 500)
 
-        return make_response({'message': 'Email sent to operator.'}, 200)
+        return make_response('Email sent to operator.', 200)

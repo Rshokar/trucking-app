@@ -3,9 +3,8 @@ from models import Dispatch, Company, Customer, RFO
 from sqlalchemy import func
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
-from flask import Response, jsonify
+from flask import Response,  make_response
 from datetime import datetime, timedelta
-from utils import make_response
 from flask import g
 
 
@@ -25,7 +24,7 @@ class DispatchController:
             session, dispatch_id, g.user["uid"])
 
         if dispatch is None:
-            return make_response({'error': 'Dispatch not found'}, 404)
+            return make_response('Dispatch not found', 404)
 
         return make_response(dispatch.to_dict(True), 200)
 
@@ -98,10 +97,10 @@ class DispatchController:
             session, customer_id, g.user["uid"])
 
         if customer is None:
-            return make_response({'error': 'Customer not found'}, 404)
+            return make_response('Customer not found', 404)
 
         if customer.company_id != company_id:
-            return make_response({'error': 'Company not found'}, 404)
+            return make_response('Company not found', 404)
 
         dispatch = Dispatch(
             company_id, customer_id, notes, datetime.strptime(date, "%Y-%m-%d"))
@@ -124,7 +123,7 @@ class DispatchController:
             session, dispatch_id, g.user["uid"])
 
         if dispatch is None:
-            return make_response({'error': 'Dispatch not found'}, 404)
+            return make_response('Dispatch not found', 404)
 
         dispatch.date = datetime.strptime(
             data.get("date"), "%Y-%m-%d")
@@ -147,12 +146,12 @@ class DispatchController:
             session, dispatch_id, g.user["uid"])
 
         if dispatch is None:
-            return make_response({'error': 'Dispatch not found'}, 404)
+            return make_response('Dispatch not found', 404)
 
         try:
             session.delete(dispatch)
             session.commit()
-            return make_response({'message': 'Dispatch deleted successfully'}, 200)
-        except IntegrityError as e:
+            return make_response('Dispatch deleted successfully', 200)
+        except IntegrityError:
             session.rollback()
-            return make_response({'error': 'Tickets exist that reference dispatch. Dispatch cannot be deleted.'}, 400)
+            return make_response('Tickets exist that reference dispatch. Dispatch cannot be deleted.', 400)

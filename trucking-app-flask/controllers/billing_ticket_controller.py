@@ -33,7 +33,7 @@ class BillingTicketController:
             .filter(and_(BillingTickets.bill_id == bill_id, Company.owner_id == g.user["uid"]))\
             .first()
         if bill is None:
-            return make_response({"error": "Billing ticket not found"}, 404)
+            return make_response("Billing ticket not found", 404)
         return make_response(bill.to_dict(), 200)
 
     def get_all_bills(session, page: int, limit: int, rfo_id: int):
@@ -48,7 +48,7 @@ class BillingTicketController:
             rfo_id (_type_): _description_
         """
         if rfo_id <= 0:
-            return make_response({"error": "RFO ID is required and must be greater than 0"}, 400)
+            return make_response("RFO ID is required and must be greater than 0", 400)
 
         rfo = None
 
@@ -59,7 +59,7 @@ class BillingTicketController:
             .first()
 
         if (rfo is None):
-            return make_response({"error": "RFO not found"}, 404)
+            return make_response("RFO not found", 404)
 
         bills = session.query(BillingTickets)\
             .where(BillingTickets.rfo_id == rfo_id)\
@@ -92,7 +92,7 @@ class BillingTicketController:
             .first()
 
         if rfo is None:
-            return make_response({"error": "RFO not found"}, 404)
+            return make_response("RFO not found", 404)
 
         # Generate a unique key for the image
         image_key = create_unique_image_key() + f"_{rfo_id}"
@@ -108,7 +108,7 @@ class BillingTicketController:
                 }
             )
         except Exception as e:
-            return make_response({"error": "Failed to upload image to S3: " + str(e)}, 500)
+            return make_response("Failed to upload image to S3: " + str(e), 500)
 
         # Create the billing ticket with the image key
         bill = BillingTickets(
@@ -143,7 +143,7 @@ class BillingTicketController:
             .first()
 
         if bill is None:
-            return make_response({"error": "Billing ticket not found"}, 404)
+            return make_response("Billing ticket not found", 404)
 
         if file:
             # delete the old image if it exists
@@ -167,7 +167,7 @@ class BillingTicketController:
                     }
                 )
             except Exception as e:
-                return make_response({"error": "Failed to upload image to S3: " + str(e)}, 500)
+                return make_response("Failed to upload image to S3: " + str(e), 500)
             bill.image_id = new_id
 
         bill.ticket_number = ticket_number or bill.ticket_number
@@ -195,7 +195,7 @@ class BillingTicketController:
             .first()
 
         if bill is None:
-            return make_response({"error": "Billing ticket not found"}, 404)
+            return make_response("Billing ticket not found", 404)
 
         # Delete the associated image from S3
         try:
@@ -203,12 +203,12 @@ class BillingTicketController:
                              Key=bill.image_id)
         except ClientError as e:
             # If the image was not found in S3, we log the exception and continue with deleting the bill
-            return make_response({"error": "An error occured while deleting the image"}, 500)
+            return make_response("An error occured while deleting the image", 500)
 
         # # Delete the bill
         session.delete(bill)
         session.commit()
-        return make_response({"message": "Billing ticket deleted"}, 200)
+        return make_response("Billing ticket deleted", 200)
 
     def operator_get_billing_tickets(session, token):
         '''
@@ -226,16 +226,16 @@ class BillingTicketController:
         try:
             data = s.loads(token, max_age=86400)  # Token valid for 24 hours
         except SignatureExpired:
-            return make_response({'error': 'Token expired.'}, 400)
+            return make_response('Token expired.', 400)
         except BadTimeSignature:
-            return make_response({'error': 'Invalid token.'}, 400)
+            return make_response('Invalid token.', 400)
 
         result = session.query(BillingTickets).filter_by(
             rfo_id=data["rfo_id"]
         ).all()
 
         if not result:
-            return make_response({'error': 'No BillingTickets found for the given RFO.'}, 404)
+            return make_response('No BillingTickets found for the given RFO.', 404)
 
         # If there are any results, convert them to dictionary
         response = [billing_ticket.to_dict() for billing_ticket in result]
@@ -254,7 +254,7 @@ class BillingTicketController:
         bill = session.query(BillingTickets).filter_by(bill_id=bill_id).first()
 
         if bill is None:
-            return make_response({"error": "Billing ticket not found"}, 404)
+            return make_response("Billing ticket not found", 404)
 
         try:
             # Generate a pre-signed URL for the S3 object
@@ -272,4 +272,4 @@ class BillingTicketController:
 
         except Exception as e:
             # Handle any errors that occurred while generating the pre-signed URL
-            return make_response({"error": "Failed to generate pre-signed URL: " + str(e)}, 500)
+            return make_response("Failed to generate pre-signed URL: " + str(e), 500)

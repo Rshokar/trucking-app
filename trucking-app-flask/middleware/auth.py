@@ -23,7 +23,7 @@ def firebase_required(fn):
 
         # print(request.headers)
         if authHead is None:
-            return make_response({"error": "Auth header missing"}, 401)
+            return make_response("Auth header missing", 401)
 
         id_token = authHead.split(" ")[1]
 
@@ -34,6 +34,6 @@ def firebase_required(fn):
             g.user = user
         except Exception as e:
             print(e)
-            return make_response({"error": "Authentication failed"}, 401)
+            return make_response("Authentication failed", 401)
         return fn(*args, **kwargs)
     return wrapper

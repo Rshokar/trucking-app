@@ -1,11 +1,11 @@
 from itsdangerous import URLSafeTimedSerializer
 from models import Operator, Company, RFO
 from sqlalchemy.exc import IntegrityError
-from utils import make_response, send_verification_email, send_operator_auth_token
+from utils import send_verification_email, send_operator_auth_token
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadTimeSignature
 from flask_login import current_user
 from sqlalchemy import and_
-from flask import current_app as app, g
+from flask import current_app as app, g, make_response
 from flask_mail import Mail
 import os
 
@@ -53,7 +53,7 @@ class OperatorController:
         operator = Operator.get_operator_by_id_and_owner(
             session, operator_id, g.user["uid"])
         if operator is None:
-            return make_response({'error': 'Operator not found.'}, 404)
+            return make_response('Operator not found.', 404)
         return make_response(operator.to_dict(), 200)  # 200 OK
 
     def create_operator(session, request):
@@ -77,13 +77,12 @@ class OperatorController:
             company_id=company_id, owner_id=g.user["uid"]).first()
 
         if company is None:
-            return make_response(
-                {"error": f"Company with ID {company_id} not found"}, 404)
+            return make_response(f"Company with ID {company_id} not found", 404)
 
         operator_email = session.query(Operator).filter_by(
             operator_email=email, company_id=company_id).first()
         if operator_email is not None:
-            return make_response({'error': 'Operator email already used'}, 400)
+            return make_response('Operator email already used', 400)
 
         # Generate unique token for the operator
         token = s.dumps(email, salt=SALT)
@@ -116,15 +115,15 @@ class OperatorController:
             session, operator_id, g.user["uid"])
 
         if operator is None:
-            return make_response({"error": "Operator not found"}, 404)
+            return make_response("Operator not found", 404)
 
         try:
             session.delete(operator)
             session.commit()
-            return make_response({"message": "Operator deleted successfully"}, 200)
+            return make_response("Operator deleted successfully", 200)
         except IntegrityError:
             session.rollback()
-            return make_response({"error": "Operator has tickets refrencing it, cannot be deleted"}, 400)
+            return make_response("Operator has tickets refrencing it, cannot be deleted", 400)
 
     def update_operator(session, request, operator_id):
         """
@@ -147,7 +146,7 @@ class OperatorController:
 
         # Return early if invalid operator id provided
         if operator is None:
-            return make_response({'error': "Operator not found"}, 404)
+            return make_response("Operator not found", 404)
 
         operator_email = session.query(Operator).filter(
             and_(
@@ -157,7 +156,7 @@ class OperatorController:
             )).first()
 
         if operator_email is not None:
-            return make_response({'error': 'Operator email already used'}, 400)
+            return make_response('Operator email already used', 400)
 
         operator.operator_email = email
         operator.operator_name = name
@@ -178,26 +177,26 @@ class OperatorController:
         '''
 
         if token is None:
-            return make_response({'error': 'Token required.'}, 404)
+            return make_response('Token required.', 404)
         try:
             # Change max_age as per your requirements
             email = s.loads(token, salt=SALT, max_age=3600)
         except:
-            return make_response({'error': 'The confirmation link is invalid or has expired.'}, 400)
+            return make_response('The confirmation link is invalid or has expired.', 400)
 
         operator = session.query(Operator).filter_by(
             operator_email=email).first()
 
         if operator is None:
-            return make_response({'error': 'Operator not found.'}, 404)
+            return make_response('Operator not found.', 404)
 
         if operator.confirmed:
-            return make_response({'error': 'Account already confirmed.'}, 200)
+            return make_response('Account already confirmed.', 200)
 
         operator.confirmed = True
         session.commit()
 
-        return make_response({'message': 'You have confirmed your account. Thanks!'}, 200)
+        return make_response('You have confirmed your account. Thanks!', 200)
 
     def generate_operator_auth_token(session, request_token):
         '''
@@ -220,10 +219,10 @@ class OperatorController:
                 request_token, max_age=86400)  # Token valid for 24 hours
         except SignatureExpired as e:
             print(e)
-            return make_response({'error': 'Token expired.'}, 400)
+            return make_response('Token expired.', 400)
         except BadTimeSignature as e:
             print(e)
-            return make_response({'error': 'Invalid token.'}, 400)
+            return make_response('Invalid token.', 400)
 
         operator = session.query(Operator).filter_by(
             operator_id=data["operator_id"], confirmed=True).first()
@@ -231,10 +230,10 @@ class OperatorController:
         rfo = session.query(RFO).filter_by(rfo_id=data["rfo_id"]).first()
 
         if operator is None:
-            return make_response({'error': 'Operator not found.'}, 404)
+            return make_response('Operator not found.', 404)
 
         if rfo is None:
-            return make_response({'error': 'RFO not found.'}, 404)
+            return make_response('RFO not found.', 404)
 
         # Generate a unique alphanumeric token for the operator
         s = URLSafeTimedSerializer(OPERATOR_AUTH_TOKEN_SECRET)
@@ -245,7 +244,7 @@ class OperatorController:
         send_operator_auth_token(
             Mail(app), operator.operator_email, token, operator.operator_name)
 
-        return make_response({'message': 'Token sent to operator email.'}, 200)
+        return make_response('Token sent to operator email.', 200)
 
     def validate_operator_auth_token(session, token):
         '''
@@ -264,23 +263,23 @@ class OperatorController:
             # Token valid for 24 hours
             data = authS.loads(token, max_age=86400)
         except SignatureExpired:
-            return make_response({'error': 'Token expired.'}, 400)
+            return make_response('Token expired.', 400)
         except BadTimeSignature:
-            return make_response({'error': 'Invalid token.'}, 400)
+            return make_response('Invalid token.', 400)
 
         operator = session.query(Operator).filter_by(
             operator_id=data['operator_id']).first()
 
-        rfo = session.query(RFO).filter_by(rfo_id=data['rfo_id']).first()
-
         if operator is None:
-            return make_response({'error': 'Operator not found.'}, 404)
+            return make_response('Operator not found.', 404)
 
         if operator.confirmed is False:
-            return make_response({'error': 'Operator email not verified.'}, 401)
+            return make_response('Operator email not verified.', 401)
+
+        rfo = session.query(RFO).filter_by(rfo_id=data['rfo_id']).first()
 
         if rfo is None:
-            return make_response({'error': 'RFO not found.'}, 404)
+            return make_response('RFO not found.', 404)
 
         accessS = URLSafeTimedSerializer(OPERATOR_ACCESS_TOKEN_SECRET)
 

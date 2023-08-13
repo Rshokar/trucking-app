@@ -1,5 +1,5 @@
 import React, { FunctionComponent, useEffect, useState, useCallback } from 'react';
-import { TextInput, Modal, FAB, Snackbar, Portal, Chip, useTheme, Text } from 'react-native-paper';
+import { TextInput, Modal, FAB, Portal, Chip, useTheme } from 'react-native-paper';
 import { DatePickerModal } from 'react-native-paper-dates';
 import moment from 'moment';
 import { Dispatch, DispatchQuery } from '../../models/Dispatch';
@@ -14,6 +14,8 @@ import MyModal from '../Modal/MyModal';
 import { CustomerController } from '../../controllers/CustomerController';
 import DispatchCard from '../Cards/DIspatchCard';
 import { View } from 'react-native';
+import useSnackbar from '../../hooks/useSnackbar';
+
 type Props = {
     navigateToTickets: (dispId: string) => void;
     customers: Customer[];
@@ -28,12 +30,10 @@ const DispatchSection: FunctionComponent<Props> = ({ navigateToTickets, customer
     const [enablePaginate, setEnablePaginate] = useState<boolean>(false);
     const [showDateModal, setShowDateModal] = useState<boolean>(false);
     const [showFormModal, setShowFormModal] = useState<boolean>(false);
-    const [visibleSnackbar, setVisibleSnackbar] = useState(false);
-    const [snackbarMessage, setSnackbarMessage] = useState('');
-    const [snackbarColor, setSnackbarColor] = useState('green');
     const [showDispatchCard, setShowDispatchCard] = useState<boolean>(false)
     const [loading, setLoading] = useState<boolean>(true);
     const theme = useTheme();
+    const { showSnackbar } = useSnackbar();
 
     useEffect(() => {
         const cusIds = new Set<number>();
@@ -85,10 +85,11 @@ const DispatchSection: FunctionComponent<Props> = ({ navigateToTickets, customer
                 return await handleCreateDispatch(values);
             }
         } catch (err: any) {
-            console.error(err);
-            setSnackbarColor('red');
-            setSnackbarMessage(err.message);
-            setVisibleSnackbar(true);
+            showSnackbar({
+                message: err.message,
+                color: theme.colors.error,
+                onClickText: 'Ok'
+            })
             return false;
         }
     };
@@ -100,15 +101,19 @@ const DispatchSection: FunctionComponent<Props> = ({ navigateToTickets, customer
             res.customer = customers.find(c => c.customer_id === data.customer_id);
             res.rfo_count = 0;
             setDispatches([res, ...dispatches]);
-            setSnackbarColor('green');
-            setSnackbarMessage('Dispatch created successfully');
-            setVisibleSnackbar(true);
+            showSnackbar({
+                message: 'Dispatch created successfully',
+                color: theme.colors.primary,
+                onClickText: 'Ok'
+            })
             setShowFormModal(false)
             return true;
         } catch (err: any) {
-            setSnackbarColor('red');
-            setSnackbarMessage(err.message);
-            setVisibleSnackbar(true);
+            showSnackbar({
+                message: err.message,
+                color: theme.colors.error,
+                onClickText: 'Ok'
+            })
             throw err;
         }
     }
@@ -131,15 +136,19 @@ const DispatchSection: FunctionComponent<Props> = ({ navigateToTickets, customer
             dispatches[index] = updatedDispatch;
             setDispatches([...dispatches]);
             setFocusingDispatch(undefined); // Reset focusingDispatch after update
-            setSnackbarColor('green');
-            setSnackbarMessage('Dispatch updated successfully');
-            setVisibleSnackbar(true);
+            showSnackbar({
+                message: 'Dispatch updated successfully',
+                color: theme.colors.primary,
+                onClickText: 'Ok'
+            })
             setShowFormModal(false)
             return true;
         } catch (err: any) {
-            setSnackbarColor('red');
-            setSnackbarMessage(err.message);
-            setVisibleSnackbar(true);
+            showSnackbar({
+                message: err.message,
+                color: theme.colors.error,
+                onClickText: 'Ok'
+            })
             return false;
         }
     }
@@ -150,15 +159,19 @@ const DispatchSection: FunctionComponent<Props> = ({ navigateToTickets, customer
 
             await dC.delete(id);
             setDispatches([...dispatches.filter(d => (d.dispatch_id + "") !== id)])
-            setSnackbarMessage("Dispatch deleted successfully");
-            setSnackbarColor('green');
-            setVisibleSnackbar(true);
+            showSnackbar({
+                message: 'Dispatch deleted successfully',
+                color: theme.colors.primary,
+                onClickText: 'Ok'
+            })
             setShowFormModal(false);
             return true;
         } catch (err: any) {
-            setSnackbarColor('red');
-            setSnackbarMessage(err.message);
-            setVisibleSnackbar(true);
+            showSnackbar({
+                message: err.message,
+                color: theme.colors.error,
+                onClickText: 'Ok'
+            })
             return false
         }
     }
@@ -171,7 +184,6 @@ const DispatchSection: FunctionComponent<Props> = ({ navigateToTickets, customer
         setQuery(q);
     }
 
-    console.log("LOADING", loading)
 
     return (
         <StyledSection>
@@ -276,20 +288,6 @@ const DispatchSection: FunctionComponent<Props> = ({ navigateToTickets, customer
                     <DispatchCard {...focusingDispatch} />
                 </Modal>
             </Portal>
-
-            <Snackbar
-                visible={visibleSnackbar}
-                onDismiss={() => setVisibleSnackbar(false)}
-                action={{
-                    label: 'OK',
-                    onPress: () => {
-                        setVisibleSnackbar(false);
-                    },
-                }}
-                style={{ backgroundColor: snackbarColor }}
-            >
-                {snackbarMessage}
-            </Snackbar>
         </StyledSection>
     )
 }
