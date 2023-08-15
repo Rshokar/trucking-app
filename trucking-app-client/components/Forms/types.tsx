@@ -28,6 +28,6 @@ export interface RFOFormResult extends FormResult {
 }
 
 export interface FormProps<T extends FormResult> {
-    onSubmit: (results: T, id?: string) => any | Promise<boolean>;
+    onSubmit: (results: T, id?: string) => Promise<any>;
     defaultValues?: T;
 }

@@ -180,16 +180,18 @@ const RFOForm: FC<Props> = ({ onSubmit, defaultValues, operators }) => {
                                 </InputBox>
                             </DualInput>
                             <Button mode="contained" onPress={async () => {
-                                await validateForm();
-                                console.log('ERRORS', errors);
-                                if (
+                                if (Object.keys(values).length === 0) {
+                                    await validateForm();
+                                    return;
+                                } else if (
                                     !errors.start_date &&
                                     !errors.start_time &&
                                     !errors.operator_id &&
                                     !errors.truck &&
                                     !errors.trailer
-                                )
+                                ) {
                                     setStep(2)
+                                }
                             }} style={{ width: '100%', backgroundColor: theme.colors.primary }}>
                                 Next
                             </Button>

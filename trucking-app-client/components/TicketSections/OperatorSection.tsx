@@ -157,6 +157,7 @@ const OperatorSection: FC<Props> = ({ navigate }) => {
                                 title={item.operator_name || ''}
                                 subtitle={item.confirmed ? item.operator_email : "Email not validated"}
                                 avatar={item.operator_name?.charAt(0).toLocaleUpperCase() || 'A'}
+                                onClick={() => showOperatorsRfos(item)}
                                 onLongpress={() => showOperatorsRfos(item)}
                                 onButtonClick={() => {
                                     setFocusedOperator(item);
