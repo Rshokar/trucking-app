@@ -19,8 +19,8 @@ export class AuthController {
                     ...await getAuthHeader()
                 }
             });
-            AuthController.saveCompany(response.data.company);
             u.role = response.data.user.role;
+            AuthController.saveCompany(response.data.company);
             AuthController.saveUser(u);
             return response.data;
         } catch (error) {
