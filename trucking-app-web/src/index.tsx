@@ -1,13 +1,55 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import './index.css';
-import App from './App';
+import { createTheme, ThemeProvider } from '@mui/material'
+import RootPage from './routes/Root/RootPage';
+import ErrorPage from './routes/Error/ErrorPage';
+import ValidateOperatorEmailPage from './routes/ValidateOperatorEmail/ValidateOperatorEmail'
+
+const theme = createTheme({
+  palette: {
+    primary: { main: '#ef835d' },
+    secondary: { main: '#2c365a' },
+    error: { main: '#FF0000' },
+    background: { default: 'lightgray' },
+    text: { primary: 'black' }
+  }
+})
+
+export const colors = {
+  white: '#fff',
+  primary: "#ef835d",
+  secondary: "#2c365a",
+  tertiary: "#85c6d8",
+  gray: "#d1d5db",
+  graylight: "#F3F4F6",
+  graydark: "#4B5563",
+  accent: "#fbcd77",
+  success: "#01A971",
+  red: 'red'
+}
+const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <RootPage />,
+    errorElement: <ErrorPage />
+  },
+  {
+    path: '/validate_operator_email/:token',
+    element: <ValidateOperatorEmailPage />,
+    errorElement: <ErrorPage />
+  }
+])
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
+
 root.render(
   <React.StrictMode>
-    <App />
+    <ThemeProvider theme={theme}>
+      <RouterProvider router={router} />
+    </ThemeProvider>
   </React.StrictMode>
 );
