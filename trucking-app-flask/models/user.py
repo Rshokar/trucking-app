@@ -1,19 +1,38 @@
-from sqlalchemy import Column, Integer, String
+import re
+from sqlalchemy import Column, String
+from sqlalchemy.orm import validates, relationship
 from models.model import Base
+from config import db
+from enum import Enum
+
+
+class UserRole(str, Enum):
+    DISPATCHER = "dispatcher"
 
 
 class User(Base):
     __tablename__ = 'users'
-    id = Column("id", Integer, primary_key=True)
-    type = Column("type", String(5))
-    password = Column("password", String(100))
-    email = Column("email", String(100))
+    id = Column("id", String(50), primary_key=True)
+    role = Column("role", String(20))
 
-    def __init__(self, id, type, email, password) -> None:
+    @validates("role")
+    def validate_role(self, key, role):
+        if role != UserRole.DISPATCHER.value:
+            raise ValueError("Invalid Role")
+        return role
+
+    company = relationship("Company", backref="owner",
+                           lazy=True, cascade="delete", uselist=False)
+
+    def __init__(self, id, role=UserRole.DISPATCHER.value):
+        self.role = role
         self.id = id
-        self.type = type
-        self.email = email
-        self.password = password
 
     def __repr__(self):
-        return f"({self.id}) {self.type} {self.email} {self.password}"
+        return f"USER: ({self.id}) {self.role}"
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "role": self.role,
+        }

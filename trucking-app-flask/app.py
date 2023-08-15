@@ -1,44 +1,75 @@
-from flask import Flask
+import os
+from config.db import Session, Base, engine
+from utils import loadDB
+from routes import v1
+from flask import Flask, g
+from dotenv import load_dotenv
+from flask_login import LoginManager
+from models import User
 
-# DB
-from config.db import engine
-from models.model import Base
-
-# End points
-from routes.company import company
-from routes.dispatch import dispatch
-from routes.rfo import rfo
-from routes.billing_ticket import billing_ticket
-from routes.auth import auth
-from routes.user import user
 
 # Load env variables
-from dotenv import load_dotenv
 load_dotenv()
+
+
+IS_PRODUCTION = os.environ.get("STATE")
+MAX_CONTENT_SIZE = os.environ.get("MAX_CONTENT_SIZE")
+
+# if (IS_PRODUCTION == "development" or IS_PRODUCTION == "test"):
+#     # # If development clear all database
+#     Base.metadata.drop_all(engine)
+
+#     print("--|--Creating Tables--|--")
+#     # Create all tables if not already there
+#     Base.metadata.create_all(engine)
+
+#     if (IS_PRODUCTION == "development"):
+#         print("--|--Loading Test Data--|--")
+#         loadDB(int(1))
+
 
 app = Flask(__name__)
 
+# SMTP server name provided by AWS
+app.config['MAIL_SERVER'] = 'email-smtp.us-west-2.amazonaws.com'
+app.config['MAIL_PORT'] = 587  # Port number provided by AWS
+# SMTP username provided by AWS
+app.config['MAIL_USERNAME'] = 'AKIA56YFAK5VQDUD56U2'
+# SMTP password provided by AWS
+app.config['MAIL_PASSWORD'] = 'BOxXBK/OHsOFXcapQAuuhRvrblCxHL1BEU/2enfB9n3t'
+app.config['MAIL_USE_TLS'] = True  # AWS recommends using StartTLS
+app.config['MAIL_USE_SSL'] = False
+app.config['MAX_CONTENT_LENGTH'] = int(MAX_CONTENT_SIZE)  # 16 megabytes
+
+# Set secret key for auth session
+app.secret_key = 'fzV2T57K8JmQJ@C'
+
+# # Initialize login manager
+# login_manager = LoginManager(app)
+# login_manager.init_app(app)
+
+
+# @login_manager.user_loader
+# def load_user(user_id, callback=None):
+#     session = Session()
+#     return session.query(User).get(user_id)
+
+
 # Register all endpoints
-app.register_blueprint(user, url_prefix="/user")
-app.register_blueprint(auth, url_prefix="/auth")
-app.register_blueprint(billing_ticket, url_prefix="/billing_ticket")
-app.register_blueprint(rfo, url_prefix="/rfo")
-app.register_blueprint(dispatch, url_prefix="/dispatch")
-app.register_blueprint(company, url_prefix="/company")
+app.register_blueprint(v1, url_prefix="/v1")
 
-# Create DB Tables
-try:
-    print("--|--CREATING TABLES--|--")
-    Base.metadata.create_all(engine)
-except Exception as e:
-    print("Error:", e)
+# Function to create a session for each request
 
-try:
-    # Connect to the database
-    connection = engine.connect()
-    print("--|--Connection to the database is successful--|--")
-except Exception as e:
-    print("Error:", e)
 
-if __name__ == "__main__":
-    app.run(debug=True)
+@app.before_request
+def create_session():
+    g.session = Session()
+
+
+@app.teardown_request
+def close_session(error):
+    if hasattr(g, 'session'):
+        g.session.close()
+
+    if error:
+        print(error)
