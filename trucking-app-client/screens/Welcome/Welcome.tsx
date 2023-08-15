@@ -2,6 +2,7 @@ import React, { FunctionComponent, useEffect, useState } from 'react'
 import { StatusBar } from 'expo-status-bar'
 import { TouchableOpacity, View } from 'react-native'
 import { Button, Text, useTheme } from 'react-native-paper'
+import styled from 'styled-components/native'
 
 import BigText from '../../components/Texts/BigText'
 import SmallText from '../../components/Texts/SmallText'
@@ -33,6 +34,17 @@ import { OperatorController } from '../../controllers/OperatorController'
 import useSnackbar from '../../hooks/useSnackbar'
 
 type Props = StackScreenProps<RoofStackParamList, "Welcome">
+
+const FormView = styled.View`
+display: flex; 
+flex-directio: column;
+justify-content: flex-start; 
+padding-horizontal: 5%;
+padding-vertical: 10%;
+align-items: center; 
+width: 100%; 
+gap: 20px;
+`
 
 const Welcome: FunctionComponent<Props> = ({ navigation }) => {
 
@@ -193,7 +205,7 @@ const Welcome: FunctionComponent<Props> = ({ navigation }) => {
                     </View>
                 </BottomSection>
                 <SwipeDownViewAnimation show={showAuth} close={hideAuth} VH={.95}>
-                    <Form>
+                    <FormView>
                         <BigText textStyle={{ color: colors.primary }}>{showLogin ? "Welcome Back" : "Create an Account"}</BigText>
                         <Text style={{ color: colors.secondary, textAlign: 'center' }} variant='labelLarge'>
                             {showLogin ? "Welcome to the trucking app, enter you credentials and lets get started" : "Welcome to the trucking app, register and lets get started"}
@@ -216,7 +228,7 @@ const Welcome: FunctionComponent<Props> = ({ navigation }) => {
                                 </Text>
                             </TouchableOpacity>
                         </View>
-                    </Form>
+                    </FormView>
                 </SwipeDownViewAnimation>
             </WelcomContainer>
         </>

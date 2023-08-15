@@ -4,7 +4,7 @@ import { Image, View } from 'react-native'
 import { TextInput, Button, useTheme, Text } from 'react-native-paper';
 import * as ImagePicker from 'expo-image-picker'
 import * as Yup from 'yup';
-import { InputBox } from './styles';
+import { ErrorText, FormContainer, InputBox } from './styles';
 
 export type BillFormResult = {
     ticket_number: string;
@@ -17,7 +17,10 @@ type Props = {
 };
 
 const BillFormSchema = Yup.object().shape({
-    ticket_number: Yup.string().required('Required'),
+    ticket_number: Yup.string()
+        .required('Required')
+        .min(2, "Too short")
+        .max(200, "Too long"),
 });
 
 const BillForm: FC<Props> = ({ onSubmit, defaultValues }) => {
@@ -59,30 +62,47 @@ const BillForm: FC<Props> = ({ onSubmit, defaultValues }) => {
         >
             {({ handleChange, handleBlur, handleSubmit, values, errors, isSubmitting }) => {
                 return (
-                    <>
+                    <FormContainer>
                         <InputBox>
                             <TextInput
                                 label="Ticket Number"
                                 onChangeText={handleChange('ticket_number')}
                                 onBlur={handleBlur('ticket_number')}
                                 value={values.ticket_number}
-                                error={errors.ticket_number ? true : false}
+                                error={!!errors.ticket_number}
                             />
+                            {errors.ticket_number && <ErrorText>{errors.ticket_number}</ErrorText>}
                         </InputBox>
-                        {!defaultValues && image && <Image source={{ uri: image.uri }} style={{ width: '100%', height: 300 }} />}
+                        {(!defaultValues && image) && <Image source={{ uri: image.uri }} style={{ width: '100%', height: 300 }} />}
                         {
                             !defaultValues &&
-                            <>
-                                <Button onPress={pickImage}>Pick Image</Button>
-                                <View>
-                                    <Text>{imageError}</Text>
-                                </View>
-                            </>
+                            <InputBox>
+                                <Button
+                                    style={{ backgroundColor: theme.colors.tertiary }}
+                                    onPress={pickImage}
+                                >
+                                    <Text style={{ color: 'white' }}>
+                                        Pick Image
+                                    </Text>
+                                </Button>
+                                {imageError && <ErrorText>{imageError}</ErrorText>}
+                            </InputBox>
                         }
-                        <Button mode="contained" onPress={() => handleSubmit()} disabled={isSubmitting} style={{ marginTop: 10, backgroundColor: theme.colors.primary }}>
-                            {isSubmitting ? "Submitting...." : "Submit"}
+                        <Button
+                            onPress={(e) => handleSubmit()}
+                            disabled={isSubmitting}
+                            style={{
+                                backgroundColor: isSubmitting ? theme.colors.onSurfaceDisabled : theme.colors.primary,
+                                width: '100%',
+                            }}
+
+                        >
+                            <Text style={{ color: 'white' }}>
+                                {isSubmitting ? "Loading..." : "Submit"}
+
+                            </Text>
                         </Button>
-                    </>
+                    </FormContainer>
                 )
             }}
         </Formik>

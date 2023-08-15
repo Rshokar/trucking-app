@@ -176,7 +176,7 @@ const OperatorSection: FC<Props> = ({ navigate }) => {
             <MyModal
                 visible={visible}
                 onDismiss={hideModal}
-                title={'Add/Edit Operator'}
+                title={`${focusedOperator ? 'Edit' : 'Add'} Operator`}
             >
                 <OperatorForm
                     onSubmit={handleFormSubmit}
@@ -189,7 +189,7 @@ const OperatorSection: FC<Props> = ({ navigate }) => {
                         setShowRfos(false);
                         setFocusedOperator(undefined);
                     }}
-                    style={{ alignItems: 'center' }}
+                    contentContainerStyle={{ alignItems: 'center', justifyContent: 'center' }}
                 >
                     <View style={{ backgroundColor: 'white', height: '95%', width: '95%', paddingVertical: 20, borderRadius: 10 }}>
 

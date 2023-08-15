@@ -17,3 +17,9 @@ export const DualInput = styled.View`
     flex-direction: row; 
     gap: 10px; 
 `
+
+export const FormContainer = styled.View`
+    align-items: center; 
+    width: 100%; 
+    gap: 20px;
+`

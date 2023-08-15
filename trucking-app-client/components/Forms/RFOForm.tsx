@@ -7,7 +7,8 @@ import moment from 'moment';
 import DropDown from 'react-native-paper-dropdown';
 import { Operator } from '../../models/Operator';
 import { RFO } from '../../models/RFO';
-import { InputBox } from './styles';
+import { DualInput, ErrorText, FormContainer, InputBox } from './styles';
+import { err } from 'react-native-svg/lib/typescript/xml';
 
 export type RFOFormResult = {
     operator_id: number;
@@ -82,8 +83,8 @@ const RFOForm: FC<Props> = ({ onSubmit, defaultValues, operators }) => {
                 setSubmitting(false);
             }}
         >
-            {({ handleChange, setFieldValue, handleBlur, handleSubmit, values, errors, isSubmitting }) => {
-                return <>
+            {({ handleChange, setFieldValue, handleBlur, handleSubmit, validateForm, values, errors, isSubmitting }) => {
+                return <FormContainer>
                     {step === 1 && (
                         <>
                             <InputBox>
@@ -103,84 +104,100 @@ const RFOForm: FC<Props> = ({ onSubmit, defaultValues, operators }) => {
                                         error: errors.operator_id,
                                     }}
                                 />
-
-
+                                {errors.operator_id && <ErrorText>{errors.operator_id}</ErrorText>}
                             </InputBox>
-                            <InputBox>
-                                <TextInput
-                                    label="Start Date"
-                                    value={values.start_date}
-                                    onPressIn={() => setDateVisible(true)}
-                                    error={errors.start_date ? true : false}
-                                />
-                                <DatePickerModal
-                                    locale='en'
-                                    mode='single'
-                                    visible={dateVisible}
-                                    onDismiss={() => setDateVisible(false)}
-                                    date={values.start_date ? new Date(values.start_date) : new Date()}
-                                    onConfirm={({ date }) => {
-                                        setDateVisible(false);
-                                        handleChange("start_date")(moment(date).format("YYYY-MM-DD"));
-                                    }}
-                                />
-                            </InputBox>
-                            <InputBox>
-                                <TextInput
-                                    label="Start Time"
-                                    value={values.start_time}
-                                    onPressIn={() => setTimeVisible(true)}
-                                    error={errors.start_time ? true : false}
-                                />
-                                <TimePickerModal
-                                    visible={timeVisible}
-                                    onDismiss={() => setTimeVisible(false)}
-                                    onConfirm={({ hours, minutes }) => {
-                                        setTimeVisible(false);
-                                        handleChange("start_time")(`${hours}:${minutes}`);
-                                    }}
-                                />
-                            </InputBox>
-                            <Button mode="contained" onPress={() => {
-                                if (!errors.start_date && !errors.start_time && !errors.operator_id)
+                            <DualInput>
+                                <InputBox style={{ flex: 1 }}>
+                                    <TextInput
+                                        label="Start Date"
+                                        value={values.start_date}
+                                        onPressIn={() => setDateVisible(true)}
+                                        error={errors.start_date ? true : false}
+                                    />
+                                    <DatePickerModal
+                                        locale='en'
+                                        mode='single'
+                                        visible={dateVisible}
+                                        onDismiss={() => setDateVisible(false)}
+                                        date={values.start_date ? new Date(values.start_date) : new Date()}
+                                        onConfirm={({ date }) => {
+                                            setDateVisible(false);
+                                            handleChange("start_date")(moment(date).format("YYYY-MM-DD"));
+                                        }}
+                                    />
+                                    {errors.start_date && <ErrorText>{errors.start_date}</ErrorText>}
+                                </InputBox>
+                                <InputBox style={{ flex: 1 }}>
+                                    <TextInput
+                                        label="Start Time"
+                                        value={values.start_time}
+                                        onPressIn={() => setTimeVisible(true)}
+                                        error={errors.start_time ? true : false}
+                                    />
+                                    <TimePickerModal
+                                        visible={timeVisible}
+                                        onDismiss={() => setTimeVisible(false)}
+                                        onConfirm={({ hours, minutes }) => {
+                                            setTimeVisible(false);
+                                            handleChange("start_time")(`${hours}:${minutes}`);
+                                        }}
+                                    />
+                                    {errors.start_time && <ErrorText>{errors.start_time}</ErrorText>}
+                                </InputBox>
+                            </DualInput>
+                            <DualInput>
+                                <InputBox style={{ flex: 1 }}>
+                                    <DropDown
+                                        label={'Truck'}
+                                        mode={'outlined'}
+                                        value={values.truck}
+                                        setValue={handleChange('truck')}
+                                        list={truckOptions}
+                                        visible={truckDropdownVisible}
+                                        showDropDown={() => setTruckDropdownVisible(true)}
+                                        onDismiss={() => setTruckDropdownVisible(false)}
+                                        inputProps={{
+                                            error: errors.truck,
+                                        }}
+                                    />
+                                    {errors.truck && <ErrorText>{errors.truck}</ErrorText>}
+                                </InputBox>
+                                <InputBox style={{ flex: 1 }}>
+                                    <DropDown
+                                        label={'Trailer'}
+                                        mode={'outlined'}
+                                        value={values.trailer}
+                                        setValue={handleChange('trailer')}
+                                        list={trailerOptions}
+                                        visible={trailerDropdownVisible}
+                                        showDropDown={() => setTrailerDropdownVisible(true)}
+                                        onDismiss={() => setTrailerDropdownVisible(false)}
+                                        inputProps={{
+                                            error: errors.trailer,
+                                        }}
+                                    />
+                                    {errors.trailer && <ErrorText>{errors.trailer}</ErrorText>}
+                                </InputBox>
+                            </DualInput>
+                            <Button mode="contained" onPress={async () => {
+                                await validateForm();
+                                console.log('ERRORS', errors);
+                                if (
+                                    !errors.start_date &&
+                                    !errors.start_time &&
+                                    !errors.operator_id &&
+                                    !errors.truck &&
+                                    !errors.trailer
+                                )
                                     setStep(2)
-                            }} style={{ marginTop: 10, backgroundColor: theme.colors.primary }}>
+                            }} style={{ width: '100%', backgroundColor: theme.colors.primary }}>
                                 Next
                             </Button>
                         </>
                     )}
                     {step === 2 && (
                         <>
-                            <InputBox>
-                                <DropDown
-                                    label={'Truck'}
-                                    mode={'outlined'}
-                                    value={values.truck}
-                                    setValue={handleChange('truck')}
-                                    list={truckOptions}
-                                    visible={truckDropdownVisible}
-                                    showDropDown={() => setTruckDropdownVisible(true)}
-                                    onDismiss={() => setTruckDropdownVisible(false)}
-                                    inputProps={{
-                                        error: errors.truck,
-                                    }}
-                                />
-                            </InputBox>
-                            <InputBox>
-                                <DropDown
-                                    label={'Trailer'}
-                                    mode={'outlined'}
-                                    value={values.trailer}
-                                    setValue={handleChange('trailer')}
-                                    list={trailerOptions}
-                                    visible={trailerDropdownVisible}
-                                    showDropDown={() => setTrailerDropdownVisible(true)}
-                                    onDismiss={() => setTrailerDropdownVisible(false)}
-                                    inputProps={{
-                                        error: errors.trailer,
-                                    }}
-                                />
-                            </InputBox>
+
                             <InputBox>
                                 <TextInput
                                     label="Start Location"
@@ -208,15 +225,25 @@ const RFOForm: FC<Props> = ({ onSubmit, defaultValues, operators }) => {
                                     error={errors.load_location ? true : false}
                                 />
                             </InputBox>
-                            <Button mode="contained" onPress={() => handleSubmit()} disabled={isSubmitting} style={{ marginTop: 10, backgroundColor: theme.colors.primary }}>
+                            <Button
+                                mode="contained"
+                                onPress={() => handleSubmit()}
+                                disabled={isSubmitting}
+                                style={{ backgroundColor: isSubmitting ? theme.colors.onSurfaceDisabled : theme.colors.primary, width: '100%' }}>
                                 {isSubmitting ? "Submitting...." : "Submit"}
                             </Button>
-                            <Button mode="contained" onPress={() => setStep(step - 1)} disabled={isSubmitting} style={{ marginTop: 10, backgroundColor: theme.colors.secondary }}>
+                            <Button
+                                mode="contained"
+                                onPress={() => setStep(step - 1)}
+                                disabled={isSubmitting}
+                                style={{
+                                    backgroundColor: theme.colors.secondary, width: '100%'
+                                }}>
                                 Back
                             </Button>
                         </>
                     )}
-                </>
+                </FormContainer>
             }}
         </Formik>
     )

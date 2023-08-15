@@ -197,7 +197,7 @@ const CustomerSection: FC<Props> = ({ navigateToTicket }) => {
                 onDismiss={function (): void {
                     setVisible(false);
                 }}
-                title={'Add Customer'}
+                title={`${focusedCustomers ? 'Edit' : 'Add'} Customer`}
             >
                 <CustomerForm
                     onSubmit={handleFormSubmit}

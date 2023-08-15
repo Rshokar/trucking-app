@@ -4,7 +4,8 @@ import * as yup from 'yup';
 import { TextInput, Button, Text, useTheme } from 'react-native-paper';
 import { OperatorFormResult, FormProps } from './types';
 import { Operator } from '../../models/Operator';
-import { InputBox } from './styles';
+import { ErrorText, FormContainer, InputBox } from './styles';
+import { err } from 'react-native-svg/lib/typescript/xml';
 
 // Define validation schema with Yup
 const validationSchema = yup.object().shape({
@@ -13,32 +14,29 @@ const validationSchema = yup.object().shape({
 });
 
 const OperatorForm: FC<FormProps<OperatorFormResult>> = (props) => {
-    const [submitting, setSubmitting] = useState<boolean>(false);
     const theme = useTheme();
 
     return (
         <Formik
             initialValues={props.defaultValues || new Operator() as OperatorFormResult}
             validationSchema={validationSchema}
-            onSubmit={async (data: OperatorFormResult) => {
-                setSubmitting(true);
-                const res = await props.onSubmit(data);
-                setSubmitting(!res);
+            onSubmit={async (data: OperatorFormResult, { setSubmitting }) => {
+                await props.onSubmit(data);
+                setSubmitting(false);
             }}
             enableReinitialize
         >
-            {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
-                <>
+            {({ handleChange, handleBlur, handleSubmit, values, errors, isSubmitting }) => (
+                <FormContainer>
                     <InputBox>
                         <TextInput
                             label="Operator Name"
                             onChangeText={handleChange('operator_name')}
                             onBlur={handleBlur('operator_name')}
                             value={values.operator_name}
-                            error={touched.operator_name && Boolean(errors.operator_name)}
-                            style={{ marginBottom: 10 }}
+                            error={!!errors.operator_name}
                         />
-                        {touched.operator_name && <Text>{errors.operator_name}</Text>}
+                        {errors.operator_name && <ErrorText>{errors.operator_name}</ErrorText>}
                     </InputBox>
 
                     <InputBox>
@@ -47,19 +45,26 @@ const OperatorForm: FC<FormProps<OperatorFormResult>> = (props) => {
                             onChangeText={handleChange('operator_email')}
                             onBlur={handleBlur('operator_email')}
                             value={values.operator_email}
-                            error={touched.operator_email && Boolean(errors.operator_email)}
-                            style={{ marginBottom: 10 }}
+                            error={!!errors.operator_email}
                         />
-                        {touched.operator_email && <Text>{errors.operator_email}</Text>}
+                        {errors.operator_email && <ErrorText>{errors.operator_email}</ErrorText>}
                     </InputBox>
 
-                    <Button onPress={(e) => handleSubmit()} disabled={submitting} style={{ backgroundColor: submitting ? theme.colors.onSurfaceDisabled : theme.colors.primary }}>
+                    <Button
+                        onPress={(e) => handleSubmit()}
+                        disabled={isSubmitting}
+                        style={{
+                            backgroundColor: isSubmitting ? theme.colors.onSurfaceDisabled : theme.colors.primary,
+                            width: '100%',
+                        }}
+
+                    >
                         <Text style={{ color: 'white' }}>
-                            {submitting ? "Loading..." : "Submit"}
+                            {isSubmitting ? "Loading..." : "Submit"}
 
                         </Text>
                     </Button>
-                </>
+                </FormContainer>
             )}
         </Formik>
     );

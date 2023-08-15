@@ -224,7 +224,7 @@ const DispatchSection: FunctionComponent<Props> = ({ navigateToTickets, customer
             }
             <MyModal visible={showFormModal}
                 onDismiss={() => setShowFormModal(false)}
-                title={'Add/Edit Dispatch'} >
+                title={`${focusingDispatch ? 'Edit' : 'Add'} Dispatch`} >
                 <DispatchForm
                     onSubmit={handleDispatchFormSubmit} defaultValues={focusingDispatch as DispatchFormResult}
                     customers={customers}

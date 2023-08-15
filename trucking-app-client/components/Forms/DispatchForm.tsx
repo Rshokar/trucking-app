@@ -4,7 +4,7 @@ import { Button, TextInput, Divider, Text, useTheme, IconButton } from 'react-na
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { Customer } from '../../models/Customer';
-import { ErrorText, InputBox } from './styles';
+import { ErrorText, FormContainer, InputBox } from './styles';
 import { DatePickerModal } from 'react-native-paper-dates';
 import moment from 'moment';
 import { Dispatch } from '../../models/Dispatch';
@@ -31,7 +31,10 @@ const DispatchFormSchema = Yup.object().shape({
     customer_id: Yup.number()
         .min(1, "Customer is required")
         .required('Required'),
-    notes: Yup.string().required('Required'),
+    notes: Yup.string()
+        .required('Required')
+        .min(10, "Too short")
+        .max(1000, "Too long"),
     date: Yup.string().required('Required'),
 });
 
@@ -84,12 +87,9 @@ const DispatchForm: FC<Props> = ({ onSubmit, defaultValues, customers }) => {
                         return false;
                     }
                 }
+                return <FormContainer>
 
-
-                return <>
-                    <InputBox style={{
-
-                    }}>
+                    <InputBox>
                         <View style={{
                             flexDirection: 'row',
                             width: '100%',
@@ -123,9 +123,8 @@ const DispatchForm: FC<Props> = ({ onSubmit, defaultValues, customers }) => {
                                 onPress={openCustomerModal}
                             />
                         </View>
-                        {errors.customer_id && <ErrorText variant='titleSmall'>{errors.customer_id as string}</ErrorText>}
+                        {errors.customer_id && <ErrorText>{errors.customer_id as string}</ErrorText>}
                     </InputBox>
-                    <Divider />
                     <InputBox>
                         <TextInput
                             label="Date"
@@ -153,10 +152,18 @@ const DispatchForm: FC<Props> = ({ onSubmit, defaultValues, customers }) => {
                             onBlur={handleBlur('notes')}
                             value={values.notes}
                             multiline
-                            error={errors.notes ? true : false}
+                            error={!!errors.notes}
                         />
+                        {errors.notes && <ErrorText>{errors.notes as string}</ErrorText>}
                     </InputBox>
-                    <Button onPress={() => handleSubmit()} disabled={isSubmitting} style={{ backgroundColor: isSubmitting ? theme.colors.onSurfaceDisabled : theme.colors.primary }} >
+                    <Button
+                        onPress={() => handleSubmit()}
+                        disabled={isSubmitting}
+                        style={{
+                            backgroundColor: isSubmitting ? theme.colors.onSurfaceDisabled : theme.colors.primary,
+                            width: '100%'
+                        }}
+                    >
                         <Text style={{ color: 'white' }}>
                             {isSubmitting ? "Submitting...." : "Submit"}
                         </Text>
@@ -172,7 +179,7 @@ const DispatchForm: FC<Props> = ({ onSubmit, defaultValues, customers }) => {
                             }}
                         />
                     </MyModal>
-                </>
+                </FormContainer>
             }}
         </Formik>
     )
