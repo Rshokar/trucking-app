@@ -11,6 +11,7 @@ import UserCompanyForm, { UserCompanyFormResults } from '../../components/Forms/
 import UserController from '../../controllers/UserController'
 import { signOut } from 'firebase/auth'
 import { FIREBASE_AUTH } from '../../config/firebaseConfig'
+import useSnackbar from '../../hooks/useSnackbar'
 
 export type Props = StackScreenProps<RoofStackParamList, "Account">
 
@@ -20,8 +21,7 @@ const Account: FC<Props> = (props) => {
     const [user, setUser] = useState<User>();
     const [isEditing, setIsEditing] = useState(false);
     const [visible, setVisible] = useState(false);
-    const [snackbarMessage, setSnackbarMessage] = useState('');
-    const [snackbarColor, setSnackbarColor] = useState('success');
+    const { showSnackbar } = useSnackbar();
 
     const getCompany = async (): Promise<void> => setCompany(await AuthController.getCompany());
     const getUser = async (): Promise<void> => setUser(await AuthController.getUser());
@@ -36,9 +36,6 @@ const Account: FC<Props> = (props) => {
     }
 
     const handleSave = async (values: UserCompanyFormResults): Promise<any> => {
-        setSnackbarMessage('Updating User!'); // Example Message
-        setVisible(true);
-        setSnackbarColor('blue')
         try {
             const uC = new UserController()
             const res: UserCompanyFormResults = await uC.updateUserAndCompany(values.email, values.company_name);
@@ -46,26 +43,36 @@ const Account: FC<Props> = (props) => {
             if (company) company.company_name = res.company_name;
             if (user) user.email = res.email;
 
-            setSnackbarMessage('User updated!'); // Example Message
-            setVisible(true);
-            setSnackbarColor('green')
+            showSnackbar({
+                color: theme.colors.primary,
+                message: "Updated User!",
+                onClickText: 'Ok'
+            })
             setIsEditing(false);
         } catch (err: any) {
-            setSnackbarMessage(err.message); // Example Message
-            setVisible(true);
-            setSnackbarColor('red')
-            // TODO: Save updates to backend with values
+            showSnackbar({
+                color: theme.colors.error,
+                onClickText: 'Ok',
+                message: err.message
+            })
         }
     }
 
     const handleLogout = async () => {
         try {
             await signOut(FIREBASE_AUTH);
+            showSnackbar({
+                color: theme.colors.primary,
+                message: "User logged out!",
+                onClickText: 'Ok'
+            })
             props.navigation.navigate('Welcome')
         } catch (err: any) {
-            setSnackbarMessage(err.message);
-            setSnackbarColor('red');
-            setVisible(true)
+            showSnackbar({
+                color: theme.colors.error,
+                onClickText: 'Ok',
+                message: err.message
+            })
         }
     }
     return (<>
@@ -96,18 +103,6 @@ const Account: FC<Props> = (props) => {
                 </Text>
             </Button>
         </View>
-        <Snackbar
-            visible={visible}
-            onDismiss={() => setVisible(false)}
-            style={{ backgroundColor: snackbarColor }}
-
-            action={{
-                label: 'Close',
-                onPress: () => setVisible(false),
-            }}
-        >
-            {snackbarMessage}
-        </Snackbar>
     </>
     );
 }

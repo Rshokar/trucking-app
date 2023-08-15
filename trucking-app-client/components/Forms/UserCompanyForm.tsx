@@ -1,8 +1,8 @@
 // UserCompanyForm.tsx
 import React, { FC, } from 'react';
-import { TextInput, Button, Switch, Text } from 'react-native-paper';
+import { TextInput, Button, Switch, Text, useTheme } from 'react-native-paper';
 import { View } from 'react-native';
-import { InputBox } from '../../components/Forms/styles';
+import { FormContainer, InputBox } from '../../components/Forms/styles';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { Company } from '../../models/Company';
@@ -28,6 +28,7 @@ interface UserCompanyFormProps {
 }
 
 const UserCompanyForm: FC<UserCompanyFormProps> = ({ company, user, isEditing, handleEdit, handleSave }) => {
+    const theme = useTheme();
 
     return (
         <Formik
@@ -38,9 +39,9 @@ const UserCompanyForm: FC<UserCompanyFormProps> = ({ company, user, isEditing, h
             onSubmit={handleSave}
             validationSchema={validationSchema}
         >
-            {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => {
+            {({ handleChange, handleBlur, handleSubmit, values, errors, touched, isSubmitting }) => {
                 return (
-                    <View>
+                    <FormContainer>
                         <InputBox>
                             <TextInput
                                 label="Company Name"
@@ -61,15 +62,26 @@ const UserCompanyForm: FC<UserCompanyFormProps> = ({ company, user, isEditing, h
                             />
                             {touched.email && errors.email && <Text>{errors.email}</Text>}
                         </InputBox>
-                        <Button mode="contained" onPress={handleEdit} style={{ marginBottom: 10 }}>
+                        <Button
+                            mode="contained"
+                            onPress={handleEdit}
+                            style={{
+                                width: '100%',
+                                backgroundColor: isEditing ? theme.colors.secondary : theme.colors.primary
+                            }}
+                        >
                             {isEditing ? 'Cancel' : 'Edit'}
                         </Button>
                         {isEditing &&
-                            <Button mode="contained" onPress={() => handleSubmit()}>
-                                Save
+                            <Button
+                                mode="contained"
+                                onPress={() => handleSubmit()}
+                                disabled={isSubmitting}
+                                style={{ backgroundColor: isSubmitting ? theme.colors.onSurfaceDisabled : theme.colors.primary, width: '100%' }}>
+                                {isSubmitting ? "Submitting...." : "Submit"}
                             </Button>
                         }
-                    </View>
+                    </FormContainer>
                 )
             }}
         </Formik>
