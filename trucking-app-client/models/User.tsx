@@ -11,9 +11,6 @@ export class User implements Model {
     getId(): number {
         return this.id || 0
     }
-
-
-
 }
 
 

@@ -147,7 +147,6 @@ const Welcome: FunctionComponent<Props> = ({ navigation }) => {
 
     const handleRegister = async (formResult: RegisterFormResult): Promise<any> => {
         let u: User = new User()
-        u.role = formResult.acType;
         u.password = formResult.password;
         u.email = formResult.email;
         console.log(formResult)
@@ -159,15 +158,22 @@ const Welcome: FunctionComponent<Props> = ({ navigation }) => {
             const cC = new CompanyController();
             const [comp] = await Promise.all([cC.get(), loadCache()]);
             AuthController.saveCompany(comp)
-            // setFlashColor(colors.success)
-            // setFlashMessage("Successfully Registered")
-            // setFlashToggle(!flashToggle)
+            showSnackbar({
+                message: 'Registered in successfully',
+                color: theme.colors.primary,
+                onClickText: 'Ok'
+            })
             navigation.navigate("Home", { company: comp })
         } catch (e: any) {
-            console.log(e.message)
-            // setFlashColor(colors.red)
-            // setFlashMessage(e.message)
-            // setFlashToggle(!flashToggle)
+            let error: string = "Error registering in."
+            if (e.code === 'auth/email-already-in-use')
+                error = "Email is already being used"
+
+            showSnackbar({
+                message: error,
+                color: theme.colors.error,
+                onClickText: 'Ok'
+            })
         }
     }
 

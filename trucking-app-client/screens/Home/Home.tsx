@@ -12,7 +12,6 @@ import DispatchSection from '../../components/TicketSections/DispatchSection'
 import OperatorSection from '../../components/TicketSections/OperatorSection'
 import CustomerSection from '../../components/TicketSections/CustomerSection'
 import Cache from '../../utils/Cache'
-import { Operator } from '../../models/Operator';
 
 const HomeContainer = styled.View`
     width: 100%; 

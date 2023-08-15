@@ -7,6 +7,5 @@ account_validation = {
             "format": "email"
         },
     },
-    "required": ["company_name", "email"],
     "additionalProperties": False
 }

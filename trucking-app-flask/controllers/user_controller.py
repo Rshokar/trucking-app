@@ -1,7 +1,8 @@
 from models import User, Company
 from utils import make_response
 from sqlalchemy.exc import IntegrityError, OperationalError
-from flask_login import current_user
+from flask import g
+from firebase_admin import auth, exceptions
 
 
 class UserController:
@@ -64,28 +65,31 @@ class UserController:
             request (_type_): _description_
             session (_type_): _description_
         """
-
         data = request.get_json()
+        email = data.get('email', None)
+        company_name = data.get('company_name', None)
 
-        user = session.query(User).filter_by(id=current_user.get_id()).first()
-        company = session.query(Company).filter_by(owner_id=user.id).first()
+        if email is not None:
+            try:
+                user = user = auth.get_user(g.user['uid'])
+                if (user.email != email):
+                    auth.update_user(g.user['uid'], email=email)
+            except exceptions.NotFoundError as e:
+                return make_response("User not found", 400)
+            except exceptions.AlreadyExistsError as e:
+                return make_response("Email already in use", 400)
 
-        if not user:
-            return make_response("User not found.", 404)
+        if company_name is not None:
+            company = session.query(Company).filter_by(
+                owner_id=g.user['uid']).first()
+            if not company:
+                return make_response("Company not found.", 404)
+            try:
+                company.company_name = company_name
+                session.commit()
+            except ValueError as e:
+                return make_response(str(e), 400)
+            except OperationalError as e:
+                return make_response("There was an errors", 500)
 
-        if not company:
-            return make_response("Company not found.", 404)
-
-        try:
-            if 'email' in data:
-                user.email = data['email']
-            if 'company_name' in data:
-                company.company_name = data['company_name']
-            session.commit()
-            return make_response("Account updated successfully.", 200)
-        except ValueError as e:
-            return make_response(str(e), 400)
-        except IntegrityError as e:
-            return make_response("Email or company name already used.", 409)
-        except OperationalError as e:
-            print(f"ERROR: {e}")
+        return make_response("Account updated successfully.", 200)
