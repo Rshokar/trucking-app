@@ -1,6 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { User } from "../models/User";
-import { AuthController as Auth } from './AuthController'; // Self reference for JWT
 import myAxios from '../config/myAxios';
 import { Company } from "../models/Company";
 import { isAxiosError } from 'axios';
@@ -9,7 +8,8 @@ import { getAuthHeader } from "../utils/authHeader";
 
 export class AuthController {
 
-
+    // This function is responsible for registering a user and 
+    // Saving the user and company in the authcontrller object
     static async register(u: User, company: string, userId: string): Promise<{ user: User, company: Company }> {
         const data = { company, user_id: userId };
 
@@ -19,6 +19,9 @@ export class AuthController {
                     ...await getAuthHeader()
                 }
             });
+            AuthController.saveCompany(response.data.company);
+            u.role = response.data.user.role;
+            AuthController.saveUser(u);
             return response.data;
         } catch (error) {
             if (isAxiosError(error)) {

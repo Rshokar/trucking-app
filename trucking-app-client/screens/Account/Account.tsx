@@ -20,7 +20,6 @@ const Account: FC<Props> = (props) => {
     const [company, setCompany] = useState<Company>();
     const [user, setUser] = useState<User>();
     const [isEditing, setIsEditing] = useState(false);
-    const [visible, setVisible] = useState(false);
     const { showSnackbar } = useSnackbar();
 
     const getCompany = async (): Promise<void> => setCompany(await AuthController.getCompany());
@@ -91,8 +90,6 @@ const Account: FC<Props> = (props) => {
                     handleSave={handleSave}
                 />
             }
-
-
         </View>
         <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'flex-end', padding: 20 }}>
             <Button

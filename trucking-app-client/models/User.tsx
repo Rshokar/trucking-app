@@ -1,15 +1,15 @@
 import { Model, Query } from './Model'
 
 
-export class User implements Model {
+export class User {
 
-    id?: number;
+    id?: string;
     role?: string;
     password?: string;
     email?: string;
 
-    getId(): number {
-        return this.id || 0
+    getId(): string {
+        return (this.id || 0) + ''
     }
 }
 

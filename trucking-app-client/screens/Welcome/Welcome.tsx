@@ -116,10 +116,13 @@ const Welcome: FunctionComponent<Props> = ({ navigation }) => {
         u.password = res.password
         try {
             const res = await signInWithEmailAndPassword(FIREBASE_AUTH, u.email, u.password);
+            u.id = res.user.providerId
             await AuthController.setJWTToken(await res.user.getIdToken())
             const cC = new CompanyController();
             const [comp] = await Promise.all([cC.get(), loadCache()]);
+            console.log(u);
             AuthController.saveCompany(comp)
+            AuthController.saveUser(u)
             showSnackbar({
                 message: 'Loged in successfully',
                 color: theme.colors.primary
@@ -138,10 +141,6 @@ const Welcome: FunctionComponent<Props> = ({ navigation }) => {
                 message: error,
                 color: theme.colors.error
             })
-
-            // setFlashMessage(e.message)
-            // setFlashColor("red")
-            // setFlashToggle(!flashToggle)
         }
     }
 
@@ -152,18 +151,14 @@ const Welcome: FunctionComponent<Props> = ({ navigation }) => {
         console.log(formResult)
         try {
             const res = await createUserWithEmailAndPassword(FIREBASE_AUTH, u.email, u.password);
-            console.log(await res.user.getIdToken())
             await AuthController.setJWTToken(await res.user.getIdToken())
-            await AuthController.register(u, formResult.company, res.user.uid)
-            const cC = new CompanyController();
-            const [comp] = await Promise.all([cC.get(), loadCache()]);
-            AuthController.saveCompany(comp)
+            const { company } = await AuthController.register(u, formResult.company, res.user.uid)
             showSnackbar({
                 message: 'Registered in successfully',
                 color: theme.colors.primary,
                 onClickText: 'Ok'
             })
-            navigation.navigate("Home", { company: comp })
+            navigation.navigate("Home", { company })
         } catch (e: any) {
             let error: string = "Error registering in."
             if (e.code === 'auth/email-already-in-use')
@@ -186,7 +181,7 @@ const Welcome: FunctionComponent<Props> = ({ navigation }) => {
                 </TopSection>
                 <BottomSection >
                     <Text variant="headlineLarge" style={{ marginBottom: 10, color: 'white', fontWeight: 'bold' }}>
-                        Paper Less Trucking
+                        Trucking App
                     </Text>
                     <Text style={{ marginBottom: 25, color: 'white' }}>
                         Drop the books and pick up the future
