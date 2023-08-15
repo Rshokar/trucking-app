@@ -12,7 +12,6 @@ export interface RegisterFormResult extends FormResult {
     password: string,
     confirmPassword: string,
     company: string,
-    acType: 'dispatcher' | 'operator'
 }
 
 export interface CustomerFormResult extends FormResult {

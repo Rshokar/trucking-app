@@ -7,6 +7,7 @@ import {
     findNodeHandle,
 } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { View } from 'react-native'
 
 import { colors } from '../colors';
 import { AnimationProps } from './types';
@@ -84,7 +85,12 @@ const SwipeDownViewAnimation: FunctionComponent<SwipeDownViewAnimationProps> = (
             ]}
             {...panResponder.panHandlers}
         >
-            <Ionicons name="caret-down-outline" size={20} color={colors.secondary} />
+            <View
+                ref={breakRef}
+                style={{ padding: 5, justifyContent: 'center', alignItems: 'center' }}
+            >
+                <Ionicons name="caret-down-outline" size={20} color={colors.secondary} />
+            </View>
 
             {props.children}
         </Animated.View>

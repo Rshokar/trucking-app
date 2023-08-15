@@ -11,6 +11,7 @@ const FormView = styled.View`
     flex-directio: column;
     justify-content: flex-start; 
     padding-horizontal: 5%;
+    padding-vertical: 10%;
     align-items: center; 
     width: 100%; 
     height: 100%; 

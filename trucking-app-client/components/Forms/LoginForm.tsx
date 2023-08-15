@@ -1,15 +1,12 @@
 import React, { FunctionComponent } from 'react'
 import { Formik } from 'formik'
 import * as Yup from 'yup'
-import { TextInput } from 'react-native-gesture-handler'
-
-
-import RegularButton from '../Buttons/RegularButton'
 import Input from './Inputs/Input'
 import { LoginFormResult } from './types'
 
 import { FormProps } from './types'
-import { Button, Text, useTheme } from 'react-native-paper'
+import { Button, Text, TextInput, useTheme } from 'react-native-paper'
+import { ErrorText, InputBox } from './styles'
 
 const intialValues: LoginFormResult = { email: '', password: '' }
 const LoginForm: FunctionComponent<FormProps<LoginFormResult>> = (props) => {
@@ -24,34 +21,47 @@ const LoginForm: FunctionComponent<FormProps<LoginFormResult>> = (props) => {
             .required('Password is required')
     })
 
-    return <Formik initialValues={intialValues} onSubmit={props.onSubmit} validationSchema={validationSchema}>
-        {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => <>
-            <Input
-                errorProps={{ error: errors.email, touched: touched.email }}
-                onChangeText={handleChange('email')}
-                onBlur={handleBlur('email')}
-                value={values.email}
-                placeholder="Paperless@trucking-app.com"
-                name={'email'}
-            />
-
-            <Input
-                errorProps={{ error: errors.password, touched: touched.password }}
-                onChangeText={handleChange('password')}
-                onBlur={handleBlur('password')}
-                secureTextEntry={true}
-                value={values.password}
-                placeholder="***********"
-                name={"password"}
-            />
-
+    return <Formik initialValues={intialValues} onSubmit={async (data: LoginFormResult, { setSubmitting }) => {
+        await props.onSubmit(data);
+        setSubmitting(false)
+    }}
+        validationSchema={validationSchema}
+    >
+        {({ handleChange, handleBlur, handleSubmit, values, errors, touched, isSubmitting }) => <>
+            <InputBox>
+                <TextInput
+                    label={"Email"}
+                    value={values.email}
+                    placeholder='trucking@tare.com'
+                    onChangeText={handleChange('email')}
+                    onBlur={handleBlur('email')}
+                    error={!!errors.email}
+                />
+                {errors.email && <ErrorText>{errors.email}</ErrorText>}
+            </InputBox>
+            <InputBox>
+                <TextInput
+                    label={"Password"}
+                    value={values.password}
+                    placeholder='**************'
+                    onChangeText={handleChange('password')}
+                    onBlur={handleBlur('password')}
+                    error={!!errors.password}
+                    secureTextEntry={true}
+                />
+                {errors.password && <ErrorText>{errors.password}</ErrorText>}
+            </InputBox>
             <Button
-                style={{ backgroundColor: theme.colors.primary, width: '100%' }}
-                onPress={() => { handleSubmit() }}
+                mode="contained"
+                onPress={() => handleSubmit()}
+                disabled={isSubmitting}
+                style={{
+                    marginTop: 10,
+                    backgroundColor: isSubmitting ? theme.colors.onSurfaceDisabled : theme.colors.primary,
+                    width: '100%',
+                }}
             >
-                <Text style={{ color: 'white' }}>
-                    Login
-                </Text>
+                {isSubmitting ? "Submitting...." : "Login"}
             </Button>
         </>
         }

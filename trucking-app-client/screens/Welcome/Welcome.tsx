@@ -1,8 +1,7 @@
 import React, { FunctionComponent, useEffect, useState } from 'react'
 import { StatusBar } from 'expo-status-bar'
-import styled from 'styled-components/native'
-import { TouchableOpacity } from 'react-native'
-import { Button, Snackbar, Text } from 'react-native-paper'
+import { TouchableOpacity, View } from 'react-native'
+import { Button, Text, useTheme } from 'react-native-paper'
 
 import BigText from '../../components/Texts/BigText'
 import SmallText from '../../components/Texts/SmallText'
@@ -16,59 +15,22 @@ import { User } from '../../models/User'
 import { FIREBASE_AUTH } from '../../config/firebaseConfig'
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth'
 import Cache from '../../utils/Cache'
+import { WelcomContainer, TopSection, BottomSection, TopImage } from './styles'
 
 
 // Custom Components
 import { colors } from '../../components/colors'
-import { Container } from '../../components/shared'
-
-const WelcomContainer = styled(Container)`
-    background-color: ${colors.secondary};
-    justify-content: space-between;r
-    width: 100%;
-    height: 100%;
-`
-
-const TopSection = styled.View`
-    width: 100%;
-    flex: 1;
-    max-height: 55%;
-`
-
-const TopImage = styled.Image`
-    width: 100%; 
-    height: 100%; 
-    resize-mode: stretch;
-`
-
-const BottomSection = styled.View`
-    width: 100%; 
-    padding: 25px;
-    flex: 1;
-    justify-content: flex-end;
-`
-
-const FormSwitchText = styled.Text`
-    padding-left: 5px;
-    margin-top: 5px;
-    color: ${colors.tertiary};
-`
-
-
 
 import { RoofStackParamList } from '../../navigators/RoofStack'
 import { StackScreenProps } from '@react-navigation/stack'
 
 import background from '../../assets/welcome.png'
-import FlashAnimation from '../../components/Animated/FlashAnimation'
 import { CustomerController } from '../../controllers/CustomerController'
 import { Customer, CustomerQuery } from '../../models/Customer'
-import { Company } from '../../models/Company'
 import { CompanyController } from '../../controllers/CompanyController'
 import { Operator, OperatorQuery } from '../../models/Operator'
 import { OperatorController } from '../../controllers/OperatorController'
-
-
+import useSnackbar from '../../hooks/useSnackbar'
 
 type Props = StackScreenProps<RoofStackParamList, "Welcome">
 
@@ -80,6 +42,8 @@ const Welcome: FunctionComponent<Props> = ({ navigation }) => {
     const [flashMessage, setFlashMessage] = useState<string>("")
     const [flashColor, setFlashColor] = useState<string>(colors.success)
     const [flashToggle, setFlashToggle] = useState<boolean>(false);
+    const { showSnackbar } = useSnackbar();
+    const theme = useTheme();
 
     const hideAuth = () => setShowAuth(false)
 
@@ -144,15 +108,28 @@ const Welcome: FunctionComponent<Props> = ({ navigation }) => {
             const cC = new CompanyController();
             const [comp] = await Promise.all([cC.get(), loadCache()]);
             AuthController.saveCompany(comp)
-            setFlashColor(colors.success)
-            setFlashMessage("Successfully Loggd In")
-            setFlashToggle(!flashToggle)
-            setTimeout(async () => navigation.navigate("Home", { company: comp }), 2000)
+            showSnackbar({
+                message: 'Loged in successfully',
+                color: theme.colors.primary
+            })
+            navigation.navigate("Home", { company: comp })
         } catch (e: any) {
-            console.log(e)
-            setFlashMessage(e.message)
-            setFlashColor("red")
-            setFlashToggle(!flashToggle)
+            console.log(e);
+            let error: string = "Error logging in. "
+            if (e.code === 'auth/user-not-found') {
+                error = "User not found"
+            } else if (e.code === 'auth/wrong-password') {
+                error = 'Incorrect credentials'
+            }
+
+            showSnackbar({
+                message: error,
+                color: theme.colors.error
+            })
+
+            // setFlashMessage(e.message)
+            // setFlashColor("red")
+            // setFlashToggle(!flashToggle)
         }
     }
 
@@ -170,15 +147,15 @@ const Welcome: FunctionComponent<Props> = ({ navigation }) => {
             const cC = new CompanyController();
             const [comp] = await Promise.all([cC.get(), loadCache()]);
             AuthController.saveCompany(comp)
-            setFlashColor(colors.success)
-            setFlashMessage("Successfully Registered")
-            setFlashToggle(!flashToggle)
-            setTimeout(async () => navigation.navigate("Home", { company: comp }), 2000)
+            // setFlashColor(colors.success)
+            // setFlashMessage("Successfully Registered")
+            // setFlashToggle(!flashToggle)
+            navigation.navigate("Home", { company: comp })
         } catch (e: any) {
             console.log(e.message)
-            setFlashColor(colors.red)
-            setFlashMessage(e.message)
-            setFlashToggle(!flashToggle)
+            // setFlashColor(colors.red)
+            // setFlashMessage(e.message)
+            // setFlashToggle(!flashToggle)
         }
     }
 
@@ -190,44 +167,55 @@ const Welcome: FunctionComponent<Props> = ({ navigation }) => {
                     <TopImage source={background} />
                 </TopSection>
                 <BottomSection >
-                    <BigText textStyle={{ width: "70%", marginBottom: 25 }}>
+                    <Text variant="headlineLarge" style={{ marginBottom: 10, color: 'white', fontWeight: 'bold' }}>
                         Paper Less Trucking
-                    </BigText>
-                    <SmallText textStyle={{ width: "70%", marginBottom: 25 }}>
+                    </Text>
+                    <Text style={{ marginBottom: 25, color: 'white' }}>
                         Drop the books and pick up the future
-                    </SmallText>
-                    <Button style={{ backgroundColor: colors.primary }} onPress={() => setShowAuth(true)}>
-                        <Text style={{ color: 'white' }}>
-
-                            Get Started
-                        </Text>
-                    </Button>
+                    </Text>
+                    <View style={{ flexDirection: 'row', gap: 10 }}>
+                        <Button style={{ backgroundColor: colors.primary, flex: 1 }} onPress={() => {
+                            setShowLogin(true);
+                            setShowAuth(true);
+                        }}>
+                            <Text style={{ color: 'white' }}>
+                                Login
+                            </Text>
+                        </Button>
+                        <Button style={{ backgroundColor: 'white', flex: 1 }} onPress={() => {
+                            setShowLogin(false);
+                            setShowAuth(true);
+                        }}>
+                            <Text style={{ color: theme.colors.primary }}>
+                                Register
+                            </Text>
+                        </Button>
+                    </View>
                 </BottomSection>
                 <SwipeDownViewAnimation show={showAuth} close={hideAuth} VH={.95}>
                     <Form>
                         <BigText textStyle={{ color: colors.primary }}>{showLogin ? "Welcome Back" : "Create an Account"}</BigText>
-                        <SmallText textStyle={{ color: colors.secondary }}>
-                            {showLogin ? "Welcome to the trucking app, enter you credentials and lets started" : "Welcome to the trucking app, enter you credentials and lets started"}
-                        </SmallText>
-                        <FlashAnimation
-                            toggle={flashToggle}
-                            onAnimationBegin={!showLogin ? () => setShowLogin(true) : undefined}
-                            color={flashColor}
-                        >
-                            {flashMessage}
-                        </FlashAnimation>
+                        <Text style={{ color: colors.secondary, textAlign: 'center' }} variant='labelLarge'>
+                            {showLogin ? "Welcome to the trucking app, enter you credentials and lets get started" : "Welcome to the trucking app, register and lets get started"}
+                        </Text>
+
                         {
                             showLogin ? <LoginForm onSubmit={handleLogin} /> : <RegisterForm onSubmit={handleRegister} />
                         }
-                        <SmallText
-                            textStyle={{ textAlign: 'center', color: colors.secondary }}>
-                            {showLogin ? "Don't have an account?" : "Already have an account?"}
-                            <TouchableOpacity onPress={showLogin ? () => setShowLogin(false) : () => setShowLogin(true)}>
-                                <FormSwitchText>
+                        <View style={{ flexDirection: 'row' }}>
+                            <View>
+                                <Text>
+                                    {showLogin ? "Don't have an account?" : "Already have an account?"}
+                                </Text>
+                            </View>
+                            <TouchableOpacity
+                                onPress={showLogin ? () => setShowLogin(false) : () => setShowLogin(true)}
+                                style={{ justifyContent: 'flex-end', paddingLeft: 5 }}>
+                                <Text style={{ color: theme.colors.tertiary }}>
                                     {showLogin ? "Create an account" : "Login"}
-                                </FormSwitchText>
+                                </Text>
                             </TouchableOpacity>
-                        </SmallText>
+                        </View>
                     </Form>
                 </SwipeDownViewAnimation>
             </WelcomContainer>
