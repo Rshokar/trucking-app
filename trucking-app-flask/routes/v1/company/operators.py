@@ -79,3 +79,15 @@ def generate_token(request_token):
 def validate(request_token):
     session = g.session
     return OperatorController.validate_operator_auth_token(session, request_token)
+
+
+@operators.route('/ticket', methods=["GET"])
+def get_rfo():
+    authhead = request.headers.get("Authorization-Fake-X", None)
+
+    if authhead is None:
+        return make_response("Auth header missing", 400)
+
+    access_token = authhead.split(" ")[1]
+
+    return OperatorController.get_rfo(g.session, access_token)

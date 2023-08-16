@@ -4,7 +4,12 @@ import { Typography, Box, useTheme } from '@mui/material'
 import { Container } from '../../components/shared'
 import LockIcon from '@mui/icons-material/Lock';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigation } from 'react-router-dom';
+import { Bill } from '../../models/Bill';
+import { Dispatch } from '../../models/Dispatch';
+import { Customer } from '../../models/Customer';
+import { Company } from '../../models/Company';
+import { RFO } from '../../models/RFO';
 
 const View = styled(Container)`
     height: 100vh;
@@ -31,11 +36,17 @@ const TicketPage = (props: Props) => {
     const theme = useTheme();
     const [validated, setValidated] = useState(false); // flag that indicates whether an email has been sent to operator
     const [accessToken, setAccessToken] = useState<string>();
+
+    const [disp, setDispatch] = useState<Dispatch>();
+    const [rfo, setRFO] = useState<RFO>();
+    const [customer, setCustomer] = useState<Customer>();
+    const [bills, setBills] = useState<Bill>();
+    const [operator, setOperator] = useState<string>();
+
     const { token } = useParams();
 
     const sendAuthEmail = async () => {
         try {
-
             const res = await fetch(`http://127.0.0.1:5000/v1/company/operators/validate_token/${token}`, {
                 method: 'GET',
                 headers: {
@@ -50,13 +61,42 @@ const TicketPage = (props: Props) => {
         }
     }
 
+    const getTickets = async () => {
+        try {
+            const res = await fetch('http://127.0.0.1:5000/v1/company/operators/ticket', {
+                method: 'GET',
+                headers: {
+                    "Authorization-Fake-X": `Bearer ${accessToken}`
+                }
+            })
+            if (res.status !== 200) throw Error("Response from api not okay");
+
+            const result = await res.json();
+
+            setDispatch(result.dispatch)
+            setRFO(result.rfo)
+            setCustomer(result.customer)
+            setBills(result.bills)
+            setOperator(result.operator)
+
+        } catch (err: any) {
+            console.log(err);
+        }
+    }
+
     useEffect(() => {
         if (!token) {
             // Redirect to welcom page and display error
         }
-
         sendAuthEmail();
     }, [])
+
+
+    useEffect(() => {
+        if (!accessToken) return;
+        getTickets();
+
+    }, [accessToken])
 
     console.log('VALIDATE', validated, accessToken);
 

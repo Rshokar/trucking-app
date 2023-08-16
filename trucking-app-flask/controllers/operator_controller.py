@@ -1,5 +1,5 @@
 from itsdangerous import URLSafeTimedSerializer
-from models import Operator, Company, RFO
+from models import Operator, Company, RFO, BillingTickets
 from sqlalchemy.exc import IntegrityError
 from utils import send_verification_email, send_operator_auth_token
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadTimeSignature
@@ -287,3 +287,46 @@ class OperatorController:
         access_token = accessS.dumps(data)
 
         return make_response({'access_token': access_token}, 200)
+
+    def get_rfo(session, token):
+        """
+            Gets the neccessary data for an operator to view there rfo
+        """
+
+        s = URLSafeTimedSerializer(OPERATOR_ACCESS_TOKEN_SECRET)
+
+        try:
+            # Token valid for 24 hours
+            data = s.loads(token, max_age=86400)
+        except SignatureExpired:
+            return make_response('Token expired.', 400)
+        except BadTimeSignature:
+            return make_response('Invalid token.', 400)
+
+        # Get RFO, Disaptch, Customer, Bills, and operator
+        rfo = session.query(RFO).filter_by(rfo_id=data['rfo_id']).first()
+
+        if rfo is None:
+            return make_response("RFO not found", 404)
+
+        oper = session.query(Operator).filter_by(
+            operator_id=data['operator_id']).first()
+
+        if oper is None:
+            return make_response("Operator not found", 404)
+
+        bills = session.query(BillingTickets).filter_by(
+            rfo_id=data['rfo_id']).all()
+        disp = rfo.dispatch
+        res = {
+            "rfo": rfo.to_dict(),
+            "dispatch": disp.to_dict(),
+            "customer": disp.customer.to_dict(),
+            "operator": oper.operator_name,
+            "company": disp.company.to_dict(),
+            "bills": [bill.to_dict() for bill in bills]
+        }
+
+        print(res)
+
+        return make_response(res, 200)
