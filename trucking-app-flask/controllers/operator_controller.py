@@ -81,6 +81,7 @@ class OperatorController:
 
         operator_email = session.query(Operator).filter_by(
             operator_email=email, company_id=company_id).first()
+
         if operator_email is not None:
             return make_response('Operator email already used', 400)
 
@@ -94,8 +95,12 @@ class OperatorController:
         # Generate unique token for the operator
         token = s.dumps({"operator_id": new_operator.operator_id}, salt=SALT)
 
-        # Send verification email to the new operator
-        send_verification_email(mail, email, token, name, company.company_name)
+        try:
+            # Send verification email to the new operator
+            send_verification_email(
+                mail, email, token, name, company.company_name)
+        except Exception as e:
+            print(e)
 
         return make_response(new_operator.to_dict(), 201)
 
@@ -326,7 +331,5 @@ class OperatorController:
             "company": disp.company.to_dict(),
             "bills": [bill.to_dict() for bill in bills]
         }
-
-        print(res)
 
         return make_response(res, 200)

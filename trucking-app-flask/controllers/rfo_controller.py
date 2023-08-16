@@ -88,6 +88,9 @@ class RfoController:
         if oper is None:
             return make_response('Operator not found', 404)
 
+        if oper.confirmed == False:
+            return make_response("Operator email not verified", 400)
+
         rfo = RFO(
             dispatch_id=disp_id,
             operator_id=oper_id,
@@ -150,6 +153,9 @@ class RfoController:
                 operator_id=operator_id, company_id=comp.company_id).first()
             if oper is None:
                 return make_response('Operator not found', 404)
+
+            if oper.confirmed == False:
+                return make_response("Operator email not verified", 400)
 
         disp = session.query(Dispatch).filter_by(
             dispatch_id=rfo.dispatch_id, company_id=comp.company_id).first()

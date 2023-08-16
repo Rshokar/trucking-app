@@ -118,7 +118,11 @@ const TicketPage = (props: Props) => {
             })
             if (res.status !== 200) throw Error("Response from api not okay")
             setValidated(res.status === 200);
-            setAccessToken((await res.json()).access_token)
+
+
+            setTimeout(async () => {
+                setAccessToken((await res.json()).access_token)
+            }, 1000)
         } catch (err: any) {
             console.log(err);
         }
@@ -133,6 +137,7 @@ const TicketPage = (props: Props) => {
                 }
             })
             if (res.status !== 200) throw Error("Response from api not okay");
+
 
             const result = await res.json();
 
@@ -149,9 +154,6 @@ const TicketPage = (props: Props) => {
     }
 
     useEffect(() => {
-        if (!token) {
-            // Redirect to welcom page and display error
-        }
         sendAuthEmail();
     }, [])
 
@@ -162,9 +164,7 @@ const TicketPage = (props: Props) => {
 
     }, [accessToken])
 
-    console.log('VALIDATE', validated, accessToken);
-
-    return <View>
+    return <View style={{ alignItems: 'center' }}>
         {loaded ?
             <TicketInfoContainer>
                 <TicketContainer>
@@ -232,7 +232,8 @@ const TicketPage = (props: Props) => {
                             <Typography variant='subtitle2'>Recent</Typography>
                         </SeperatedText>
                         {
-                            bills?.map(b => <TicketItem
+                            bills?.map((b, index) => <TicketItem
+                                key={index}
                                 onButtonClick={() => console.log("edit")}
                                 buttonClickIcon={<EditIcon style={{ fontSize: '20pt', color: theme.palette.secondary.main, padding: '5px' }} />}
                                 title={`${b.ticket_number}`}
@@ -242,7 +243,7 @@ const TicketPage = (props: Props) => {
                             />)
                         }
                         <Button style={{
-                            background: theme.palette.primary.main,
+                            background: theme.palette.secondary.main,
                             color: 'white',
                             width: '300px'
                         }}>Add Bill</Button>

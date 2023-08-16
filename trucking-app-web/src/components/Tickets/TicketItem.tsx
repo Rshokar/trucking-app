@@ -73,8 +73,13 @@ const TicketItem: FunctionComponent<TicketItemProps> = (props) => {
                 }}>
                     {props.icon}
                 </IconView>
-                <div style={{ marginLeft: 10 }}>
-                    <Typography style={{ fontWeight: 'bold' }} variant='subtitle1'>
+                <div style={{
+                    marginLeft: 10,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                }}>
+                    <Typography style={{ fontWeight: 'bold', lineHeight: 1 }} variant='subtitle1'>
                         {props.title}
                     </Typography>
                     {
