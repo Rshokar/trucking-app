@@ -20,6 +20,8 @@ class Operator(Base):
         self.confirmed = confirmed
         self.confirm_token = confirm_token
 
+    rfo = relationship("RFO", backref="operator", lazy=True)
+
     def __repr__(self):
         return f"OPERATOR: ({self.operator_id}) {self.company_id} {self.operator_name} {self.operator_email}"
 
