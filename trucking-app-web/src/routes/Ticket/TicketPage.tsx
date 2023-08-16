@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { Typography, Box, useTheme } from '@mui/material'
 import { Container } from '../../components/shared'
-import MarkEmailReadIcon from '@mui/icons-material/MarkEmailRead';
-import LocalPostOfficeIcon from '@mui/icons-material/LocalPostOffice';
+import LockIcon from '@mui/icons-material/Lock';
+import LockOpenIcon from '@mui/icons-material/LockOpen';
 import { useParams } from 'react-router-dom';
 
 const View = styled(Container)`
@@ -27,20 +27,27 @@ const MessageView = styled(Box)`
 
 type Props = {}
 
-const ValidateOperatorEmailPage = (props: Props) => {
+const TicketPage = (props: Props) => {
     const theme = useTheme();
-    const [validated, setValidated] = useState(false);
+    const [validated, setValidated] = useState(false); // flag that indicates whether an email has been sent to operator
+    const [accessToken, setAccessToken] = useState<string>();
     const { token } = useParams();
 
-    const validateEmail = async () => {
-        const res = await fetch('http://127.0.0.1:5000/v1/company/operators/validate', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ token: token + '' })
-        })
-        setValidated(res.status === 200);
+    const sendAuthEmail = async () => {
+        try {
+
+            const res = await fetch(`http://127.0.0.1:5000/v1/company/operators/validate_token/${token}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+            })
+            if (res.status !== 200) throw Error("Response from api not okay")
+            setValidated(res.status === 200);
+            setAccessToken((await res.json()).access_token)
+        } catch (err: any) {
+            console.log(err);
+        }
     }
 
     useEffect(() => {
@@ -48,10 +55,10 @@ const ValidateOperatorEmailPage = (props: Props) => {
             // Redirect to welcom page and display error
         }
 
-        validateEmail();
+        sendAuthEmail();
     }, [])
 
-    console.log('VALIDATED', validated);
+    console.log('VALIDATE', validated, accessToken);
 
     return <View>
         <MessageView style={{ backgroundColor: theme.palette.secondary.main }}>
@@ -61,10 +68,10 @@ const ValidateOperatorEmailPage = (props: Props) => {
                 flexDirection: 'column',
             }}>
                 <Typography variant='h5' style={{ color: 'white' }}>
-                    {validated ? "Email Validated" : "Validating your email"}
+                    {validated ? "Thanks for your patients!" : "Validating....."}
                 </Typography>
                 <Typography variant='body2' style={{ color: 'white' }}>
-                    {validated ? "Thank you for your patients, your email has been validated and your dispatcher will be in contact soon" : " Thanks for clicking the link. We are currently validating your email."}
+                    {validated ? "Thank you for your patients! Here is your ticket" : "Just give us a second, we are validating your token."}
                 </Typography>
             </div>
             <Box sx={{
@@ -76,7 +83,7 @@ const ValidateOperatorEmailPage = (props: Props) => {
                 justifyContent: 'center',
                 borderRadius: '10px'
             }}>
-                {validated ? <MarkEmailReadIcon style={{ fontSize: '25pt' }} /> : <LocalPostOfficeIcon style={{ fontSize: '25pt' }} />}
+                {validated ? <LockOpenIcon style={{ fontSize: '25pt' }} /> : <LockIcon style={{ fontSize: '25pt' }} />}
             </Box>
             <Typography variant='caption' style={{ color: 'white' }}>
                 {validated ? "All done thanks for waiting" : "Sorry for taking too long...."}
@@ -85,4 +92,4 @@ const ValidateOperatorEmailPage = (props: Props) => {
     </View>
 }
 
-export default ValidateOperatorEmailPage
+export default TicketPage

@@ -102,6 +102,20 @@ class RfoController:
         session.add(rfo)
         session.commit()
 
+        # Send RFO email to operator
+        s = URLSafeTimedSerializer(SEND_OPERATOR_RFO_TOKEN_SECRET)
+        token_data = {"operator_id": oper.operator_id,
+                      "rfo_id": rfo.rfo_id}
+        # This will give you a secure token with the operator_id and rfo_id
+
+        token = s.dumps(token_data)
+
+        try:
+            send_operator_rfo(Mail(app), oper.operator_email,
+                              rfo, oper, comp, disp.customer, disp, token)
+        except Exception as e:
+            print(e)
+
         # to_dict should not change rfo.start_time to string.
         res = rfo.to_dict()
         res["operator"] = oper.to_dict()

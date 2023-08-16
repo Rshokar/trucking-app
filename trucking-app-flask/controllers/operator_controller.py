@@ -3,7 +3,7 @@ from models import Operator, Company, RFO
 from sqlalchemy.exc import IntegrityError
 from utils import send_verification_email, send_operator_auth_token
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadTimeSignature
-from flask_login import current_user
+
 from sqlalchemy import and_
 from flask import current_app as app, g, make_response
 from flask_mail import Mail
@@ -67,7 +67,7 @@ class OperatorController:
         Returns:
             Responses: 201 Created
         '''
-        # mail = Mail(app)
+        mail = Mail(app)
         req = request.get_json()
         company_id = req.get('company_id')
         name = req.get('operator_name')
@@ -84,18 +84,18 @@ class OperatorController:
         if operator_email is not None:
             return make_response('Operator email already used', 400)
 
-        # Generate unique token for the operator
-        token = s.dumps(email, salt=SALT)
-
         # Create operator
         new_operator = Operator(company_id=company_id,
-                                operator_name=name, operator_email=email, confirmed=False, confirm_token=token)
+                                operator_name=name, operator_email=email, confirmed=False)
 
         session.add(new_operator)
         session.commit()
 
+        # Generate unique token for the operator
+        token = s.dumps({"operator_id": new_operator.operator_id}, salt=SALT)
+
         # Send verification email to the new operator
-        # send_verification_email(mail, email, token, name)
+        send_verification_email(mail, email, token, name, company.company_name)
 
         return make_response(new_operator.to_dict(), 201)
 
@@ -180,12 +180,12 @@ class OperatorController:
             return make_response('Token required.', 404)
         try:
             # Change max_age as per your requirements
-            email = s.loads(token, salt=SALT, max_age=3600)
+            op = s.loads(token, salt=SALT, max_age=3600)
         except:
             return make_response('The confirmation link is invalid or has expired.', 400)
 
         operator = session.query(Operator).filter_by(
-            operator_email=email).first()
+            operator_id=op["operator_id"]).first()
 
         if operator is None:
             return make_response('Operator not found.', 404)
@@ -200,7 +200,7 @@ class OperatorController:
 
     def generate_operator_auth_token(session, request_token):
         '''
-        Generate a unique 6 digit alphanumeric token for an operator to access a ticket
+        Generates an auth token and sends it via email to an operator.
 
         Parameters:
             Session (session): SQLAlchemy db session

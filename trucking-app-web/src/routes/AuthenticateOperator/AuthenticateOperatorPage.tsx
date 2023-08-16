@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import { Typography, Box, useTheme } from '@mui/material'
 import { Container } from '../../components/shared'
 import MarkEmailReadIcon from '@mui/icons-material/MarkEmailRead';
-import LocalPostOfficeIcon from '@mui/icons-material/LocalPostOffice';
+import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import { useParams } from 'react-router-dom';
 
 const View = styled(Container)`
@@ -29,18 +29,17 @@ type Props = {}
 
 const ValidateOperatorEmailPage = (props: Props) => {
     const theme = useTheme();
-    const [validated, setValidated] = useState(false);
+    const [sent, setSent] = useState(false); // flag that indicates whether an email has been sent to operator
     const { token } = useParams();
 
-    const validateEmail = async () => {
-        const res = await fetch('http://127.0.0.1:5000/v1/company/operators/validate', {
-            method: 'POST',
+    const sendAuthEmail = async () => {
+        const res = await fetch(`http://127.0.0.1:5000/v1/company/operators/generate_token/${token}`, {
+            method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ token: token + '' })
         })
-        setValidated(res.status === 200);
+        setSent(res.status === 200);
     }
 
     useEffect(() => {
@@ -48,10 +47,10 @@ const ValidateOperatorEmailPage = (props: Props) => {
             // Redirect to welcom page and display error
         }
 
-        validateEmail();
+        sendAuthEmail();
     }, [])
 
-    console.log('VALIDATED', validated);
+    console.log('SENT', sent);
 
     return <View>
         <MessageView style={{ backgroundColor: theme.palette.secondary.main }}>
@@ -61,10 +60,10 @@ const ValidateOperatorEmailPage = (props: Props) => {
                 flexDirection: 'column',
             }}>
                 <Typography variant='h5' style={{ color: 'white' }}>
-                    {validated ? "Email Validated" : "Validating your email"}
+                    {sent ? "We just sent you an email!" : "Authenticating....."}
                 </Typography>
                 <Typography variant='body2' style={{ color: 'white' }}>
-                    {validated ? "Thank you for your patients, your email has been validated and your dispatcher will be in contact soon" : " Thanks for clicking the link. We are currently validating your email."}
+                    {sent ? "Thank you for your patients, we just sent you an email to your RFO" : "Just give us a second, we are sending you a validation email."}
                 </Typography>
             </div>
             <Box sx={{
@@ -76,10 +75,10 @@ const ValidateOperatorEmailPage = (props: Props) => {
                 justifyContent: 'center',
                 borderRadius: '10px'
             }}>
-                {validated ? <MarkEmailReadIcon style={{ fontSize: '25pt' }} /> : <LocalPostOfficeIcon style={{ fontSize: '25pt' }} />}
+                {sent ? <MarkEmailReadIcon style={{ fontSize: '25pt' }} /> : <LocalShippingIcon style={{ fontSize: '25pt' }} />}
             </Box>
             <Typography variant='caption' style={{ color: 'white' }}>
-                {validated ? "All done thanks for waiting" : "Sorry for taking too long...."}
+                {sent ? "All done thanks for waiting" : "Sorry for taking too long...."}
             </Typography>
         </MessageView>
     </View>

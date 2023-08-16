@@ -13,7 +13,7 @@ class Operator(Base):
     confirmed = Column("confirmed", Boolean, default=False)
     confirm_token = Column("confirm_token", String(200), nullable=True)
 
-    def __init__(self, company_id, operator_name, operator_email, confirm_token, confirmed=False) -> None:
+    def __init__(self, company_id, operator_name, operator_email, confirm_token=None, confirmed=False) -> None:
         self.company_id = company_id
         self.operator_name = operator_name
         self.operator_email = operator_email

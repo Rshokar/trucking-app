@@ -57,11 +57,16 @@ def delete_operator(operator_id):
     return OperatorController.delete_operator(session=session, operator_id=operator_id)
 
 
-@operators.route('/validate', methods=["GET"])
+@operators.route('/validate', methods=["POST"])
 def validate_operators():
     session = g.session
-    token = request.args.get("token", None)
-    return OperatorController.validate_operator(session, token)
+    print("HELLO WORLD")
+    try:
+        token = request.get_json().get("token", None)
+        return OperatorController.validate_operator(session, token)
+    except Exception as e:
+        print(e)
+        return make_response("Error validating operator.", 500)
 
 
 @operators.route('/generate_token/<string:request_token>', methods=["GET"])

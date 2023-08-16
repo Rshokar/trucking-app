@@ -51,9 +51,6 @@ const Welcome: FunctionComponent<Props> = ({ navigation }) => {
 
     const [showLogin, setShowLogin] = useState<boolean>(true)
     const [showAuth, setShowAuth] = useState<boolean>(false)
-    const [flashMessage, setFlashMessage] = useState<string>("")
-    const [flashColor, setFlashColor] = useState<string>(colors.success)
-    const [flashToggle, setFlashToggle] = useState<boolean>(false);
     const { showSnackbar } = useSnackbar();
     const theme = useTheme();
 
@@ -136,10 +133,11 @@ const Welcome: FunctionComponent<Props> = ({ navigation }) => {
             } else if (e.code === 'auth/wrong-password') {
                 error = 'Incorrect credentials'
             }
-
+            console.log("HELLO WORLD", error)
             showSnackbar({
                 message: error,
-                color: theme.colors.error
+                color: theme.colors.error,
+                onClickText: 'Ok'
             })
         }
     }
@@ -160,7 +158,7 @@ const Welcome: FunctionComponent<Props> = ({ navigation }) => {
             })
             navigation.navigate("Home", { company })
         } catch (e: any) {
-            let error: string = "Error registering in."
+            let error: string = "Error registering."
             if (e.code === 'auth/email-already-in-use')
                 error = "Email is already being used"
 

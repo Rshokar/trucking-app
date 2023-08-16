@@ -1,7 +1,7 @@
 from flask_mail import Message
 
 
-def send_verification_email(mail, email, token, name):
+def send_verification_email(mail, email, token, name, company_name):
     '''
     Send a verification email to a new operator.
 
@@ -16,9 +16,20 @@ def send_verification_email(mail, email, token, name):
                   sender='ravindershokar@gmail.com', recipients=[email])
 
     # Ideally, you should use url_for function of Flask to create verify URL
-    verify_url = f"http://localhost:5000/v1/company/operators/validate?token={token}"
+    verify_url = f"http://localhost:3000/validate_operator_email/{token}"
 
-    msg.body = f'Hi {name},\nPlease click on the link {verify_url} to verify your email.'
+    msg.body = f'''
+    Hello {name},
+
+    {company_name} wants to add you to their operator list.
+    
+    Please click on the link {verify_url} to verify your email.
+    
+    Regards,
+    
+    Tare Ticketing and {company_name}
+    '''
+
     mail.send(msg)
 
 
@@ -64,7 +75,7 @@ def send_operator_rfo(mail, email, rfo, operator, company, customer, Dispatch, t
 
     Please click on the link below to view more details and accept the job:
 
-    http://localhost:5000/v1/company/operators/generate_token/{token}
+    http://localhost:3000/operator_auth/{token}
 
     If you have any questions, please contact your dispatcher.
 
@@ -95,7 +106,7 @@ def send_operator_auth_token(mail, email, token, operator_name):
 
     You requested access to an RFO assigned to you. 
 
-    http://localhost:5000/v1/company/operators/validate_token/{token}
+    http://localhost:3000/ticket/{token}
 
     Click the link above and you will have access to this ticket for the next 24 hours. 
 
