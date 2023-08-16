@@ -65,7 +65,6 @@ const RFOForm: FC<Props> = ({ onSubmit, defaultValues, operators }) => {
     const operatorList = operators.filter(o => o.confirmed)
         .map(operator => ({ label: operator.operator_name + "", value: operator.operator_id ?? 0 }));
 
-    console.log('OPERATORS', operators);
 
     const iv: any = { ...defaultValues };
 

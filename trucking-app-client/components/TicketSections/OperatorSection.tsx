@@ -14,6 +14,7 @@ import { RFO } from '../../models/RFO';
 import { View } from 'react-native';
 import useSnackbar from '../../hooks/useSnackbar';
 import ConstructionWorker from '../../assets/svgs/ConstructionWorket';
+import OperatorCard from '../Cards/OperatorCard';
 
 const StyledInput = styled(TextInput)`
     width: 90%;
@@ -33,6 +34,7 @@ const OperatorSection: FC<Props> = ({ navigate }) => {
     const [showRfos, setShowRfos] = useState<boolean>(false)
     const theme = useTheme();
     const [loading, setLoading] = useState<boolean>(false);
+    const [showCard, setShowCard] = useState<boolean>(false)
     const showModal = () => setVisible(true);
     const hideModal = () => setVisible(false);
     const { showSnackbar } = useSnackbar();
@@ -80,7 +82,7 @@ const OperatorSection: FC<Props> = ({ navigate }) => {
                 res = await operatorController.create(formData as Operator);
                 operators.push(res);
                 showSnackbar({
-                    message: 'Customer successfuly added',
+                    message: 'Operator successfuly added',
                     color: theme.colors.primary,
                     onClickText: 'Ok'
                 })
@@ -130,6 +132,31 @@ const OperatorSection: FC<Props> = ({ navigate }) => {
         setShowRfos(true);
     }
 
+    const showOperatorCard = (oper: Operator) => {
+        setFocusedOperator(oper)
+        setShowCard(true)
+    }
+
+    const resendVerificationEmail = async (oper: Operator) => {
+        const oC = new OperatorController();
+        try {
+            await oC.sendVerificationEmail(oper.operator_id + "");
+            showSnackbar({
+                color: theme.colors.primary,
+                message: 'Sent verification email',
+                onClickText: 'Ok',
+            })
+        } catch (err: any) {
+            console.log(err.message)
+            showSnackbar({
+                color: theme.colors.error,
+                message: err.message,
+                onClickText: 'Ok',
+            })
+        }
+
+    }
+
     return (
         <StyledSection>
             <StyledHeader>
@@ -157,8 +184,8 @@ const OperatorSection: FC<Props> = ({ navigate }) => {
                                 title={item.operator_name || ''}
                                 subtitle={item.confirmed ? item.operator_email : "Email not validated"}
                                 avatar={item.operator_name?.charAt(0).toLocaleUpperCase() || 'A'}
-                                onClick={() => showOperatorsRfos(item)}
-                                onLongpress={() => showOperatorsRfos(item)}
+                                onClick={() => item.confirmed ? showOperatorsRfos(item) : showOperatorCard(item)}
+                                onLongpress={() => item.confirmed ? showOperatorsRfos(item) : showOperatorCard(item)}
                                 onButtonClick={() => {
                                     setFocusedOperator(item);
                                     setVisible(true);
@@ -204,6 +231,17 @@ const OperatorSection: FC<Props> = ({ navigate }) => {
                             operId={focusedOperator?.operator_id}
                         />
                     </View>
+                </Modal>
+            </Portal>
+            <Portal>
+                <Modal
+                    visible={showCard}
+                    onDismiss={() => {
+                        setShowCard(false);
+                        setFocusedOperator(undefined);
+                    }}
+                    contentContainerStyle={{ justifyContent: 'center', alignItems: 'center' }}>
+                    <OperatorCard sendVerifcationEmail={resendVerificationEmail} {...focusedOperator} />
                 </Modal>
             </Portal>
             {

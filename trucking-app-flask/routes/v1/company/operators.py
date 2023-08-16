@@ -38,6 +38,14 @@ def create_operator():
         return make_response({"error": "Invalid Request Data"}, 400)
 
 
+@operators.route('/<int:operator_id>', methods=["POST"])
+@firebase_required
+def send_validation_email(operator_id):
+    if (operator_id <= 0):
+        return make_response("Operator_id is invalid", 400)
+    return OperatorController.send_validation_email(g.session, operator_id)
+
+
 @operators.route("/<int:operator_id>", methods=["PUT"])
 @firebase_required
 def update_operator(operator_id):

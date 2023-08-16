@@ -104,6 +104,39 @@ class OperatorController:
 
         return make_response(new_operator.to_dict(), 201)
 
+    def send_validation_email(session, operator_id):
+        """_summary_
+            Sends a validation email to the operator
+        Args:
+            session (_type_): _description_
+            operator_id (_type_): _description_
+
+        Returns:
+            _type_: _description_
+        """
+        mail = Mail(app)
+        print(g.user["uid"], operator_id)
+        operator = Operator.get_operator_by_id_and_owner(
+            session, operator_id, g.user["uid"])
+
+        if operator is None:
+            return make_response('Operator does not exist', 404)
+
+        if operator.confirmed is True:
+            return make_response('Operator has already been validated', 400)
+
+            # Generate unique token for the operator
+        token = s.dumps({"operator_id": operator.operator_id}, salt=SALT)
+
+        try:
+            # Send verification email to the new operator
+            send_verification_email(
+                mail, operator.operator_email, token, operator.operator_name, operator.company.company_name)
+        except Exception as e:
+            return make_response("Error sending email", 500)
+
+        return make_response("Email sent", 200)
+
     # Delete an operator
     def delete_operator(session, operator_id):
         '''

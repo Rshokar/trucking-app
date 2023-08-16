@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Avatar, Button, Card, IconButton, Text } from 'react-native-paper';
 import { View } from 'react-native';
 import moment from 'moment';
-import { RFO } from '../../../models/RFO';
+import { RFO } from '../../models/RFO';
 import styled from 'styled-components/native';
 
 const LeftContent = (props: any) => <Avatar.Icon {...props} icon="ticket" />

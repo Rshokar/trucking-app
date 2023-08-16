@@ -40,12 +40,15 @@ export const SnackbarProvider: React.FC<SnackbarProviderProps> = ({ children }) 
     const [state, setState] = useState(defaultContextData);
 
     const showSnackbar = (config: SnackbarConfig) => {
+        console.log(config)
         setState({ ...state, ...config, show: true });
     };
 
     const hideSnackbar = () => {
         setState({ ...state, show: false });
     };
+
+
 
     return (
         <SnackbarContext.Provider value={{ ...state, showSnackbar, hideSnackbar }}>

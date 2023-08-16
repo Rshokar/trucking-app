@@ -106,4 +106,19 @@ export class OperatorController {
             throw new Error("Error creating operator");
         }
     }
+
+    async sendVerificationEmail(id: string): Promise<any> {
+        try {
+            await myAxios.post<void>(`/company/operators/${id}`, undefined, {
+                headers: {
+                    ... await getAuthHeader()
+                }
+            })
+        } catch (error) {
+            if (isAxiosError(error)) {
+                throw new Error(error.response?.data)
+            }
+            throw new Error("Error creating operator");
+        }
+    }
 }
