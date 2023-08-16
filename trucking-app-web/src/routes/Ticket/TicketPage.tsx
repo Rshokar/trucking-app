@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
-import { Typography, Box, useTheme } from '@mui/material'
+import { Typography, Box, useTheme, Button, Fab } from '@mui/material'
 import { Container } from '../../components/shared'
 import LockIcon from '@mui/icons-material/Lock';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
@@ -15,20 +15,28 @@ import IconButton from '@mui/material/IconButton';
 import moment from 'moment';
 import BookIcon from '@mui/icons-material/Book';
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
+import ReceiptIcon from '@mui/icons-material/Receipt';
+import EditIcon from '@mui/icons-material/Edit';
+import AddIcon from '@mui/icons-material/Add';
+
 import { colors } from '../..';
+import TicketItem from '../../components/Tickets/TicketItem';
+import BillSVG from '../../components/SVGS/BillSVG';
 const View = styled(Container)`
     height: 100vh;
     width: 100vw;
+    align-items: flex-start;
 `
 
 const TicketInfoContainer = styled.div`
+    height: 100%;
     max-width: 90%; 
     width: 500px; 
     display: flex;
     justify-content: center;
     align-items: center; 
     flex-direction: column;
-    padding: 20px; 
+    padding-top: 10px; 
     box-sizing: border-box;
     gap: 10px;
 `
@@ -39,6 +47,7 @@ const TicketContainer = styled(Box)`
     padding: 10px; 
     border: 2px solid grey;
     border-radius: 5px;
+    box-sizing: border-box;
 `
 
 const TicketContainerHeader = styled.div`
@@ -61,6 +70,26 @@ const SeperatedText = styled.div`
     align-items: center; 
 `
 
+const NoTicketsFound = styled.div`
+    display: flex;
+    height: 100%;
+    width: 100%;
+    align-items: center; 
+    justify-content: center; 
+    flex-direction: column; 
+    gap: 20px;
+`
+
+const TicketSection = styled.div`
+    display: flex;
+    height: 100%;
+    width: 100%;
+    align-items: center; 
+    justify-content: flex-start; 
+    flex-direction: column; 
+    gap: 10px;
+`
+
 
 type Props = {}
 
@@ -73,7 +102,7 @@ const TicketPage = (props: Props) => {
     const [disp, setDispatch] = useState<Dispatch>();
     const [rfo, setRFO] = useState<RFO>();
     const [customer, setCustomer] = useState<Customer>();
-    const [bills, setBills] = useState<Bill>();
+    const [bills, setBills] = useState<Bill[]>();
     const [operator, setOperator] = useState<string>();
     const [company, setCompany] = useState<Company>();
 
@@ -149,8 +178,12 @@ const TicketPage = (props: Props) => {
                         </div>
                     </TicketContainerHeader>
                     <TextSection>
-                        <Typography variant='body2'>Dispatcher: {company?.company_name}</Typography>
-                        <Typography variant='body2'>Notes: {disp?.notes}</Typography>
+                        <SeperatedText>
+                            <Typography variant='body2'>Dispatcher:</Typography>
+                            <Typography variant='body2'>{company?.company_name}</Typography>
+
+                        </SeperatedText>
+                        <Typography variant='body2'>{disp?.notes}</Typography>
                     </TextSection>
                 </TicketContainer>
                 <TicketContainer>
@@ -182,6 +215,39 @@ const TicketPage = (props: Props) => {
                         </SeperatedText>
                     </TextSection>
                 </TicketContainer>
+                {bills?.length === 0 ?
+                    <NoTicketsFound>
+                        <BillSVG width={200} height={200} />
+                        <Typography>No Bills found. Create One! </Typography>
+                        <Button style={{
+                            background: theme.palette.primary.main,
+                            color: 'white',
+                            width: '300px'
+                        }}>Add Bill</Button>
+                    </NoTicketsFound>
+                    :
+                    <TicketSection>
+                        <SeperatedText style={{ width: '100%', paddingRight: '5px', paddingLeft: '5px', boxSizing: 'border-box' }}>
+                            <Typography style={{ fontWeight: 'bold' }} variant='subtitle2'>Billing Tickets</Typography>
+                            <Typography variant='subtitle2'>Recent</Typography>
+                        </SeperatedText>
+                        {
+                            bills?.map(b => <TicketItem
+                                onButtonClick={() => console.log("edit")}
+                                buttonClickIcon={<EditIcon style={{ fontSize: '20pt', color: theme.palette.secondary.main, padding: '5px' }} />}
+                                title={`${b.ticket_number}`}
+                                subtitle={`RFO ID: ${b.rfo_id}`}
+                                icon={<ReceiptIcon style={{ fontSize: '27pt', color: 'white', padding: '5px' }} />}
+                                onDelete={async () => console.log(b)}
+                            />)
+                        }
+                        <Button style={{
+                            background: theme.palette.primary.main,
+                            color: 'white',
+                            width: '300px'
+                        }}>Add Bill</Button>
+                    </TicketSection>
+                }
             </TicketInfoContainer>
             :
             <MessageView
