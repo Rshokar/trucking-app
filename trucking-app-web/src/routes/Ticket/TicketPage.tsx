@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
-import { Typography, Box, useTheme, Button, Fab } from '@mui/material'
+import { Typography, Box, useTheme, Button, Modal } from '@mui/material'
 import { Container } from '../../components/shared'
 import LockIcon from '@mui/icons-material/Lock';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
-import { useParams, useNavigation } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { Bill } from '../../models/Bill';
 import { Dispatch } from '../../models/Dispatch';
 import { Customer } from '../../models/Customer';
@@ -17,11 +17,11 @@ import BookIcon from '@mui/icons-material/Book';
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import ReceiptIcon from '@mui/icons-material/Receipt';
 import EditIcon from '@mui/icons-material/Edit';
-import AddIcon from '@mui/icons-material/Add';
-
-import { colors } from '../..';
 import TicketItem from '../../components/Tickets/TicketItem';
 import BillSVG from '../../components/SVGS/BillSVG';
+import BillForm, { BillFormResult } from '../../components/Forms/BillForm';
+import { FormView } from '../../components/Forms/styles';
+
 const View = styled(Container)`
     height: 100vh;
     width: 100vw;
@@ -105,6 +105,8 @@ const TicketPage = (props: Props) => {
     const [bills, setBills] = useState<Bill[]>();
     const [operator, setOperator] = useState<string>();
     const [company, setCompany] = useState<Company>();
+    const [showForm, setShowForm] = useState<boolean>(false)
+    const [focusedBill, setFocusedBill] = useState<Bill>();
 
     const { token } = useParams();
 
@@ -137,8 +139,6 @@ const TicketPage = (props: Props) => {
                 }
             })
             if (res.status !== 200) throw Error("Response from api not okay");
-
-
             const result = await res.json();
 
             setDispatch(result.dispatch)
@@ -163,6 +163,22 @@ const TicketPage = (props: Props) => {
         getTickets();
 
     }, [accessToken])
+
+    const handleCreate = async (data: BillFormResult): Promise<any> => {
+        console.log(data)
+    }
+
+    const hanldeEdit = async (data: BillFormResult, id: string): Promise<any> => {
+        console.log(data, id)
+    }
+
+
+    const handleFormSubmit = async (values: BillFormResult, id?: string | undefined): Promise<boolean> => {
+        if (focusedBill) {
+            return await hanldeEdit(values, focusedBill.bill_id + "")
+        }
+        return await handleCreate(values);
+    }
 
     return <View style={{ alignItems: 'center' }}>
         {loaded ?
@@ -219,11 +235,17 @@ const TicketPage = (props: Props) => {
                     <NoTicketsFound>
                         <BillSVG width={200} height={200} />
                         <Typography>No Bills found. Create One! </Typography>
-                        <Button style={{
-                            background: theme.palette.primary.main,
-                            color: 'white',
-                            width: '300px'
-                        }}>Add Bill</Button>
+                        <Button
+                            style={{
+                                background: theme.palette.primary.main,
+                                color: 'white',
+                                width: '300px'
+                            }}
+                            onClick={(e) => {
+                                setFocusedBill(undefined);
+                                setShowForm(true);
+                            }}
+                        >Add Bill</Button>
                     </NoTicketsFound>
                     :
                     <TicketSection>
@@ -234,7 +256,10 @@ const TicketPage = (props: Props) => {
                         {
                             bills?.map((b, index) => <TicketItem
                                 key={index}
-                                onButtonClick={() => console.log("edit")}
+                                onButtonClick={() => {
+                                    setFocusedBill(b)
+                                    setShowForm(true)
+                                }}
                                 buttonClickIcon={<EditIcon style={{ fontSize: '20pt', color: theme.palette.secondary.main, padding: '5px' }} />}
                                 title={`${b.ticket_number}`}
                                 subtitle={`RFO ID: ${b.rfo_id}`}
@@ -242,13 +267,42 @@ const TicketPage = (props: Props) => {
                                 onDelete={async () => console.log(b)}
                             />)
                         }
-                        <Button style={{
-                            background: theme.palette.secondary.main,
-                            color: 'white',
-                            width: '300px'
-                        }}>Add Bill</Button>
+                        <Button
+                            style={{
+                                background: theme.palette.secondary.main,
+                                color: 'white',
+                                width: '300px'
+                            }}
+                            onClick={(e) => {
+                                setFocusedBill(undefined);
+                                setShowForm(true);
+                            }}
+                        >Add Bill</Button>
                     </TicketSection>
                 }
+                <Modal
+                    style={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        flexDirection: 'column',
+                    }}
+                    open={showForm}
+                    onClose={() => {
+                        setFocusedBill(undefined);
+                        setShowForm(false);
+                    }}
+
+                >
+                    <FormView>
+                        <Typography id="modal-modal-title" variant="h6" component="h2">
+                            Text in a modal
+                        </Typography>
+                        <BillForm
+                            defaultValues={focusedBill}
+                            onSubmit={handleFormSubmit} />
+                    </FormView>
+                </Modal>
             </TicketInfoContainer>
             :
             <MessageView
