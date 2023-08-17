@@ -31,8 +31,7 @@ const BillSection: FC<Props> = ({ navigateToTicket, rfoId }) => {
         return bQ;
     });
     const [enablePaginate, setEnablePaginate] = useState<boolean>(false);
-    const [snackbarVisible, setSnackbarVisible] = useState(false);
-    const [snackbarMessage, setSnackbarMessage] = useState('');
+
     const [visible, setVisible] = useState(false);
     const [focusedBill, setFocusedBill] = useState<Bill>();
     const [search, setSearch] = useState<string>("");
@@ -215,14 +214,21 @@ const BillSection: FC<Props> = ({ navigateToTicket, rfoId }) => {
             </MyModal>
             <Portal>
                 <Modal
+
                     visible={showBill}
-                    onDismiss={() => {
-                        setShowBill(false);
-                        setFocusedBill(undefined);
+                    onDismiss={() => { }}
+                    contentContainerStyle={{
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        backgroundColor: 'black',
+                        height: '100%'
                     }}
-                    contentContainerStyle={{ justifyContent: 'center', alignItems: 'center' }}
                 >
                     <BillCard
+                        onClose={() => {
+                            setFocusedBill(undefined);
+                            setShowBill(false)
+                        }}
                         getId={() => focusedBill?.bill_id ?? 0}
                         {...focusedBill}
                     />
