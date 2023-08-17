@@ -90,7 +90,6 @@ const TicketSection = styled.div`
     gap: 10px;
 `
 
-
 type Props = {}
 
 const TicketPage = (props: Props) => {
@@ -171,7 +170,6 @@ const TicketPage = (props: Props) => {
     const hanldeEdit = async (data: BillFormResult, id: string): Promise<any> => {
         console.log(data, id)
     }
-
 
     const handleFormSubmit = async (values: BillFormResult, id?: string | undefined): Promise<boolean> => {
         if (focusedBill) {

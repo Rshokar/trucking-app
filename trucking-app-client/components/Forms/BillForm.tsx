@@ -31,9 +31,9 @@ const BillForm: FC<Props> = ({ onSubmit, defaultValues }) => {
 
     const pickImage = async () => {
         let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.All,
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
             allowsEditing: true,
-            aspect: [4, 3],
+            aspect: [16, 9],
             quality: 1,
         });
 
