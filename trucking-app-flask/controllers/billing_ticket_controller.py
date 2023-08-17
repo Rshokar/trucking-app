@@ -4,6 +4,7 @@ from utils import make_response
 from config import s3, create_unique_image_key
 from models import BillingTickets, RFO, Dispatch, Company
 from sqlalchemy import and_
+from sqlalchemy.exc import IntegrityError
 import os
 from botocore.exceptions import ClientError
 from flask import g
@@ -273,3 +274,58 @@ class BillingTicketController:
         except Exception as e:
             # Handle any errors that occurred while generating the pre-signed URL
             return make_response("Failed to generate pre-signed URL: " + str(e), 500)
+
+    def operator_get_all_bills(session, token, file, ticket_number):
+        """_summary_
+            Gets all bills according to id
+            If current user is not owner of rfo 
+            then 404 is returned
+        Args:
+            session (_type_): _description_
+            page (_type_): _description_
+            limit (_type_): _description_
+            rfo_id (_type_): _description_
+        """
+
+        s = URLSafeTimedSerializer(OPERATOR_ACCESS_TOKEN_SECRET)
+
+        try:
+            data = s.loads(token, max_age=86400)  # Token valid for 24 hours
+        except SignatureExpired:
+            return make_response('Token expired.', 400)
+        except BadTimeSignature:
+            return make_response('Invalid token.', 400)
+
+        # Generate a unique key for the image
+        image_key = create_unique_image_key() + f"_{data['rfo_id']}"
+
+        # Create the billing ticket with the image key
+
+        try:
+            bill = BillingTickets(
+                data['rfo_id'],
+                ticket_number,
+                image_key,
+                S3_BUCKET_NAME,
+                "us-west-2"
+            )
+
+            session.add(bill)
+            session.commit()
+        except IntegrityError as e:
+            return make_response("RFO not found", 404)
+            # Try to upload the image to S3
+        try:
+            s3.upload_fileobj(
+                file,
+                S3_BUCKET_NAME,
+                image_key,
+                ExtraArgs={
+                    "ContentType": file.content_type
+                }
+            )
+        except Exception as e:
+            session.delete(bill)
+            return make_response("Failed to upload image to S3: " + str(e), 500)
+
+        return make_response(bill.to_dict(), 201)

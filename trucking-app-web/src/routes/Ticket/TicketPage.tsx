@@ -101,7 +101,7 @@ const TicketPage = (props: Props) => {
     const [disp, setDispatch] = useState<Dispatch>();
     const [rfo, setRFO] = useState<RFO>();
     const [customer, setCustomer] = useState<Customer>();
-    const [bills, setBills] = useState<Bill[]>();
+    const [bills, setBills] = useState<Bill[]>([]);
     const [operator, setOperator] = useState<string>();
     const [company, setCompany] = useState<Company>();
     const [showForm, setShowForm] = useState<boolean>(false)
@@ -165,7 +165,30 @@ const TicketPage = (props: Props) => {
 
     const handleCreate = async (data: BillFormResult): Promise<any> => {
         console.log(data)
+        try {
+            const formData = new FormData();
+
+            formData.append('file', data.file);
+            formData.append('ticket_number', data.ticket_number);
+
+            const res = await fetch('http://127.0.0.1:5000/v1/billing_ticket/operator', {
+                method: 'POST',
+                headers: {
+                    "Authorization-Fake-X": `Bearer ${accessToken}`
+                },
+                body: formData
+            });
+
+            if (res.status !== 201) throw Error("Error creating bill")
+            const bill: Bill = await res.json();
+
+            setBills([...bills, bill])
+            setShowForm(false)
+        } catch (err: any) {
+            console.log(err);
+        }
     }
+
 
     const hanldeEdit = async (data: BillFormResult, id: string): Promise<any> => {
         console.log(data, id)
@@ -294,7 +317,7 @@ const TicketPage = (props: Props) => {
                 >
                     <FormView>
                         <Typography id="modal-modal-title" variant="h6" component="h2">
-                            Text in a modal
+                            {focusedBill ? 'Edit bill' : 'Add bill'}
                         </Typography>
                         <BillForm
                             defaultValues={focusedBill}

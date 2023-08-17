@@ -18,3 +18,12 @@ billing_ticket_upate = {
     "required": ["ticket_number"],
     "additionalProperties": True
 }
+
+operator_billing_ticket_validation = {
+    "type": "object",
+    "properties": {
+        "ticket_number": {"type": "string", "maxLength": 50, "minLength": 2},
+    },
+    "required": ["ticket_number"],
+    "additionalProperties": True
+}

@@ -4,10 +4,10 @@ import * as Yup from 'yup';
 import {
     Button,
     TextField,
-    InputLabel,
-    Typography,
     useTheme
 } from '@mui/material';
+import { MuiFileInput } from 'mui-file-input'
+import { ErrorText } from './styles';
 
 
 export interface BillFormResult {
@@ -52,11 +52,17 @@ const BillForm: React.FC<Props> = ({ onSubmit, defaultValues }) => {
         },
     });
 
-    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        if (event.target.files) {
-            setFile(event.target.files[0]);
+    const handleFileChange = (file: File) => {
+        if (file) {
+            const validTypes = ['image/png', 'image/jpeg'];
+            if (validTypes.includes(file.type)) {
+                setFile(file);
+                setFileError(''); // Clear any previous error message
+            } else {
+                setFileError('Invalid file type. Please upload a PNG or JPEG image.');
+            }
         }
-    };
+    }
 
     return (
         <>
@@ -71,18 +77,23 @@ const BillForm: React.FC<Props> = ({ onSubmit, defaultValues }) => {
                 error={formik.touched.ticket_number && Boolean(formik.errors.ticket_number)}
                 helperText={formik.touched.ticket_number && formik.errors.ticket_number}
             />
-            {!defaultValues && (
-                <div>
-                    <InputLabel htmlFor="file">Upload File</InputLabel>
-                    <input
-                        id="file"
-                        name="file"
-                        type="file"
-                        onChange={handleFileChange}
-                    />
-                    {fileError && <Typography variant="body2" style={{ color: theme.palette.error.main }}>{fileError}</Typography>}
-                </div>
-            )}
+            {!defaultValues && <div>
+                <MuiFileInput
+                    style={{
+                        border: `.5px solid ${fileError ? '#C73E1D' : 'transparent'}`,
+                        borderRadius: '5px',
+                        color: fileError ? '#C73E1D' : 'transparent',
+                    }}
+                    value={file}
+                    onChange={(value) => value ? handleFileChange(value) : null}
+                    inputProps={{ accept: '.png, .jpeg' }}
+                />
+                {fileError && <ErrorText variant='caption' style={{
+
+                }}>{fileError}</ErrorText>}
+            </div>
+            }
+
             <Button
                 type="submit"
                 variant="contained"
