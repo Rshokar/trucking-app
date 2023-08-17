@@ -40,7 +40,7 @@ class BillingTicketController:
     def get_all_bills(session, page: int, limit: int, rfo_id: int):
         """_summary_
             Gets all bills according to id
-            If current user is not owner of rfo 
+            If current user is not owner of rfo
             then 404 is returned
         Args:
             session (_type_): _description_
@@ -275,10 +275,10 @@ class BillingTicketController:
             # Handle any errors that occurred while generating the pre-signed URL
             return make_response("Failed to generate pre-signed URL: " + str(e), 500)
 
-    def operator_get_all_bills(session, token, file, ticket_number):
+    def operator_create_bill(session, token, file, ticket_number):
         """_summary_
             Gets all bills according to id
-            If current user is not owner of rfo 
+            If current user is not owner of rfo
             then 404 is returned
         Args:
             session (_type_): _description_
@@ -329,3 +329,71 @@ class BillingTicketController:
             return make_response("Failed to upload image to S3: " + str(e), 500)
 
         return make_response(bill.to_dict(), 201)
+
+    def operator_delete_bill(session, token, bill_id):
+        """_summary_
+
+        Args:
+            session (_type_): data base session
+            token (stirng): access token
+            bill_id (number): bill primary key
+        """
+
+        s = URLSafeTimedSerializer(OPERATOR_ACCESS_TOKEN_SECRET)
+
+        try:
+            data = s.loads(token, max_age=86400)  # Token valid for 24 hours
+        except SignatureExpired:
+            return make_response('Token expired.', 400)
+        except BadTimeSignature:
+            return make_response('Invalid token.', 400)
+
+        bill = session.query(BillingTickets)\
+            .filter(and_(BillingTickets.bill_id == bill_id, BillingTickets.rfo_id == data["rfo_id"]))\
+            .first()
+
+        if bill is None:
+            return make_response("Billing ticket not found", 404)
+
+        # Delete the associated image from S3
+        try:
+            s3.delete_object(Bucket=S3_BUCKET_NAME,
+                             Key=bill.image_id)
+        except ClientError as e:
+            # If the image was not found in S3, we log the exception and continue with deleting the bill
+            return make_response("An error occured while deleting the image", 500)
+
+        # # Delete the bill
+        session.delete(bill)
+        session.commit()
+        return make_response("Billing ticket deleted", 204)
+
+    def operator_update_bill(session, token, bill_id, ticket_number):
+        """_summary_
+
+        Args:
+            session (_type_): data base session
+            token (stirng): access token
+            bill_id (number): bill primary key
+        """
+
+        s = URLSafeTimedSerializer(OPERATOR_ACCESS_TOKEN_SECRET)
+
+        try:
+            data = s.loads(token, max_age=86400)  # Token valid for 24 hours
+        except SignatureExpired:
+            return make_response('Token expired.', 400)
+        except BadTimeSignature:
+            return make_response('Invalid token.', 400)
+
+        bill = session.query(BillingTickets)\
+            .filter(and_(BillingTickets.bill_id == bill_id, BillingTickets.rfo_id == data["rfo_id"]))\
+            .first()
+
+        if bill is None:
+            return make_response("Bill not found", 404)
+
+        bill.ticket_number = ticket_number
+
+        session.commit()
+        return make_response("Billing ticket updated", 200)

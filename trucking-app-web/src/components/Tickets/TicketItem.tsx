@@ -52,7 +52,7 @@ const TicketItem: FunctionComponent<TicketItemProps> = (props) => {
     const theme = useTheme();
     const handleDelete = async () => {
         props.onDelete && await props.onDelete()
-        // setDeleting(false);
+        setDeleting(false);
     }
 
     const IconView = styled.div`

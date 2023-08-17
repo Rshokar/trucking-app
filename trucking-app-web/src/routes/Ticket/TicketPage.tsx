@@ -1,6 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
-import { Typography, Box, useTheme, Button, Modal } from '@mui/material'
+import {
+    Typography,
+    Box,
+    useTheme,
+    Button,
+    Modal,
+    Snackbar
+} from '@mui/material'
 import { Container } from '../../components/shared'
 import LockIcon from '@mui/icons-material/Lock';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
@@ -106,6 +113,9 @@ const TicketPage = (props: Props) => {
     const [company, setCompany] = useState<Company>();
     const [showForm, setShowForm] = useState<boolean>(false)
     const [focusedBill, setFocusedBill] = useState<Bill>();
+    const [snackbar, setShowSnackBar] = useState<boolean>(false);
+    const [color, setSnackbarColor] = useState<string>('');
+    const [message, setSnackbarMessage] = useState<string>('');
 
     const { token } = useParams();
 
@@ -163,6 +173,13 @@ const TicketPage = (props: Props) => {
 
     }, [accessToken])
 
+    const showSnackBar = (color: string, message: string) => {
+        setSnackbarColor(color);
+        setSnackbarMessage(message)
+        setShowSnackBar(true)
+    };
+    const hideSnackBar = () => setShowSnackBar(false)
+
     const handleCreate = async (data: BillFormResult): Promise<any> => {
         console.log(data)
         try {
@@ -184,7 +201,10 @@ const TicketPage = (props: Props) => {
 
             setBills([...bills, bill])
             setShowForm(false)
+            showSnackBar('success', "Bill Created")
+
         } catch (err: any) {
+            showSnackBar('error', "Error creating bill")
             console.log(err);
         }
     }
@@ -192,6 +212,34 @@ const TicketPage = (props: Props) => {
 
     const hanldeEdit = async (data: BillFormResult, id: string): Promise<any> => {
         console.log(data, id)
+
+        try {
+            const formData = new FormData();
+
+            formData.append("ticket_number", data.ticket_number)
+
+            const res = await fetch(`http://127.0.0.1:5000/v1/billing_ticket/operator/${id}`, {
+                method: 'PATCH',
+                headers: {
+                    "Authorization-Fake-X": `Bearer ${accessToken}`
+                },
+                body: formData
+            })
+
+            if (res.status !== 200) throw Error("Error editing bill")
+
+            const index = bills.findIndex(b => b.bill_id?.toString() === id)
+            bills[index].ticket_number = data.ticket_number;
+            setBills([...bills]);
+            setShowForm(false);
+            setFocusedBill(undefined);
+            showSnackBar('success', "Bill Updated")
+
+        } catch (err: any) {
+            showSnackBar('error', "Error editing bill")
+
+            console.log(err);
+        }
     }
 
     const handleFormSubmit = async (values: BillFormResult, id?: string | undefined): Promise<boolean> => {
@@ -200,6 +248,29 @@ const TicketPage = (props: Props) => {
         }
         return await handleCreate(values);
     }
+
+    const handleDelete = async (id: string): Promise<void> => {
+        try {
+            const res = await fetch(`http://127.0.0.1:5000/v1/billing_ticket/operator/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    "Authorization-Fake-X": `Bearer ${accessToken}`
+                }
+            })
+
+            if (res.status !== 204) throw Error("API error");
+
+            setBills([...bills.filter(b => ('' + b.bill_id) !== id)])
+            showSnackBar('success', "Bill Deleted")
+
+            return;
+        } catch (err: any) {
+            showSnackBar('error', "Error editing bill")
+
+            console.log(err);
+        }
+    }
+    console.log(focusedBill);
 
     return <View style={{ alignItems: 'center' }}>
         {loaded ?
@@ -285,7 +356,7 @@ const TicketPage = (props: Props) => {
                                 title={`${b.ticket_number}`}
                                 subtitle={`RFO ID: ${b.rfo_id}`}
                                 icon={<ReceiptIcon style={{ fontSize: '27pt', color: 'white', padding: '5px' }} />}
-                                onDelete={async () => console.log(b)}
+                                onDelete={async () => await handleDelete(b.bill_id + '')}
                             />)
                         }
                         <Button
@@ -324,6 +395,13 @@ const TicketPage = (props: Props) => {
                             onSubmit={handleFormSubmit} />
                     </FormView>
                 </Modal>
+                <Snackbar
+                    open={snackbar}
+                    autoHideDuration={3000}
+                    onClose={hideSnackBar}
+                    message={message}
+                    color={color}
+                />
             </TicketInfoContainer>
             :
             <MessageView

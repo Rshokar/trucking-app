@@ -90,7 +90,11 @@ def get_bill_image(bill_id):
 
 
 @billing_ticket.route("/operator", methods=["POST"])
-def operator_create_bill():
+@billing_ticket.route("/operator/<int:bill_id>", methods=["DELETE", "PATCH"])
+def operator_manage_bill(bill_id=None):
+    if (bill_id is None and (request.method == 'DELETE' or request.method == 'PATCH')):
+        return make_response("Bill id is required", 400)
+
     authhead = request.headers.get("Authorization-Fake-X", None)
 
     if authhead is None:
@@ -98,8 +102,23 @@ def operator_create_bill():
 
     access_token = authhead.split(" ")[1]
 
+    # If method is delete, delete bill
+    if request.method == "DELETE":
+        return BillingTicketController.operator_delete_bill(g.session, access_token, bill_id)
+
     if request.mimetype != 'multipart/form-data':
         return make_response({"error": "Content type must be multipart/form-data"}, 400)
+
+    ticket_number = request.form.get("ticket_number")
+    if not ticket_number:
+        return make_response({"error": "Ticket number is missing."}, 400)
+
+    if request.method == "PATCH":
+        try:
+            jsonschema.validate(request.form, billing_ticket_upate)
+            return BillingTicketController.operator_update_bill(g.session, access_token, bill_id, ticket_number)
+        except jsonschema.ValidationError as e:
+            return make_response({"error": e.message}, 400)
 
     file = None
     if 'file' in request.files:
@@ -107,12 +126,8 @@ def operator_create_bill():
         if not is_image(file.filename):
             return make_response({'error': "Invalid image file."}, 400)
 
-    ticket_number = request.form.get("ticket_number")
-    if not ticket_number:
-        return make_response({"error": "Ticket number is missing."}, 400)
-
     try:
         jsonschema.validate(request.form, operator_billing_ticket_validation)
-        return BillingTicketController.operator_get_all_bills(g.session, access_token, file, ticket_number)
+        return BillingTicketController.operator_create_bill(g.session, access_token, file, ticket_number)
     except jsonschema.ValidationError as e:
         return make_response({"error": e.message}, 400)

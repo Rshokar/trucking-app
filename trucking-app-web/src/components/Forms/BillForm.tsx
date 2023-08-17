@@ -34,7 +34,7 @@ const BillForm: React.FC<Props> = ({ onSubmit, defaultValues }) => {
     const [fileError, setFileError] = useState<string>();
 
     const formik = useFormik({
-        initialValues: {
+        initialValues: defaultValues || {
             ticket_number: '',
         } as BillFormResult,
         validationSchema: BillFormSchema,
