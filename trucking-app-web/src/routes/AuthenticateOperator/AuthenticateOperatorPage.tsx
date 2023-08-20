@@ -34,7 +34,7 @@ const ValidateOperatorEmailPage = (props: Props) => {
 
     const sendAuthEmail = async () => {
         const res = await fetch(`http://127.0.0.1:5000/v1/company/operators/generate_token/${token}`, {
-            method: 'GET',
+            method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },

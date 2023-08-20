@@ -24,9 +24,9 @@ MAX_CONTENT_SIZE = os.environ.get("MAX_CONTENT_SIZE")
 #     # Create all tables if not already there
 #     Base.metadata.create_all(engine)
 
-#     if (IS_PRODUCTION == "development"):
-#         print("--|--Loading Test Data--|--")
-#         loadDB(int(1))
+# if (IS_PRODUCTION == "development"):
+#     print("--|--Loading Test Data--|--")
+#     loadDB(int(1))
 
 
 app = Flask(__name__)

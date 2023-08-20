@@ -10,7 +10,7 @@ class Operator(Base):
     company_id = Column("company_id", Integer, ForeignKey(Company.company_id))
     operator_name = Column("operator_name", String(100), nullable=False)
     operator_email = Column("operator_email", String(200), nullable=False)
-    confirmed = Column("confirmed", Boolean, default=False)
+    confirmed = Column("confirmed", Boolean,  default=False)
     confirm_token = Column("confirm_token", String(200), nullable=True)
 
     def __init__(self, company_id, operator_name, operator_email, confirm_token=None, confirmed=False) -> None:

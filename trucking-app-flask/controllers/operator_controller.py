@@ -3,9 +3,10 @@ from models import Operator, Company, RFO, BillingTickets
 from sqlalchemy.exc import IntegrityError
 from utils import send_verification_email, send_operator_auth_token
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadTimeSignature
-
+import random
 from sqlalchemy import and_
 from flask import current_app as app, g, make_response
+from datetime import datetime, timedelta
 from flask_mail import Mail
 import os
 
@@ -250,11 +251,9 @@ class OperatorController:
 
         s = URLSafeTimedSerializer(SEND_OPERATOR_RFO_TOKEN_SECRET)
 
-        print(
-            f"TOKEN {request_token} \nSEND OPERATOR RFO TOKEN SECRET: {SEND_OPERATOR_RFO_TOKEN_SECRET}")
         try:
             data = s.loads(
-                request_token, max_age=86400)  # Token valid for 24 hours
+                request_token)
         except SignatureExpired as e:
             print(e)
             return make_response('Token expired.', 400)
@@ -274,19 +273,26 @@ class OperatorController:
             return make_response('RFO not found.', 404)
 
         # Generate a unique alphanumeric token for the operator
-        s = URLSafeTimedSerializer(OPERATOR_AUTH_TOKEN_SECRET)
-        token = s.dumps(
-            {'operator_id': data["operator_id"], 'rfo_id': data["rfo_id"]})
+        six_digit_number = random.randint(100000, 999999)
+
+        print(six_digit_number)
+
+        rfo.token = six_digit_number
+        rfo.token_date = datetime.now()
+        rfo.token_consumed = False
+
+        session.commit()
 
         # Send the token to the operator's email
         send_operator_auth_token(
-            Mail(app), operator.operator_email, token, operator.operator_name)
+            Mail(app), operator.operator_email, six_digit_number, operator.operator_name)
 
         return make_response('Token sent to operator email.', 200)
 
-    def validate_operator_auth_token(session, token):
+    def validate_operator_auth_token(session, token, code):
         '''
-        Validates an operator's token. Returns a access token. Token will last 24 hours
+        Validates an operator's code. If successful,
+        flips the consumed field in RFO and returns an access token.
 
         Parameters:
             Session (session): SQLAlchemy db session
@@ -295,11 +301,11 @@ class OperatorController:
         Returns:
             Responses: 200 OK if successful, 404 if operator not found, 400 if token is expired or invalid
         '''
-        authS = URLSafeTimedSerializer(OPERATOR_AUTH_TOKEN_SECRET)
+
+        authS = URLSafeTimedSerializer(SEND_OPERATOR_RFO_TOKEN_SECRET)
 
         try:
-            # Token valid for 24 hours
-            data = authS.loads(token, max_age=86400)
+            data = authS.loads(token)
         except SignatureExpired:
             return make_response('Token expired.', 400)
         except BadTimeSignature:
@@ -314,16 +320,28 @@ class OperatorController:
         if operator.confirmed is False:
             return make_response('Operator email not verified.', 401)
 
-        rfo = session.query(RFO).filter_by(rfo_id=data['rfo_id']).first()
+        rfo = session.query(RFO).filter(
+            rfo_id=data['rfo_id'],
+            operator_id=data['operator_id'],
+            token=code
+        ).first()
 
         if rfo is None:
             return make_response('RFO not found.', 404)
+
+        if rfo.token_consumed is True:
+            return make_response("Code has already been consumed", 401)
+
+        # Check if the token was created more than 5 minutes before the request was made.
+        if rfo.token_date < datetime.now() - timedelta(minutes=5):
+            return make_response("Code expired", 401)
 
         accessS = URLSafeTimedSerializer(OPERATOR_ACCESS_TOKEN_SECRET)
 
         # Once the token is validated, you may issue a new token (access token)
         access_token = accessS.dumps(data)
-
+        rfo.token_consumed = True
+        session.commit()
         return make_response({'access_token': access_token}, 200)
 
     def get_rfo(session, token):

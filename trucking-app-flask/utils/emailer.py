@@ -158,12 +158,12 @@ def send_operator_auth_token(mail, email, token, operator_name):
     Hello {operator_name},
 
     You requested access to an RFO assigned to you. 
+    
+    Enter this code to get access to the RFO (Request For Operator)
 
-    http://localhost:3000/ticket/{token}
+    Token: {token}
 
-    Click the link above and you will have access to this ticket for the next 24 hours. 
-
-    Note: This token will expire after 24 hours. If it expires, you will be asked to re authenticate.
+    Note: This code will expire in 5 minuets. If it expires, request another email.
 
     If you have any questions, please contact your dispatcher.
 
