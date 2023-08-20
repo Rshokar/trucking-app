@@ -101,7 +101,7 @@ def validate(request_token):
     if code is None:
         return make_response("Code is missing", 400)
 
-    return OperatorController.validate_operator_auth_token(session, request_token)
+    return OperatorController.validate_operator_auth_token(session, request_token, code)
 
 # Endpoint for retrieving ticket information for a given RFO (Request For Operator) encoded in the access token.
 # The returned information includes details on dispatch, RFO, bills, company, and customer.

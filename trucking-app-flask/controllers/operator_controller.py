@@ -321,9 +321,9 @@ class OperatorController:
             return make_response('Operator email not verified.', 401)
 
         rfo = session.query(RFO).filter(
-            rfo_id=data['rfo_id'],
-            operator_id=data['operator_id'],
-            token=code
+            RFO.rfo_id == data['rfo_id'],
+            RFO.operator_id == data['operator_id'],
+            RFO.token == code
         ).first()
 
         if rfo is None:
