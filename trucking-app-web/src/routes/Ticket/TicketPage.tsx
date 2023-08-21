@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import { Container } from '../../components/shared'
 import Ticket from './Components/Ticket';
 import OperatorAuth from './Components/OperatorAuth';
-import { Snackbar } from '@mui/material';
+import { Snackbar, SnackbarContent } from '@mui/material';
 
 
 const View = styled(Container)`
@@ -41,9 +41,15 @@ const TicketPage = () => {
             open={snackbar}
             autoHideDuration={3000}
             onClose={hideSnackBar}
-            message={message}
-            color={color}
-        />
+        >
+            <SnackbarContent
+                sx={{
+                    backgroundColor: color
+                }}
+                message={message}
+            />
+
+        </Snackbar>
     </View>
 }
 

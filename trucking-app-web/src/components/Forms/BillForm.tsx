@@ -77,12 +77,13 @@ const BillForm: React.FC<Props> = ({ onSubmit, defaultValues }) => {
                 error={formik.touched.ticket_number && Boolean(formik.errors.ticket_number)}
                 helperText={formik.touched.ticket_number && formik.errors.ticket_number}
             />
-            {!defaultValues && <div>
+            {!defaultValues && <>
                 <MuiFileInput
                     style={{
                         border: `.5px solid ${fileError ? '#C73E1D' : 'transparent'}`,
                         borderRadius: '5px',
                         color: fileError ? '#C73E1D' : 'transparent',
+                        width: '100%',
                     }}
                     value={file}
                     onChange={(value) => value ? handleFileChange(value) : null}
@@ -91,7 +92,7 @@ const BillForm: React.FC<Props> = ({ onSubmit, defaultValues }) => {
                 {fileError && <ErrorText variant='caption' style={{
 
                 }}>{fileError}</ErrorText>}
-            </div>
+            </>
             }
 
             <Button

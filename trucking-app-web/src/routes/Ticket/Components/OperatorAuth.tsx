@@ -50,24 +50,32 @@ const OperatorAuth: FC<Props> = ({ setAccessToken, showSnackBar }) => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ code })
             })
-            if (res.status !== 200) throw Error("Response from api not okay")
+            if (res.status !== 200) throw Error(await res.text())
 
             setAccessToken((await res.json()).access_token)
-            showSnackBar('success', "Validation complete")
+            showSnackBar(theme.palette.secondary.main, "Validation complete")
         } catch (err: any) {
-            console.log(err);
+            showSnackBar(theme.palette.error.main, err.message)
         }
     }
 
     const sendAuthEmail = async (): Promise<any> => {
-        const res = await fetch(`http://127.0.0.1:5000/v1/company/operators/generate_token/${token}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-        })
-        showSnackBar('success', "Email sent");
-        setSent(res.status === 200);
+
+        try {
+            const res = await fetch(`http://127.0.0.1:5000/v1/company/operators/generate_token/${token}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+            })
+
+            if (res.status !== 200) throw Error(await res.text())
+
+            showSnackBar(theme.palette.secondary.main, "Email sent");
+            setSent(true);
+        } catch (err: any) {
+            showSnackBar(theme.palette.error.main, err.message)
+        }
     }
 
     const handleReSend = async (): Promise<any> => {

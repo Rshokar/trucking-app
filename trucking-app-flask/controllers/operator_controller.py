@@ -327,14 +327,14 @@ class OperatorController:
         ).first()
 
         if rfo is None:
-            return make_response('RFO not found.', 404)
+            return make_response('Incorrect code.', 404)
 
         if rfo.token_consumed is True:
-            return make_response("Code has already been consumed", 401)
+            return make_response("Code has already been used!", 401)
 
         # Check if the token was created more than 5 minutes before the request was made.
         if rfo.token_date < datetime.now() - timedelta(minutes=5):
-            return make_response("Code expired", 401)
+            return make_response("The code provided is expired", 401)
 
         accessS = URLSafeTimedSerializer(OPERATOR_ACCESS_TOKEN_SECRET)
 
