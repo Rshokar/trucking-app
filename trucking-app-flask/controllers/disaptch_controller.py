@@ -72,6 +72,7 @@ class DispatchController:
                 "customer_id": dispatch.customer_id,
                 "notes": dispatch.notes,
                 "date": dispatch.date.isoformat(),
+                "expiry": dispatch.expiry.isoformat(),
                 "customer": {"customer_name": customer},
                 "rfo_count": rfo_count,
             })
@@ -125,12 +126,25 @@ class DispatchController:
         if dispatch is None:
             return make_response('Dispatch not found', 404)
 
-        dispatch.date = datetime.strptime(
-            data.get("date"), "%Y-%m-%d")
+        date = datetime.strptime(
+            data.get("date"), "%Y-%m-%d").date()
+
+        expiry = datetime.strptime(
+            data.get("expiry"), "%Y-%m-%d").date()
+
+        if expiry < date:
+            return make_response("Expiry must be after date", 400)
+
         dispatch.notes = data.get('notes')
         dispatch.customer_id = data.get('customer_id')
+        dispatch.expiry = expiry.isoformat()
+        dispatch.date = date.isoformat()
+
+        print(dispatch.expiry)
+        print(dispatch.date)
 
         session.commit()
+
         res = dispatch.to_dict(True)
         print(res)
         return make_response(res, 200)

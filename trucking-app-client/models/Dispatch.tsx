@@ -9,6 +9,7 @@ export class Dispatch implements Model {
     customer_id?: number
     notes?: string;
     date?: string;
+    expiry?: string
     customer?: Customer;
     company?: Company;
     rfos?: any;

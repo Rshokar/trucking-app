@@ -32,7 +32,6 @@ def register():
         jsonschema.validate(request.json, register_validation)
         return AuthController.register(session=session, request=request)
     except jsonschema.exceptions.ValidationError as e:
-        print(e)
         return make_response({"error": e.message}, 400)
 
 

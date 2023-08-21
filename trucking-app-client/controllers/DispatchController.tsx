@@ -69,6 +69,7 @@ export class DispatchController {
             notes: model.notes,
             date: model.date,
             customer_id: model.customer_id,
+            expiry: model.expiry
         }
         try {
             const response = await myAxios.put<Dispatch>(`/dispatch/${id}`, data, {
