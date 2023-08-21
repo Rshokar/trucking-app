@@ -237,7 +237,7 @@ class OperatorController:
 
         return make_response('You have confirmed your account. Thanks!', 200)
 
-    def generate_operator_auth_token(session, request_token):
+    def send_code_to_operator(session, request_token):
         '''
         Generates an auth token and sends it via email to an operator.
 

@@ -6,7 +6,6 @@ import { createTheme, ThemeProvider } from '@mui/material'
 import RootPage from './routes/Root/RootPage';
 import ErrorPage from './routes/Error/ErrorPage';
 import ValidateOperatorEmailPage from './routes/ValidateOperatorEmail/ValidateOperatorEmail'
-import AuthenticateOperatorPage from './routes/AuthenticateOperator/AuthenticateOperatorPage';
 import TicketPage from './routes/Ticket/TicketPage';
 
 const theme = createTheme({
@@ -14,7 +13,7 @@ const theme = createTheme({
     primary: { main: '#ef835d' },
     secondary: { main: '#2c365a' },
     error: { main: '#C73E1D' },
-    background: { default: 'lightgray' },
+    background: { default: '#D3D3D3' },
     text: { primary: '#000000' }
   }
 })
@@ -40,11 +39,6 @@ const router = createBrowserRouter([
   {
     path: '/validate_operator_email/:token',
     element: <ValidateOperatorEmailPage />,
-    errorElement: <ErrorPage />
-  },
-  {
-    path: '/operator_auth/:token',
-    element: <AuthenticateOperatorPage />,
     errorElement: <ErrorPage />
   },
   {

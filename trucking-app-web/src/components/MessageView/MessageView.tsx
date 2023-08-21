@@ -23,6 +23,7 @@ type MessageViewProps = {
     subtitle: string;
     icon: ReactNode;
     message: string;
+    children?: ReactNode
 }
 
 const MessageView: React.FC<MessageViewProps> = (props) => {
@@ -43,17 +44,22 @@ const MessageView: React.FC<MessageViewProps> = (props) => {
                     {subtitle}
                 </Typography>
             </div>
-            <Box sx={{
-                display: 'flex',
-                backgroundColor: 'white',
-                width: '60px',
-                height: '60px',
-                alignItems: 'center',
-                justifyContent: 'center',
-                borderRadius: '10px'
-            }}>
-                {icon}
-            </Box>
+            {
+                props.children ?
+                    props.children
+                    :
+                    <Box sx={{
+                        display: 'flex',
+                        backgroundColor: 'white',
+                        width: '60px',
+                        height: '60px',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        borderRadius: '10px'
+                    }}>
+                        {icon}
+                    </Box>
+            }
             <Typography variant='caption' style={{ color: 'white' }}>
                 {message}
             </Typography>

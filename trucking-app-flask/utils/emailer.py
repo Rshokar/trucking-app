@@ -75,7 +75,7 @@ def send_operator_rfo(mail, email, rfo, operator, company, customer, Dispatch, t
 
     Please click on the link below to view more details and accept the job:
 
-    http://localhost:3000/operator_auth/{token}
+    http://localhost:3000/ticket/{token}
 
     If you have any questions, please contact your dispatcher.
 

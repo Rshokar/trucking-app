@@ -86,7 +86,7 @@ def validate_operators():
 @operators.route('/generate_token/<string:request_token>', methods=["POST"])
 def generate_token(request_token):
     session = g.session
-    return OperatorController.generate_operator_auth_token(session, request_token)
+    return OperatorController.send_code_to_operator(session, request_token)
 
 # Endpoint for validating an authentication token provided by an operator.
 # If the token is valid, an access token will be returned for subsequent requests.
