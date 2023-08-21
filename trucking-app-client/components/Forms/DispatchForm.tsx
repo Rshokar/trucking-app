@@ -67,7 +67,7 @@ const DispatchForm: FC<Props> = ({ onSubmit, defaultValues, customers }) => {
                 is: true,
                 then: (schema) => schema.required("Expiry Date Required"),
             })
-        // .min(Yup.ref('date'), 'Expiry date must be after the dispatch date')
+            .min(Yup.ref('date'), 'Expiry date must be after the dispatch date')
     });
 
 
