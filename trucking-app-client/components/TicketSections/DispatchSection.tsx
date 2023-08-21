@@ -245,7 +245,7 @@ const DispatchSection: FunctionComponent<Props> = ({ navigateToTickets, customer
                 noTicketFoundMessage={"No Dispatches Found!"}
                 render={({ item }: { item: Dispatch }) => {
 
-                    const expired: boolean = new Date(item.expiry + '').getTime() < Date.now();
+                    const expired: boolean = new Date(item.expiry + '').getTime() <= Date.now();
                     return <TicketItem
                         title={item.customer?.customer_name || ''}
                         subtitle={<Text>

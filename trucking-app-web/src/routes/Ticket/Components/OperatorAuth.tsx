@@ -1,4 +1,4 @@
-import React, { useEffect, FC, useState } from 'react'
+import React, { useEffect, FC, useState, ReactNode } from 'react'
 import MessageView from '../../../components/MessageView/MessageView'
 import HourglassBottomIcon from '@mui/icons-material/HourglassBottom';
 import { useParams } from 'react-router-dom';
@@ -7,6 +7,8 @@ import { Button, Typography, useTheme } from '@mui/material';
 import styled from 'styled-components';
 import { FormView } from '../../../components/Forms/styles';
 import DumpTruckSvg from '../../../components/SVGS/DumpTruckSvg';
+import ExpiredSVG from '../../../components/SVGS/ExpiredSVG';
+import NothingFoundSVG from '../../../components/SVGS/NothingFoundSVG';
 
 
 type Props = {
@@ -35,10 +37,14 @@ const FormContainer = styled.div`
 
 const OperatorAuth: FC<Props> = ({ setAccessToken, showSnackBar }) => {
 
-    const [sent, setSent] = useState(false); // flag that indicates whether an email has been sent to operator
-    const [sending, setSending] = useState<boolean>(false);
-    const { token } = useParams();
     const theme = useTheme();
+    const [sent, setSent] = useState(false); // flag that indicates whether an email has been sent to operator
+    const [expired, setExpired] = useState<boolean>(false);
+    const [sending, setSending] = useState<boolean>(false);
+    const [svg, setSVG] = useState<ReactNode>(<DumpTruckSvg width={100} height={100} color={theme.palette.secondary.main} />);
+    const [title, setTitle] = useState<string>("Authenticating Operator");
+    const [subtitle, setSubtitle] = useState<string>("Wait while we create you an secret token");
+    const { token } = useParams();
 
 
 
@@ -50,6 +56,21 @@ const OperatorAuth: FC<Props> = ({ setAccessToken, showSnackBar }) => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ code })
             })
+
+            if (res.status === 401) {
+                setExpired(true)
+                setTitle("The dispatch is expired")
+                setSubtitle("Contact your dispatcher to update status")
+                setSVG(<ExpiredSVG width={100} height={100} color={theme.palette.error.main} />)
+            };
+
+            if (res.status === 404) {
+                setExpired(true)
+                setTitle("RFO (Request For Operator) not found")
+                setSubtitle("The ticket you were looking for no loner exist. Contact your dispatcher")
+                setSVG(<NothingFoundSVG width={100} height={100} color={theme.palette.error.main} />)
+            }
+
             if (res.status !== 200) throw Error(await res.text())
 
             setAccessToken((await res.json()).access_token)
@@ -69,12 +90,28 @@ const OperatorAuth: FC<Props> = ({ setAccessToken, showSnackBar }) => {
                 },
             })
 
+            if (res.status === 401) {
+                setExpired(true)
+                setTitle("The dispatch is expired")
+                setSubtitle("Contact your dispatcher to update status")
+                setSVG(<ExpiredSVG width={100} height={100} color={theme.palette.error.main} />)
+            };
+
+            if (res.status === 404) {
+                setExpired(true)
+                setTitle("RFO (Request For Operator) not found")
+                setSubtitle("The ticket you were looking for no loner exist. Contact your dispatcher")
+                setSVG(<NothingFoundSVG width={100} height={100} color={theme.palette.error.main} />)
+            }
             if (res.status !== 200) throw Error(await res.text())
 
             showSnackBar(theme.palette.secondary.main, "Email sent");
+            setTitle("Enter verification code")
+            setSubtitle("We've sent a code to your email. Enter it bellow to authenticate")
             setSent(true);
         } catch (err: any) {
             showSnackBar(theme.palette.error.main, err.message)
+            setTitle(err.message)
         }
     }
 
@@ -89,51 +126,45 @@ const OperatorAuth: FC<Props> = ({ setAccessToken, showSnackBar }) => {
         sendAuthEmail();
     }, [])
 
-    return (
-        <>
+    return <FormContainer>
+        {svg}
+        <FormView style={{ width: '100%', backgroundColor: 'white' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <Typography variant="subtitle1" fontWeight={'bold'}>{title}</Typography>
+                <Typography variant='subtitle2' textAlign={'center'}>{subtitle}</Typography>
+            </div>
             {
-                sent ?
-                    <FormContainer>
-                        <DumpTruckSvg width={100} height={100} color={theme.palette.secondary.main} />
-                        <FormView style={{ width: '100%', backgroundColor: 'white' }}>
-                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                                <Typography variant="subtitle1" fontWeight={'bold'}>
-                                    Enter Verification Code
-                                </Typography>
-                                <Typography variant='subtitle2' textAlign={'center'}>
-                                    We've sent a code to your email. Enter it bellow to authenticate
-                                </Typography>
-                            </div>
-                            <div style={{ backgroundColor: 'white', padding: '5px', borderRadius: '5px' }}>
-                                <RFOCodeForm onSubmit={validateCode} />
-                            </div>
-                            <ResendMessage>
-                                <Typography variant='body2' textAlign={'center'}>Didn't get a code?</Typography>
-                                <Button
-                                    disabled={sending}
-                                    onClick={handleReSend}
-                                >
-                                    <Typography style={{ fontWeight: 'bold' }} variant='body2' >
-                                        {sending ? "Sending..." : "Click to resend."}
-                                    </Typography>
-                                </Button>
-                            </ResendMessage>
-                        </FormView>
-                    </FormContainer>
-                    :
-                    <MessageView
-
-                        title={"Authenticating Operator"}
-                        subtitle={"Wait while we create you an secret token"}
-                        icon={<HourglassBottomIcon style={{ fontSize: '25pt' }} />}
-                        message={"Sorry for taking too long. We will send you a token over email when its done."}
-                    />
+                sent &&
+                <div style={{ backgroundColor: 'white', padding: '5px', borderRadius: '5px' }}>
+                    <RFOCodeForm onSubmit={validateCode} />
+                </div>
             }
+            {
+                !expired &&
+                <ResendMessage>
+                    <Typography variant='body2' textAlign={'center'}>Didn't get a code?</Typography>
+                    <Button
+                        disabled={sending}
+                        onClick={handleReSend}
+                    >
+                        <Typography style={{ fontWeight: 'bold' }} variant='body2' >
+                            {sending ? "Sending..." : "Click to resend."}
+                        </Typography>
+                    </Button>
+                </ResendMessage>
+            }
+        </FormView>
+    </FormContainer>
 
-        </>
-    )
 }
 
 export default OperatorAuth
 
 
+// <MessageView
+
+// title={"Authenticating Operator"}
+// subtitle={"Wait while we create you an secret token"}
+// icon={<HourglassBottomIcon style={{ fontSize: '25pt' }} />}
+// message={"Sorry for taking too long. We will send you a token over email when its done."}
+// />

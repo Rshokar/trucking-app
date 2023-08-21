@@ -70,7 +70,6 @@ def delete_operator(operator_id):
 @operators.route('/validate', methods=["POST"])
 def validate_operators():
     session = g.session
-    print("HELLO WORLD")
     try:
         token = request.get_json().get("token", None)
         return OperatorController.validate_operator(session, token)

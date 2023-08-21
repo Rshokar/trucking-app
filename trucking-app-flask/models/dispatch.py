@@ -43,6 +43,9 @@ class Dispatch(Base):
 
         return dispatch_dict
 
+    def expired(self):
+        return datetime.now() > self.expiry
+
     def get_dispatch_by_id_and_owner(session, dispatch_id, owner_id):
         return session.query(Dispatch)\
             .join(Company, Dispatch.company_id == Company.company_id)\

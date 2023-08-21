@@ -1,5 +1,5 @@
 from itsdangerous import URLSafeTimedSerializer
-from models import Operator, Company, RFO, BillingTickets
+from models import Operator, Company, RFO, BillingTickets, Dispatch
 from sqlalchemy.exc import IntegrityError
 from utils import send_verification_email, send_operator_auth_token
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadTimeSignature
@@ -264,13 +264,20 @@ class OperatorController:
         operator = session.query(Operator).filter_by(
             operator_id=data["operator_id"], confirmed=True).first()
 
-        rfo = session.query(RFO).filter_by(rfo_id=data["rfo_id"]).first()
-
         if operator is None:
             return make_response('Operator not found.', 404)
 
+        rfo = session.query(RFO).filter_by(rfo_id=data["rfo_id"], ).first()
+
         if rfo is None:
             return make_response('RFO not found.', 404)
+
+        dispatch = session.query(Dispatch).filter_by(
+            dispatch_id=rfo.dispatch_id).first()
+
+        # If dispatch is expired return a 401
+        if dispatch.expired():
+            return make_response("Dispatch is expired", 401)
 
         # Generate a unique alphanumeric token for the operator
         six_digit_number = random.randint(100000, 999999)
@@ -331,6 +338,12 @@ class OperatorController:
 
         if rfo.token_consumed is True:
             return make_response("Code has already been used!", 401)
+
+        dispatch = session.query(Dispatch).filter_by(
+            dispatch_id=rfo.dispatch_id).first()
+
+        if dispatch.expired():
+            return make_response("Dispatch is expired", 401)
 
         # Check if the token was created more than 5 minutes before the request was made.
         if rfo.token_date < datetime.now() - timedelta(minutes=5):
