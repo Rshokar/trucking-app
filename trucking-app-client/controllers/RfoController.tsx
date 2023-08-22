@@ -90,4 +90,19 @@ export class RFOController {
             throw new Error("Error creating RFO");
         }
     }
+
+    async sendRFOEmail(id: string): Promise<void> {
+        try {
+            await myAxios.post(`/rfo/send_operator_email/${id}`, {}, {
+                headers: {
+                    ...await getAuthHeader()
+                }
+            })
+        } catch (error: any) {
+            if (isAxiosError(error))
+                throw new Error(error.response?.data);
+            throw new Error("Error creating RFO");
+        }
+    }
+
 }

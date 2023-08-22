@@ -225,7 +225,6 @@ const OperatorSection: FC<Props> = ({ navigate }) => {
                             navigateToTicket={function (rfo: RFO): void {
                                 setShowRfos(false)
                                 navigate("Tickets", { dispId: rfo.dispatch_id, rfoId: rfo.rfo_id })
-
                             }}
                             operators={operators}
                             operId={focusedOperator?.operator_id}

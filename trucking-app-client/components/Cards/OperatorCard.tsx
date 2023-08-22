@@ -33,9 +33,9 @@ const OperatorCard: React.FC<OperatorCardProps> = (props) => {
                 subtitle={props.operator_email}
                 left={LeftContent}
             />
-            <Card.Content style={{ gap: 10 }}>
+            <Card.Content style={{ gap: 20 }}>
                 <Line>
-                    <Text variant='bodySmall'>This operator has not been validated.</Text>
+                    <Text variant='bodyLarge'>The operator need to validate their email. Click the button bellow and an email will be sent containing a validation url</Text>
                 </Line>
                 <Button
                     mode="contained"

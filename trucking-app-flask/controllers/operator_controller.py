@@ -298,15 +298,24 @@ class OperatorController:
 
     def validate_operator_auth_token(session, token, code):
         '''
-        Validates an operator's code. If successful,
-        flips the consumed field in RFO and returns an access token.
+        Validates an operator's authentication token and corresponding code. If successful,
+        flips the consumed field in RFO (Request For Order) and returns an access token.
 
         Parameters:
-            Session (session): SQLAlchemy db session
-            token (str): Token string
+            session (Session): SQLAlchemy db session.
+            token (str): The token string to be validated.
+            code (str): The code associated with the token.
 
         Returns:
-            Responses: 200 OK if successful, 404 if operator not found, 400 if token is expired or invalid
+            Response: HTTP response with status code and message.
+                - 200 OK if successful, along with the access token in the response body.
+                - 400 Bad Request if the token is expired or invalid.
+                - 401 Unauthorized if the operator email is not verified, or the code is already used or expired.
+                - 404 Not Found if the operator is not found.
+
+        Exceptions:
+            SignatureExpired: Raised when the token is expired.
+            BadTimeSignature: Raised when the token is invalid.
         '''
 
         authS = URLSafeTimedSerializer(SEND_OPERATOR_RFO_TOKEN_SECRET)
@@ -318,23 +327,20 @@ class OperatorController:
         except BadTimeSignature:
             return make_response('Invalid token.', 400)
 
-        operator = session.query(Operator).filter_by(
-            operator_id=data['operator_id']).first()
-
-        if operator is None:
-            return make_response('Operator not found.', 404)
-
-        if operator.confirmed is False:
-            return make_response('Operator email not verified.', 401)
-
-        rfo = session.query(RFO).filter(
+        # Combined query to fetch operator and rfo
+        result = session.query(Operator, RFO).join(RFO, Operator.operator_id == RFO.operator_id).filter(
+            Operator.operator_id == data['operator_id'],
             RFO.rfo_id == data['rfo_id'],
-            RFO.operator_id == data['operator_id'],
             RFO.token == code
         ).first()
 
-        if rfo is None:
-            return make_response('Incorrect code.', 404)
+        if result is None:
+            return make_response('Operator or RFO not found.', 404)
+
+        operator, rfo = result
+
+        if operator.confirmed is False:
+            return make_response('Operator email not verified.', 401)
 
         if rfo.token_consumed is True:
             return make_response("Code has already been used!", 401)
@@ -353,7 +359,11 @@ class OperatorController:
 
         # Once the token is validated, you may issue a new token (access token)
         access_token = accessS.dumps(data)
-        rfo.token_consumed = True
+
+        # Directly update the token_consumed field without fetching the record first
+        session.query(RFO).filter_by(
+            rfo_id=data['rfo_id']).update({'token_consumed': True})
+
         session.commit()
         return make_response({'access_token': access_token}, 200)
 

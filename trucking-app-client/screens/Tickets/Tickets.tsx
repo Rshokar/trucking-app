@@ -27,7 +27,7 @@ import uuid from 'react-native-uuid'
 const BalanceContainer = styled(Container)`
     background-color: ${colors.graylight}; 
     width: 100%;
-    gap: 20px; 
+    gap: 10px; 
     flex: 1;
 `
 
@@ -40,8 +40,6 @@ export interface TicketIds {
 }
 
 const Tickets: FunctionComponent<Props> = ({ route }) => {
-
-    console.log("ROUTE PARAMS", route.params)
 
     const [tickets, setTickets] = useState<TicketIds>({
         dispId: route.params.dispId,
@@ -108,9 +106,6 @@ const Tickets: FunctionComponent<Props> = ({ route }) => {
             onChange: setOperators
         })
     }, [])
-
-    console.log("OPERATROS", operators);
-
 
     return (
         <BalanceContainer>

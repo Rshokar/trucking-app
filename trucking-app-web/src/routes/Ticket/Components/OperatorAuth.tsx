@@ -57,24 +57,28 @@ const OperatorAuth: FC<Props> = ({ setAccessToken, showSnackBar }) => {
                 body: JSON.stringify({ code })
             })
 
+            if (res.status === 400) {
+                setTitle("Incorrect Code!")
+                setSubtitle("Click bellow to resend token")
+            }
+
             if (res.status === 401) {
                 setExpired(true)
                 setTitle("The dispatch is expired")
-                setSubtitle("Contact your dispatcher to update status")
+                setSubtitle("Something went wrong")
                 setSVG(<ExpiredSVG width={100} height={100} color={theme.palette.error.main} />)
             };
 
             if (res.status === 404) {
-                setExpired(true)
-                setTitle("RFO (Request For Operator) not found")
-                setSubtitle("The ticket you were looking for no loner exist. Contact your dispatcher")
+                setTitle("Token is not correct")
+                setSubtitle("The token used did not match out results. Try again")
                 setSVG(<NothingFoundSVG width={100} height={100} color={theme.palette.error.main} />)
             }
 
             if (res.status !== 200) throw Error(await res.text())
 
             setAccessToken((await res.json()).access_token)
-            showSnackBar(theme.palette.secondary.main, "Validation complete")
+            showSnackBar(theme.palette.secondary.main, "Validation complete.")
         } catch (err: any) {
             showSnackBar(theme.palette.error.main, err.message)
         }

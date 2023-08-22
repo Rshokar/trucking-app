@@ -57,7 +57,7 @@ def delete_rfo(rfo_id):
     return RfoController.delete_rfo(g.session, rfo_id)
 
 
-@rfo.route("/send_operator_email/<int:rfo_id>", methods=["GET"])
+@rfo.route("/send_operator_email/<int:rfo_id>", methods=["POST"])
 @firebase_required
 def send_operator_email(rfo_id):
     return RfoController.send_operator_rfo_email(g.session, rfo_id)

@@ -159,7 +159,9 @@ const BillSection: FC<Props> = ({ navigateToTicket, rfoId }) => {
 
     return (
         <StyledSection>
-            <StyledHeader>
+            <StyledHeader style={{
+                paddingTop: 5
+            }}>
                 <StyledInput
                     label={'Search By Ticket Number'}
                     onChangeText={(text) => setSearch(text)}
@@ -175,7 +177,7 @@ const BillSection: FC<Props> = ({ navigateToTicket, rfoId }) => {
                     setFocusedBill(undefined);
                     showModal();
                 }}
-                noTicketFoundSVG={<BillSVG width={125} height={125} stroke={'black'} />}
+                noTicketFoundSVG={<BillSVG width={75} height={75} stroke={'black'} />}
                 noTicketFoundMessage={"No Billing Tickets Found!"}
                 render={({ item }: { item: Bill }) => {
                     if (item.ticket_number?.toString().includes(search)) {
