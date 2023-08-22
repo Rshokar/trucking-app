@@ -99,6 +99,11 @@ const BillForm: React.FC<Props> = ({ onSubmit, defaultValues }) => {
                 type="submit"
                 variant="contained"
                 color="primary"
+                fullWidth
+                style={{
+                    color: 'white'
+
+                }}
                 disabled={formik.isSubmitting}
                 onClick={(e) => {
                     e.preventDefault();

@@ -24,6 +24,7 @@ import { Company } from '../../../models/Company';
 import { Customer } from '../../../models/Customer';
 import { RFO } from '../../../models/RFO';
 import { Dispatch } from '../../../models/Dispatch'
+import BillCard from '../../../components/Cards/BillCard';
 
 const TicketInfoContainer = styled.div`
     height: 100%;
@@ -108,6 +109,7 @@ const Ticket: FC<Props> = ({ accessToken, showSnackBar }) => {
     const [operator, setOperator] = useState<string>();
     const [company, setCompany] = useState<Company>();
     const [showForm, setShowForm] = useState<boolean>(false)
+    const [showBill, setShowBill] = useState<boolean>(false)
     const [focusedBill, setFocusedBill] = useState<Bill>();
 
 
@@ -318,6 +320,10 @@ const Ticket: FC<Props> = ({ accessToken, showSnackBar }) => {
                             subtitle={`RFO ID: ${b.rfo_id}`}
                             icon={<ReceiptIcon style={{ fontSize: '27pt', color: 'white', padding: '5px' }} />}
                             onDelete={async () => await handleDelete(b.bill_id + '')}
+                            onClick={() => {
+                                setFocusedBill(b)
+                                setShowBill(true)
+                            }}
                         />)
                     }
                     <Button
@@ -355,6 +361,24 @@ const Ticket: FC<Props> = ({ accessToken, showSnackBar }) => {
                         defaultValues={focusedBill}
                         onSubmit={handleFormSubmit} />
                 </FormView>
+            </Modal>
+            <Modal
+                open={showBill}
+                onClose={() => {
+                    setFocusedBill(undefined)
+                    setShowBill(false)
+                }}
+                style={{
+                    backgroundColor: 'black'
+                }}
+            >
+                <BillCard
+                    accessToken={accessToken}
+                    onClose={() => {
+                        setFocusedBill(undefined)
+                        setShowBill(false)
+                    }}
+                    {...focusedBill} />
             </Modal>
         </TicketInfoContainer>
     )

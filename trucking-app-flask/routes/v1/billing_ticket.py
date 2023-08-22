@@ -89,6 +89,18 @@ def get_bill_image(bill_id):
     return BillingTicketController.get_bill_ticket_image(g.session, bill_id)
 
 
+@billing_ticket.route("/operator/image/<int:bill_id>", methods=["GET"])
+def operator_get_bill_image(bill_id):
+    authhead = request.headers.get("Authorization-Fake-X", None)
+
+    if authhead is None:
+        return make_response("Auth header missing", 400)
+
+    access_token = authhead.split(" ")[1]
+
+    return BillingTicketController.operator_get_bill_ticket_image(g.session, access_token, bill_id)
+
+
 @billing_ticket.route("/operator", methods=["POST"])
 @billing_ticket.route("/operator/<int:bill_id>", methods=["DELETE", "PATCH"])
 def operator_manage_bill(bill_id=None):

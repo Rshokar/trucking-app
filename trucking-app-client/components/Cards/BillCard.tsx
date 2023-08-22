@@ -69,27 +69,33 @@ const BillCard: React.FC<BillCardProps> = (props) => {
     console.log(images)
 
     return (
-        <>
-
+        <View style={{
+            width: '100%',
+            height: '100%',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center'
+        }}>
             <Text style={styles.modalTitle}
 
             >
                 Ticket Number: {props.ticket_number}
             </Text>
             {
-                images.length > 0 ? <ImageViewer
+                images.length > 0 && <ImageViewer
+                    loadingRender={() => <ActivityIndicator size={45} />}
+                    enableSwipeDown
                     imageUrls={images}
-                    style={{ paddingVertical: 20, height: imageHeight, width: '100%' }}
+                    style={{ width: '100%' }}
+                    renderIndicator={(currentIndex) => <Text>Ticket Number: {props.ticket_number}</Text>}
                 />
-                    :
-                    <ActivityIndicator />
             }
             <Button style={{ backgroundColor: theme.colors.secondary, width: 200, marginVertical: 20 }} onPress={close}>
                 <Text style={{ color: 'white' }}>
                     Close
                 </Text>
             </Button>
-        </>
+        </View>
 
     );
 };

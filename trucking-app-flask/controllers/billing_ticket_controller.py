@@ -275,6 +275,18 @@ class BillingTicketController:
             # Handle any errors that occurred while generating the pre-signed URL
             return make_response("Failed to generate pre-signed URL: " + str(e), 500)
 
+    def operator_get_bill_ticket_image(session, token, bill_id):
+        s = URLSafeTimedSerializer(OPERATOR_ACCESS_TOKEN_SECRET)
+
+        try:
+            s.loads(token, max_age=86400)  # Token valid for 24 hours
+        except SignatureExpired:
+            return make_response('Token expired.', 400)
+        except BadTimeSignature:
+            return make_response('Invalid token.', 400)
+
+        return BillingTicketController.get_bill_ticket_image(session, bill_id)
+
     def operator_create_bill(session, token, file, ticket_number):
         """_summary_
             Gets all bills according to id
