@@ -14,7 +14,7 @@ export interface TicketSectionProps {
     loading: boolean
     title?: string;
     onRefresh?: () => Promise<any>;
-    onNoTicketsFound: () => any;
+    onNoTicketsFound?: () => any;
     noTicketFoundMessage: string;
     noTicketFoundSVG?: ReactNode
 }

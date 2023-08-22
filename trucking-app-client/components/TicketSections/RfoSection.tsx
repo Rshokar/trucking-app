@@ -194,6 +194,8 @@ const RFOSection: FC<Props> = ({ navigateToTicket, dispId, operId, operators }) 
         setQuery(rQ);
     }
 
+    console.log('RFO SECTION', dispId, operId)
+
     return (
         <StyledSection>
             <TicketSection
@@ -202,11 +204,11 @@ const RFOSection: FC<Props> = ({ navigateToTicket, dispId, operId, operators }) 
                 data={rfos}
                 onRefresh={handleRefresh}
                 loading={loading}
-                onNoTicketsFound={() => {
+                onNoTicketsFound={dispId ? () => {
                     setFocusedRFO(undefined);
                     showModal();
-                }}
-                noTicketFoundMessage={"No Request For Operators Found!"}
+                } : undefined}
+                noTicketFoundMessage={"No RFOs (Request For Operator) Found!"}
                 noTicketFoundSVG={<Contract width={125} height={125} stroke={'black'} fill={'black'} />}
                 render={({ item }: { item: RFO }) => {
                     if (item.operator?.operator_name?.match(search || '')) {
