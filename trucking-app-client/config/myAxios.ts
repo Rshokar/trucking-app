@@ -11,7 +11,7 @@ const myAxios = axios.create({
 });
 
 // // Add a request interceptor
-myAxios.interceptors.request.use(function (config) {
+myAxios.interceptors.response.use(function (config) {
     return config;
 },
     async (error) => {
@@ -28,11 +28,14 @@ myAxios.interceptors.request.use(function (config) {
                 AuthController.re_auth(newToken);
             } catch (err: any) {
                 // Navigate to login.
+                await AuthController.logout()
                 navigate('Welcome', {});  // Use your desired route name
             }
 
             // Retry the request with the new token
             return myAxios(originalRequest);
+        } else if (error.response.status === 401 && originalRequest._retry) {
+            navigate('Welcome', {});
         }
 
         return Promise.reject(error);

@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, request, abort, g
+from flask import Blueprint, jsonify, request, make_response, g
 from controllers import CustomerController
 from validations import customer_validation
 from middleware import firebase_required
@@ -16,6 +16,7 @@ def get_customer(customer_id):
 @customers.route("/", methods=["GET"])
 @firebase_required
 def get_all_customers():  # get query string parameters with defaults
+    # return make_response("ERROR", 401)
     session = g.session
     limit = int(request.args.get('limit', 10))
     page = int(request.args.get('page', 0))

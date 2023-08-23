@@ -45,12 +45,14 @@ export class AuthController {
 
         try {
             await myAxios.delete('/auth/logout');
-            await AsyncStorage.clear();
         } catch (error) {
             if (isAxiosError(error)) {
                 throw new Error(error.response?.data);
             }
             throw new Error("Error during registration");
+        } finally {
+            await AsyncStorage.clear();
+
         }
     }
 
