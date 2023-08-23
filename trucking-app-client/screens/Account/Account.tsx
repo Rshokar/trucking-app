@@ -59,6 +59,7 @@ const Account: FC<Props> = (props) => {
 
     const handleLogout = async () => {
         try {
+            await AuthController.logout()
             await signOut(FIREBASE_AUTH);
             showSnackbar({
                 color: theme.colors.primary,

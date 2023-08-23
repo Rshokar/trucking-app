@@ -1,19 +1,14 @@
 import qs from 'qs'
 import { Dispatch, DispatchQuery } from "../models/Dispatch";
 import { AuthController } from './AuthController';
-import axios, { isAxiosError } from 'axios';
+import { isAxiosError } from 'axios';
 import myAxios from '../config/myAxios';
-import { getAuthHeader } from "../utils/authHeader";
 
 export class DispatchController {
 
     async get<Dispatch>(query: DispatchQuery): Promise<Dispatch> {
         try {
-            const response = await myAxios.get<Dispatch>(`/dispatch/${query.dispatch_id}`, {
-                headers: {
-                    ...await getAuthHeader()
-                }
-            });
+            const response = await myAxios.get<Dispatch>(`/dispatch/${query.dispatch_id}`);
             return response.data;
         } catch (error) {
             if (isAxiosError(error)) {
@@ -33,13 +28,8 @@ export class DispatchController {
         });
 
         const queryString = qs.stringify(q) + customers;
-        const token = await AuthController.getJWTToken();
         try {
-            const response = await myAxios.get<Dispatch[]>(`/dispatch?${queryString}`, {
-                headers: {
-                    ...await getAuthHeader()
-                }
-            });
+            const response = await myAxios.get<Dispatch[]>(`/dispatch?${queryString}`);
             return response.data;
         } catch (error) {
             if (isAxiosError(error)) {
@@ -51,11 +41,7 @@ export class DispatchController {
 
     async delete(id: string): Promise<void> {
         try {
-            await myAxios.delete(`/dispatch/${id}`, {
-                headers: {
-                    ...await getAuthHeader()
-                }
-            });
+            await myAxios.delete(`/dispatch/${id}`);
         } catch (error) {
             if (isAxiosError(error)) {
                 throw new Error(error.response?.data)
@@ -72,11 +58,7 @@ export class DispatchController {
             expiry: model.expiry
         }
         try {
-            const response = await myAxios.put<Dispatch>(`/dispatch/${id}`, data, {
-                headers: {
-                    ...await getAuthHeader()
-                }
-            });
+            const response = await myAxios.put<Dispatch>(`/dispatch/${id}`, data);
             return response.data;
         } catch (error) {
             if (isAxiosError(error)) {
@@ -91,11 +73,7 @@ export class DispatchController {
             const company = await AuthController.getCompany();
             model.company_id = company.company_id;
 
-            const response = await myAxios.post<Dispatch>(`/dispatch`, model, {
-                headers: {
-                    ...await getAuthHeader()
-                }
-            });
+            const response = await myAxios.post<Dispatch>(`/dispatch`, model);
             return response.data;
         } catch (error) {
             if (isAxiosError(error)) {

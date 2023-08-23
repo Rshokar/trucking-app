@@ -10,11 +10,7 @@ export class OperatorController {
 
     async get(query: OperatorQuery): Promise<Operator> {
         try {
-            const response = await myAxios.get<Operator>(`/company/operators/${query.operator_id}`, {
-                headers: {
-                    ... await getAuthHeader()
-                }
-            });
+            const response = await myAxios.get<Operator>(`/company/operators/${query.operator_id}`);
             return response.data;
         } catch (error) {
             if (isAxiosError(error)) {
@@ -28,11 +24,7 @@ export class OperatorController {
         const q: any = { ...query };
 
         try {
-            const response = await myAxios.get<Operator[]>(`/company/operators?${qs.stringify(q)}`, {
-                headers: {
-                    ... await getAuthHeader()
-                }
-            });
+            const response = await myAxios.get<Operator[]>(`/company/operators?${qs.stringify(q)}`);
             return response.data;
         } catch (error) {
             if (isAxiosError(error)) {
@@ -44,11 +36,7 @@ export class OperatorController {
 
     async delete(id: string): Promise<void> {
         try {
-            await myAxios.delete(`/company/operators/${id}`, {
-                headers: {
-                    ... await getAuthHeader()
-                }
-            });
+            await myAxios.delete(`/company/operators/${id}`);
             const oCache = Cache.getInstance(Operator);
             oCache.setData([...oCache.getData().filter(o => ("" + o.operator_id) === id)])
         } catch (error) {
@@ -61,11 +49,7 @@ export class OperatorController {
 
     async update(id: string, model: Operator): Promise<Operator> {
         try {
-            const response = await myAxios.put<Operator>(`/company/operators/${id}`, model, {
-                headers: {
-                    ... await getAuthHeader()
-                }
-            });
+            const response = await myAxios.put<Operator>(`/company/operators/${id}`, model);
             const oCache = Cache.getInstance(Operator);
             const index = oCache.getData().findIndex(o => ("" + o.operator_id) === id)
             if (index === -1) {
@@ -91,11 +75,7 @@ export class OperatorController {
             const company = await AuthController.getCompany();
             data.company_id = company.company_id;
 
-            const response = await myAxios.post<Operator>(`/company/operators`, data, {
-                headers: {
-                    ... await getAuthHeader()
-                }
-            });
+            const response = await myAxios.post<Operator>(`/company/operators`, data);
             const oCache = Cache.getInstance(Operator);
             oCache.setData([...oCache.getData(), response.data]);
             return response.data;
@@ -109,11 +89,7 @@ export class OperatorController {
 
     async sendVerificationEmail(id: string): Promise<any> {
         try {
-            await myAxios.post<void>(`/company/operators/${id}`, undefined, {
-                headers: {
-                    ... await getAuthHeader()
-                }
-            })
+            await myAxios.post<void>(`/company/operators/${id}`, undefined)
         } catch (error) {
             if (isAxiosError(error)) {
                 throw new Error(error.response?.data)

@@ -1,10 +1,9 @@
 auth_validation = {
     "type": "object",
     "properties": {
-        "email": {"type": "string"},
-        "password": {"type": "string"},
+        "id_token": {"type": "string"},
     },
-    "required": ["email", "password"],
+    "required": ["id_token"],
     "additionalProperties": False
 }
 
@@ -12,10 +11,13 @@ auth_validation = {
 register_validation = {
     "type": "object",
     "properties": {
-        "role": {"type": "string"},
-        "company": {"type": "string"},
-        "user_id": {"type": "string"},
+        "token": {"type": "string"},
+        "company": {
+            "type": "string",
+            "minLength": 3,  # since company name must be greater than 2 characters
+            "maxLength": 50
+        },
     },
-    "required": ["company", "user_id"],
+    "required": ["company", "token"],
     "additionalProperties": False
 }

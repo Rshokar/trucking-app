@@ -5,9 +5,7 @@ import { Button, Text, useTheme } from 'react-native-paper'
 import styled from 'styled-components/native'
 
 import BigText from '../../components/Texts/BigText'
-import SmallText from '../../components/Texts/SmallText'
 import { LoginFormResult, RegisterFormResult } from '../../components/Forms/types'
-import Form from '../../components/Forms/Form'
 import LoginForm from '../../components/Forms/LoginForm'
 import RegisterForm from '../../components/Forms/RegisterForm'
 import SwipeDownViewAnimation from '../../components/Animated/SwipeDownViewAnimation'
@@ -107,24 +105,15 @@ const Welcome: FunctionComponent<Props> = ({ navigation }) => {
 
 
 
-    const handleLogin = async (res: LoginFormResult): Promise<any> => {
-        let u: User = new User()
-        u.email = res.email
-        u.password = res.password
+    const handleLogin = async (formRes: LoginFormResult): Promise<any> => {
         try {
-            const res = await signInWithEmailAndPassword(FIREBASE_AUTH, u.email, u.password);
-            u.id = res.user.providerId
-            await AuthController.setJWTToken(await res.user.getIdToken())
-            const cC = new CompanyController();
-            const [comp] = await Promise.all([cC.get(), loadCache()]);
-            console.log(u);
-            AuthController.saveCompany(comp)
-            AuthController.saveUser(u)
+            const res = await signInWithEmailAndPassword(FIREBASE_AUTH, formRes.email, formRes.password);
+            const { company } = await AuthController.login(await res.user.getIdToken(), formRes.email);
             showSnackbar({
                 message: 'Loged in successfully',
                 color: theme.colors.primary
             })
-            navigation.navigate("Home", { company: comp })
+            navigation.navigate("Home", { company })
         } catch (e: any) {
             console.log(e);
             let error: string = "Error logging in. "
@@ -133,24 +122,18 @@ const Welcome: FunctionComponent<Props> = ({ navigation }) => {
             } else if (e.code === 'auth/wrong-password') {
                 error = 'Incorrect credentials'
             }
-            console.log("HELLO WORLD", error)
+
             showSnackbar({
                 message: error,
-                color: theme.colors.error,
-                onClickText: 'Ok'
+                color: theme.colors.error
             })
         }
     }
 
     const handleRegister = async (formResult: RegisterFormResult): Promise<any> => {
-        let u: User = new User()
-        u.password = formResult.password;
-        u.email = formResult.email;
-        console.log(formResult)
         try {
-            const res = await createUserWithEmailAndPassword(FIREBASE_AUTH, u.email, u.password);
-            await AuthController.setJWTToken(await res.user.getIdToken())
-            const { company } = await AuthController.register(u, formResult.company, res.user.uid)
+            const res = await createUserWithEmailAndPassword(FIREBASE_AUTH, formResult.email, formResult.password);
+            const { company } = await AuthController.register(await res.user.getIdToken(), formResult.company, formResult.email)
             showSnackbar({
                 message: 'Registered in successfully',
                 color: theme.colors.primary,
@@ -158,7 +141,7 @@ const Welcome: FunctionComponent<Props> = ({ navigation }) => {
             })
             navigation.navigate("Home", { company })
         } catch (e: any) {
-            let error: string = "Error registering."
+            let error: string = "Error registering in."
             if (e.code === 'auth/email-already-in-use')
                 error = "Email is already being used"
 

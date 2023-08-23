@@ -4,7 +4,6 @@ import { AuthController } from "./AuthController";
 import { Company } from "../models/Company";
 import { User } from "../models/User";
 import { UserCompanyFormResults } from "../components/Forms/UserCompanyForm";
-import { getAuthHeader } from "../utils/authHeader";
 
 export default class UserController {
 
@@ -12,8 +11,7 @@ export default class UserController {
         try {
             const response = await myAxios.put<UserCompanyFormResults>(
                 `/user/account`,
-                { email, company_name },
-                { headers: await getAuthHeader() }
+                { email, company_name }
             );
 
             const comp: Company = await AuthController.getCompany();

@@ -2,17 +2,12 @@ import qs from 'qs';
 import { RFO, RFOQuery } from "../models/RFO";
 import myAxios from '../config/myAxios';
 import { isAxiosError } from 'axios';
-import { getAuthHeader } from '../utils/authHeader';
 
 export class RFOController {
 
     async get(query: RFOQuery): Promise<RFO> {
         try {
-            const response = await myAxios.get<RFO>(`/rfo/${query.rfo_id}`, {
-                headers: {
-                    ...await getAuthHeader()
-                }
-            });
+            const response = await myAxios.get<RFO>(`/rfo/${query.rfo_id}`);
             return response.data;
         } catch (error) {
             if (isAxiosError(error)) {
@@ -30,11 +25,7 @@ export class RFOController {
         const queryString = qs.stringify(q);
 
         try {
-            const response = await myAxios.get<RFO[]>(`/rfo?${queryString}`, {
-                headers: {
-                    ...await getAuthHeader()
-                }
-            });
+            const response = await myAxios.get<RFO[]>(`/rfo?${queryString}`);
             return response.data;
         } catch (error) {
             if (isAxiosError(error)) {
@@ -46,11 +37,7 @@ export class RFOController {
 
     async delete(id: string): Promise<void> {
         try {
-            await myAxios.delete(`/rfo/${id}`, {
-                headers: {
-                    ...await getAuthHeader()
-                }
-            });
+            await myAxios.delete(`/rfo/${id}`);
         } catch (error) {
             if (isAxiosError(error)) {
                 throw new Error(error.response?.data);
@@ -61,11 +48,7 @@ export class RFOController {
 
     async update(id: string, model: RFO): Promise<RFO> {
         try {
-            const response = await myAxios.put<RFO>(`/rfo/${id}`, model, {
-                headers: {
-                    ...await getAuthHeader()
-                }
-            });
+            const response = await myAxios.put<RFO>(`/rfo/${id}`, model);
             return response.data;
         } catch (error) {
             if (isAxiosError(error)) {
@@ -77,11 +60,7 @@ export class RFOController {
 
     async create(model: RFO): Promise<RFO> {
         try {
-            const response = await myAxios.post<RFO>(`/rfo`, model, {
-                headers: {
-                    ...await getAuthHeader()
-                }
-            });
+            const response = await myAxios.post<RFO>(`/rfo`, model);
             return response.data;
         } catch (error) {
             if (isAxiosError(error)) {
@@ -93,11 +72,7 @@ export class RFOController {
 
     async sendRFOEmail(id: string): Promise<void> {
         try {
-            await myAxios.post(`/rfo/send_operator_email/${id}`, {}, {
-                headers: {
-                    ...await getAuthHeader()
-                }
-            })
+            await myAxios.post(`/rfo/send_operator_email/${id}`, {})
         } catch (error: any) {
             if (isAxiosError(error))
                 throw new Error(error.response?.data);
