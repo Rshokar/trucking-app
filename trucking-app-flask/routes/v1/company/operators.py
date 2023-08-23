@@ -3,7 +3,7 @@ from controllers.operator_controller import OperatorController
 from utils import make_response
 from validations import operator_validation, operator_update
 import jsonschema
-from middleware import firebase_required
+from middleware import firebase_required, operator_auth
 
 
 operators = Blueprint("operators", __name__)
@@ -107,15 +107,7 @@ def validate(request_token):
 
 
 @operators.route('/ticket', methods=["GET"])
+@operator_auth
 def get_rfo():
-    authhead = request.headers.get("Authorization-Fake-X", None)
-
-    # Check if the Authorization header is present in the request.
-    if authhead is None:
-        return make_response("Auth header missing", 400)
-
-    # Extract the access token from the Authorization header.
-    access_token = authhead.split(" ")[1]
-
     # Return the ticket information associated with the provided access token.
-    return OperatorController.get_rfo(g.session, access_token)
+    return OperatorController.get_rfo(g.session, g.data)

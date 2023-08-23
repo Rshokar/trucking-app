@@ -107,11 +107,14 @@ const TicketItem: FunctionComponent<TicketItemProps> = (props) => {
                         <DeleteIcon style={{ fontSize: '20pt', color: theme.palette.error.main, padding: '5px' }} />
                     </IconButton>
                 </>}
-                {(!deleting && props.buttonClickIcon && props.onButtonClick) && <IconButton size="small" onClick={props.onButtonClick}>
+                {(!deleting && props.buttonClickIcon && props.onButtonClick) && <IconButton size="small" onClick={(e) => {
+                    e.stopPropagation();
+                    props.onButtonClick && props.onButtonClick();
+                }}>
                     {props.buttonClickIcon}
                 </IconButton>}
             </RightView>
-        </TicketRow>
+        </TicketRow >
     )
 }
 

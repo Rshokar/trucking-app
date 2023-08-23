@@ -367,21 +367,10 @@ class OperatorController:
         session.commit()
         return make_response({'access_token': access_token}, 200)
 
-    def get_rfo(session, token):
+    def get_rfo(session, data):
         """
             Gets the neccessary data for an operator to view there rfo
         """
-
-        s = URLSafeTimedSerializer(OPERATOR_ACCESS_TOKEN_SECRET)
-
-        try:
-            # Token valid for 24 hours
-            data = s.loads(token, max_age=86400)
-        except SignatureExpired:
-            return make_response('Token expired.', 400)
-        except BadTimeSignature:
-            return make_response('Invalid token.', 400)
-
         # Get RFO, Disaptch, Customer, Bills, and operator
         rfo = session.query(RFO).filter_by(rfo_id=data['rfo_id']).first()
 

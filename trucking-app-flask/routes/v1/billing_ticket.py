@@ -4,7 +4,7 @@ import jsonschema
 from utils import make_response
 from validations import billing_ticket_validation, billing_ticket_upate, operator_billing_ticket_validation
 from config import is_image
-from middleware import firebase_required
+from middleware import firebase_required, operator_auth
 
 billing_ticket = Blueprint("billing_ticket", __name__)
 
@@ -103,20 +103,14 @@ def operator_get_bill_image(bill_id):
 
 @billing_ticket.route("/operator", methods=["POST"])
 @billing_ticket.route("/operator/<int:bill_id>", methods=["DELETE", "PATCH"])
+@operator_auth
 def operator_manage_bill(bill_id=None):
     if (bill_id is None and (request.method == 'DELETE' or request.method == 'PATCH')):
         return make_response("Bill id is required", 400)
 
-    authhead = request.headers.get("Authorization-Fake-X", None)
-
-    if authhead is None:
-        return make_response("Auth header missing", 400)
-
-    access_token = authhead.split(" ")[1]
-
     # If method is delete, delete bill
     if request.method == "DELETE":
-        return BillingTicketController.operator_delete_bill(g.session, access_token, bill_id)
+        return BillingTicketController.operator_delete_bill(g.session, g.data, bill_id)
 
     if request.mimetype != 'multipart/form-data':
         return make_response({"error": "Content type must be multipart/form-data"}, 400)
@@ -128,7 +122,7 @@ def operator_manage_bill(bill_id=None):
     if request.method == "PATCH":
         try:
             jsonschema.validate(request.form, billing_ticket_upate)
-            return BillingTicketController.operator_update_bill(g.session, access_token, bill_id, ticket_number)
+            return BillingTicketController.operator_update_bill(g.session, g.data, bill_id, ticket_number)
         except jsonschema.ValidationError as e:
             return make_response({"error": e.message}, 400)
 
@@ -140,6 +134,6 @@ def operator_manage_bill(bill_id=None):
 
     try:
         jsonschema.validate(request.form, operator_billing_ticket_validation)
-        return BillingTicketController.operator_create_bill(g.session, access_token, file, ticket_number)
+        return BillingTicketController.operator_create_bill(g.session, g.data, file, ticket_number)
     except jsonschema.ValidationError as e:
         return make_response({"error": e.message}, 400)

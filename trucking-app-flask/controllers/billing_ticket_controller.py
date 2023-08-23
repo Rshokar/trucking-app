@@ -287,7 +287,7 @@ class BillingTicketController:
 
         return BillingTicketController.get_bill_ticket_image(session, bill_id)
 
-    def operator_create_bill(session, token, file, ticket_number):
+    def operator_create_bill(session, data, file, ticket_number):
         """_summary_
             Gets all bills according to id
             If current user is not owner of rfo
@@ -298,16 +298,6 @@ class BillingTicketController:
             limit (_type_): _description_
             rfo_id (_type_): _description_
         """
-
-        s = URLSafeTimedSerializer(OPERATOR_ACCESS_TOKEN_SECRET)
-
-        try:
-            data = s.loads(token, max_age=86400)  # Token valid for 24 hours
-        except SignatureExpired:
-            return make_response('Token expired.', 400)
-        except BadTimeSignature:
-            return make_response('Invalid token.', 400)
-
         # Generate a unique key for the image
         image_key = create_unique_image_key() + f"_{data['rfo_id']}"
 
@@ -342,7 +332,7 @@ class BillingTicketController:
 
         return make_response(bill.to_dict(), 201)
 
-    def operator_delete_bill(session, token, bill_id):
+    def operator_delete_bill(session, data, bill_id):
         """_summary_
 
         Args:
@@ -350,16 +340,6 @@ class BillingTicketController:
             token (stirng): access token
             bill_id (number): bill primary key
         """
-
-        s = URLSafeTimedSerializer(OPERATOR_ACCESS_TOKEN_SECRET)
-
-        try:
-            data = s.loads(token, max_age=86400)  # Token valid for 24 hours
-        except SignatureExpired:
-            return make_response('Token expired.', 400)
-        except BadTimeSignature:
-            return make_response('Invalid token.', 400)
-
         bill = session.query(BillingTickets)\
             .filter(and_(BillingTickets.bill_id == bill_id, BillingTickets.rfo_id == data["rfo_id"]))\
             .first()
@@ -380,7 +360,7 @@ class BillingTicketController:
         session.commit()
         return make_response("Billing ticket deleted", 204)
 
-    def operator_update_bill(session, token, bill_id, ticket_number):
+    def operator_update_bill(session, data, bill_id, ticket_number):
         """_summary_
 
         Args:
@@ -388,16 +368,6 @@ class BillingTicketController:
             token (stirng): access token
             bill_id (number): bill primary key
         """
-
-        s = URLSafeTimedSerializer(OPERATOR_ACCESS_TOKEN_SECRET)
-
-        try:
-            data = s.loads(token, max_age=86400)  # Token valid for 24 hours
-        except SignatureExpired:
-            return make_response('Token expired.', 400)
-        except BadTimeSignature:
-            return make_response('Invalid token.', 400)
-
         bill = session.query(BillingTickets)\
             .filter(and_(BillingTickets.bill_id == bill_id, BillingTickets.rfo_id == data["rfo_id"]))\
             .first()

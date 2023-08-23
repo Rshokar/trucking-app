@@ -130,10 +130,10 @@ class AuthController:
             return response
 
         except auth.ExpiredIdTokenError:
-            return make_response("Token has expired", 401)
+            return make_response("Token has expired", 403)
 
         except auth.InvalidIdTokenError:
-            return make_response("Invalid token", 401)
+            return make_response("Invalid token", 400)
 
         except Exception as e:
             return make_response(str(e), 500)
