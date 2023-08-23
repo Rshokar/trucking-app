@@ -99,6 +99,43 @@ class AuthController:
             return make_response("Invalid token", 401)
 
         except Exception as e:
+            print(e)
+            return make_response(str(e), 500)
+
+    @staticmethod
+    def re_auth(request):
+        """
+        Validates the JWT token provided in the request body and, if valid, sets it as an
+        http-only cookie named 'access_token' for subsequent requests.
+
+        Args:
+            request (Request): The Flask request object containing client's request data.
+
+        Returns:
+            Response: A Flask response object. If successful, it contains a set-cookie header
+                      for the access_token. Otherwise, an error message is returned.
+        """
+        id_token = request.json.get("id_token")
+
+        try:
+            # Verify the ID token using Firebase Admin SDK
+            auth.verify_id_token(id_token)
+
+            # Construct a successful response
+            response = make_response("Set Cookie", 200)
+
+            # Set the verified ID token in the cookies as 'access_token'
+            response.set_cookie('access_token', id_token, httponly=True)
+
+            return response
+
+        except auth.ExpiredIdTokenError:
+            return make_response("Token has expired", 401)
+
+        except auth.InvalidIdTokenError:
+            return make_response("Invalid token", 401)
+
+        except Exception as e:
             return make_response(str(e), 500)
 
     @staticmethod

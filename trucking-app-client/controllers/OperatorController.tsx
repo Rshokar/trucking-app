@@ -3,7 +3,6 @@ import { Operator, OperatorQuery } from "../models/Operator";
 import { isAxiosError } from 'axios';
 import myAxios from '../config/myAxios';
 import { AuthController } from './AuthController';
-import { getAuthHeader } from '../utils/authHeader';
 import Cache from '../utils/Cache';
 
 export class OperatorController {

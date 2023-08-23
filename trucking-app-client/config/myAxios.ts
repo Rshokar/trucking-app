@@ -1,5 +1,8 @@
 import axios from "axios";
-
+import { FIREBASE_APP } from "./firebaseConfig";
+import { getAuth, getIdToken } from "firebase/auth";
+import { navigate } from "../utils/NavigationService";
+import { AuthController } from "../controllers/AuthController";
 const API_URL = "http://10.0.0.134:5000/v1";
 
 // Create an instance with default settings
@@ -7,17 +10,32 @@ const myAxios = axios.create({
     baseURL: `${API_URL}`,
 });
 
-// Add a request interceptor
+// // Add a request interceptor
 myAxios.interceptors.request.use(function (config) {
-    // Log the headers
-    // console.log('Axios Request Headers:', config.headers);
-    // console.log('Axios Request URI:', config.url);
-
-    // Return the config so the request can proceed
     return config;
-}, function (error) {
-    // If there's an error, you can handle it here
-    return Promise.reject(error);
-});
+},
+    async (error) => {
+        const user = getAuth(FIREBASE_APP).currentUser;
+        const originalRequest = error.config;
+
+        if (user && error.response.status === 401 && !originalRequest._retry) {
+            originalRequest._retry = true;
+
+            // Force refresh the token using Firebase SDK
+            const newToken = await getIdToken(user, true);  // `true` forces a refresh
+
+            try {
+                AuthController.re_auth(newToken);
+            } catch (err: any) {
+                // Navigate to login.
+                navigate('Welcome', {});  // Use your desired route name
+            }
+
+            // Retry the request with the new token
+            return myAxios(originalRequest);
+        }
+
+        return Promise.reject(error);
+    });
 
 export default myAxios;

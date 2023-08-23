@@ -40,7 +40,8 @@ def firebase_required(fn):
             # Save the user data in Flask's g object for subsequent processing
             g.user = user
 
-        except auth.ExpiredIdTokenError:
+        except auth.ExpiredIdTokenError as e:
+            print(e)
             return make_response("Authentication token has expired", 401)
         except auth.InvalidIdTokenError as e:
             print(e)

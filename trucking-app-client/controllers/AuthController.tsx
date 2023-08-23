@@ -17,6 +17,7 @@ export class AuthController {
             AuthController.saveUser({ ...response.data.user, email });
             return response.data;
         } catch (error) {
+            console.log(error)
             if (isAxiosError(error)) {
                 throw new Error(error.response?.data);
             }
@@ -53,6 +54,16 @@ export class AuthController {
         }
     }
 
+    static async re_auth(token: string): Promise<void> {
+        try {
+            await myAxios.post<{ user: User, company: Company }>('/auth/re_auth', { id_token: token });
+        } catch (error) {
+            if (isAxiosError(error)) {
+                throw new Error(error.response?.data);
+            }
+            throw new Error("Error during registration");
+        }
+    }
 
 
 

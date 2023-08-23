@@ -17,6 +17,15 @@ def login():
         return make_response({"error": e.message}, 400)
 
 
+@auth.route("/re_auth", methods=["POST"])
+def re_auth():
+    try:
+        jsonschema.validate(request.json, auth_validation)
+        return AuthController.re_auth(request=request)
+    except jsonschema.exceptions.ValidationError as e:
+        return make_response({"error": e.message}, 400)
+
+
 @auth.route("/logout", methods=["DELETE"])
 @firebase_required
 def logout():
@@ -31,11 +40,3 @@ def register():
         return AuthController.register(session=session, request=request)
     except jsonschema.exceptions.ValidationError as e:
         return make_response({"error": e.message}, 400)
-
-
-@auth.route("/check_auth", methods=["GET"])
-def check_auth():
-    if current_user.is_authenticated:
-        return make_response({"message": "User is authenticated"}, 200)
-    else:
-        return make_response({"message": "User is not authenticated"}, 401)

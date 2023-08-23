@@ -116,7 +116,7 @@ const Welcome: FunctionComponent<Props> = ({ navigation }) => {
             navigation.navigate("Home", { company })
         } catch (e: any) {
             console.log(e);
-            let error: string = "Error logging in. "
+            let error: string = e.message
             if (e.code === 'auth/user-not-found') {
                 error = "User not found"
             } else if (e.code === 'auth/wrong-password') {
