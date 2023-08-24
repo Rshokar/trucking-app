@@ -148,6 +148,15 @@ const BillSection: FC<Props> = ({ navigateToTicket, rfoId }) => {
     const toggleBilled = async (bill: Bill): Promise<void> => {
         try {
             await BillController.toggleBilled(bill)
+            const index = bills.findIndex(b => b.bill_id === bill.bill_id);
+            if (index === -1) throw Error("Billing ticket not found");
+            bills[index].billed = !bill.billed
+            setBills([...bills]);
+            showSnackbar({
+                message: "Billed status toggled.",
+                color: theme.colors.primary,
+                onClickText: 'Ok'
+            })
         } catch (err: any) {
             showSnackbar({
                 message: err.message,
@@ -198,7 +207,7 @@ const BillSection: FC<Props> = ({ navigateToTicket, rfoId }) => {
                             <TicketItem
                                 aviColor={theme.colors.tertiary}
                                 title={item.ticket_number.toString()}
-                                subtitle={<Text style={{ color: item.billed ? '' : theme.colors.error }}>
+                                subtitle={<Text style={{ color: item.billed ? 'black' : theme.colors.error }}>
                                     {
                                         item.billed ? 'Billed' : 'Not Billed'
                                     }

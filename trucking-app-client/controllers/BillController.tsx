@@ -112,7 +112,7 @@ export class BillController {
 
     static async toggleBilled(bill: Bill): Promise<void> {
         try {
-            await myAxios.get<string>(`/billing_ticket/toggle_billed/${bill.bill_id}`);
+            await myAxios.post<string>(`/billing_ticket/toggle_billed/${bill.bill_id}`);
         } catch (error) {
             if (isAxiosError(error)) {
                 throw new Error(error.response?.data);
