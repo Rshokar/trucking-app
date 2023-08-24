@@ -1,5 +1,5 @@
 import React, { FC, useState, useEffect } from 'react';
-import { TextInput, useTheme, FAB, Modal, Portal } from 'react-native-paper';
+import { TextInput, useTheme, FAB, Modal, Portal, Text } from 'react-native-paper';
 import styled from 'styled-components/native';
 import { Operator, OperatorQuery } from '../../models/Operator';
 import { OperatorController } from '../../controllers/OperatorController';
@@ -15,6 +15,7 @@ import { View } from 'react-native';
 import useSnackbar from '../../hooks/useSnackbar';
 import ConstructionWorker from '../../assets/svgs/ConstructionWorket';
 import OperatorCard from '../Cards/OperatorCard';
+import { it } from 'react-native-paper-dates';
 
 const StyledInput = styled(TextInput)`
     width: 90%;
@@ -182,7 +183,11 @@ const OperatorSection: FC<Props> = ({ navigate }) => {
                             <TicketItem
                                 aviColor={theme.colors.secondary}
                                 title={item.operator_name || ''}
-                                subtitle={item.confirmed ? item.operator_email : "Email not validated"}
+                                subtitle={<Text style={{ color: item.confirmed ? 'black' : theme.colors.error }}>
+                                    {
+                                        item.confirmed ? item.operator_email : "Email not validated"
+                                    }
+                                </Text>}
                                 avatar={item.operator_name?.charAt(0).toLocaleUpperCase() || 'A'}
                                 onClick={() => item.confirmed ? showOperatorsRfos(item) : showOperatorCard(item)}
                                 onLongpress={() => item.confirmed ? showOperatorsRfos(item) : showOperatorCard(item)}
