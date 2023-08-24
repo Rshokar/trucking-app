@@ -6,12 +6,22 @@ from models.company import Company
 
 class Operator(Base):
     __tablename__ = 'operators'
+
     operator_id = Column("operator_id", Integer, primary_key=True)
     company_id = Column("company_id", Integer, ForeignKey(Company.company_id))
     operator_name = Column("operator_name", String(100), nullable=False)
-    operator_email = Column("operator_email", String(200), nullable=False)
-    confirmed = Column("confirmed", Boolean,  default=False)
+    _operator_email = Column("operator_email", String(
+        200), nullable=False)  # Notice the change here
+    confirmed = Column("confirmed", Boolean, default=False)
     confirm_token = Column("confirm_token", String(200), nullable=True)
+
+    @property
+    def operator_email(self):
+        return self._operator_email
+
+    @operator_email.setter
+    def operator_email(self, value):
+        self._operator_email = value.lower()
 
     def __init__(self, company_id, operator_name, operator_email, confirm_token=None, confirmed=False) -> None:
         self.company_id = company_id

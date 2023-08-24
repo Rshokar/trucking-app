@@ -183,7 +183,7 @@ const OperatorSection: FC<Props> = ({ navigate }) => {
                             <TicketItem
                                 aviColor={theme.colors.secondary}
                                 title={item.operator_name || ''}
-                                subtitle={<Text style={{ color: item.confirmed ? 'black' : theme.colors.error }}>
+                                subtitle={<Text style={{ color: item.confirmed ? '' : theme.colors.error }}>
                                     {
                                         item.confirmed ? item.operator_email : "Email not validated"
                                     }

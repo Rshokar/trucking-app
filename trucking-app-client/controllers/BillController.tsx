@@ -109,4 +109,17 @@ export class BillController {
             throw new Error("Error getting bill image URL");
         }
     }
+
+    static async toggleBilled(bill: Bill): Promise<void> {
+        try {
+            await myAxios.get<string>(`/billing_ticket/toggle_billed/${bill.bill_id}`);
+        } catch (error) {
+            if (isAxiosError(error)) {
+                throw new Error(error.response?.data);
+            }
+            throw new Error(`Error switching bill to ${bill.billed ? 'not billed' : 'billed'}`);
+        }
+    }
+
 }
+

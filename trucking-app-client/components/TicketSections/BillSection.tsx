@@ -1,5 +1,5 @@
 import React, { FC, useState, useEffect } from 'react';
-import { FAB, Modal, Portal, Snackbar, TextInput, useTheme } from 'react-native-paper';
+import { FAB, Modal, Portal, Text, TextInput, useTheme } from 'react-native-paper';
 import styled from 'styled-components/native';
 import { Bill, BillQuery } from '../../models/Bill';
 import { BillController } from '../../controllers/BillController';
@@ -145,6 +145,19 @@ const BillSection: FC<Props> = ({ navigateToTicket, rfoId }) => {
         }
     };
 
+    const toggleBilled = async (bill: Bill): Promise<void> => {
+        try {
+            await BillController.toggleBilled(bill)
+        } catch (err: any) {
+            showSnackbar({
+                message: err.message,
+                color: theme.colors.error,
+                onClickText: 'Ok'
+            })
+        }
+    }
+
+
     const handleShowBill = (bill: Bill) => {
         setFocusedBill(bill)
         setShowBill(true);
@@ -185,13 +198,18 @@ const BillSection: FC<Props> = ({ navigateToTicket, rfoId }) => {
                             <TicketItem
                                 aviColor={theme.colors.tertiary}
                                 title={item.ticket_number.toString()}
-                                subtitle={`RFO: ${item.rfo_id}`}
+                                subtitle={<Text style={{ color: item.billed ? '' : theme.colors.error }}>
+                                    {
+                                        item.billed ? 'Billed' : 'Not Billed'
+                                    }
+                                </Text>
+                                }
                                 avatar={'$'} // Placeholder avatar
                                 onButtonClick={() => {
                                     setFocusedBill(item);
                                     setVisible(true);
                                 }}
-                                onLongpress={() => handleShowBill(item)}
+                                onLongpress={() => toggleBilled(item)}
                                 onClick={() => handleShowBill(item)}
                                 buttonClickIcon={"pencil"}
                                 onDelete={async (): Promise<boolean> => await handleDelete(item.bill_id + "")}

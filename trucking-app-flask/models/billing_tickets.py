@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, CHAR
+from sqlalchemy import Column, Integer, String, ForeignKey, Boolean
 from models.model import Base
 from models.rfo import RFO
 
@@ -12,6 +12,7 @@ class BillingTickets(Base):
     image_id = Column("image_id", String(200))
     bucket = Column("bucket", String(50))
     region = Column("region", String(50))
+    billed = Column("billed", Boolean, default=False)
 
     def __init__(self, rfo_id, ticket_number, image_id, bucket, region):
         self.rfo_id = rfo_id

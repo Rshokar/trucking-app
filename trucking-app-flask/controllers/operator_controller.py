@@ -72,7 +72,7 @@ class OperatorController:
         req = request.get_json()
         company_id = req.get('company_id')
         name = req.get('operator_name')
-        email = req.get('operator_email')
+        email = req.get('operator_email').lower()
 
         company = session.query(Company).filter_by(
             company_id=company_id, owner_id=g.user["uid"]).first()
@@ -177,7 +177,7 @@ class OperatorController:
             Responses: 200 OK if successful, 404 if operator not found
         """
         req = request.get_json()
-        email = req.get('operator_email')
+        email = req.get('operator_email').lower()
         name = req.get("operator_name")
 
         operator = Operator.get_operator_by_id_and_owner(

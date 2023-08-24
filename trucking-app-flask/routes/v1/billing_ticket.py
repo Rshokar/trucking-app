@@ -79,6 +79,12 @@ def get_bill_image(bill_id):
     return BillingTicketController.get_bill_ticket_image(g.session, bill_id)
 
 
+@billing_ticket.route("/toggle_billed/<int:bill_id>", methods=["POST"])
+@firebase_required
+def toggle_bill(bill_id):
+    return BillingTicketController.toggle_billed(g.session, bill_id)
+
+
 @billing_ticket.route("/operator/image/<int:bill_id>", methods=["GET"])
 def operator_get_bill_image(bill_id):
     authhead = request.headers.get("Authorization-Fake-X", None)

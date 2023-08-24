@@ -211,6 +211,29 @@ class BillingTicketController:
         session.commit()
         return make_response("Billing ticket deleted", 200)
 
+    def toggle_billed(session, bill_id):
+        """_summary_
+            This endpoint will toggle the bill attribute.
+        Args:
+            session (_type_): _description_
+            bill_id (_type_): _description_
+        """
+
+        bill = session.query(BillingTickets)\
+            .join(RFO, RFO.rfo_id == BillingTickets.rfo_id)\
+            .join(Dispatch, RFO.dispatch_id == Dispatch.dispatch_id)\
+            .join(Company, Company.company_id == Dispatch.company_id)\
+            .filter_by(and_(Company.owner_id == g.user['uid'], BillingTickets.bill_id == bill_id))\
+            .first()
+
+        if bill is None:
+            return make_response("Billing ticket is not found", 404)
+
+        bill.billed = not bill.billed
+
+        session.commit()
+        return make_response("Bill is toggled", 200)
+
     def operator_get_billing_tickets(session, token):
         '''
         Fetch Bills related to rfo_id in token
