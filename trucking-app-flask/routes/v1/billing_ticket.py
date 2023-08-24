@@ -73,16 +73,6 @@ def delete_bill(bill_id):
     return BillingTicketController.delete_bill(g.session, bill_id)
 
 
-# @billing_ticket.route("/operator", methods=["GET"])
-# def operator_get_rfo():
-#     auth_header = request.headers.get('Authorization')
-#     if not auth_header or 'Bearer' not in auth_header:
-#         return make_response({'error': 'Bearer token required.'}, 401)
-#     # Split the token from the Bearer
-#     token = auth_header.split(' ')[1]
-#     return BillingTicketController.operator_get_billing_tickets(g.session, token)
-
-
 @billing_ticket.route("/<int:bill_id>/image", methods=["GET"])
 @firebase_required
 def get_bill_image(bill_id):

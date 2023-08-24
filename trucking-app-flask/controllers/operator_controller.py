@@ -197,8 +197,24 @@ class OperatorController:
         if operator_email is not None:
             return make_response('Operator email already used', 400)
 
+        # The email is updated. We need to flag as unconfirmed
+        # Also need to send verification email
+        if operator.operator_email != email:
+            operator.confirmed = False
+            # Generate unique token for the operator
+            token = s.dumps({"operator_id": operator.operator_id}, salt=SALT)
+            mail = Mail(app)
+
+            try:
+                # Send verification email to the new operator
+                send_verification_email(
+                    mail, email, token, name, operator.company.company_name)
+            except Exception as e:
+                print(e)
+
         operator.operator_email = email
         operator.operator_name = name
+
         session.commit()
 
         return make_response(operator.to_dict(), 200)
