@@ -81,7 +81,8 @@ def get_bill_image(bill_id):
 
 @billing_ticket.route("/toggle_billed/<int:bill_id>", methods=["POST"])
 @firebase_required
-def toggle_bill(bill_id):
+def toggle_bill(bill_id: int):
+    """Toggle the billed status of a given billing ticket."""
     return BillingTicketController.toggle_billed(g.session, bill_id)
 
 

@@ -211,20 +211,27 @@ class BillingTicketController:
         session.commit()
         return make_response("Billing ticket deleted", 200)
 
-    def toggle_billed(session, bill_id):
-        """_summary_
-            This endpoint will toggle the bill attribute.
+    @staticmethod
+    def toggle_billed(session, bill_id: int):
+        """
+        Toggle the billed attribute for a given billing ticket.
+
         Args:
-            session (_type_): _description_
-            bill_id (_type_): _description_
+            session (Session): SQLAlchemy session object.
+            bill_id (int): ID of the billing ticket.
+
+        Returns:
+            Response: Flask response object.
         """
 
-        bill = session.query(BillingTickets)\
-            .join(RFO, RFO.rfo_id == BillingTickets.rfo_id)\
-            .join(Dispatch, RFO.dispatch_id == Dispatch.dispatch_id)\
-            .join(Company, Company.company_id == Dispatch.company_id)\
-            .filter_by(and_(Company.owner_id == g.user['uid'], BillingTickets.bill_id == bill_id))\
-            .first()
+        bill = (
+            session.query(BillingTickets)
+            .join(RFO, RFO.rfo_id == BillingTickets.rfo_id)
+            .join(Dispatch, RFO.dispatch_id == Dispatch.dispatch_id)
+            .join(Company, Company.company_id == Dispatch.company_id)
+            .filter(and_(Company.owner_id == g.user['uid'], BillingTickets.bill_id == bill_id))
+            .one_or_none()
+        )
 
         if bill is None:
             return make_response("Billing ticket is not found", 404)
@@ -232,7 +239,8 @@ class BillingTicketController:
         bill.billed = not bill.billed
 
         session.commit()
-        return make_response("Bill is toggled", 200)
+        status = "billed" if bill.billed else "unbilled"
+        return make_response(f"Bill is now {status}", 200)
 
     def operator_get_billing_tickets(session, token):
         '''
