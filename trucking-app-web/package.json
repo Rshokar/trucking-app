@@ -17,6 +17,7 @@
     "@types/react-router-dom": "^5.3.3",
     "@types/styled-components": "^5.1.26",
     "formik": "^2.4.3",
+    "intersection-observer": "^0.12.2",
     "moment": "^2.29.4",
     "mui-file-input": "^3.0.0",
     "react": "^18.2.0",

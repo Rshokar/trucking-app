@@ -1,12 +1,12 @@
 import React from 'react'
 import styled from 'styled-components'
-import { Container } from '../../../components/shared'
-import { device } from '../../../components/devices'
+import { Container } from '../../../../components/shared'
+import { device } from '../../../../components/devices'
 import { ButtonGroup, IconButton, Typography, useTheme } from '@mui/material'
-import Break from '../../../components/Break/Break'
-import DumpTruckSvg from '../../../components/SVGS/DumpTruckSvg'
-import PlayStoreSVG from '../../../components/SVGS/PlayStoreSVG'
-import AppStoreSVG from '../../../components/SVGS/AppStoreSVG'
+import Break from '../../../../components/Break/Break'
+import DumpTruckSvg from '../../../../components/SVGS/DumpTruckSvg'
+import PlayStoreSVG from '../../../../components/SVGS/PlayStoreSVG'
+import AppStoreSVG from '../../../../components/SVGS/AppStoreSVG'
 const HeroContainer = styled(Container)`
     background-color: white;
     height: 100vh;
@@ -43,7 +43,7 @@ const Hero = () => {
         <HeroContainer>
             <ContentWrapper>
                 <HeroSection>
-                    <Typography variant='h4' style={{ fontWeight: 'bold' }}>TARE TICKETING</Typography>
+                    <Typography variant='h3' style={{ fontWeight: 'bold' }} textAlign={'center'}>TARE TICKETING</Typography>
                     <Break />
                     <Typography variant='subtitle1' fontWeight={'bold'}>Drop the books and pick up the future</Typography>
                 </HeroSection>

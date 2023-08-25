@@ -7,6 +7,7 @@ import RootPage from './routes/Root/RootPage';
 import ErrorPage from './routes/Error/ErrorPage';
 import ValidateOperatorEmailPage from './routes/ValidateOperatorEmail/ValidateOperatorEmail'
 import TicketPage from './routes/Ticket/TicketPage';
+import 'intersection-observer'
 
 const theme = createTheme({
   palette: {

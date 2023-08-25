@@ -1,8 +1,8 @@
 import React from 'react'
 
 
-import Hero from './components/Hero'
-import Features from './components/Features'
+import Hero from './components/Hero/Hero'
+import Features from './components/Features/Features'
 import Pricing from './components/Pricing'
 import Steps from './components/Steps'
 import CallToAction from './components/CallToAction'
