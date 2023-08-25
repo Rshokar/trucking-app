@@ -10,10 +10,10 @@ import TicketPage from './routes/Ticket/TicketPage';
 
 const theme = createTheme({
   palette: {
-    primary: { main: '#ef835d' },
-    secondary: { main: '#2c365a' },
+    primary: { main: '#2c365a' },
+    secondary: { main: '#ef835d' },
     error: { main: '#C73E1D' },
-    background: { default: '#D3D3D3' },
+    background: { default: '#FFFFFF' },
     text: { primary: '#000000' }
   }
 })
@@ -30,6 +30,7 @@ export const colors = {
   success: "#01A971",
   red: 'red'
 }
+
 const router = createBrowserRouter([
   {
     path: '/',
