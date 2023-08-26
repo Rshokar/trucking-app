@@ -2,6 +2,7 @@ import React, { useState, ReactNode, useRef, useEffect } from 'react'
 import styled from 'styled-components'
 import { Container } from '../../../../../components/shared'
 import { Typography } from '@mui/material'
+import { device } from '../../../../../components/devices'
 
 const FeatureHeader = styled(Container)`
     justify-content: space-between;
@@ -55,8 +56,13 @@ const FeatureContainer = styled(Container) <{ color: string, inView: boolean }>`
 const TwoLineTitle = styled(Typography)`
     display: -webkit-box;
     -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
     overflow: hidden;
+    color: white; 
+    width: 100%;
+
+    @media(${device.tablet}) {
+        width: 75%
+    }
 `;
 
 
@@ -116,7 +122,7 @@ const Feature = (props: Props) => {
     return (
         <FeatureContainer color={props.color} ref={featureRef} inView={inView}>
             <FeatureHeader>
-                <TwoLineTitle variant='h5' style={{ color: 'white', width: '75%' }} textAlign='left' fontWeight='bold'>
+                <TwoLineTitle variant='h5' textAlign='left' fontWeight='bold'>
                     {props.title}
                 </TwoLineTitle>
                 <div>

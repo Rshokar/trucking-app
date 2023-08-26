@@ -14,6 +14,7 @@ const FeaturesContainer = styled(Container)`
     display: flex; 
     flex-direction: column; 
     gap: 50px;
+    padding-bottom: 40px;
     
     @media(${device.tablet}) {
         gap: 100px;
@@ -28,7 +29,8 @@ const Features = () => {
             <Typography variant='h4' style={{
                 backgroundColor: '#FFFFFF',
                 textAlign: 'center',
-                paddingBottom: '40px'
+                paddingBottom: '40px',
+                fontWeight: 'bold',
             }}  >
                 FEATURES
             </Typography >

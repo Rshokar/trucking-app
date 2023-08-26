@@ -7,6 +7,7 @@ import Break from '../../../../components/Break/Break'
 import DumpTruckSvg from '../../../../components/SVGS/DumpTruckSvg'
 import PlayStoreSVG from '../../../../components/SVGS/PlayStoreSVG'
 import AppStoreSVG from '../../../../components/SVGS/AppStoreSVG'
+import DownloadApp from '../../../../components/DownloadApp/DownloadApp'
 const HeroContainer = styled(Container)`
     background-color: white;
     height: 100vh;
@@ -55,14 +56,7 @@ const Hero = () => {
                         <Typography textAlign='center' variant='caption' padding={'10px'} fontWeight='bold'>
                             SIMPLE AND EASY TICKET AND DISPATCH MANAGMENT FOR AGGREGATE LOGISTICS DISPATCHERS
                         </Typography>
-                        <ButtonGroup style={{ gap: '10px ' }}>
-                            <IconButton style={{ backgroundColor: theme.palette.secondary.main }}>
-                                <PlayStoreSVG height={'40px'} width={'40px'} fill='white' />
-                            </IconButton>
-                            <IconButton style={{ backgroundColor: theme.palette.primary.main }}>
-                                <AppStoreSVG height={'40px'} width={'40px'} fill='white' />
-                            </IconButton>
-                        </ButtonGroup>
+                        <DownloadApp />
                         <Typography variant='caption' fontWeight='bold'>
                             DOWNLOAD
                         </Typography>

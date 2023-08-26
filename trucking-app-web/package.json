@@ -16,6 +16,7 @@
     "@types/react-dom": "^18.2.7",
     "@types/react-router-dom": "^5.3.3",
     "@types/styled-components": "^5.1.26",
+    "firebase": "^10.3.0",
     "formik": "^2.4.3",
     "intersection-observer": "^0.12.2",
     "moment": "^2.29.4",
