@@ -2,9 +2,9 @@ import React, { CSSProperties, ReactNode } from 'react'
 import styled from 'styled-components'
 import { Container } from '../../../../../components/shared'
 import { ButtonGroup, Typography } from '@mui/material'
-import DownloadSVG from '../../../../../components/SVGS/DownloadSVG'
-import DownloadApp from '../../../../../components/DownloadApp/DownloadApp'
+
 import Break from '../../../../../components/Break/Break'
+
 const StepContainer = styled(Container)`
     height: 90vh;
     width: 100vw; 
@@ -37,14 +37,14 @@ const Step = (props: Props) => {
         >
             <ContentContainer>
                 <div>
-                    <Typography variant='h5' style={{ fontWeight: 'bold', color: 'white' }}>
-                        Download the app
+                    <Typography variant='h4' style={{ fontWeight: 'bold', color: 'white' }}>
+                        {props.step.title}
                     </Typography>
-                    <Typography variant='subtitle1' style={{ fontWeight: 'bold', color: 'white', textAlign: 'center' }}>
-                        STEP ONE
+                    <Typography variant='h6' style={{ fontWeight: 'bold', color: 'white', textAlign: 'center' }}>
+                        {props.step.stepName}
                     </Typography>
                 </div>
-                <DownloadSVG width={'250px'} height={'250px'} stroke='white' />
+                {props.step.SVG}
                 <div style={{
                     display: 'flex',
                     justifyContent: 'center',
@@ -52,12 +52,9 @@ const Step = (props: Props) => {
                     gap: '10px',
                     flexDirection: 'column'
                 }}>
-                    <DownloadApp
-                        iosButtonStyle={{ border: '1px solid white' }}
-                        playStoreButtonStyle={{ border: '1px solid white' }}
-                    />
-                    <Typography variant='subtitle2' fontWeight='bold' color='white'>
-                        Download the app and register
+                    {props.step.callToActionButtons}
+                    <Typography variant='subtitle1' fontWeight='bold' textAlign='center' color='white' maxWidth='75%'>
+                        {props.step.callToAction}
                     </Typography>
                     <Break style={{ height: '3px', backgroundColor: props.breakColor }} />
                 </div>
