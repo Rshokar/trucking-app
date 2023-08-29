@@ -7,7 +7,7 @@ import Break from '../../../../../components/Break/Break'
 
 const StepContainer = styled(Container)`
     height: 90vh;
-    width: 100vw; 
+    width: 100%; 
 `
 
 const ContentContainer = styled(Container)`

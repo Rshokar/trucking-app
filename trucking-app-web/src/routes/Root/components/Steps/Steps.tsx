@@ -12,7 +12,6 @@ import RelaxSVG from '../../../../components/SVGS/RelaxSVG'
 
 const StepsContainer = styled(Container)`
     flex-direction: column;
-
 `
 
 type Props = {}

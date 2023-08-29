@@ -1,17 +1,16 @@
-import React from 'react'
-import styled from 'styled-components'
-import { Container } from '../../../../components/shared'
-import { device } from '../../../../components/devices'
-import { ButtonGroup, IconButton, Typography, useTheme } from '@mui/material'
-import Break from '../../../../components/Break/Break'
-import DumpTruckSvg from '../../../../components/SVGS/DumpTruckSvg'
-import PlayStoreSVG from '../../../../components/SVGS/PlayStoreSVG'
-import AppStoreSVG from '../../../../components/SVGS/AppStoreSVG'
-import DownloadApp from '../../../../components/DownloadApp/DownloadApp'
+import styled from 'styled-components';
+import { Container } from '../../../../components/shared';
+import { device } from '../../../../components/devices';
+import { Typography, useTheme } from '@mui/material';
+import Break from '../../../../components/Break/Break';
+import DumpTruckSvg from '../../../../components/SVGS/DumpTruckSvg';
+import DownloadApp from '../../../../components/DownloadApp/DownloadApp';
+
 const HeroContainer = styled(Container)`
     background-color: white;
     height: 100vh;
-    width: 100vw;
+    width: 100%;
+
 
     @media(${device.tablet}) {
         height: 90vh; 
@@ -21,15 +20,13 @@ const HeroContainer = styled(Container)`
 
 const ContentWrapper = styled(Container)`
 
-flex-direction: column;
+    flex-direction: column;
 
-@media(${device.tablet}) {
-    flex-direction: row;
-    height: 90vh;
-}
+    @media(${device.tablet}) {
+        flex-direction: row;
+        height: 90vh;
+    }
 `
-
-
 
 const HeroSection = styled(Container)`
     flex: 1;
