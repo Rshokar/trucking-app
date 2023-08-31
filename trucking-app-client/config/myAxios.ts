@@ -15,6 +15,7 @@ myAxios.interceptors.response.use(function (config) {
     return config;
 },
     async (error) => {
+        console.log('ERROR IN MYAXIOS INTERCEPTOR', error)
         const user = getAuth(FIREBASE_APP).currentUser;
         const originalRequest = error.config;
 

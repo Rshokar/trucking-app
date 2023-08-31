@@ -26,7 +26,7 @@ const Features = () => {
     const theme = useTheme();
     return (
         <>
-            <Typography variant='h4' style={{
+            <Typography variant='h3' style={{
                 backgroundColor: '#FFFFFF',
                 textAlign: 'center',
                 paddingBottom: '40px',

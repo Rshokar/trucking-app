@@ -1,6 +1,4 @@
 import React, { useEffect, FC, useState, ReactNode } from 'react'
-import MessageView from '../../../components/MessageView/MessageView'
-import HourglassBottomIcon from '@mui/icons-material/HourglassBottom';
 import { useParams } from 'react-router-dom';
 import RFOCodeForm from '../../../components/Forms/RFOCodeForm';
 import { Button, Typography, useTheme } from '@mui/material';
@@ -9,6 +7,7 @@ import { FormView } from '../../../components/Forms/styles';
 import DumpTruckSvg from '../../../components/SVGS/DumpTruckSvg';
 import ExpiredSVG from '../../../components/SVGS/ExpiredSVG';
 import NothingFoundSVG from '../../../components/SVGS/NothingFoundSVG';
+import MyCard from '../../../components/Cards/MyCard';
 
 
 type Props = {
@@ -130,13 +129,12 @@ const OperatorAuth: FC<Props> = ({ setAccessToken, showSnackBar }) => {
         sendAuthEmail();
     }, [])
 
-    return <FormContainer>
-        {svg}
+    return <MyCard
+        title={title}
+        subtitle={subtitle}
+        svg={svg}
+    >
         <FormView style={{ width: '100%', backgroundColor: 'white' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                <Typography variant="subtitle1" fontWeight={'bold'}>{title}</Typography>
-                <Typography variant='subtitle2' textAlign={'center'}>{subtitle}</Typography>
-            </div>
             {
                 sent &&
                 <div style={{ backgroundColor: 'white', padding: '5px', borderRadius: '5px' }}>
@@ -158,8 +156,7 @@ const OperatorAuth: FC<Props> = ({ setAccessToken, showSnackBar }) => {
                 </ResendMessage>
             }
         </FormView>
-    </FormContainer>
-
+    </MyCard>
 }
 
 export default OperatorAuth

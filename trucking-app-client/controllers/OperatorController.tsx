@@ -23,7 +23,7 @@ export class OperatorController {
         const q: any = { ...query };
 
         try {
-            const response = await myAxios.get<Operator[]>(`/company/operators?${qs.stringify(q)}`);
+            const response = await myAxios.get<Operator[]>(`/company/operators/?${qs.stringify(q)}`);
             return response.data;
         } catch (error) {
             if (isAxiosError(error)) {

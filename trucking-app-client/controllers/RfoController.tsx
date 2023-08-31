@@ -25,7 +25,7 @@ export class RFOController {
         const queryString = qs.stringify(q);
 
         try {
-            const response = await myAxios.get<RFO[]>(`/rfo?${queryString}`);
+            const response = await myAxios.get<RFO[]>(`/rfo/?${queryString}`);
             return response.data;
         } catch (error) {
             if (isAxiosError(error)) {

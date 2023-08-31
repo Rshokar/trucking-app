@@ -3,6 +3,7 @@ import styled from 'styled-components'
 import { Container } from '../../../../../components/shared'
 import { Typography } from '@mui/material'
 import { device } from '../../../../../components/devices'
+import { useMediaQuery } from 'react-responsive';
 
 const FeatureHeader = styled(Container)`
     justify-content: space-between;
@@ -80,6 +81,7 @@ type Props = {
 const Feature = (props: Props) => {
     const [inView, setInView] = useState(false);
     const featureRef = useRef<any>(null);
+    const isLaptop = useMediaQuery({ query: device.laptop });
 
     useEffect(() => {
         const observer = new IntersectionObserver(

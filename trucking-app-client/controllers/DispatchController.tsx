@@ -29,7 +29,7 @@ export class DispatchController {
 
         const queryString = qs.stringify(q) + customers;
         try {
-            const response = await myAxios.get<Dispatch[]>(`/dispatch?${queryString}`);
+            const response = await myAxios.get<Dispatch[]>(`/dispatch/?${queryString}`);
             return response.data;
         } catch (error) {
             if (isAxiosError(error)) {

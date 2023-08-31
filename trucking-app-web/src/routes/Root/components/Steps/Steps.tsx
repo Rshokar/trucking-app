@@ -9,15 +9,21 @@ import ExcavatorSVG from '../../../../components/SVGS/ExcavatorSVG'
 import OperatorSVG from '../../../../components/SVGS/OperatorSVG'
 import DispatchBookSVG from '../../../../components/SVGS/DispatchBookSVG'
 import RelaxSVG from '../../../../components/SVGS/RelaxSVG'
+import { useMediaQuery } from 'react-responsive';
+import { device } from '../../../../components/devices'
 
 const StepsContainer = styled(Container)`
     flex-direction: column;
 `
 
-type Props = {}
-
-const Steps = (props: Props) => {
+const Steps = () => {
     const theme = useTheme();
+    const isLaptop = useMediaQuery({ query: device.laptop });
+    const isDesktop = useMediaQuery({ query: device.desktop });
+    let svgSize = '20rem';
+
+    if (isLaptop) svgSize = '300px';
+    if (isDesktop) svgSize = '400px';
 
     return (
         <StepsContainer>
@@ -32,7 +38,7 @@ const Steps = (props: Props) => {
                     callToAction: 'Download the app and register',
                     stepName: 'Step One',
                     title: 'Download the app',
-                    SVG: <DownloadSVG width={'250px'} height={'250px'} stroke='white' />,
+                    SVG: <DownloadSVG width={svgSize} height={svgSize} stroke='white' />,
                 }}
             />
             <Step
@@ -42,7 +48,7 @@ const Steps = (props: Props) => {
                     callToAction: 'Categorize dispatches by customer and date. Allowing for easy search and billing',
                     stepName: 'Step Two',
                     title: 'Add your customers',
-                    SVG: <ExcavatorSVG width={'250px'} height={'250px'} stroke='white' fill='none' strokeWidth='1' />,
+                    SVG: <ExcavatorSVG width={svgSize} height={svgSize} stroke='white' fill='none' strokeWidth='1' />,
                 }}
             />
             <Step
@@ -52,7 +58,7 @@ const Steps = (props: Props) => {
                     callToAction: 'Send operators RFO\'s (Request for operators) directly to operator emails in a safe and secure manner.',
                     stepName: 'Step Three',
                     title: 'Add your operators',
-                    SVG: <OperatorSVG width={'250px'} height={'250px'} stroke='white' fill='white' strokeWidth='.25' />,
+                    SVG: <OperatorSVG width={svgSize} height={svgSize} stroke='white' fill='white' strokeWidth='.25' />,
                 }}
             />
             <Step
@@ -62,7 +68,7 @@ const Steps = (props: Props) => {
                     callToAction: 'Create a dispatch and add RFO(Request for Operators). Emails will automatically be sent to operators allowing you to focus on your business.',
                     stepName: 'Step Four',
                     title: 'Send Dispatches',
-                    SVG: <DispatchBookSVG width={'250px'} height={'250px'} stroke='white' strokeWidth='1' />,
+                    SVG: <DispatchBookSVG width={svgSize} height={svgSize} stroke='white' strokeWidth='1' />,
                 }}
             />
             <Step
@@ -73,8 +79,8 @@ const Steps = (props: Props) => {
                     stepName: 'Step Five',
                     title: 'Sit Back',
                     SVG: <RelaxSVG
-                        width={'250px'}
-                        height={'250px'}
+                        width={svgSize}
+                        height={svgSize}
                         stroke='white'
                         strokeWidth='1'
                         fill='none'

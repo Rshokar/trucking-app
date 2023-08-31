@@ -25,7 +25,7 @@ export class BillController {
         const queryString = qs.stringify(q);
 
         try {
-            const response = await myAxios.get<Bill[]>(`/billing_ticket?${queryString}`);
+            const response = await myAxios.get<Bill[]>(`/billing_ticket/?${queryString}`);
             return response.data;
         } catch (error) {
             if (isAxiosError(error)) {
