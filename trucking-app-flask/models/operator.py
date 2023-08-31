@@ -23,7 +23,7 @@ class Operator(Base):
     rfo = relationship("RFO", backref="operator", lazy=True)
 
     def __repr__(self):
-        return f"OPERATOR: ({self.operator_id}) {self.company_id} {self.operator_name} {self.operator_email}"
+        return f"OPERATOR: ({self.operator_id}) {self.company_id} {self.operator_name} {self.operator_email} {self.confirmed}"
 
     def to_dict(self):
         return {

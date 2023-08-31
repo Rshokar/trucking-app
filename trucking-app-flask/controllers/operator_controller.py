@@ -235,9 +235,9 @@ class OperatorController:
             return make_response('Token required.', 404)
         try:
             # Change max_age as per your requirements
-            op = s.loads(token, salt=SALT, max_age=3600)
+            op = s.loads(token, salt=SALT, max_age=172800)  # Two days
         except:
-            return make_response('The confirmation link is invalid or has expired.', 400)
+            return make_response('The confirmation link is invalid or has expired.', 403)
 
         operator = session.query(Operator).filter_by(
             operator_id=op["operator_id"]).first()
@@ -245,7 +245,7 @@ class OperatorController:
         if operator is None:
             return make_response('Operator not found.', 404)
 
-        if operator.confirmed:
+        if operator.confirmed is True:
             return make_response('Account already confirmed.', 200)
 
         operator.confirmed = True
