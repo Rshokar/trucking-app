@@ -1,48 +1,28 @@
 import React, { FunctionComponent, useEffect, useState } from 'react'
 import { StatusBar } from 'expo-status-bar'
-import { TouchableOpacity, View } from 'react-native'
+import { View } from 'react-native'
 import { Button, Text, useTheme } from 'react-native-paper'
-import styled from 'styled-components/native'
-
-import BigText from '../../components/Texts/BigText'
 import { LoginFormResult, RegisterFormResult } from '../../components/Forms/types'
-import LoginForm from '../../components/Forms/LoginForm'
-import RegisterForm from '../../components/Forms/RegisterForm'
 import SwipeDownViewAnimation from '../../components/Animated/SwipeDownViewAnimation'
 import { AuthController } from '../../controllers/AuthController'
-import { User } from '../../models/User'
 import { FIREBASE_AUTH } from '../../config/firebaseConfig'
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth'
 import Cache from '../../utils/Cache'
 import { WelcomContainer, TopSection, BottomSection, TopImage } from './styles'
-
-
-// Custom Components
 import { colors } from '../../components/colors'
-
 import { RoofStackParamList } from '../../navigators/RoofStack'
 import { StackScreenProps } from '@react-navigation/stack'
-
 import background from '../../assets/welcome.png'
 import { CustomerController } from '../../controllers/CustomerController'
 import { Customer, CustomerQuery } from '../../models/Customer'
-import { CompanyController } from '../../controllers/CompanyController'
 import { Operator, OperatorQuery } from '../../models/Operator'
 import { OperatorController } from '../../controllers/OperatorController'
 import useSnackbar from '../../hooks/useSnackbar'
+import AuthSection from './components/AuthSection'
 
 type Props = StackScreenProps<RoofStackParamList, "Welcome">
 
-const FormView = styled.View`
-display: flex; 
-flex-directio: column;
-justify-content: flex-start; 
-padding-horizontal: 5%;
-padding-vertical: 10%;
-align-items: center; 
-width: 100%; 
-gap: 20px;
-`
+
 
 const Welcome: FunctionComponent<Props> = ({ navigation }) => {
 
@@ -56,35 +36,35 @@ const Welcome: FunctionComponent<Props> = ({ navigation }) => {
 
     // We want to check if the current user is logged in
     // If they are logged in then we will redirect to home
-    useEffect(() => {
-        async function checkTokenValidity() {
-            // Get the token from the AuthController
-            const token = await AuthController.getJWTToken();
+    // useEffect(() => {
+    //     async function checkTokenValidity() {
+    //         // Get the token from the AuthController
+    //         const token = await AuthController.getJWTToken();
 
-            if (!token) {
-                // No token available, perhaps redirect to login
-                return;
-            }
+    //         if (!token) {
+    //             // No token available, perhaps redirect to login
+    //             return;
+    //         }
 
-            // Use Firebase to verify the token
-            try {
-                const decodedToken = await FIREBASE_AUTH.currentUser?.getIdTokenResult();
+    //         // Use Firebase to verify the token
+    //         try {
+    //             const decodedToken = await FIREBASE_AUTH.currentUser?.getIdTokenResult();
 
-                if (!decodedToken) return;
-                AuthController.setJWTToken(decodedToken.token);
+    //             if (!decodedToken) return;
+    //             AuthController.setJWTToken(decodedToken.token);
 
-                // This does not need to happen syncronusly
-                await loadCache();
+    //             // This does not need to happen syncronusly
+    //             await loadCache();
 
-                // If the token is valid, it will decode without throwing an error
-                navigation.navigate("Home", { company: await AuthController.getCompany() });
-            } catch (error) {
-                console.error("Token is not valid or expired:", error);
-            }
-        }
+    //             // If the token is valid, it will decode without throwing an error
+    //             navigation.navigate("Home", { company: await AuthController.getCompany() });
+    //         } catch (error) {
+    //             console.error("Token is not valid or expired:", error);
+    //         }
+    //     }
 
-        checkTokenValidity();
-    }, []);
+    //     checkTokenValidity();
+    // }, []);
 
     const loadCache = async () => {
         // First get the customer and operator caches
@@ -187,30 +167,11 @@ const Welcome: FunctionComponent<Props> = ({ navigation }) => {
                     </View>
                 </BottomSection>
                 <SwipeDownViewAnimation show={showAuth} close={hideAuth} VH={.95}>
-                    <FormView>
-                        <BigText textStyle={{ color: colors.primary }}>{showLogin ? "Welcome Back" : "Create an Account"}</BigText>
-                        <Text style={{ color: colors.secondary, textAlign: 'center' }} variant='labelLarge'>
-                            {showLogin ? "Welcome to the trucking app, enter you credentials and lets get started" : "Welcome to the trucking app, register and lets get started"}
-                        </Text>
-
-                        {
-                            showLogin ? <LoginForm onSubmit={handleLogin} /> : <RegisterForm onSubmit={handleRegister} />
-                        }
-                        <View style={{ flexDirection: 'row' }}>
-                            <View>
-                                <Text>
-                                    {showLogin ? "Don't have an account?" : "Already have an account?"}
-                                </Text>
-                            </View>
-                            <TouchableOpacity
-                                onPress={showLogin ? () => setShowLogin(false) : () => setShowLogin(true)}
-                                style={{ justifyContent: 'flex-end', paddingLeft: 5 }}>
-                                <Text style={{ color: theme.colors.tertiary }}>
-                                    {showLogin ? "Create an account" : "Login"}
-                                </Text>
-                            </TouchableOpacity>
-                        </View>
-                    </FormView>
+                    <AuthSection
+                        handleLogin={handleLogin}
+                        handleRegister={handleRegister}
+                        toggleLogin={showLogin}
+                    />
                 </SwipeDownViewAnimation>
             </WelcomContainer>
         </>
