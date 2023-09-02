@@ -6,9 +6,10 @@ import NewPasswordForm from './Forms/ForgotPassowrdForms/NewPasswordForm';
 import { Text, useTheme } from 'react-native-paper'
 import UserController from '../controllers/UserController';
 import useSnackbar from '../hooks/useSnackbar';
+import { AuthController } from '../controllers/AuthController';
 
 type ForgotPasswordProps = {
-    showLogin: () => void;
+    done: () => void;
 }
 
 enum STEPS {
@@ -17,7 +18,7 @@ enum STEPS {
     PASSWORD = 3,
 }
 
-const ForgotPassword: FC<ForgotPasswordProps> = () => {
+const ForgotPassword: FC<ForgotPasswordProps> = ({ done }) => {
     const [step, setStep] = useState<STEPS>(STEPS.EMAIL);
     const [resetPasswordToken, setResetPasswordToken] = useState<string>();
     const [email, setEmail] = useState<string>();
@@ -52,7 +53,17 @@ const ForgotPassword: FC<ForgotPasswordProps> = () => {
     }
 
     const updatePassword = async (values: { password: string }): Promise<void> => {
+        console.log(values);
 
+        try {
+            await UserController.updatePassword(values.password, resetPasswordToken + '', email + '');
+            done();
+        } catch (err: any) {
+            showSnackbar({
+                message: err.message,
+                color: theme.colors.error,
+            })
+        }
     }
 
     console.log(email, resetPasswordToken);
@@ -76,7 +87,12 @@ const ForgotPassword: FC<ForgotPasswordProps> = () => {
         </>
     } else {
         // New Password
-        return <NewPasswordForm onSubmit={updatePassword} />
+        return <>
+            <View>
+                <Text variant='bodyLarge' style={{ textAlign: 'center', color: theme.colors.secondary }}>Sucess, enter your new password.</Text>
+            </View>
+            <NewPasswordForm onSubmit={updatePassword} />
+        </>
     }
 }
 

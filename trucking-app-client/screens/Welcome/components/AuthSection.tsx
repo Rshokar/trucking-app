@@ -87,13 +87,17 @@ const AuthSection: FC<Props> = ({ handleLogin, handleRegister, toggleLogin }) =>
     const showForgotPassword = () => setForgotPassword(true)
 
     if (forgotPassword) {
-        return <Container>
+        return <Container style={{ height: 425 }}>
             <Head
                 title="Forgot password?"
                 titleColor={theme.colors.primary}
                 subTitleColor={theme.colors.secondary}
             />
-            <ForgotPassword showLogin={() => setLogin(true)} />
+            <ForgotPassword done={() => {
+                setForgotPassword(false)
+                setLogin(true)
+            }
+            } />
             <Action
                 message=''
                 actionMessage='Remember your password?'

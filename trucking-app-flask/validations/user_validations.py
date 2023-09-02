@@ -37,3 +37,27 @@ validate_forgot_password_code = {
     "required": ["email", "code"],  # both email and token are required
     "additionalProperties": False
 }
+
+
+forgot_password_reset_password = {
+    "type": "object",
+    "properties": {
+        "email": {
+            "type": "string",
+            "format": "email"
+        },
+        "token": {
+            "type": "string",
+            # regex to capture a typical JWT-like structure; can be adjusted if needed
+            "pattern": "^[A-Za-z0-9-_]+\\.[A-Za-z0-9-_]+\\.[A-Za-z0-9-_]+$"
+        },
+        "password": {
+            "type": "string",
+            # regex to ensure the password is at least 8 characters long and contains both letters and numbers
+            "pattern": "^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$"
+        }
+    },
+    # all three fields are required
+    "required": ["email", "token", "password"],
+    "additionalProperties": False
+}

@@ -59,4 +59,17 @@ export default class UserController {
             throw new Error("Error sending code")
         }
     }
+
+    static async updatePassword(password: string, token: string, email: string): Promise<void> {
+        try {
+            await myAxios.post<void>(
+                '/user/forgot_password/reset_password',
+                { password, token, email }
+            )
+        } catch (err: any) {
+            if (isAxiosError(err))
+                throw new Error(err.response?.data)
+            throw new Error("Error sending code")
+        }
+    }
 }

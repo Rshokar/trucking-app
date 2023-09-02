@@ -2,7 +2,7 @@ import React from 'react';
 import * as Yup from 'yup';
 import { Formik } from 'formik';
 import { TextInput, Button, useTheme } from 'react-native-paper';
-import { InputBox, ErrorText, DualInput } from '../styles';
+import { InputBox, ErrorText } from '../styles';
 
 const initialValues = {
     password: '',
@@ -29,33 +29,31 @@ const NewPasswordForm: React.FC<{ onSubmit: (values: { password: string, confirm
         >
             {({ handleChange, handleBlur, handleSubmit, values, errors, isSubmitting }) => (
                 <>
-                    <DualInput>
-                        <InputBox style={{ flex: 1 }}>
-                            <TextInput
-                                label={"New Password"}
-                                value={values.password}
-                                placeholder='**************'
-                                onChangeText={handleChange('password')}
-                                onBlur={handleBlur('password')}
-                                error={!!errors.password}
-                                secureTextEntry={true}
-                            />
-                            {errors.password && <ErrorText>{errors.password}</ErrorText>}
-                        </InputBox>
+                    <InputBox style={{ flex: 1 }}>
+                        <TextInput
+                            label={"New Password"}
+                            value={values.password}
+                            placeholder='**************'
+                            onChangeText={handleChange('password')}
+                            onBlur={handleBlur('password')}
+                            error={!!errors.password}
+                            secureTextEntry={true}
+                        />
+                        {errors.password && <ErrorText>{errors.password}</ErrorText>}
+                    </InputBox>
 
-                        <InputBox style={{ flex: 1 }}>
-                            <TextInput
-                                label={"Confirm New Password"}
-                                value={values.confirmPassword}
-                                placeholder='**************'
-                                onChangeText={handleChange('confirmPassword')}
-                                onBlur={handleBlur('confirmPassword')}
-                                error={!!errors.confirmPassword}
-                                secureTextEntry={true}
-                            />
-                            {errors.confirmPassword && <ErrorText>{errors.confirmPassword}</ErrorText>}
-                        </InputBox>
-                    </DualInput>
+                    <InputBox style={{ flex: 1 }}>
+                        <TextInput
+                            label={"Confirm New Password"}
+                            value={values.confirmPassword}
+                            placeholder='**************'
+                            onChangeText={handleChange('confirmPassword')}
+                            onBlur={handleBlur('confirmPassword')}
+                            error={!!errors.confirmPassword}
+                            secureTextEntry={true}
+                        />
+                        {errors.confirmPassword && <ErrorText>{errors.confirmPassword}</ErrorText>}
+                    </InputBox>
 
                     <Button
                         mode="contained"

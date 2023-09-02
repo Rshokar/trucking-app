@@ -1,7 +1,7 @@
 from flask import request, Blueprint, g, make_response
 import jsonschema
 from controllers import UserController
-from validations import forgot_passwrod_email, validate_forgot_password_code
+from validations import forgot_passwrod_email, validate_forgot_password_code, forgot_password_reset_password
 
 # Create a blueprint for the forgot password related routes
 forgot_password = Blueprint('forgot_password', __name__)
@@ -95,4 +95,8 @@ def reset_password():
         "status": "failure"
     }
     """
-    ...
+    try:
+        jsonschema.validate(request.json, forgot_password_reset_password)
+        return UserController.forgot_password_update_password(g.session, request)
+    except jsonschema.ValidationError as e:
+        return make_response(str(e), 400)

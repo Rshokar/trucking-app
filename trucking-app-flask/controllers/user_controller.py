@@ -181,3 +181,48 @@ class UserController:
         session.commit()
 
         return make_response(token, 200)
+
+    @staticmethod
+    def forgot_password_update_password(session, request):
+        """
+        Updates the user's password after successful token validation.
+        """
+
+        # Extract email, token, and new password from request
+        email = request.json["email"].lower()
+        token = request.json["token"]
+        new_password = request.json["password"]
+
+        # Check if the email exists in Firebase users and get the UID
+        try:
+            firebase_user = auth.get_user_by_email(email)
+        except exceptions.FirebaseError:
+            return make_response("Error resetting the password", 400)
+
+        # Fetch user from our DB using the Firebase UID and the provided token
+        user = session.query(User).filter_by(
+            id=firebase_user.uid, recovery_token=token).first()
+        if not user:
+            return make_response("Error resetting the password", 400)
+
+        # Validate the token using the URLSafeTimedSerializer
+        s = URLSafeTimedSerializer(RESET_PASSWORD_SECRET)
+        try:
+            # This will throw an error if the token is bad or expired
+            # Assuming the token is valid for 5 min
+            s.loads(token, salt=RESET_PASSWORD_SALT, max_age=300)
+        except (BadTimeSignature, SignatureExpired):
+            return make_response("Token expired, please try again.", 400)
+
+        # Update password in Firebase
+        try:
+            auth.update_user(firebase_user.uid, password=new_password)
+        except exceptions.FirebaseError:
+            return make_response("Error updating the password", 400)
+
+        # Clear the recovery token and related fields in our DB
+        user.recovery_token = None
+        user.code_created_at = None
+        session.commit()
+
+        return make_response("Password reset successfully", 200)
