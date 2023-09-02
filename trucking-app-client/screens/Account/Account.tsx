@@ -36,8 +36,7 @@ const Account: FC<Props> = (props) => {
 
     const handleSave = async (values: UserCompanyFormResults): Promise<any> => {
         try {
-            const uC = new UserController()
-            const res: UserCompanyFormResults = await uC.updateUserAndCompany(values.email, values.company_name);
+            const res: UserCompanyFormResults = await UserController.updateUserAndCompany(values.email, values.company_name);
 
             if (company) company.company_name = res.company_name;
             if (user) user.email = res.email;

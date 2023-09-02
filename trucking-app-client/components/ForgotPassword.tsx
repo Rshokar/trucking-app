@@ -4,6 +4,9 @@ import EmailForm from './Forms/ForgotPassowrdForms/EmailForm';
 import CodeForm from './Forms/ForgotPassowrdForms/CodeForm';
 import NewPasswordForm from './Forms/ForgotPassowrdForms/NewPasswordForm';
 import { Text, useTheme } from 'react-native-paper'
+import UserController from '../controllers/UserController';
+import useSnackbar from '../hooks/useSnackbar';
+
 type ForgotPasswordProps = {
     showLogin: () => void;
 }
@@ -17,9 +20,19 @@ enum STEPS {
 const ForgotPassword: FC<ForgotPasswordProps> = () => {
     const [step, setStep] = useState<STEPS>(STEPS.EMAIL);
     const theme = useTheme();
+    const { showSnackbar } = useSnackbar();
 
     const sendVerificationCode = async (values: { email: string }): Promise<void> => {
         console.log(values);
+
+        try {
+            await UserController.sendForgotPasswordCode(values.email)
+        } catch (err: any) {
+            showSnackbar({
+                message: err.message,
+                color: theme.colors.error,
+            })
+        }
     }
 
     const validateCode = async (values: { code: string }): Promise<void> => {

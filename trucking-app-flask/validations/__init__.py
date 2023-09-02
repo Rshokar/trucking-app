@@ -6,4 +6,4 @@ from .company_validations import company_validation, company_update
 from .auth_validations import auth_validation, register_validation
 from .customer_validations import customer_validation, customer_update
 from .dispatch_validation import dispatch_validation, dispatch_update
-from .user_validations import account_validation
+from .user_validations import account_validation, forgot_passwrod_email

@@ -9,3 +9,14 @@ account_validation = {
     },
     "additionalProperties": False
 }
+
+forgot_passwrod_email = {
+    "type": "object",
+    "properties": {
+        "email": {
+            "type": "string",
+            "format": "email"
+        },
+    },
+    "additionalProperties": False
+}

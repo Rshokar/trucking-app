@@ -7,7 +7,7 @@ import { UserCompanyFormResults } from "../components/Forms/UserCompanyForm";
 
 export default class UserController {
 
-    async updateUserAndCompany(email: string, company_name: string): Promise<UserCompanyFormResults> {
+    static async updateUserAndCompany(email: string, company_name: string): Promise<UserCompanyFormResults> {
         try {
             const response = await myAxios.put<UserCompanyFormResults>(
                 `/user/account`,
@@ -30,6 +30,19 @@ export default class UserController {
                 throw new Error(error.response?.data);
             }
             throw new Error("Error updating user");
+        }
+    }
+
+    static async sendForgotPasswordCode(email: string): Promise<void> {
+        try {
+            await myAxios.post<void>(
+                '/user/forgot_password/send_code',
+                { email }
+            )
+        } catch (err: any) {
+            if (isAxiosError(err))
+                throw new Error(err.response?.data)
+            throw new Error("Error sending code")
         }
     }
 }
