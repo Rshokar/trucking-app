@@ -31,15 +31,19 @@ class AuthController:
 
         try:
             # Decode and verify Firebase JWT
+            print('HELLO WORLD', token, company_name)
             decoded_token = auth.verify_id_token(token)
             uid = decoded_token.get("uid")
 
             # Create user and company in local DB
+            print("HELLO WORLD ONE", uid)
+            print("UID:", uid, type(uid))
             user = User(id=uid)
             session.add(user)
-
+            print("HELLO WORLD TWO")
             company = Company(name=company_name, owner_id=uid)
             session.add(company)
+            print('HELLO WORLD', company, user)
 
             session.commit()
 
@@ -54,6 +58,7 @@ class AuthController:
             return response
 
         except Exception as e:
+            print(e)
             return make_response(str(e), 500)
 
     @staticmethod

@@ -1,8 +1,18 @@
+from itsdangerous import BadTimeSignature, SignatureExpired, URLSafeTimedSerializer
 from models import User, Company
 from utils import make_response
 from sqlalchemy.exc import IntegrityError, OperationalError
-from flask import g
+from flask import g, current_app as app
 from firebase_admin import auth, exceptions
+from flask_mail import Mail
+from models import User
+import os
+from firebase_admin import auth
+from random import randint
+from utils import send_user_forgot_password_code
+
+SEND_USER_FORGOT_PASSWORD_EMAIL_SECRET = os.environ.get(
+    "SEND_USER_FORGOT_PASSWORD_EMAIL_SECRET")
 
 
 class UserController:
@@ -93,3 +103,33 @@ class UserController:
                 return make_response("There was an errors", 500)
 
         return make_response("Account updated successfully.", 200)
+
+    @staticmethod
+    def send_forgot_password_code(session, request):
+        # Ensure email is provided
+        error_message = "If your email was found we will send an email"
+
+        email = request.json["email"].lower()
+
+        # Check if the email exists in Firebase users
+        try:
+            firebase_user = auth.get_user_by_email(email)
+        except exceptions.FirebaseError:
+            return make_response(error_message, 200)
+
+        # Fetch user from our DB using the Firebase UID
+        user = session.query(User).filter_by(id=firebase_user.uid).first()
+        if not user:
+            return make_response(error_message, 200)
+
+        # Generate six-digit code
+        code = str(randint(100000, 999999))
+
+        # Store the six-digit code in DB
+        user.reset_code = code
+        session.commit()
+
+        # Send the email with the code
+        send_user_forgot_password_code(Mail(app), email, code)
+
+        return make_response(error_message, 200)

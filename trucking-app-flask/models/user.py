@@ -1,5 +1,5 @@
 import re
-from sqlalchemy import Column, String
+from sqlalchemy import Column, String, Integer
 from sqlalchemy.orm import validates, relationship
 from models.model import Base
 from config import db
@@ -14,6 +14,9 @@ class User(Base):
     __tablename__ = 'users'
     id = Column("id", String(50), primary_key=True)
     role = Column("role", String(20))
+    reset_code = Column("reset_code", String(6), nullable=True)  # 6-digit code
+    recovery_token = Column("recovery_token", String(
+        255), nullable=True)  # Token sent to client
 
     @validates("role")
     def validate_role(self, key, role):
@@ -21,18 +24,29 @@ class User(Base):
             raise ValueError("Invalid Role")
         return role
 
+    @validates("reset_code")
+    def validate_reset_code(self, key, reset_code):
+        # Only allow six-digit codes
+        if self.reset_code is not None and not re.match("^\d{6}$", reset_code):
+            raise ValueError("Invalid reset code format")
+        return reset_code
+
     company = relationship("Company", backref="owner",
                            lazy=True, cascade="delete", uselist=False)
 
-    def __init__(self, id, role=UserRole.DISPATCHER.value):
+    def __init__(self, id, role=UserRole.DISPATCHER.value, reset_code=None, recovery_token=None):
         self.role = role
         self.id = id
+        self.reset_code = reset_code
+        self.recovery_token = recovery_token
 
     def __repr__(self):
-        return f"USER: ({self.id}) {self.role}"
+        return f"USER: ({self.id}) {self.role}, {self.reset_code}, {self.recovery_token}"
 
     def to_dict(self):
         return {
             "id": self.id,
             "role": self.role,
+            "reset_code": self.reset_code,
+            "recovery_token": self.recovery_token
         }

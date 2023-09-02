@@ -1,4 +1,4 @@
-from flask import jsonify, request, Blueprint, g, make_response
+from flask import request, Blueprint, g, make_response
 import jsonschema
 from controllers import UserController
 from validations import forgot_passwrod_email
@@ -33,7 +33,7 @@ def send_code():
     try:
         jsonschema.validate(request.json, forgot_passwrod_email)
         print(request.json)
-        return make_response("JMELL", 200)
+        return UserController.send_forgot_password_code(g.session, request)
     except jsonschema.ValidationError as e:
         return make_response(str(e), 400)
 

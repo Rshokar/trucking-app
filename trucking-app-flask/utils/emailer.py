@@ -172,3 +172,38 @@ def send_operator_auth_token(mail, email, token, operator_name):
     '''
 
     mail.send(msg)
+
+
+def send_user_forgot_password_code(mail, email, code):
+    '''
+    Send a six-digit password reset code to the user's email.
+
+    Parameters:
+        mail (flask_mail.Mail): The Flask-Mail instance
+        email (str): The user's email
+        code (str): The six-digit password reset code
+    '''
+
+    # Constructing the email message
+    msg = Message('Password Reset Code - Trucking App',
+                  sender='ravindershokar@gmail.com', recipients=[email])
+
+    msg.body = f'''
+    Hello,
+
+    You requested to reset your password for the Trucking App.
+
+    Here's your password reset code: {code}
+
+    Enter this code to continue with the password reset process.
+
+    Note: This code will expire in 10 minutes. If it expires, please request another one.
+
+    If you didn't request this, please ignore this email.
+
+    Regards,
+    Trucking App Support
+    '''
+
+    # Sending the email
+    mail.send(msg)

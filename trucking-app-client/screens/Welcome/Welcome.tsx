@@ -111,8 +111,12 @@ const Welcome: FunctionComponent<Props> = ({ navigation }) => {
     }
 
     const handleRegister = async (formResult: RegisterFormResult): Promise<any> => {
+        console.log(formResult);
         try {
+            console.log("HELLO WORLD")
             const res = await createUserWithEmailAndPassword(FIREBASE_AUTH, formResult.email, formResult.password);
+            console.log("HELLO WORLD")
+
             const { company } = await AuthController.register(await res.user.getIdToken(), formResult.company, formResult.email)
             showSnackbar({
                 message: 'Registered in successfully',
@@ -121,6 +125,7 @@ const Welcome: FunctionComponent<Props> = ({ navigation }) => {
             })
             navigation.navigate("Home", { company })
         } catch (e: any) {
+            console.log("ERROR", e);
             let error: string = "Error registering in."
             if (e.code === 'auth/email-already-in-use')
                 error = "Email is already being used"
