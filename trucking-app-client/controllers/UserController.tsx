@@ -45,4 +45,18 @@ export default class UserController {
             throw new Error("Error sending code")
         }
     }
+
+    static async validateForgotPasswordCode(code: string, email: string): Promise<string> {
+        try {
+            const response = await myAxios.post<void>(
+                '/user/forgot_password/validate_code',
+                { code, email }
+            )
+            return response.data as unknown as string
+        } catch (err: any) {
+            if (isAxiosError(err))
+                throw new Error(err.response?.data)
+            throw new Error("Error sending code")
+        }
+    }
 }

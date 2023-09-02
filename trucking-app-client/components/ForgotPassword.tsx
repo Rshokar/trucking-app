@@ -19,14 +19,16 @@ enum STEPS {
 
 const ForgotPassword: FC<ForgotPasswordProps> = () => {
     const [step, setStep] = useState<STEPS>(STEPS.EMAIL);
+    const [resetPasswordToken, setResetPasswordToken] = useState<string>();
+    const [email, setEmail] = useState<string>();
     const theme = useTheme();
     const { showSnackbar } = useSnackbar();
 
     const sendVerificationCode = async (values: { email: string }): Promise<void> => {
-        console.log(values);
-
         try {
-            await UserController.sendForgotPasswordCode(values.email)
+            await UserController.sendForgotPasswordCode(values.email);
+            setEmail(values.email);
+            setStep(STEPS.CODE)
         } catch (err: any) {
             showSnackbar({
                 message: err.message,
@@ -36,12 +38,24 @@ const ForgotPassword: FC<ForgotPasswordProps> = () => {
     }
 
     const validateCode = async (values: { code: string }): Promise<void> => {
+        console.log(values);
 
+        try {
+            setResetPasswordToken(await UserController.validateForgotPasswordCode(values.code, email + ''))
+            setStep(STEPS.PASSWORD);
+        } catch (err: any) {
+            showSnackbar({
+                message: err.message,
+                color: theme.colors.error,
+            })
+        }
     }
 
     const updatePassword = async (values: { password: string }): Promise<void> => {
 
     }
+
+    console.log(email, resetPasswordToken);
 
     if (step === STEPS.EMAIL) {
         // Enter Email
@@ -54,7 +68,12 @@ const ForgotPassword: FC<ForgotPasswordProps> = () => {
     } else if (step === STEPS.CODE) {
 
         // Enter Code
-        return <CodeForm onSubmit={validateCode} />
+        return <>
+            <View>
+                <Text variant='bodyLarge' style={{ textAlign: 'center', color: theme.colors.secondary }}>If your email was found we sent you a six digit code. Enter it bellow.</Text>
+            </View>
+            <CodeForm onSubmit={validateCode} />
+        </>
     } else {
         // New Password
         return <NewPasswordForm onSubmit={updatePassword} />

@@ -10,9 +10,13 @@ import os
 from firebase_admin import auth
 from random import randint
 from utils import send_user_forgot_password_code
+from datetime import datetime
 
-SEND_USER_FORGOT_PASSWORD_EMAIL_SECRET = os.environ.get(
-    "SEND_USER_FORGOT_PASSWORD_EMAIL_SECRET")
+
+RESET_PASSWORD_SECRET = os.environ.get(
+    "RESET_PASSWORD_SECRET")
+
+RESET_PASSWORD_SALT = os.environ.get('RESET_PASSWORD_SALT')
 
 
 class UserController:
@@ -122,14 +126,58 @@ class UserController:
         if not user:
             return make_response(error_message, 200)
 
+        # If the user has a code that's not expired, we can avoid regenerating and resending
+        if user.reset_code and not user.check_token_expiration():
+            return make_response(error_message, 200)
+
         # Generate six-digit code
         code = str(randint(100000, 999999))
 
-        # Store the six-digit code in DB
+        # Store the six-digit code in DB and set the creation time
         user.reset_code = code
+        user.code_created_at = datetime.utcnow()
         session.commit()
 
         # Send the email with the code
         send_user_forgot_password_code(Mail(app), email, code)
 
         return make_response(error_message, 200)
+
+    @staticmethod
+    def validate_forgot_password_code(session, request):
+        """
+        Validates the six-digit reset code and returns a token if the code is valid.
+        """
+
+        # Extract email and code from request
+        email = request.json["email"].lower()
+        code = request.json["code"]
+
+        # Check if the email exists in Firebase users and get the UID
+        try:
+            firebase_user = auth.get_user_by_email(email)
+        except exceptions.FirebaseError:
+            return make_response("Invalid code entered", 400)
+
+        # Fetch user from our DB using the Firebase UID and the provided code
+        user = session.query(User).filter_by(
+            id=firebase_user.uid, reset_code=code).first()
+        if not user:
+            return make_response("Invalid code entered", 400)
+
+        # Check the token expiration
+        if user.check_token_expiration():
+            return make_response("Code has expired", 400)
+
+        # Generate secure token for the user to reset their password
+        s = URLSafeTimedSerializer(RESET_PASSWORD_SECRET)
+        token = s.dumps(email, salt=RESET_PASSWORD_SALT)
+
+        # Store the generated token in the DB
+        user.reset_code = None
+        user.code_created_at = None
+        user.recovery_token = token
+        print(user)
+        session.commit()
+
+        return make_response(token, 200)

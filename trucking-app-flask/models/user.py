@@ -1,9 +1,13 @@
 import re
-from sqlalchemy import Column, String, Integer
+from sqlalchemy import Column, String, Integer, DateTime
 from sqlalchemy.orm import validates, relationship
 from models.model import Base
 from config import db
 from enum import Enum
+from datetime import timedelta, datetime
+import os
+
+RESET_PASSWORD_CODE_EXPIRY = os.environ.get("RESET_PASSWORD_CODE_EXPIRY")
 
 
 class UserRole(str, Enum):
@@ -17,6 +21,7 @@ class User(Base):
     reset_code = Column("reset_code", String(6), nullable=True)  # 6-digit code
     recovery_token = Column("recovery_token", String(
         255), nullable=True)  # Token sent to client
+    code_created_at = Column("token_created_at", DateTime, nullable=True)
 
     @validates("role")
     def validate_role(self, key, role):
@@ -27,7 +32,7 @@ class User(Base):
     @validates("reset_code")
     def validate_reset_code(self, key, reset_code):
         # Only allow six-digit codes
-        if self.reset_code is not None and not re.match("^\d{6}$", reset_code):
+        if reset_code is not None and not re.match("^\d{6}$", reset_code):
             raise ValueError("Invalid reset code format")
         return reset_code
 
@@ -48,5 +53,14 @@ class User(Base):
             "id": self.id,
             "role": self.role,
             "reset_code": self.reset_code,
-            "recovery_token": self.recovery_token
+            "recovery_token": self.recovery_token,
         }
+
+    def check_token_expiration(self):
+        """Check if the token has expired."""
+        TOKEN_EXPIRATION_DURATION = timedelta(
+            minutes=int(RESET_PASSWORD_CODE_EXPIRY))
+        if self.code_created_at:
+            expiration_time = self.code_created_at + TOKEN_EXPIRATION_DURATION
+            return datetime.utcnow() > expiration_time
+        return True  # If no token_created_at is set, assume it's expired
