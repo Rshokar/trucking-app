@@ -3,6 +3,7 @@ import styled from 'styled-components/native'
 import LoginForm from '../../../components/Forms/LoginForm'
 import RegisterForm from '../../../components/Forms/RegisterForm'
 import { LoginFormResult, RegisterFormResult } from '../../../components/Forms/types'
+import ForgotPassword from '../../../components/ForgotPassword'
 
 
 import { Text, useTheme } from 'react-native-paper'
@@ -43,7 +44,7 @@ type ActionProps = {
 
 type HeadProps = {
     title: string,
-    subTitle: string,
+    subTitle?: string,
     titleColor: string,
     subTitleColor: string,
 }
@@ -61,11 +62,10 @@ const Action: FC<ActionProps> = ({ message, actionMessage, action, color }) => <
 
 const Head: FC<HeadProps> = ({ title, subTitle, titleColor, subTitleColor }) => <>
     <Text style={{ color: titleColor }} variant='displaySmall'>{title}</Text>
-    <Text style={{ color: subTitleColor, textAlign: 'center' }} variant='labelLarge'>{subTitle}</Text>
+    {subTitle && <Text style={{ color: subTitleColor, textAlign: 'center' }} variant='bodyLarge'>{subTitle}</Text>}
 </>
 
 const AuthSection: FC<Props> = ({ handleLogin, handleRegister, toggleLogin }) => {
-
     const theme = useTheme();
     const [forgotPassword, setForgotPassword] = useState<boolean>(false);
     const [login, setLogin] = useState<boolean>(true);
@@ -90,11 +90,10 @@ const AuthSection: FC<Props> = ({ handleLogin, handleRegister, toggleLogin }) =>
         return <Container>
             <Head
                 title="Forgot password?"
-                subTitle="Don't worry we can recover your password. Just follow the steps bellow."
                 titleColor={theme.colors.primary}
                 subTitleColor={theme.colors.secondary}
             />
-            <LoginForm onSubmit={handleLogin} />
+            <ForgotPassword showLogin={() => setLogin(true)} />
             <Action
                 message=''
                 actionMessage='Remember your password?'
