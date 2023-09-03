@@ -43,8 +43,6 @@ const TicketContainer = styled(Box)`
     width: 100%; 
     height: auto;
     padding: 10px; 
-    border: 2px solid grey;
-    border-radius: 5px;
     box-sizing: border-box;
     background-color: white;
 `
@@ -241,7 +239,7 @@ const Ticket: FC<Props> = ({ accessToken, showSnackBar }) => {
             <TicketContainer>
                 <TicketContainerHeader>
                     <IconButton>
-                        <BookIcon style={{ fontSize: '25pt', color: theme.palette.secondary.main }} />
+                        <BookIcon style={{ fontSize: '25pt', color: theme.palette.primary.main }} />
                     </IconButton>
                     <div>
                         <Typography variant='h5' style={{ fontWeight: 'bold' }}>{customer?.customer_name}</Typography>
@@ -250,17 +248,17 @@ const Ticket: FC<Props> = ({ accessToken, showSnackBar }) => {
                 </TicketContainerHeader>
                 <TextSection>
                     <SeperatedText>
-                        <Typography variant='body2'>Dispatcher:</Typography>
-                        <Typography variant='body2'>{company?.company_name}</Typography>
+                        <Typography variant='body1'>Dispatcher:</Typography>
+                        <Typography variant='body1'>{company?.company_name}</Typography>
 
                     </SeperatedText>
-                    <Typography variant='body2'>{disp?.notes}</Typography>
+                    <Typography variant='body1'>{disp?.notes}</Typography>
                 </TextSection>
             </TicketContainer>
             <TicketContainer>
                 <TicketContainerHeader>
                     <IconButton>
-                        <LocalShippingIcon style={{ fontSize: '25pt', color: theme.palette.secondary.main }} />
+                        <LocalShippingIcon style={{ fontSize: '25pt', color: theme.palette.primary.main }} />
                     </IconButton>
                     <div>
                         <Typography variant='h5' style={{ fontWeight: 'bold' }}>{operator}</Typography>
@@ -269,20 +267,20 @@ const Ticket: FC<Props> = ({ accessToken, showSnackBar }) => {
                 </TicketContainerHeader>
                 <TextSection>
                     <SeperatedText>
-                        <Typography variant='body2'>Start Location:</Typography>
-                        <Typography variant='body2'>{rfo?.start_location}</Typography>
+                        <Typography variant='body1'>Start Location:</Typography>
+                        <Typography variant='body1'>{rfo?.start_location}</Typography>
                     </SeperatedText>
                     <SeperatedText>
-                        <Typography variant='body2'>Load Location:</Typography>
-                        <Typography variant='body2'>{rfo?.load_location}</Typography>
+                        <Typography variant='body1'>Load Location:</Typography>
+                        <Typography variant='body1'>{rfo?.load_location}</Typography>
                     </SeperatedText>
                     <SeperatedText>
-                        <Typography variant='body2'>Dump Location:</Typography>
-                        <Typography variant='body2'>{rfo?.dump_location}</Typography>
+                        <Typography variant='body1'>Dump Location:</Typography>
+                        <Typography variant='body1'>{rfo?.dump_location}</Typography>
                     </SeperatedText>
                     <SeperatedText>
-                        <Typography variant='body2'>Start Time:</Typography>
-                        <Typography variant='body2'> {moment(rfo?.start_time).format("YYYY-MM-DD h:mm a")}</Typography>
+                        <Typography variant='body1'>Start Time:</Typography>
+                        <Typography variant='body1'> {moment(rfo?.start_time).format("YYYY-MM-DD h:mm a")}</Typography>
                     </SeperatedText>
                 </TextSection>
             </TicketContainer>
@@ -305,8 +303,8 @@ const Ticket: FC<Props> = ({ accessToken, showSnackBar }) => {
                 :
                 <TicketSection>
                     <SeperatedText style={{ width: '100%', paddingRight: '5px', paddingLeft: '5px', boxSizing: 'border-box' }}>
-                        <Typography style={{ fontWeight: 'bold' }} variant='subtitle2'>Billing Tickets</Typography>
-                        <Typography variant='subtitle2'>Recent</Typography>
+                        <Typography style={{ fontWeight: 'bold' }} variant='subtitle1'>Billing Tickets</Typography>
+                        <Typography variant='subtitle1'>Recent</Typography>
                     </SeperatedText>
                     {
                         bills?.map((b, index) => <TicketItem
@@ -315,7 +313,7 @@ const Ticket: FC<Props> = ({ accessToken, showSnackBar }) => {
                                 setFocusedBill(b)
                                 setShowForm(true)
                             }}
-                            buttonClickIcon={<EditIcon style={{ fontSize: '20pt', color: theme.palette.secondary.main, padding: '5px' }} />}
+                            buttonClickIcon={<EditIcon style={{ fontSize: '20pt', color: theme.palette.primary.main, padding: '5px' }} />}
                             title={`${b.ticket_number}`}
                             subtitle={`RFO ID: ${b.rfo_id}`}
                             icon={<ReceiptIcon style={{ fontSize: '27pt', color: 'white', padding: '5px' }} />}
