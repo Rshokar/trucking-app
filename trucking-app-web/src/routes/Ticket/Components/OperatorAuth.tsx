@@ -50,7 +50,7 @@ const OperatorAuth: FC<Props> = ({ setAccessToken, showSnackBar }) => {
 
     const validateCode = async (code: string) => {
         try {
-            const res = await fetch(`http://127.0.0.1:5000/v1/company/operators/validate_token/${token}`, {
+            const res = await fetch(`${process.env.REACT_APP_API_URL}/v1/company/operators/validate_token/${token}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ code })
@@ -86,7 +86,7 @@ const OperatorAuth: FC<Props> = ({ setAccessToken, showSnackBar }) => {
     const sendAuthEmail = async (): Promise<any> => {
 
         try {
-            const res = await fetch(`http://127.0.0.1:5000/v1/company/operators/generate_token/${token}`, {
+            const res = await fetch(`${process.env.REACT_APP_API_URL}/v1/company/operators/generate_token/${token}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

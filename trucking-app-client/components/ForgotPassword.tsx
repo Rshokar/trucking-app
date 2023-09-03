@@ -6,7 +6,6 @@ import NewPasswordForm from './Forms/ForgotPassowrdForms/NewPasswordForm';
 import { Text, useTheme } from 'react-native-paper'
 import UserController from '../controllers/UserController';
 import useSnackbar from '../hooks/useSnackbar';
-import { AuthController } from '../controllers/AuthController';
 
 type ForgotPasswordProps = {
     done: () => void;

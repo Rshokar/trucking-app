@@ -1,4 +1,7 @@
 from flask_mail import Message
+import os
+
+WEB_URL = os.environ.get("WEB_URL")
 
 
 def send_verification_email(mail, email, token, name, company_name):
@@ -16,7 +19,7 @@ def send_verification_email(mail, email, token, name, company_name):
                   sender='ravindershokar@gmail.com', recipients=[email])
 
     # Ideally, you should use url_for function of Flask to create verify URL
-    verify_url = f"http://localhost:3000/validate_operator_email/{token}"
+    verify_url = f"{WEB_URL}/validate_operator_email/{token}"
 
     msg.body = f'''
     Hello {name},
@@ -75,7 +78,7 @@ def send_operator_rfo(mail, email, rfo, operator, company, customer, Dispatch, t
 
     Please click on the link below to view more details and accept the job:
 
-    http://localhost:3000/ticket/{token}
+    {WEB_URL}/ticket/{token}
 
     If you have any questions, please contact your dispatcher.
 
@@ -128,7 +131,7 @@ def send_operator_rfo_update(mail, email, rfo, operator, company, customer, Disp
 
     Please click on the link below to view more details and accept the job:
 
-    http://localhost:3000/operator_auth/{token}
+    {WEB_URL}/operator_auth/{token}
 
     If you have any questions, please contact your dispatcher.
 

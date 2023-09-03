@@ -115,7 +115,7 @@ const Ticket: FC<Props> = ({ accessToken, showSnackBar }) => {
 
     const getTickets = async () => {
         try {
-            const res = await fetch('http://127.0.0.1:5000/v1/company/operators/ticket', {
+            const res = await fetch(`${process.env.REACT_APP_API_URL}/v1/company/operators/ticket`, {
                 method: 'GET',
                 headers: {
                     "Authorization-Fake-X": `Bearer ${accessToken}`
@@ -151,7 +151,7 @@ const Ticket: FC<Props> = ({ accessToken, showSnackBar }) => {
             formData.append('file', data.file);
             formData.append('ticket_number', data.ticket_number);
 
-            const res = await fetch('http://127.0.0.1:5000/v1/billing_ticket/operator', {
+            const res = await fetch(`${process.env.REACT_APP_API_URL}/v1/billing_ticket/operator`, {
                 method: 'POST',
                 headers: {
                     "Authorization-Fake-X": `Bearer ${accessToken}`
@@ -181,7 +181,7 @@ const Ticket: FC<Props> = ({ accessToken, showSnackBar }) => {
 
             formData.append("ticket_number", data.ticket_number)
 
-            const res = await fetch(`http://127.0.0.1:5000/v1/billing_ticket/operator/${id}`, {
+            const res = await fetch(`${process.env.REACT_APP_API_URL}/v1/billing_ticket/operator/${id}`, {
                 method: 'PATCH',
                 headers: {
                     "Authorization-Fake-X": `Bearer ${accessToken}`
@@ -214,7 +214,7 @@ const Ticket: FC<Props> = ({ accessToken, showSnackBar }) => {
 
     const handleDelete = async (id: string): Promise<void> => {
         try {
-            const res = await fetch(`http://127.0.0.1:5000/v1/billing_ticket/operator/${id}`, {
+            const res = await fetch(`${process.env.REACT_APP_API_URL}/v1/billing_ticket/operator/${id}`, {
                 method: 'DELETE',
                 headers: {
                     "Authorization-Fake-X": `Bearer ${accessToken}`
