@@ -37,7 +37,7 @@ jobs:
         echo "DB_NAME=${{ secrets.DB_NAME }}" >> trucking-app-flask/.env
         echo "FLASK_DEBUG=$FLASK_DEBUG" >> trucking-app-flask/.env
         echo "OPERATOR_AUTH_TOKEN_SECRET=${OPERATOR_AUTH_TOKEN_SECRET}" >> trucking-app-flask/.env
-        echo "SEND_OPERATOR_RFO_TOKEN_SECRET=${SEND_OPERATOR_RFO_TOKEN_SECRET }" >> trucking-app-flask/.env
+        echo "SEND_OPERATOR_RFO_TOKEN_SECRET=${SEND_OPERATOR_RFO_TOKEN_SECRET}" >> trucking-app-flask/.env
         echo "OPERATOR_ACCESS_TOKEN_SECRET=${OPERATOR_ACCESS_TOKEN_SECRET}" >> trucking-app-flask/.env
         echo "RESET_PASSWORD_SECRET=${RESET_PASSWORD_SECRET}" >> trucking-app-flask/.env
         echo "RESET_PASSWORD_SALT=${RESET_PASSWORD_SALT}" >> trucking-app-flask/.env
