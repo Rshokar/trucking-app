@@ -44,7 +44,7 @@ const TicketItem: FunctionComponent<TicketItemProps> = (props) => {
     }
 
     return (
-        <TicketRow onPress={props.onClick} onLongPress={() => props.onLongpress && props.onLongpress()} pressRetentionOffset={{ top: 10, left: 10, bottom: 10, right: 10 }}>
+        <TicketRow style={props.style} onPress={props.onClick} onLongPress={() => props.onLongpress && props.onLongpress()} pressRetentionOffset={{ top: 10, left: 10, bottom: 10, right: 10 }}>
             <LeftView>
                 <TransactionAvi
                     background={props.aviColor || colors.tertiary}
@@ -63,6 +63,7 @@ const TicketItem: FunctionComponent<TicketItemProps> = (props) => {
                         <SmallText textStyle={{
                             textAlign: 'left',
                             color: colors.graydark,
+                            ...props.textStyle,
                         }}>
                             {props.subtitle}
                         </SmallText>

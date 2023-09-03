@@ -1,5 +1,5 @@
 import React, { FC, useState, useEffect } from 'react';
-import { FAB, Modal, Portal, Snackbar, TextInput, useTheme } from 'react-native-paper';
+import { FAB, Modal, Portal, Text, TextInput, useTheme } from 'react-native-paper';
 import styled from 'styled-components/native';
 import { Bill, BillQuery } from '../../models/Bill';
 import { BillController } from '../../controllers/BillController';
@@ -31,8 +31,7 @@ const BillSection: FC<Props> = ({ navigateToTicket, rfoId }) => {
         return bQ;
     });
     const [enablePaginate, setEnablePaginate] = useState<boolean>(false);
-    const [snackbarVisible, setSnackbarVisible] = useState(false);
-    const [snackbarMessage, setSnackbarMessage] = useState('');
+
     const [visible, setVisible] = useState(false);
     const [focusedBill, setFocusedBill] = useState<Bill>();
     const [search, setSearch] = useState<string>("");
@@ -146,6 +145,28 @@ const BillSection: FC<Props> = ({ navigateToTicket, rfoId }) => {
         }
     };
 
+    const toggleBilled = async (bill: Bill): Promise<void> => {
+        try {
+            await BillController.toggleBilled(bill)
+            const index = bills.findIndex(b => b.bill_id === bill.bill_id);
+            if (index === -1) throw Error("Billing ticket not found");
+            bills[index].billed = !bill.billed
+            setBills([...bills]);
+            showSnackbar({
+                message: "Billed status toggled.",
+                color: theme.colors.primary,
+                onClickText: 'Ok'
+            })
+        } catch (err: any) {
+            showSnackbar({
+                message: err.message,
+                color: theme.colors.error,
+                onClickText: 'Ok'
+            })
+        }
+    }
+
+
     const handleShowBill = (bill: Bill) => {
         setFocusedBill(bill)
         setShowBill(true);
@@ -160,7 +181,9 @@ const BillSection: FC<Props> = ({ navigateToTicket, rfoId }) => {
 
     return (
         <StyledSection>
-            <StyledHeader>
+            <StyledHeader style={{
+                paddingTop: 5
+            }}>
                 <StyledInput
                     label={'Search By Ticket Number'}
                     onChangeText={(text) => setSearch(text)}
@@ -176,7 +199,7 @@ const BillSection: FC<Props> = ({ navigateToTicket, rfoId }) => {
                     setFocusedBill(undefined);
                     showModal();
                 }}
-                noTicketFoundSVG={<BillSVG width={125} height={125} stroke={'black'} />}
+                noTicketFoundSVG={<BillSVG width={75} height={75} stroke={'black'} />}
                 noTicketFoundMessage={"No Billing Tickets Found!"}
                 render={({ item }: { item: Bill }) => {
                     if (item.ticket_number?.toString().includes(search)) {
@@ -184,13 +207,18 @@ const BillSection: FC<Props> = ({ navigateToTicket, rfoId }) => {
                             <TicketItem
                                 aviColor={theme.colors.tertiary}
                                 title={item.ticket_number.toString()}
-                                subtitle={`RFO: ${item.rfo_id}`}
+                                subtitle={<Text style={{ color: item.billed ? 'black' : theme.colors.error }}>
+                                    {
+                                        item.billed ? 'Billed' : 'Not Billed'
+                                    }
+                                </Text>
+                                }
                                 avatar={'$'} // Placeholder avatar
                                 onButtonClick={() => {
                                     setFocusedBill(item);
                                     setVisible(true);
                                 }}
-                                onLongpress={() => handleShowBill(item)}
+                                onLongpress={() => toggleBilled(item)}
                                 onClick={() => handleShowBill(item)}
                                 buttonClickIcon={"pencil"}
                                 onDelete={async (): Promise<boolean> => await handleDelete(item.bill_id + "")}
@@ -215,14 +243,21 @@ const BillSection: FC<Props> = ({ navigateToTicket, rfoId }) => {
             </MyModal>
             <Portal>
                 <Modal
+
                     visible={showBill}
-                    onDismiss={() => {
-                        setShowBill(false);
-                        setFocusedBill(undefined);
+                    onDismiss={() => { }}
+                    contentContainerStyle={{
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        backgroundColor: 'black',
+                        height: '100%'
                     }}
-                    contentContainerStyle={{ justifyContent: 'center', alignItems: 'center' }}
                 >
                     <BillCard
+                        onClose={() => {
+                            setFocusedBill(undefined);
+                            setShowBill(false)
+                        }}
                         getId={() => focusedBill?.bill_id ?? 0}
                         {...focusedBill}
                     />

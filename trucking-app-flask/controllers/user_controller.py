@@ -1,8 +1,22 @@
+from itsdangerous import BadTimeSignature, SignatureExpired, URLSafeTimedSerializer
 from models import User, Company
 from utils import make_response
 from sqlalchemy.exc import IntegrityError, OperationalError
-from flask import g
+from flask import g, current_app as app
 from firebase_admin import auth, exceptions
+from flask_mail import Mail
+from models import User
+import os
+from firebase_admin import auth
+from random import randint
+from utils import send_user_forgot_password_code
+from datetime import datetime
+
+
+RESET_PASSWORD_SECRET = os.environ.get(
+    "RESET_PASSWORD_SECRET")
+
+RESET_PASSWORD_SALT = os.environ.get('RESET_PASSWORD_SALT')
 
 
 class UserController:
@@ -93,3 +107,122 @@ class UserController:
                 return make_response("There was an errors", 500)
 
         return make_response("Account updated successfully.", 200)
+
+    @staticmethod
+    def send_forgot_password_code(session, request):
+        # Ensure email is provided
+        error_message = "If your email was found we will send an email"
+
+        email = request.json["email"].lower()
+
+        # Check if the email exists in Firebase users
+        try:
+            firebase_user = auth.get_user_by_email(email)
+        except exceptions.FirebaseError:
+            return make_response(error_message, 200)
+
+        # Fetch user from our DB using the Firebase UID
+        user = session.query(User).filter_by(id=firebase_user.uid).first()
+        if not user:
+            return make_response(error_message, 200)
+
+        # If the user has a code that's not expired, we can avoid regenerating and resending
+        if user.reset_code and not user.check_token_expiration():
+            return make_response(error_message, 200)
+
+        # Generate six-digit code
+        code = str(randint(100000, 999999))
+
+        # Store the six-digit code in DB and set the creation time
+        user.reset_code = code
+        user.code_created_at = datetime.utcnow()
+        session.commit()
+
+        # Send the email with the code
+        send_user_forgot_password_code(Mail(app), email, code)
+
+        return make_response(error_message, 200)
+
+    @staticmethod
+    def validate_forgot_password_code(session, request):
+        """
+        Validates the six-digit reset code and returns a token if the code is valid.
+        """
+
+        # Extract email and code from request
+        email = request.json["email"].lower()
+        code = request.json["code"]
+
+        # Check if the email exists in Firebase users and get the UID
+        try:
+            firebase_user = auth.get_user_by_email(email)
+        except exceptions.FirebaseError:
+            return make_response("Invalid code entered", 400)
+
+        # Fetch user from our DB using the Firebase UID and the provided code
+        user = session.query(User).filter_by(
+            id=firebase_user.uid, reset_code=code).first()
+        if not user:
+            return make_response("Invalid code entered", 400)
+
+        # Check the token expiration
+        if user.check_token_expiration():
+            return make_response("Code has expired", 400)
+
+        # Generate secure token for the user to reset their password
+        s = URLSafeTimedSerializer(RESET_PASSWORD_SECRET)
+        token = s.dumps(email, salt=RESET_PASSWORD_SALT)
+
+        # Store the generated token in the DB
+        user.reset_code = None
+        user.code_created_at = None
+        user.recovery_token = token
+        print(user)
+        session.commit()
+
+        return make_response(token, 200)
+
+    @staticmethod
+    def forgot_password_update_password(session, request):
+        """
+        Updates the user's password after successful token validation.
+        """
+
+        # Extract email, token, and new password from request
+        email = request.json["email"].lower()
+        token = request.json["token"]
+        new_password = request.json["password"]
+
+        # Check if the email exists in Firebase users and get the UID
+        try:
+            firebase_user = auth.get_user_by_email(email)
+        except exceptions.FirebaseError:
+            return make_response("Error resetting the password", 400)
+
+        # Fetch user from our DB using the Firebase UID and the provided token
+        user = session.query(User).filter_by(
+            id=firebase_user.uid, recovery_token=token).first()
+        if not user:
+            return make_response("Error resetting the password", 400)
+
+        # Validate the token using the URLSafeTimedSerializer
+        s = URLSafeTimedSerializer(RESET_PASSWORD_SECRET)
+        try:
+            # This will throw an error if the token is bad or expired
+            # Assuming the token is valid for 5 min
+            s.loads(token, salt=RESET_PASSWORD_SALT, max_age=300)
+        except (BadTimeSignature, SignatureExpired):
+            return make_response("Token expired, please try again.", 400)
+
+        # Update password in Firebase
+        try:
+            auth.update_user(firebase_user.uid, password=new_password)
+        except exceptions.FirebaseError:
+            return make_response("Error updating the password", 400)
+
+        # Clear the recovery token and related fields in our DB
+        user.recovery_token = None
+        user.code_created_at = None
+        session.commit()
+
+        return make_response("Password reset successfully", 200)

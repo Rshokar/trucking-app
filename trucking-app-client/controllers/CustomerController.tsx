@@ -3,18 +3,13 @@ import { Customer, CustomerQuery } from "../models/Customer";
 import { isAxiosError } from 'axios';
 import myAxios from '../config/myAxios';
 import { AuthController } from './AuthController';
-import { getAuthHeader } from '../utils/authHeader';
 import Cache from '../utils/Cache';
 
 export class CustomerController {
 
     async get(query: CustomerQuery): Promise<Customer> {
         try {
-            const response = await myAxios.get<Customer>(`/company/customers/${query.customer_id}`, {
-                headers: {
-                    ...await getAuthHeader()
-                }
-            });
+            const response = await myAxios.get<Customer>(`/company/customers/${query.customer_id}`);
             return response.data;
         } catch (error) {
             if (isAxiosError(error)) {
@@ -28,13 +23,11 @@ export class CustomerController {
         const q: any = { ...query };
 
         try {
-            const response = await myAxios.get<Customer[]>(`/company/customers?${qs.stringify(q)}`, {
-                headers: {
-                    ...await getAuthHeader()
-                }
-            });
+            const response = await myAxios.get<Customer[]>(`/company/customers/?${qs.stringify(q)}`);
+            console.log("CUSTOMER QUERY RESPONSE", response);
             return response.data;
         } catch (error) {
+            console.log("ERROR GETTING CUSTOMER", error);
             if (isAxiosError(error)) {
                 throw new Error(error.response?.data)
             }
@@ -44,11 +37,7 @@ export class CustomerController {
 
     async delete(id: string): Promise<void> {
         try {
-            await myAxios.delete(`/company/customers/${id}`, {
-                headers: {
-                    ...await getAuthHeader()
-                }
-            });
+            await myAxios.delete(`/company/customers/${id}`);
             const cache = Cache.getInstance(Customer);
             cache.setData([...cache.getData().filter(c => ("" + c.customer_id) !== id)])
         } catch (error) {
@@ -61,11 +50,7 @@ export class CustomerController {
 
     async update(id: string, model: Customer): Promise<Customer> {
         try {
-            const response = await myAxios.put<Customer>(`/company/customers/${id}`, model, {
-                headers: {
-                    ...await getAuthHeader()
-                }
-            });
+            const response = await myAxios.put<Customer>(`/company/customers/${id}`, model);
 
             const cCache = Cache.getInstance(Customer);
 
@@ -92,11 +77,7 @@ export class CustomerController {
             const company = await AuthController.getCompany();
             model.company_id = company.company_id;
 
-            const response = await myAxios.post<Customer>(`/company/customers`, model, {
-                headers: {
-                    ...await getAuthHeader()
-                }
-            });
+            const response = await myAxios.post<Customer>(`/company/customers`, model);
             const cCache = Cache.getInstance(Customer);
             cCache.setData([...cCache.getData(), response.data]);
             return response.data;

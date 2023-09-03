@@ -6,11 +6,11 @@ export const StyledSection = styled.View`
 
 
 export const StyledHeader = styled.View`
-    height: 100px;
+    height: 80px;
     display: flex; 
     flex-direction: row; 
     justify-content: space-evenly;
     width: 100%;
-    padding-top: 20px
-    padding-bottom: 20px
+    padding-top: 10px
+    padding-bottom: 10px
 `

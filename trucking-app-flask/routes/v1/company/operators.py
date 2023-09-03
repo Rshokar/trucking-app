@@ -3,7 +3,7 @@ from controllers.operator_controller import OperatorController
 from utils import make_response
 from validations import operator_validation, operator_update
 import jsonschema
-from middleware import firebase_required
+from middleware import firebase_required, operator_auth
 
 
 operators = Blueprint("operators", __name__)
@@ -38,6 +38,14 @@ def create_operator():
         return make_response({"error": "Invalid Request Data"}, 400)
 
 
+@operators.route('/<int:operator_id>', methods=["POST"])
+@firebase_required
+def send_validation_email(operator_id):
+    if (operator_id <= 0):
+        return make_response("Operator_id is invalid", 400)
+    return OperatorController.send_validation_email(g.session, operator_id)
+
+
 @operators.route("/<int:operator_id>", methods=["PUT"])
 @firebase_required
 def update_operator(operator_id):
@@ -56,21 +64,50 @@ def delete_operator(operator_id):
     session = g.session
     return OperatorController.delete_operator(session=session, operator_id=operator_id)
 
+# used to validate a operators email.
 
-@operators.route('/validate', methods=["GET"])
+
+@operators.route('/validate', methods=["POST"])
 def validate_operators():
     session = g.session
-    token = request.args.get("token", None)
-    return OperatorController.validate_operator(session, token)
+    try:
+        token = request.get_json().get("token", None)
+        return OperatorController.validate_operator(session, token)
+    except Exception as e:
+        print(e)
+        return make_response("Error validating operator.", 500)
+
+# Endpoint for generating an authentication token for operators.
+# This will create an email containing a six-digit token and send it to the operator.
+# The token, along with the time of creation, will be saved in the database for later validation.
 
 
-@operators.route('/generate_token/<string:request_token>', methods=["GET"])
+@operators.route('/generate_token/<string:request_token>', methods=["POST"])
 def generate_token(request_token):
     session = g.session
-    return OperatorController.generate_operator_auth_token(session, request_token)
+    return OperatorController.send_code_to_operator(session, request_token)
+
+# Endpoint for validating an authentication token provided by an operator.
+# If the token is valid, an access token will be returned for subsequent requests.
 
 
-@operators.route('/validate_token/<string:request_token>', methods=["GET"])
+@operators.route('/validate_token/<string:request_token>', methods=["POST"])
 def validate(request_token):
     session = g.session
-    return OperatorController.validate_operator_auth_token(session, request_token)
+
+    code = request.get_json().get("code", None)
+
+    if code is None:
+        return make_response("Code is missing", 400)
+
+    return OperatorController.validate_operator_auth_token(session, request_token, code)
+
+# Endpoint for retrieving ticket information for a given RFO (Request For Operator) encoded in the access token.
+# The returned information includes details on dispatch, RFO, bills, company, and customer.
+
+
+@operators.route('/ticket', methods=["GET"])
+@operator_auth
+def get_rfo():
+    # Return the ticket information associated with the provided access token.
+    return OperatorController.get_rfo(g.session, g.data)

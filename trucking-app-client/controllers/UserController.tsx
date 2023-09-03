@@ -4,16 +4,14 @@ import { AuthController } from "./AuthController";
 import { Company } from "../models/Company";
 import { User } from "../models/User";
 import { UserCompanyFormResults } from "../components/Forms/UserCompanyForm";
-import { getAuthHeader } from "../utils/authHeader";
 
 export default class UserController {
 
-    async updateUserAndCompany(email: string, company_name: string): Promise<UserCompanyFormResults> {
+    static async updateUserAndCompany(email: string, company_name: string): Promise<UserCompanyFormResults> {
         try {
             const response = await myAxios.put<UserCompanyFormResults>(
                 `/user/account`,
-                { email, company_name },
-                { headers: await getAuthHeader() }
+                { email, company_name }
             );
 
             const comp: Company = await AuthController.getCompany();
@@ -32,6 +30,46 @@ export default class UserController {
                 throw new Error(error.response?.data);
             }
             throw new Error("Error updating user");
+        }
+    }
+
+    static async sendForgotPasswordCode(email: string): Promise<void> {
+        try {
+            await myAxios.post<void>(
+                '/user/forgot_password/send_code',
+                { email }
+            )
+        } catch (err: any) {
+            if (isAxiosError(err))
+                throw new Error(err.response?.data)
+            throw new Error("Error sending code")
+        }
+    }
+
+    static async validateForgotPasswordCode(code: string, email: string): Promise<string> {
+        try {
+            const response = await myAxios.post<void>(
+                '/user/forgot_password/validate_code',
+                { code, email }
+            )
+            return response.data as unknown as string
+        } catch (err: any) {
+            if (isAxiosError(err))
+                throw new Error(err.response?.data)
+            throw new Error("Error sending code")
+        }
+    }
+
+    static async updatePassword(password: string, token: string, email: string): Promise<void> {
+        try {
+            await myAxios.post<void>(
+                '/user/forgot_password/reset_password',
+                { password, token, email }
+            )
+        } catch (err: any) {
+            if (isAxiosError(err))
+                throw new Error(err.response?.data)
+            throw new Error("Error sending code")
         }
     }
 }

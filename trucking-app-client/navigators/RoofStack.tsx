@@ -13,12 +13,11 @@ import { NavigationContainer } from '@react-navigation/native'
 import { createStackNavigator } from '@react-navigation/stack'
 
 import Greeting from '../components/Header/Greeting'
-import Profile from '../components/Header/Profile'
-import { User } from '../models/User'
 import { Company } from '../models/Company'
 import { IconButton, useTheme } from 'react-native-paper'
 import Account from '../screens/Account/Account'
 import { AuthController } from '../controllers/AuthController'
+import { navigationRef } from '../utils/NavigationService'
 
 
 export type RoofStackParamList = {
@@ -43,7 +42,7 @@ const RoofStack: FunctionComponent = () => {
 
 
     return (
-        <NavigationContainer>
+        <NavigationContainer ref={navigationRef}>
             <Stack.Navigator
                 screenOptions={({ navigation }) => ({
                     headerStyle: {

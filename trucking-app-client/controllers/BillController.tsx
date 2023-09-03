@@ -4,18 +4,13 @@ import myAxios from '../config/myAxios';
 import { isAxiosError } from 'axios';
 import * as mime from 'mime'
 import { Platform } from 'react-native';
-import { getAuthHeader } from '../utils/authHeader';
 import MyImageCompressor from '../utils/ImageCompressor';
 
 export class BillController {
 
     async get(query: BillQuery): Promise<Bill> {
         try {
-            const response = await myAxios.get<Bill>(`/billing_ticket/${query.bill_id}`, {
-                headers: {
-                    ... await getAuthHeader()
-                }
-            });
+            const response = await myAxios.get<Bill>(`/billing_ticket/${query.bill_id}`);
             return response.data;
         } catch (error) {
             if (isAxiosError(error)) {
@@ -30,11 +25,7 @@ export class BillController {
         const queryString = qs.stringify(q);
 
         try {
-            const response = await myAxios.get<Bill[]>(`/billing_ticket?${queryString}`, {
-                headers: {
-                    ... await getAuthHeader()
-                }
-            });
+            const response = await myAxios.get<Bill[]>(`/billing_ticket/?${queryString}`);
             return response.data;
         } catch (error) {
             if (isAxiosError(error)) {
@@ -46,11 +37,7 @@ export class BillController {
 
     async delete(id: string): Promise<void> {
         try {
-            await myAxios.delete(`/billing_ticket/${id}`, {
-                headers: {
-                    ... await getAuthHeader()
-                }
-            });
+            await myAxios.delete(`/billing_ticket/${id}`);
         } catch (error) {
             if (isAxiosError(error)) {
                 throw new Error(error.response?.data);
@@ -64,7 +51,6 @@ export class BillController {
             const response = await myAxios.put<Bill>(`/billing_ticket/${id}`, model, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
-                    ... await getAuthHeader()
                 }
             });
             return response.data;
@@ -101,7 +87,6 @@ export class BillController {
             const response = await myAxios.post<Bill>(`/billing_ticket/`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
-                    ... await getAuthHeader()
                 }
             });
             return response.data;
@@ -115,11 +100,7 @@ export class BillController {
 
     async getImageUrl(id: string): Promise<string> {
         try {
-            const response = await myAxios.get<string>(`/billing_ticket/${id}/image`, {
-                headers: {
-                    ... await getAuthHeader()
-                }
-            });
+            const response = await myAxios.get<string>(`/billing_ticket/${id}/image`);
             return response.data;
         } catch (error) {
             if (isAxiosError(error)) {
@@ -128,4 +109,17 @@ export class BillController {
             throw new Error("Error getting bill image URL");
         }
     }
+
+    static async toggleBilled(bill: Bill): Promise<void> {
+        try {
+            await myAxios.post<string>(`/billing_ticket/toggle_billed/${bill.bill_id}`);
+        } catch (error) {
+            if (isAxiosError(error)) {
+                throw new Error(error.response?.data);
+            }
+            throw new Error(`Error switching bill to ${bill.billed ? 'not billed' : 'billed'}`);
+        }
+    }
+
 }
+

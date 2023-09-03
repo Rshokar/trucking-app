@@ -4,25 +4,34 @@ import myAxios from '../config/myAxios';
 import { Company } from "../models/Company";
 import { isAxiosError } from 'axios';
 import { Customer } from "../models/Customer";
-import { getAuthHeader } from "../utils/authHeader";
-
 export class AuthController {
 
     // This function is responsible for registering a user and 
     // Saving the user and company in the authcontrller object
-    static async register(u: User, company: string, userId: string): Promise<{ user: User, company: Company }> {
-        const data = { company, user_id: userId };
+    static async register(jwtToken: string, company: string, email: string): Promise<{ user: User, company: Company }> {
+        const data = { company, token: jwtToken };
 
         try {
-            const response = await myAxios.post<{ user: User, company: Company }>('/auth/register', data, {
-                headers: {
-                    ...await getAuthHeader()
-                }
-            });
+            const response = await myAxios.post<{ user: User, company: Company }>('/auth/register', data);
             AuthController.saveCompany(response.data.company);
-            u.role = response.data.user.role;
-            AuthController.saveUser(u);
+            AuthController.saveUser({ ...response.data.user, email });
             return response.data;
+        } catch (error) {
+            console.log(error)
+            if (isAxiosError(error)) {
+                throw new Error(error.response?.data);
+            }
+            throw new Error("Error during registration");
+        }
+    }
+
+
+    static async login(token: string, email: string): Promise<{ user: User, company: Company }> {
+        try {
+            const response = await myAxios.post<{ user: User, company: Company }>('/auth/login', { id_token: token });
+            AuthController.saveCompany(response.data.company);
+            AuthController.saveUser({ ...response.data.user, email });
+            return { ...response.data }
         } catch (error) {
             if (isAxiosError(error)) {
                 throw new Error(error.response?.data);
@@ -30,6 +39,34 @@ export class AuthController {
             throw new Error("Error during registration");
         }
     }
+
+
+    static async logout(): Promise<void> {
+
+        try {
+            await myAxios.delete('/auth/logout');
+        } catch (error) {
+            if (isAxiosError(error)) {
+                throw new Error(error.response?.data);
+            }
+            throw new Error("Error during registration");
+        } finally {
+            await AsyncStorage.clear();
+
+        }
+    }
+
+    static async re_auth(token: string): Promise<void> {
+        try {
+            await myAxios.post<{ user: User, company: Company }>('/auth/re_auth', { id_token: token });
+        } catch (error) {
+            if (isAxiosError(error)) {
+                throw new Error(error.response?.data);
+            }
+            throw new Error("Error during registration");
+        }
+    }
+
 
 
     public static async saveUser(u: any): Promise<void> {
@@ -57,7 +94,6 @@ export class AuthController {
             customer.customer_id = c["customer_id"]
             customer.company_id = c["company_id"]
             customer.customer_name = c["customer_name"]
-            customer.deleted = c["deleted"]
             return customer;
         })
 
@@ -101,17 +137,6 @@ export class AuthController {
         } catch (error: any) {
             throw new Error(`Failed to get customer data: ${error.message}`);
         }
-    }
-
-
-    static async setJWTToken(token: string): Promise<void> {
-        await AsyncStorage.setItem('token', token);
-    }
-
-    static async getJWTToken(): Promise<string | null> {
-        const token = await AsyncStorage.getItem('token');
-        if (!token) throw Error("Auth token not found")
-        return token
     }
 
 }

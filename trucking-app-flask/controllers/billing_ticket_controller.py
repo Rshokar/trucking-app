@@ -4,6 +4,7 @@ from utils import make_response
 from config import s3, create_unique_image_key
 from models import BillingTickets, RFO, Dispatch, Company
 from sqlalchemy import and_
+from sqlalchemy.exc import IntegrityError
 import os
 from botocore.exceptions import ClientError
 from flask import g
@@ -39,7 +40,7 @@ class BillingTicketController:
     def get_all_bills(session, page: int, limit: int, rfo_id: int):
         """_summary_
             Gets all bills according to id
-            If current user is not owner of rfo 
+            If current user is not owner of rfo
             then 404 is returned
         Args:
             session (_type_): _description_
@@ -210,6 +211,37 @@ class BillingTicketController:
         session.commit()
         return make_response("Billing ticket deleted", 200)
 
+    @staticmethod
+    def toggle_billed(session, bill_id: int):
+        """
+        Toggle the billed attribute for a given billing ticket.
+
+        Args:
+            session (Session): SQLAlchemy session object.
+            bill_id (int): ID of the billing ticket.
+
+        Returns:
+            Response: Flask response object.
+        """
+
+        bill = (
+            session.query(BillingTickets)
+            .join(RFO, RFO.rfo_id == BillingTickets.rfo_id)
+            .join(Dispatch, RFO.dispatch_id == Dispatch.dispatch_id)
+            .join(Company, Company.company_id == Dispatch.company_id)
+            .filter(and_(Company.owner_id == g.user['uid'], BillingTickets.bill_id == bill_id))
+            .one_or_none()
+        )
+
+        if bill is None:
+            return make_response("Billing ticket is not found", 404)
+
+        bill.billed = not bill.billed
+
+        session.commit()
+        status = "billed" if bill.billed else "unbilled"
+        return make_response(f"Bill is now {status}", 200)
+
     def operator_get_billing_tickets(session, token):
         '''
         Fetch Bills related to rfo_id in token
@@ -273,3 +305,108 @@ class BillingTicketController:
         except Exception as e:
             # Handle any errors that occurred while generating the pre-signed URL
             return make_response("Failed to generate pre-signed URL: " + str(e), 500)
+
+    def operator_get_bill_ticket_image(session, token, bill_id):
+        s = URLSafeTimedSerializer(OPERATOR_ACCESS_TOKEN_SECRET)
+
+        try:
+            s.loads(token, max_age=86400)  # Token valid for 24 hours
+        except SignatureExpired:
+            return make_response('Token expired.', 400)
+        except BadTimeSignature:
+            return make_response('Invalid token.', 400)
+
+        return BillingTicketController.get_bill_ticket_image(session, bill_id)
+
+    def operator_create_bill(session, data, file, ticket_number):
+        """_summary_
+            Gets all bills according to id
+            If current user is not owner of rfo
+            then 404 is returned
+        Args:
+            session (_type_): _description_
+            page (_type_): _description_
+            limit (_type_): _description_
+            rfo_id (_type_): _description_
+        """
+        # Generate a unique key for the image
+        image_key = create_unique_image_key() + f"_{data['rfo_id']}"
+
+        # Create the billing ticket with the image key
+
+        try:
+            bill = BillingTickets(
+                data['rfo_id'],
+                ticket_number,
+                image_key,
+                S3_BUCKET_NAME,
+                "us-west-2"
+            )
+
+            session.add(bill)
+            session.commit()
+        except IntegrityError as e:
+            return make_response("RFO not found", 404)
+            # Try to upload the image to S3
+        try:
+            s3.upload_fileobj(
+                file,
+                S3_BUCKET_NAME,
+                image_key,
+                ExtraArgs={
+                    "ContentType": file.content_type
+                }
+            )
+        except Exception as e:
+            session.delete(bill)
+            return make_response("Failed to upload image to S3: " + str(e), 500)
+
+        return make_response(bill.to_dict(), 201)
+
+    def operator_delete_bill(session, data, bill_id):
+        """_summary_
+
+        Args:
+            session (_type_): data base session
+            token (stirng): access token
+            bill_id (number): bill primary key
+        """
+        bill = session.query(BillingTickets)\
+            .filter(and_(BillingTickets.bill_id == bill_id, BillingTickets.rfo_id == data["rfo_id"]))\
+            .first()
+
+        if bill is None:
+            return make_response("Billing ticket not found", 404)
+
+        # Delete the associated image from S3
+        try:
+            s3.delete_object(Bucket=S3_BUCKET_NAME,
+                             Key=bill.image_id)
+        except ClientError as e:
+            # If the image was not found in S3, we log the exception and continue with deleting the bill
+            return make_response("An error occured while deleting the image", 500)
+
+        # # Delete the bill
+        session.delete(bill)
+        session.commit()
+        return make_response("Billing ticket deleted", 204)
+
+    def operator_update_bill(session, data, bill_id, ticket_number):
+        """_summary_
+
+        Args:
+            session (_type_): data base session
+            token (stirng): access token
+            bill_id (number): bill primary key
+        """
+        bill = session.query(BillingTickets)\
+            .filter(and_(BillingTickets.bill_id == bill_id, BillingTickets.rfo_id == data["rfo_id"]))\
+            .first()
+
+        if bill is None:
+            return make_response("Bill not found", 404)
+
+        bill.ticket_number = ticket_number
+
+        session.commit()
+        return make_response("Billing ticket updated", 200)

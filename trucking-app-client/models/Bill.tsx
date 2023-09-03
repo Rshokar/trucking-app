@@ -14,6 +14,7 @@ export class Bill implements Model {
     ticket_number?: string;
     image_id?: number;
     rfo?: RFO;
+    billed: boolean = false
 }
 
 

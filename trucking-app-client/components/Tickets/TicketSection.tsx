@@ -91,12 +91,15 @@ const TicketSection: FunctionComponent<TicketSectionProps> = (props) => {
             {(!props.loading && props.data.length === 0) && <NoTicketsContainer>
 
                 {props.noTicketFoundSVG ? props.noTicketFoundSVG : <DumpTruck width={125} height={125} stroke={'black'} fill={'black'} />}
-                <Text variant='titleLarge'>{props.noTicketFoundMessage}</Text>
-                <Button style={{ backgroundColor: theme.colors.secondary, width: 150 }} onPress={props.onNoTicketsFound}>
-                    <Text style={{ color: 'white' }}>
-                        Add
-                    </Text>
-                </Button>
+                <Text variant='titleLarge' style={{ textAlign: 'center' }}>{props.noTicketFoundMessage}</Text>
+                {
+                    props.onNoTicketsFound &&
+                    <Button style={{ backgroundColor: theme.colors.secondary, width: 150 }} onPress={props.onNoTicketsFound}>
+                        <Text style={{ color: 'white' }}>
+                            Add
+                        </Text>
+                    </Button>
+                }
             </NoTicketsContainer>}
 
         </TicketSectionBackground>

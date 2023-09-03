@@ -1,11 +1,12 @@
 from itsdangerous import URLSafeTimedSerializer
-from models import Operator, Company, RFO
+from models import Operator, Company, RFO, BillingTickets, Dispatch
 from sqlalchemy.exc import IntegrityError
 from utils import send_verification_email, send_operator_auth_token
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadTimeSignature
-from flask_login import current_user
+import random
 from sqlalchemy import and_
 from flask import current_app as app, g, make_response
+from datetime import datetime, timedelta
 from flask_mail import Mail
 import os
 
@@ -67,11 +68,11 @@ class OperatorController:
         Returns:
             Responses: 201 Created
         '''
-        # mail = Mail(app)
+        mail = Mail(app)
         req = request.get_json()
         company_id = req.get('company_id')
         name = req.get('operator_name')
-        email = req.get('operator_email')
+        email = req.get('operator_email').lower()
 
         company = session.query(Company).filter_by(
             company_id=company_id, owner_id=g.user["uid"]).first()
@@ -81,23 +82,61 @@ class OperatorController:
 
         operator_email = session.query(Operator).filter_by(
             operator_email=email, company_id=company_id).first()
+
         if operator_email is not None:
             return make_response('Operator email already used', 400)
 
-        # Generate unique token for the operator
-        token = s.dumps(email, salt=SALT)
-
         # Create operator
         new_operator = Operator(company_id=company_id,
-                                operator_name=name, operator_email=email, confirmed=False, confirm_token=token)
+                                operator_name=name, operator_email=email, confirmed=False)
 
         session.add(new_operator)
         session.commit()
 
-        # Send verification email to the new operator
-        # send_verification_email(mail, email, token, name)
+        # Generate unique token for the operator
+        token = s.dumps({"operator_id": new_operator.operator_id}, salt=SALT)
+
+        try:
+            # Send verification email to the new operator
+            send_verification_email(
+                mail, email, token, name, company.company_name)
+        except Exception as e:
+            print(e)
 
         return make_response(new_operator.to_dict(), 201)
+
+    def send_validation_email(session, operator_id):
+        """_summary_
+            Sends a validation email to the operator
+        Args:
+            session (_type_): _description_
+            operator_id (_type_): _description_
+
+        Returns:
+            _type_: _description_
+        """
+        mail = Mail(app)
+        print(g.user["uid"], operator_id)
+        operator = Operator.get_operator_by_id_and_owner(
+            session, operator_id, g.user["uid"])
+
+        if operator is None:
+            return make_response('Operator does not exist', 404)
+
+        if operator.confirmed is True:
+            return make_response('Operator has already been validated', 400)
+
+            # Generate unique token for the operator
+        token = s.dumps({"operator_id": operator.operator_id}, salt=SALT)
+
+        try:
+            # Send verification email to the new operator
+            send_verification_email(
+                mail, operator.operator_email, token, operator.operator_name, operator.company.company_name)
+        except Exception as e:
+            return make_response("Error sending email", 500)
+
+        return make_response("Email sent", 200)
 
     # Delete an operator
     def delete_operator(session, operator_id):
@@ -138,7 +177,7 @@ class OperatorController:
             Responses: 200 OK if successful, 404 if operator not found
         """
         req = request.get_json()
-        email = req.get('operator_email')
+        email = req.get('operator_email').lower()
         name = req.get("operator_name")
 
         operator = Operator.get_operator_by_id_and_owner(
@@ -158,8 +197,24 @@ class OperatorController:
         if operator_email is not None:
             return make_response('Operator email already used', 400)
 
+        # The email is updated. We need to flag as unconfirmed
+        # Also need to send verification email
+        if operator.operator_email != email:
+            operator.confirmed = False
+            # Generate unique token for the operator
+            token = s.dumps({"operator_id": operator.operator_id}, salt=SALT)
+            mail = Mail(app)
+
+            try:
+                # Send verification email to the new operator
+                send_verification_email(
+                    mail, email, token, name, operator.company.company_name)
+            except Exception as e:
+                print(e)
+
         operator.operator_email = email
         operator.operator_name = name
+
         session.commit()
 
         return make_response(operator.to_dict(), 200)
@@ -180,17 +235,17 @@ class OperatorController:
             return make_response('Token required.', 404)
         try:
             # Change max_age as per your requirements
-            email = s.loads(token, salt=SALT, max_age=3600)
+            op = s.loads(token, salt=SALT, max_age=172800)  # Two days
         except:
-            return make_response('The confirmation link is invalid or has expired.', 400)
+            return make_response('The confirmation link is invalid or has expired.', 403)
 
         operator = session.query(Operator).filter_by(
-            operator_email=email).first()
+            operator_id=op["operator_id"]).first()
 
         if operator is None:
             return make_response('Operator not found.', 404)
 
-        if operator.confirmed:
+        if operator.confirmed is True:
             return make_response('Account already confirmed.', 200)
 
         operator.confirmed = True
@@ -198,9 +253,9 @@ class OperatorController:
 
         return make_response('You have confirmed your account. Thanks!', 200)
 
-    def generate_operator_auth_token(session, request_token):
+    def send_code_to_operator(session, request_token):
         '''
-        Generate a unique 6 digit alphanumeric token for an operator to access a ticket
+        Generates an auth token and sends it via email to an operator.
 
         Parameters:
             Session (session): SQLAlchemy db session
@@ -212,11 +267,9 @@ class OperatorController:
 
         s = URLSafeTimedSerializer(SEND_OPERATOR_RFO_TOKEN_SECRET)
 
-        print(
-            f"TOKEN {request_token} \nSEND OPERATOR RFO TOKEN SECRET: {SEND_OPERATOR_RFO_TOKEN_SECRET}")
         try:
             data = s.loads(
-                request_token, max_age=86400)  # Token valid for 24 hours
+                request_token)
         except SignatureExpired as e:
             print(e)
             return make_response('Token expired.', 400)
@@ -227,63 +280,135 @@ class OperatorController:
         operator = session.query(Operator).filter_by(
             operator_id=data["operator_id"], confirmed=True).first()
 
-        rfo = session.query(RFO).filter_by(rfo_id=data["rfo_id"]).first()
-
         if operator is None:
             return make_response('Operator not found.', 404)
+
+        rfo = session.query(RFO).filter_by(rfo_id=data["rfo_id"], ).first()
 
         if rfo is None:
             return make_response('RFO not found.', 404)
 
+        dispatch = session.query(Dispatch).filter_by(
+            dispatch_id=rfo.dispatch_id).first()
+
+        # If dispatch is expired return a 401
+        if dispatch.expired():
+            return make_response("Dispatch is expired", 401)
+
         # Generate a unique alphanumeric token for the operator
-        s = URLSafeTimedSerializer(OPERATOR_AUTH_TOKEN_SECRET)
-        token = s.dumps(
-            {'operator_id': data["operator_id"], 'rfo_id': data["rfo_id"]})
+        six_digit_number = random.randint(100000, 999999)
+
+        print(six_digit_number)
+
+        rfo.token = six_digit_number
+        rfo.token_date = datetime.now()
+        rfo.token_consumed = False
+
+        session.commit()
 
         # Send the token to the operator's email
         send_operator_auth_token(
-            Mail(app), operator.operator_email, token, operator.operator_name)
+            Mail(app), operator.operator_email, six_digit_number, operator.operator_name)
 
         return make_response('Token sent to operator email.', 200)
 
-    def validate_operator_auth_token(session, token):
+    def validate_operator_auth_token(session, token, code):
         '''
-        Validates an operator's token. Returns a access token. Token will last 24 hours
+        Validates an operator's authentication token and corresponding code. If successful,
+        flips the consumed field in RFO (Request For Order) and returns an access token.
 
         Parameters:
-            Session (session): SQLAlchemy db session
-            token (str): Token string
+            session (Session): SQLAlchemy db session.
+            token (str): The token string to be validated.
+            code (str): The code associated with the token.
 
         Returns:
-            Responses: 200 OK if successful, 404 if operator not found, 400 if token is expired or invalid
+            Response: HTTP response with status code and message.
+                - 200 OK if successful, along with the access token in the response body.
+                - 400 Bad Request if the token is expired or invalid.
+                - 401 Unauthorized if the operator email is not verified, or the code is already used or expired.
+                - 404 Not Found if the operator is not found.
+
+        Exceptions:
+            SignatureExpired: Raised when the token is expired.
+            BadTimeSignature: Raised when the token is invalid.
         '''
-        authS = URLSafeTimedSerializer(OPERATOR_AUTH_TOKEN_SECRET)
+
+        authS = URLSafeTimedSerializer(SEND_OPERATOR_RFO_TOKEN_SECRET)
 
         try:
-            # Token valid for 24 hours
-            data = authS.loads(token, max_age=86400)
+            data = authS.loads(token)
         except SignatureExpired:
             return make_response('Token expired.', 400)
         except BadTimeSignature:
             return make_response('Invalid token.', 400)
 
-        operator = session.query(Operator).filter_by(
-            operator_id=data['operator_id']).first()
+        # Combined query to fetch operator and rfo
+        result = session.query(Operator, RFO).join(RFO, Operator.operator_id == RFO.operator_id).filter(
+            Operator.operator_id == data['operator_id'],
+            RFO.rfo_id == data['rfo_id'],
+            RFO.token == code
+        ).first()
 
-        if operator is None:
-            return make_response('Operator not found.', 404)
+        if result is None:
+            return make_response('Operator or RFO not found.', 404)
+
+        operator, rfo = result
 
         if operator.confirmed is False:
             return make_response('Operator email not verified.', 401)
 
-        rfo = session.query(RFO).filter_by(rfo_id=data['rfo_id']).first()
+        if rfo.token_consumed is True:
+            return make_response("Code has already been used!", 401)
 
-        if rfo is None:
-            return make_response('RFO not found.', 404)
+        dispatch = session.query(Dispatch).filter_by(
+            dispatch_id=rfo.dispatch_id).first()
+
+        if dispatch.expired():
+            return make_response("Dispatch is expired", 401)
+
+        # Check if the token was created more than 5 minutes before the request was made.
+        if rfo.token_date < datetime.now() - timedelta(minutes=5):
+            return make_response("The code provided is expired", 401)
 
         accessS = URLSafeTimedSerializer(OPERATOR_ACCESS_TOKEN_SECRET)
 
         # Once the token is validated, you may issue a new token (access token)
         access_token = accessS.dumps(data)
 
+        # Directly update the token_consumed field without fetching the record first
+        session.query(RFO).filter_by(
+            rfo_id=data['rfo_id']).update({'token_consumed': True})
+
+        session.commit()
         return make_response({'access_token': access_token}, 200)
+
+    def get_rfo(session, data):
+        """
+            Gets the neccessary data for an operator to view there rfo
+        """
+        # Get RFO, Disaptch, Customer, Bills, and operator
+        rfo = session.query(RFO).filter_by(rfo_id=data['rfo_id']).first()
+
+        if rfo is None:
+            return make_response("RFO not found", 404)
+
+        oper = session.query(Operator).filter_by(
+            operator_id=data['operator_id']).first()
+
+        if oper is None:
+            return make_response("Operator not found", 404)
+
+        bills = session.query(BillingTickets).filter_by(
+            rfo_id=data['rfo_id']).all()
+        disp = rfo.dispatch
+        res = {
+            "rfo": rfo.to_dict(),
+            "dispatch": disp.to_dict(),
+            "customer": disp.customer.to_dict(),
+            "operator": oper.operator_name,
+            "company": disp.company.to_dict(),
+            "bills": [bill.to_dict() for bill in bills]
+        }
+
+        return make_response(res, 200)

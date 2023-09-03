@@ -1,19 +1,12 @@
 import myAxios from '../config/myAxios';
 import { Company } from "../models/Company";
 import { isAxiosError } from 'axios';
-import { Customer } from "../models/Customer";
-import { AuthController } from "./AuthController";
-import { getAuthHeader } from '../utils/authHeader';
 export class CompanyController {
 
 
     async get(): Promise<Company> {
         try {
-            const response = await myAxios.get<Company>(`/company/`, {
-                headers: {
-                    ...await getAuthHeader()
-                }
-            });
+            const response = await myAxios.get<Company>(`/company/`);
             return response.data;
         } catch (error) {
             if (isAxiosError(error)) {

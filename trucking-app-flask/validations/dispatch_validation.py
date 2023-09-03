@@ -18,7 +18,8 @@ dispatch_update = {
         "notes": {"type": "string", "maxLength": 1000},
         "date": {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$"},
         "customer_id": {"type": "integer", "minimum": 1},
+        "expiry": {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$"},
     },
-    "required": ["notes", "date", "customer_id"],
+    "required": ["notes", "date", "customer_id", "expiry"],
     "additionalProperties": False
 }

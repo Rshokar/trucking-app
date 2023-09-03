@@ -14,7 +14,7 @@ export interface TicketSectionProps {
     loading: boolean
     title?: string;
     onRefresh?: () => Promise<any>;
-    onNoTicketsFound: () => any;
+    onNoTicketsFound?: () => any;
     noTicketFoundMessage: string;
     noTicketFoundSVG?: ReactNode
 }
@@ -28,7 +28,7 @@ export interface TicketAviProps {
 
 export interface TicketItemProps {
     title: string;
-    subtitle?: string;
+    subtitle?: string | ReactNode;
     avatar: string;
     buttonClickIcon?: IconSource;
     onButtonClick?: () => any;
@@ -37,5 +37,6 @@ export interface TicketItemProps {
     onLongpress?: () => any;
     style?: ViewStyle;
     textStyle?: TextStyle;
+    subtitleStyle?: TextStyle;
     aviColor?: string;
 }

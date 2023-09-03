@@ -19,6 +19,7 @@ export type DispatchFormResult = {
     customer_id: number;
     notes: string;
     date: string;
+    expiry: string;
 }
 
 type Props = {
@@ -27,22 +28,14 @@ type Props = {
     customers: Customer[],
 }
 
-const DispatchFormSchema = Yup.object().shape({
-    customer_id: Yup.number()
-        .min(1, "Customer is required")
-        .required('Required'),
-    notes: Yup.string()
-        .required('Required')
-        .min(10, "Too short")
-        .max(1000, "Too long"),
-    date: Yup.string().required('Required'),
-});
+
 
 const DispatchForm: FC<Props> = ({ onSubmit, defaultValues, customers }) => {
     const theme = useTheme();
     const [visible, setVisible] = useState(false);
     const [cusModal, setCusModsl] = useState<boolean>(false);
     const [showDateModal, setShowDateModal] = useState(false);
+    const [showExpiryModal, setShowExpiryModal] = useState(false);
     const { showSnackbar } = useSnackbar();
 
     const openMenu = () => setVisible(true);
@@ -50,7 +43,33 @@ const DispatchForm: FC<Props> = ({ onSubmit, defaultValues, customers }) => {
     const openCustomerModal = () => setCusModsl(true);
     const closeCustomerModal = () => setCusModsl(false);
 
-    const dv: any = defaultValues ? { ...defaultValues, date: defaultValues?.date.toString().split("T")[0] } : undefined
+    console.log(defaultValues)
+
+    const dv: any = defaultValues ? {
+        ...defaultValues,
+        date: defaultValues?.date.toString().split("T")[0],
+        expiry: defaultValues?.expiry.toString().split("T")[0],
+        showExpiry: true
+    } : undefined
+
+    const DispatchFormSchema = Yup.object().shape({
+        customer_id: Yup.number()
+            .min(1, "Customer is required")
+            .required('Required'),
+        notes: Yup.string()
+            .required('Required')
+            .min(10, "Too short")
+            .max(1000, "Too long"),
+        date: Yup.date()
+            .required('Required'),
+        expiry: Yup.date()
+            .when("showExpiry", {
+                is: true,
+                then: (schema) => schema.required("Expiry Date Required"),
+            })
+            .min(Yup.ref('date'), 'Expiry date must be after the dispatch date')
+    });
+
 
     return (
         <Formik
@@ -64,6 +83,7 @@ const DispatchForm: FC<Props> = ({ onSubmit, defaultValues, customers }) => {
         >
             {({ handleChange, handleBlur, handleSubmit, values, errors, isSubmitting, setFieldValue }) => {
 
+                console.log(errors, values)
 
                 const handleAddCustomer = async (customer: Customer) => {
                     try {
@@ -143,7 +163,31 @@ const DispatchForm: FC<Props> = ({ onSubmit, defaultValues, customers }) => {
                                 handleChange("date")(moment(date).format("YYYY-MM-DD"));
                             }}
                         />
+
                     </InputBox>
+                    {
+                        defaultValues &&
+                        <InputBox>
+                            <TextInput
+                                label="Expiry Date"
+                                value={values.expiry}
+                                onPressIn={() => setShowExpiryModal(true)}
+                                error={errors.expiry ? true : false}
+                            />
+                            <DatePickerModal
+                                locale='en'
+                                mode='single'
+                                visible={showExpiryModal}
+                                onDismiss={() => setShowExpiryModal(false)}
+                                date={values.expiry ? new Date(values.expiry) : new Date()}
+                                onConfirm={({ date }) => {
+                                    setShowExpiryModal(false);
+                                    handleChange("expiry")(moment(date).format("YYYY-MM-DD"));
+                                }}
+                            />
+                            {errors.expiry && <ErrorText>{errors.expiry as string}</ErrorText>}
+                        </InputBox>
+                    }
                     <InputBox>
                         <TextInput
                             label="Notes"
@@ -174,8 +218,8 @@ const DispatchForm: FC<Props> = ({ onSubmit, defaultValues, customers }) => {
                         title={'Add Customer'}
                     >
                         <CustomerForm
-                            onSubmit={function (results: CustomerFormResult, id?: string | undefined) {
-                                handleAddCustomer(results as Customer)
+                            onSubmit={async function (results: CustomerFormResult, id?: string | undefined) {
+                                await handleAddCustomer(results as Customer)
                             }}
                         />
                     </MyModal>

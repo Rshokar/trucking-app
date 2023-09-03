@@ -33,8 +33,6 @@ const RFOSection: FC<Props> = ({ navigateToTicket, dispId, operId, operators }) 
     });
 
     const [enablePaginate, setEnablePaginate] = useState<boolean>(false);
-    const [snackbarVisible, setSnackbarVisible] = useState(false);
-    const [snackbarMessage, setSnackbarMessage] = useState('');
     const [visible, setVisible] = useState(false);
     const [focusedRFO, setFocusedRFO] = useState<RFO>();
     const [search, setSearch] = useState<string>("");
@@ -162,12 +160,41 @@ const RFOSection: FC<Props> = ({ navigateToTicket, dispId, operId, operators }) 
         }
     };
 
+    const handleSendRFOEmail = async (): Promise<boolean> => {
+        if (!focusedRFO)
+            showSnackbar({
+                color: theme.colors.error,
+                message: 'No focused RFO!'
+            })
+        try {
+            const rC = new RFOController();
+            await rC.sendRFOEmail(focusedRFO?.rfo_id + '');
+            showSnackbar({
+                message: 'Email sent',
+                color: theme.colors.primary,
+                onClickText: 'Ok',
+            })
+            return true
+        } catch (err: any) {
+            showSnackbar({
+                message: err.message,
+                color: theme.colors.error,
+                onClickText: 'Ok'
+            })
+            return false;
+        }
+
+
+    }
+
     const handleRefresh = async () => {
         const rQ = new RFOQuery();
         rQ.limit = 100;
         rQ.dispatch_id = dispId;
         setQuery(rQ);
     }
+
+    console.log('RFO SECTION', dispId, operId)
 
     return (
         <StyledSection>
@@ -177,11 +204,11 @@ const RFOSection: FC<Props> = ({ navigateToTicket, dispId, operId, operators }) 
                 data={rfos}
                 onRefresh={handleRefresh}
                 loading={loading}
-                onNoTicketsFound={() => {
+                onNoTicketsFound={dispId ? () => {
                     setFocusedRFO(undefined);
                     showModal();
-                }}
-                noTicketFoundMessage={"No Request For Operators Found!"}
+                } : undefined}
+                noTicketFoundMessage={"No RFOs (Request For Operator) Found!"}
                 noTicketFoundSVG={<Contract width={125} height={125} stroke={'black'} fill={'black'} />}
                 render={({ item }: { item: RFO }) => {
                     if (item.operator?.operator_name?.match(search || '')) {
@@ -235,8 +262,9 @@ const RFOSection: FC<Props> = ({ navigateToTicket, dispId, operId, operators }) 
                             setShowRFOCards(false)
                         }}
                         onLongPress={function () {
-                            throw new Error('Function not implemented.');
+
                         }} {...focusedRFO}
+                        sendRFOEmail={handleSendRFOEmail}
                     />
                 </Modal>
             </Portal>

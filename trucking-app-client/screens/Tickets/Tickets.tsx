@@ -1,5 +1,4 @@
 import React, { FunctionComponent, useEffect, useState } from 'react'
-import { StatusBar } from 'expo-status-bar'
 import styled from 'styled-components/native'
 
 import { colors } from '../../components/colors'
@@ -10,11 +9,9 @@ import { Dispatch, DispatchQuery } from '../../models/Dispatch'
 import { DispatchController } from '../../controllers/DispatchController'
 import { AuthController } from '../../controllers/AuthController'
 import { Company } from '../../models/Company'
-import { Customer } from '../../models/Customer'
 import RfoSection from '../../components/TicketSections/RfoSection'
 import { OperatorController } from '../../controllers/OperatorController'
 import { Operator, OperatorQuery } from '../../models/Operator'
-import { Snackbar } from 'react-native-paper'
 import { RFO, RFOQuery } from '../../models/RFO'
 import { Bill } from '../../models/Bill'
 import DispatchCard from '../../components/Cards/DIspatchCard'
@@ -23,11 +20,13 @@ import BillSection from '../../components/TicketSections/BillSection'
 import { RFOController } from '../../controllers/RfoController'
 import Cache from '../../utils/Cache'
 import uuid from 'react-native-uuid'
+import useSnackbar from '../../hooks/useSnackbar'
+import { useTheme } from 'react-native-paper'
 
 const BalanceContainer = styled(Container)`
     background-color: ${colors.graylight}; 
     width: 100%;
-    gap: 20px; 
+    gap: 10px; 
     flex: 1;
 `
 
@@ -40,8 +39,8 @@ export interface TicketIds {
 }
 
 const Tickets: FunctionComponent<Props> = ({ route }) => {
-
-    console.log("ROUTE PARAMS", route.params)
+    const { showSnackbar } = useSnackbar();
+    const theme = useTheme();
 
     const [tickets, setTickets] = useState<TicketIds>({
         dispId: route.params.dispId,
@@ -100,17 +99,28 @@ const Tickets: FunctionComponent<Props> = ({ route }) => {
         run()
     }, [tickets.rfoId, operators])
 
-    // Set Operator subscriber
+    // Get Operators from DB 
     useEffect(() => {
-        const cache = Cache.getInstance(Operator);
-        cache.subscribe({
-            id: operatorCacheId,
-            onChange: setOperators
-        })
+        const run = async () => {
+            const oC = new OperatorController();
+            const oQ = new OperatorQuery();
+            oQ.limit = 99999;
+            try {
+                const operator: Operator[] = await oC.getAll(oQ);
+                setOperators(operator)
+            } catch (err: any) {
+                showSnackbar({
+                    color: theme.colors.error,
+                    message: err.message,
+                    onClickText: 'Ok'
+                })
+            }
+        }
+
+        run();
     }, [])
 
-    console.log("OPERATROS", operators);
-
+    console.log(operators)
 
     return (
         <BalanceContainer>

@@ -2,7 +2,7 @@ from flask import current_app as app, g
 from models import RFO, Dispatch, Operator, Company, Customer
 from sqlalchemy import and_
 from sqlalchemy.exc import IntegrityError
-from utils import make_response, send_operator_rfo
+from utils import make_response, send_operator_rfo, send_operator_rfo_update
 from datetime import datetime
 from itsdangerous import BadTimeSignature, SignatureExpired, URLSafeTimedSerializer
 from flask_mail import Mail
@@ -88,6 +88,9 @@ class RfoController:
         if oper is None:
             return make_response('Operator not found', 404)
 
+        if oper.confirmed == False:
+            return make_response("Operator email not verified", 400)
+
         rfo = RFO(
             dispatch_id=disp_id,
             operator_id=oper_id,
@@ -101,6 +104,20 @@ class RfoController:
         )
         session.add(rfo)
         session.commit()
+
+        # Send RFO email to operator
+        s = URLSafeTimedSerializer(SEND_OPERATOR_RFO_TOKEN_SECRET)
+        token_data = {"operator_id": oper.operator_id,
+                      "rfo_id": rfo.rfo_id}
+        # This will give you a secure token with the operator_id and rfo_id
+
+        token = s.dumps(token_data)
+
+        try:
+            send_operator_rfo(Mail(app), oper.operator_email,
+                              rfo, oper, comp, disp.customer, disp, token)
+        except Exception as e:
+            print(e)
 
         # to_dict should not change rfo.start_time to string.
         res = rfo.to_dict()
@@ -131,17 +148,23 @@ class RfoController:
         if comp is None:
             return make_response('Company not found', 404)
 
+        disp = session.query(Dispatch).filter_by(
+            dispatch_id=rfo.dispatch_id, company_id=comp.company_id).first()
+
+        if disp is None:
+            return make_response('Dispatch not found', 404)
+
+        newOp = False
         if operator_id != rfo.operator_id:
             oper = session.query(Operator).filter_by(
                 operator_id=operator_id, company_id=comp.company_id).first()
             if oper is None:
                 return make_response('Operator not found', 404)
 
-        disp = session.query(Dispatch).filter_by(
-            dispatch_id=rfo.dispatch_id, company_id=comp.company_id).first()
-
-        if disp is None:
-            return make_response('Dispatch not found', 404)
+            if oper.confirmed == False:
+                return make_response("Operator email not verified", 400)
+            newOp = True
+            # The operator is new and need to send new email
 
         rfo.operator_id = operator_id
         rfo.load_location = load_location
@@ -152,6 +175,25 @@ class RfoController:
         rfo.truck = truck
 
         session.commit()
+
+        # Send RFO email to operator
+        s = URLSafeTimedSerializer(SEND_OPERATOR_RFO_TOKEN_SECRET)
+        token_data = {"operator_id": operator_id,
+                      "rfo_id": rfo.rfo_id}
+        # This will give you a secure token with the operator_id and rfo_id
+
+        token = s.dumps(token_data)
+
+        try:
+            if newOp:
+                send_operator_rfo(Mail(app), rfo.operator.operator_email,
+                                  rfo, rfo.operator, comp, disp.customer, disp, token)
+            else:
+                send_operator_rfo_update(Mail(
+                    app), rfo.operator.operator_email, rfo, rfo.operator, comp, disp.customer, disp, token)
+
+        except Exception as e:
+            print(e)
 
         res = rfo.to_dict()
         # Conversion is done here instead.

@@ -1,5 +1,5 @@
 import React, { FunctionComponent, useEffect, useState, useCallback } from 'react';
-import { TextInput, Modal, FAB, Portal, Chip, useTheme } from 'react-native-paper';
+import { TextInput, Modal, FAB, Portal, Chip, useTheme, Text } from 'react-native-paper';
 import { DatePickerModal } from 'react-native-paper-dates';
 import moment from 'moment';
 import { Dispatch, DispatchQuery } from '../../models/Dispatch';
@@ -185,6 +185,8 @@ const DispatchSection: FunctionComponent<Props> = ({ navigateToTickets, customer
     }
 
 
+
+
     return (
         <StyledSection>
             <StyledHeader>
@@ -242,9 +244,14 @@ const DispatchSection: FunctionComponent<Props> = ({ navigateToTickets, customer
                 }}
                 noTicketFoundMessage={"No Dispatches Found!"}
                 render={({ item }: { item: Dispatch }) => {
+
+                    const expired: boolean = new Date(item.expiry + '').getTime() <= Date.now();
                     return <TicketItem
                         title={item.customer?.customer_name || ''}
-                        subtitle={moment(item.date).format('YYYY-MM-DD')}
+                        subtitle={<Text>
+                            {moment(item.date).format('YYYY-MM-DD')}
+                            {expired && <Text style={{ color: 'red' }}>{` (${moment(item.expiry).format('YYYY-MM-DD')})`}</Text>}
+                        </Text>}
                         avatar={item.rfo_count + ""}
                         onClick={() => {
                             setFocusingDispatch(item);
@@ -260,6 +267,9 @@ const DispatchSection: FunctionComponent<Props> = ({ navigateToTickets, customer
                         }}
                         buttonClickIcon={'pencil'}
                         onDelete={() => handleDelete(item.dispatch_id + "")}
+                        textStyle={{
+                            color: expired ? 'red' : 'black'
+                        }}
                     />
                 }}
                 paginate={paginate}
