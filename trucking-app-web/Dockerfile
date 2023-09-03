@@ -1,5 +1,5 @@
 # Use a Node.js image to build the React app
-FROM node:14 AS build
+FROM node:18 AS build
 
 # Set the working directory in the container
 WORKDIR /app
@@ -22,8 +22,8 @@ FROM nginx:alpine
 # Copy the built app to the Nginx web directory
 COPY --from=build /app/build /usr/share/nginx/html
 
-# Optionally, if you have custom nginx configurations
-# COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Optionally, use custom nginx configurations
+COPY --from=build /app/nginx.conf /etc/nginx/conf.d/default.conf
 
 # Expose port 80 for the app
 EXPOSE 80

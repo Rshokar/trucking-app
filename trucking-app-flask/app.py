@@ -7,10 +7,8 @@ from flask_cors import CORS
 from dotenv import load_dotenv
 from models import User
 
-
 # Load env variables
 load_dotenv()
-
 
 IS_PRODUCTION = os.environ.get("STATE")
 MAX_CONTENT_SIZE = os.environ.get("MAX_CONTENT_SIZE")
@@ -50,12 +48,10 @@ app.secret_key = 'fzV2T57K8JmQJ@C'
 # login_manager = LoginManager(app)
 # login_manager.init_app(app)
 
-
 # @login_manager.user_loader
 # def load_user(user_id, callback=None):
 #     session = Session()
 #     return session.query(User).get(user_id)
-
 
 # Register all endpoints
 app.register_blueprint(v1, url_prefix="/v1")
