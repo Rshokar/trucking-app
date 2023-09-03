@@ -13,19 +13,6 @@ load_dotenv()
 IS_PRODUCTION = os.environ.get("STATE")
 MAX_CONTENT_SIZE = os.environ.get("MAX_CONTENT_SIZE")
 
-# if (IS_PRODUCTION == "development" or IS_PRODUCTION == "test"):
-#     # # If development clear all database
-#     Base.metadata.drop_all(engine)
-
-#     print("--|--Creating Tables--|--")
-#     # Create all tables if not already there
-#     Base.metadata.create_all(engine)
-
-# if (IS_PRODUCTION == "development"):
-#     print("--|--Loading Test Data--|--")
-#     loadDB(int(1))
-
-
 app = Flask(__name__)
 CORS(app)
 
@@ -44,14 +31,6 @@ app.config['MAX_CONTENT_LENGTH'] = int(MAX_CONTENT_SIZE)  # 16 megabytes
 # Set secret key for auth session
 app.secret_key = 'fzV2T57K8JmQJ@C'
 
-# # Initialize login manager
-# login_manager = LoginManager(app)
-# login_manager.init_app(app)
-
-# @login_manager.user_loader
-# def load_user(user_id, callback=None):
-#     session = Session()
-#     return session.query(User).get(user_id)
 
 # Register all endpoints
 app.register_blueprint(v1, url_prefix="/v1")

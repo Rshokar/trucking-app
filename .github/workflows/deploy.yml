@@ -1,0 +1,82 @@
+name: CI for Trucking App
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    env:
+        FLASK_DEBUG: 0
+        RESET_PASSWORD_CODE_EXPIRY: 5
+        AUTHORIZATION_HEADER: Authorization-Fake-X
+        WEB_URL: http://localhost:3000
+        MAX_CONTENT_SIZE: 16777216
+
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Generate Random Secrets
+      run: |
+        echo "OPERATOR_AUTH_TOKEN_SECRET=$(openssl rand -base64 32)" >> $GITHUB_ENV
+        echo "SEND_OPERATOR_RFO_TOKEN_SECRET=$(openssl rand -base64 32)" >> $GITHUB_ENV
+        echo "OPERATOR_ACCESS_TOKEN_SECRET=$(openssl rand -base64 32)" >> $GITHUB_ENV
+        echo "RESET_PASSWORD_SECRET=$(openssl rand -base64 32)" >> $GITHUB_ENV
+        echo "RESET_PASSWORD_SALT=$(openssl rand -base64 32)" >> $GITHUB_ENV
+
+
+    - name: Setup trucking-app-flask env
+      run: |
+        echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> trucking-app-flask/.env
+        echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> trucking-app-flask/.env
+        echo "DB_URL=${{ secrets.DB_URL }}" >> trucking-app-flask/.env
+        echo "DB_NAME=${{ secrets.DB_NAME }}" >> trucking-app-flask/.env
+        echo "FLASK_DEBUG=$FLASK_DEBUG" >> trucking-app-flask/.env
+        echo "OPERATOR_AUTH_TOKEN_SECRET=${OPERATOR_AUTH_TOKEN_SECRET}" >> trucking-app-flask/.env
+        echo "SEND_OPERATOR_RFO_TOKEN_SECRET=${SEND_OPERATOR_RFO_TOKEN_SECRET }" >> trucking-app-flask/.env
+        echo "OPERATOR_ACCESS_TOKEN_SECRET=${OPERATOR_ACCESS_TOKEN_SECRET}" >> trucking-app-flask/.env
+        echo "RESET_PASSWORD_SECRET=${RESET_PASSWORD_SECRET}" >> trucking-app-flask/.env
+        echo "RESET_PASSWORD_SALT=${RESET_PASSWORD_SALT}" >> trucking-app-flask/.env
+        echo "RESET_PASSWORD_CODE_EXPIRY=$RESET_PASSWORD_CODE_EXPIRY" >> trucking-app-flask/.env
+        echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> trucking-app-flask/.env
+        echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> trucking-app-flask/.env
+        echo "S3_REGION=${{ secrets.S3_REGION }}" >> trucking-app-flask/.env
+        echo "S3_BUCKET_NAME=${{ secrets.S3_BUCKET_NAME }}" >> trucking-app-flask/.env
+        echo "SES_MAIL_SERVER=${{ secrets.SES_MAIL_SERVER }}" >> trucking-app-flask/.env
+        echo "SES_MAIL_PORT=${{ secrets.SES_MAIL_PORT }}" >> trucking-app-flask/.env
+        echo "SES_MAIL_USERNAME=${{ secrets.SES_MAIL_USERNAME }}" >> trucking-app-flask/.env
+        echo "SES_MAIL_PASSWORD=${{ secrets.SES_MAIL_PASSWORD }}" >> trucking-app-flask/.env
+        echo "MAX_CONTENT_SIZE=$MAX_CONTENT_SIZE" >> trucking-app-flask/.env
+        echo "AUTHORIZATION_HEADER=$AUTHORIZATION_HEADER" >> trucking-app-flask/.env
+        echo "WEB_URL=$WEB_URL" >> trucking-app-flask/.env
+
+    - name: Build Docker images
+      run: docker-compose build
+
+    # If you have tests, uncomment and adjust this block
+    #- name: Run tests
+    #  run: docker-compose run YOUR_SERVICE_NAME YOUR_TEST_COMMAND
+
+    - name: Login to Docker Hub
+      run: docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_PASSWORD }}
+
+    - name: Push Docker images
+      run: docker-compose push
+
+    # Deploy to EC2
+    - name: Deploy to EC2
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ubuntu
+        key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+        script: |
+          cd /path/to/your/project/
+          docker-compose down
+          docker-compose pull
+          docker image prune -f
+          docker-compose up -d
