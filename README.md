@@ -57,11 +57,13 @@ To get started with the project, make sure you have the following:
 #### 1.Running API Test
 
 1. Open Command Prompt
-2. Type: `cd trucking-app`
+2. `cd` into the folder where the code is stored.
 3. Type: `cd trucking-app-flask`
 4. Type: `.venv\Scripts\activate`
-5. (.venv) should appear on the left side command line line.
-6. Type: `pip install -r requirements.txt`
+   - on Mac: `source .venv/Scripts/activate`
+5. (.venv) should appear on the left side command line.
+6. Type: `pip3 install -r requirements.txt`
+   - You should have python 3+ installed
 7. packages should be installed
 8. Type: `cd tests`
 9. Type: `pytest`
@@ -73,7 +75,8 @@ To get started with the project, make sure you have the following:
 3. Type: `cd trucking-app-flask`
 4. Type: `.venv\Scripts\activate`
 5. (.venv) should appear on the left side command line line.
-6. Type: `pip install -r requirements.txt`
+6. Type: `pip3 install -r requirements.txt`
+   - You should have python 3+ installed
 7. packages should be installed
 8. Type: `python -m flask run`
 
@@ -82,8 +85,8 @@ To get started with the project, make sure you have the following:
 1. Open Command Prompt
 2. `cd` into the folder where the code is stored
 3. Type: `cd trucking-app-client`
-4. Type: `npx expo install`
-5. Type: `npx expo start`
+4. Type: `npx expo install` or similarly `npm i`
+5. Type: `npx expo start` or similarly `npm run dev`
    <br>
 
 ## <a id="how-to-use-product">How to use the product (Features)</a>
