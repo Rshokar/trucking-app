@@ -82,7 +82,6 @@ jobs:
         username: ec2-user
         key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
         script: |
-          cd /path/to/your/project/
           docker-compose down
           docker-compose pull
           docker image prune -f
