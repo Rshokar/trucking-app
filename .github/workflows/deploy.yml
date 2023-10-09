@@ -74,6 +74,7 @@ jobs:
     - name: Push Docker images
       run: docker-compose push
 
+
     # Deploy to EC2
     - name: Deploy to EC2
       uses: appleboy/ssh-action@master
@@ -82,6 +83,22 @@ jobs:
         username: ec2-user
         key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
         script: |
+          # Check if Docker is installed and install if not
+          if ! command -v docker &> /dev/null
+          then
+            sudo yum update -y
+            sudo yum install docker -y
+            sudo service docker start
+            sudo usermod -a -G docker ec2-user
+          fi
+
+          # Ensure Docker Compose is installed (you can adjust this for your specific version)
+          if ! command -v docker-compose &> /dev/null
+          then
+            sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+            sudo chmod +x /usr/local/bin/docker-compose
+          fi
+
           docker-compose down
           docker-compose pull
           docker image prune -f

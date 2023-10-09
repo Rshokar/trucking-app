@@ -2,6 +2,7 @@ version: '3'
 services:
   web-client:
     image: rshokar/web-client:latest
+    restart: unless-stopped
     build:
       context: ./trucking-app-web
       dockerfile: Dockerfile
@@ -10,6 +11,7 @@ services:
 
   flask-api:
     image: rshokar/flask-api:latest
+    restart: unless-stopped
     build:
       context: ./trucking-app-flask
       dockerfile: Dockerfile
