@@ -11,8 +11,6 @@ services:
     restart: unless-stopped
     environment:
       - FLASK_RUN_HOST=0.0.0.0
-    env_file:
-      - ./trucking-app-flask/.env
     ports:
       - "5000:5000"
 
