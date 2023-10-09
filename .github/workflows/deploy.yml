@@ -81,7 +81,7 @@ jobs:
         username: ec2-user
         key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
         source: "docker-compose.yaml,.env,./nginx.conf"
-        target: "/path/on/ec2/where/you/want/these/files"
+        target: "./"
 
 
     - name: Deploy to EC2
