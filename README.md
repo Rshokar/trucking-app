@@ -57,7 +57,7 @@ To get started with the project, make sure you have the following:
 #### 1.Running API Test
 
 1. Open Command Prompt
-2. `cd` into the folder where the code is stored
+2. Type: `cd trucking-app`
 3. Type: `cd trucking-app-flask`
 4. Type: `.venv\Scripts\activate`
 5. (.venv) should appear on the left side command line line.
