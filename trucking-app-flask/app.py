@@ -13,7 +13,11 @@ load_dotenv()
 IS_PRODUCTION = os.environ.get("STATE")
 MAX_CONTENT_SIZE = os.environ.get("MAX_CONTENT_SIZE")
 
-app = Flask(__name__)
+# Register static web endpoint
+STATIC_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static')
+
+app = Flask(__name__, static_folder=STATIC_DIR, static_url_path='/')
+
 CORS(app)
 
 # SMTP server name provided by AWS
@@ -34,6 +38,14 @@ app.secret_key = 'fzV2T57K8JmQJ@C'
 
 # Register all endpoints
 app.register_blueprint(v1, url_prefix="/v1")
+app.route('/')
+
+
+# Route to serve the React application
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def serve_static_app(path):
+    return app.send_static_file('index.html')
 
 # Function to create a session for each request
 
