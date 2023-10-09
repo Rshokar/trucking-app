@@ -1,22 +1,26 @@
-import os
-from config.db import Session, Base, engine
-from utils import loadDB
-from routes import v1
-from flask import Flask, g
-from flask_cors import CORS
-from dotenv import load_dotenv
 from models import User
+from dotenv import load_dotenv
+from flask_cors import CORS
+from flask import Flask, g
+from routes import v1
+from utils import loadDB
+from config.db import Session, Base, engine
+import os
+IS_PRODUCTION = os.environ.get("STATE")
+MAX_CONTENT_SIZE = os.environ.get("MAX_CONTENT_SIZE")
+
+
+print(f"HELLO DB USERNAME: {os.environ.get('DB_USERNAME')}")
+
 
 # Load env variables
 load_dotenv()
 
-IS_PRODUCTION = os.environ.get("STATE")
-MAX_CONTENT_SIZE = os.environ.get("MAX_CONTENT_SIZE")
 
 # Register static web endpoint
-STATIC_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static')
+# STATIC_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static')
 
-app = Flask(__name__, static_folder=STATIC_DIR, static_url_path='/')
+app = Flask(__name__)
 
 CORS(app)
 
@@ -42,10 +46,10 @@ app.route('/')
 
 
 # Route to serve the React application
-@app.route('/', defaults={'path': ''})
-@app.route('/<path:path>')
-def serve_static_app(path):
-    return app.send_static_file('index.html')
+# @app.route('/', defaults={'path': ''})
+# @app.route('/<path:path>')
+# def serve_static_app(path):
+#     return app.send_static_file('index.html')
 
 # Function to create a session for each request
 
