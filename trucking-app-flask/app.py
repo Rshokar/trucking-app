@@ -1,21 +1,17 @@
-from models import User
-from dotenv import load_dotenv
-from flask_cors import CORS
-from flask import Flask, g
-from routes import v1
-from utils import loadDB
-from config.db import Session, Base, engine
 import os
-IS_PRODUCTION = os.environ.get("STATE")
-MAX_CONTENT_SIZE = os.environ.get("MAX_CONTENT_SIZE")
-
-
-print(f"HELLO DB USERNAME: {os.environ.get('DB_USERNAME')}")
-
+from config.db import Session, Base, engine
+from utils import loadDB
+from routes import v1
+from flask import Flask, g
+from flask_cors import CORS
+from dotenv import load_dotenv
+from models import User
 
 # Load env variables
 load_dotenv()
 
+IS_PRODUCTION = os.environ.get("STATE")
+MAX_CONTENT_SIZE = os.environ.get("MAX_CONTENT_SIZE")
 
 # Register static web endpoint
 # STATIC_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static')

@@ -64,28 +64,28 @@ jobs:
         username: ec2-user
         key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
         script: |
-          export DB_PASSWORD=${{ secrets.DB_PASSWORD }}
-          export DB_USERNAME=${{ secrets.DB_USERNAME }}
-          export DB_URL=${{ secrets.DB_URL }}
-          export DB_NAME=${{ secrets.DB_NAME }}
-          export FLASK_DEBUG=${{ env.FLASK_DEBUG }}
-          export OPERATOR_AUTH_TOKEN_SECRET=${{ env.OPERATOR_AUTH_TOKEN_SECRET }}
-          export SEND_OPERATOR_RFO_TOKEN_SECRET=${{ env.SEND_OPERATOR_RFO_TOKEN_SECRET }}
-          export OPERATOR_ACCESS_TOKEN_SECRET=${{ env.OPERATOR_ACCESS_TOKEN_SECRET }}
-          export RESET_PASSWORD_SECRET=${{ env.RESET_PASSWORD_SECRET }}
-          export RESET_PASSWORD_SALT=${{ env.RESET_PASSWORD_SALT }}
-          export RESET_PASSWORD_CODE_EXPIRY=${{ env.RESET_PASSWORD_CODE_EXPIRY }}
-          export AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          export AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
-          export S3_REGION=${{ secrets.S3_REGION }}
-          export S3_BUCKET_NAME=${{ secrets.S3_BUCKET_NAME }}
-          export SES_MAIL_SERVER=${{ secrets.SES_MAIL_SERVER }}
-          export SES_MAIL_PORT=${{ secrets.SES_MAIL_PORT }}
-          export SES_MAIL_USERNAME=${{ secrets.SES_MAIL_USERNAME }}
-          export SES_MAIL_PASSWORD=${{ secrets.SES_MAIL_PASSWORD }}
-          export MAX_CONTENT_SIZE=${{ env.MAX_CONTENT_SIZE }}
-          export AUTHORIZATION_HEADER=${{ env.AUTHORIZATION_HEADER }}
-          export WEB_URL=${{ env.WEB_URL }}
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" > .env
+          echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> .env
+          echo "DB_URL=${{ secrets.DB_URL }}" >> .env
+          echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
+          echo "FLASK_DEBUG=${{ env.FLASK_DEBUG }}" >> .env
+          echo "OPERATOR_AUTH_TOKEN_SECRET=${{ env.OPERATOR_AUTH_TOKEN_SECRET }}" >> .env
+          echo "SEND_OPERATOR_RFO_TOKEN_SECRET=${{ env.SEND_OPERATOR_RFO_TOKEN_SECRET }}" >> .env
+          echo "OPERATOR_ACCESS_TOKEN_SECRET=${{ env.OPERATOR_ACCESS_TOKEN_SECRET }}" >> .env
+          echo "RESET_PASSWORD_SECRET=${{ env.RESET_PASSWORD_SECRET }}" >> .env
+          echo "RESET_PASSWORD_SALT=${{ env.RESET_PASSWORD_SALT }}" >> .env
+          echo "RESET_PASSWORD_CODE_EXPIRY=${{ env.RESET_PASSWORD_CODE_EXPIRY }}" >> .env
+          echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> .env
+          echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> .env
+          echo "S3_REGION=${{ secrets.S3_REGION }}" >> .env
+          echo "S3_BUCKET_NAME=${{ secrets.S3_BUCKET_NAME }}" >> .env
+          echo "SES_MAIL_SERVER=${{ secrets.SES_MAIL_SERVER }}" >> .env
+          echo "SES_MAIL_PORT=${{ secrets.SES_MAIL_PORT }}" >> .env
+          echo "SES_MAIL_USERNAME=${{ secrets.SES_MAIL_USERNAME }}" >> .env
+          echo "SES_MAIL_PASSWORD=${{ secrets.SES_MAIL_PASSWORD }}" >> .env
+          echo "MAX_CONTENT_SIZE=${{ env.MAX_CONTENT_SIZE }}" >> .env
+          echo "AUTHORIZATION_HEADER=${{ env.AUTHORIZATION_HEADER }}" >> .env
+          echo "WEB_URL=${{ env.WEB_URL }}" >> .env
           
           sudo yum update -y
           sudo yum install docker -y
