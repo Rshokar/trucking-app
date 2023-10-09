@@ -27,6 +27,7 @@ jobs:
         echo "OPERATOR_ACCESS_TOKEN_SECRET=$(openssl rand -base64 32)" >> $GITHUB_ENV
         echo "RESET_PASSWORD_SECRET=$(openssl rand -base64 32)" >> $GITHUB_ENV
         echo "RESET_PASSWORD_SALT=$(openssl rand -base64 32)" >> $GITHUB_ENV
+        echo "CI=false" >> $GITHUB_ENV
 
 
     - name: Setup trucking-app-flask env
