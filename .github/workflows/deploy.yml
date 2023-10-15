@@ -12,7 +12,7 @@ jobs:
         FLASK_DEBUG: 0
         RESET_PASSWORD_CODE_EXPIRY: 5
         AUTHORIZATION_HEADER: Authorization-Fake-X
-        WEB_URL: http://34.216.125.64:3000
+        WEB_URL: http://34.216.125.64
         MAX_CONTENT_SIZE: 16777216
 
 
@@ -53,7 +53,7 @@ jobs:
         echo "SES_MAIL_PASSWORD=${{ secrets.SES_MAIL_PASSWORD }}" >> .env
         echo "MAX_CONTENT_SIZE=$MAX_CONTENT_SIZE" >> .env
         echo "AUTHORIZATION_HEADER=$AUTHORIZATION_HEADER" >> .env
-        echo "WEB_URL=http://34.216.125.64:3000" >> .env
+        echo "WEB_URL=$WEB_URL" >> .env
 
     - name: Build Web Client
       run: |
