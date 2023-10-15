@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import styled from "styled-components";
 import { Container } from "../../../components/shared";
 import {
@@ -10,8 +9,7 @@ import {
 } from "@mui/material";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import * as Yup from "yup";
-
-type Props = {};
+import toast from "react-hot-toast";
 
 const ContactContainer = styled(Container)`
   background-color: white;
@@ -31,6 +29,7 @@ const InputBoxContainer = styled.div`
 `;
 
 const TextAreaBox = styled(TextareaAutosize)`
+  width: 100%;
   border-top: none;
   border-left: none;
   border-right: none;
@@ -45,6 +44,9 @@ const TextAreaBox = styled(TextareaAutosize)`
 
 const PrimaryButton = styled(Button)({
   width: "100%",
+  "&:hover": {
+    opacity: 0.75,
+  },
 });
 
 const ButtonText = styled(Typography)`
@@ -58,7 +60,7 @@ const ErrorMsg = styled(ErrorMessage)({
   fontSize: "10pt",
 });
 
-const Contact: React.FC = (props: Props) => {
+const Contact: React.FC = () => {
   const theme = useTheme();
   const initialValues = {
     name: "",
@@ -79,6 +81,10 @@ const Contact: React.FC = (props: Props) => {
     // For now, let's log the form data to the console.
     console.log(values);
     resetForm();
+
+    toast.success("Succesfully submitted, we will contact you shortly.", {
+      position: "bottom-center",
+    });
   };
   return (
     <ContactContainer>
@@ -132,7 +138,6 @@ const Contact: React.FC = (props: Props) => {
                 id="message"
                 name="message"
                 placeholder="What can we help you with?"
-                style={{ width: "100%" }}
               />
               <ErrorMsg name="message" component="div" className="error" />
             </div>
