@@ -15,14 +15,20 @@ type Props = {};
 
 const ContactContainer = styled(Container)`
   background-color: white;
-  /* height: 75vh; */
+  display: flex;
   flex-direction: column;
   gap: 30px;
   padding-bottom: 5rem;
-  width: "50vw";
+  width: 100vw;
 `;
 
 const InputBox = styled(Input)``;
+
+const InputBoxContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 45%;
+`;
 
 const TextAreaBox = styled(TextareaAutosize)`
   border-top: none;
@@ -46,6 +52,11 @@ const ButtonText = styled(Typography)`
   align-items: center;
   justify-content: center;
 `;
+
+const ErrorMsg = styled(ErrorMessage)({
+  color: "red",
+  fontSize: "10pt",
+});
 
 const Contact: React.FC = (props: Props) => {
   const theme = useTheme();
@@ -78,61 +89,65 @@ const Contact: React.FC = (props: Props) => {
         Get in touch and let us know how we can help.
       </Typography>
 
-      <Formik
-        initialValues={initialValues}
-        validationSchema={validationSchema}
-        onSubmit={handleSubmit}
-      >
-        <Form>
-          <div
-            style={{
-              display: "flex",
-              gap: "10px",
-              justifyContent: "space-between",
+      <div style={{ width: "50vw" }}>
+        <Formik
+          initialValues={initialValues}
+          validationSchema={validationSchema}
+          onSubmit={handleSubmit}
+        >
+          <Form>
+            <div
+              style={{
+                display: "flex",
+                gap: "10px",
+                justifyContent: "space-between",
+                width: "100%",
+                marginBottom: "30px",
+              }}
+            >
+              <InputBoxContainer>
+                <Field
+                  as={InputBox}
+                  type="text"
+                  id="name"
+                  name="name"
+                  placeholder="Name"
+                />
+                <ErrorMsg name="name" component="div" className="error" />
+              </InputBoxContainer>
+              <InputBoxContainer>
+                <Field
+                  as={InputBox}
+                  type="email"
+                  id="email"
+                  name="email"
+                  placeholder="Email"
+                />
+                <ErrorMsg name="email" component="div" className="error" />
+              </InputBoxContainer>
+            </div>
+            <div style={{ marginBottom: "25px" }}>
+              <Field
+                as={TextAreaBox}
+                id="message"
+                name="message"
+                placeholder="What can we help you with?"
+                style={{ width: "100%" }}
+              />
+              <ErrorMsg name="message" component="div" className="error" />
+            </div>
 
-              width: "100%",
-              marginBottom: "20px",
-            }}
-          >
-            <Field
-              as={InputBox}
-              type="text"
-              id="name"
-              name="name"
-              placeholder="Name"
-            />
-            <ErrorMessage name="name" component="div" className="error" />
-
-            <Field
-              as={InputBox}
-              type="email"
-              id="email"
-              name="email"
-              placeholder="Email"
-            />
-            <ErrorMessage name="email" component="div" className="error" />
-          </div>
-          <div style={{ marginBottom: "25px" }}>
-            <Field
-              as={TextAreaBox}
-              id="message"
-              name="message"
-              placeholder="What can we help you with?"
-              style={{ width: "100%" }}
-            />
-            <ErrorMessage name="message" component="div" className="error" />
-          </div>
-
-          <PrimaryButton
-            type="submit"
-            style={{ backgroundColor: theme.palette.primary.main }}
-          >
-            <ButtonText variant="button" color="white" fontWeight="bold">
-              Submit
-            </ButtonText>
-          </PrimaryButton>
-        </Form>
-      </Formik>
+            <PrimaryButton
+              type="submit"
+              style={{ backgroundColor: theme.palette.primary.main }}
+            >
+              <ButtonText variant="button" color="white" fontWeight="bold">
+                Submit
+              </ButtonText>
+            </PrimaryButton>
+          </Form>
+        </Formik>
+      </div>
     </ContactContainer>
   );
 };
