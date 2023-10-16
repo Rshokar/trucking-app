@@ -30,6 +30,11 @@ jobs:
         echo "CI=false" >> $GITHUB_ENV
 
 
+    - name: Create web client env
+      run: |
+        echo "REACT_APP_API_URL=$WEB_URL" >> ./trucking-app-web/.env
+
+
     - name: Setup trucking-app-flask env
       run: |
         echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env

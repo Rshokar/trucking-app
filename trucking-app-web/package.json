@@ -34,7 +34,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "build_prod": "cross-env BUILD_PATH=./../trucking-app-flask/static REACT_APP_API_URL=http://34.216.125.64 react-scripts build",
+    "build_prod": "cross-env BUILD_PATH=./../trucking-app-flask/static react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
