@@ -2,6 +2,7 @@ version: '3'
 services:
   web-client:
     image: rshokar/web-client:latest
+    build: ./trucking-app-web/.
     restart: unless-stopped
     environment:
       - REACT_APP_API_URL=http://34.216.125.64
@@ -11,6 +12,7 @@ services:
 
   flask-api:
     image: rshokar/flask-api:latest
+    build: ./trucking-app-flask/.
     restart: unless-stopped
     environment:
       - FLASK_RUN_HOST=0.0.0.0
