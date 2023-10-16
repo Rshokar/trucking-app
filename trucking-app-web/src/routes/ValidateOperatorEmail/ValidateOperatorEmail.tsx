@@ -42,7 +42,7 @@ const ValidateOperatorEmailPage = () => {
     const { token } = useParams();
 
     const validateEmail = async () => {
-        console.log(process.env.REACT_APP_API_URL)
+        console.log("HELLO WORLD", process.env.REACT_APP_API_URL)
         const res = await fetch(`${process.env.REACT_APP_API_URL}/v1/company/operators/validate`, {
             method: 'POST',
             headers: {
