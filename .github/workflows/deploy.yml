@@ -37,34 +37,28 @@ jobs:
 
     - name: Setup trucking-app-flask env
       run: |
-        echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
-        echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> .env
-        echo "DB_URL=${{ secrets.DB_URL }}" >> .env
-        echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
-        echo "FLASK_DEBUG=$FLASK_DEBUG" >> .env
-        echo "OPERATOR_AUTH_TOKEN_SECRET=${OPERATOR_AUTH_TOKEN_SECRET}" >> .env
-        echo "SEND_OPERATOR_RFO_TOKEN_SECRET=${SEND_OPERATOR_RFO_TOKEN_SECRET}" >> .env
-        echo "OPERATOR_ACCESS_TOKEN_SECRET=${OPERATOR_ACCESS_TOKEN_SECRET}" >> .env
-        echo "RESET_PASSWORD_SECRET=${RESET_PASSWORD_SECRET}" >> .env
-        echo "RESET_PASSWORD_SALT=${RESET_PASSWORD_SALT}" >> .env
-        echo "RESET_PASSWORD_CODE_EXPIRY=$RESET_PASSWORD_CODE_EXPIRY" >> .env
-        echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> .env
-        echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> .env
-        echo "S3_REGION=${{ secrets.S3_REGION }}" >> .env
-        echo "S3_BUCKET_NAME=${{ secrets.S3_BUCKET_NAME }}" >> .env
-        echo "SES_MAIL_SERVER=${{ secrets.SES_MAIL_SERVER }}" >> .env
-        echo "SES_MAIL_PORT=${{ secrets.SES_MAIL_PORT }}" >> .env
-        echo "SES_MAIL_USERNAME=${{ secrets.SES_MAIL_USERNAME }}" >> .env
-        echo "SES_MAIL_PASSWORD=${{ secrets.SES_MAIL_PASSWORD }}" >> .env
-        echo "MAX_CONTENT_SIZE=$MAX_CONTENT_SIZE" >> .env
-        echo "AUTHORIZATION_HEADER=$AUTHORIZATION_HEADER" >> .env
-        echo "WEB_URL=$WEB_URL" >> .env
-
-    - name: Build Web Client
-      run: |
-        cd ./trucking-app-web
-        npm ci
-        npm run build_prod
+        echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> ./trucking-app-flask/.env
+        echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> ./trucking-app-flask/.env
+        echo "DB_URL=${{ secrets.DB_URL }}" >> ./trucking-app-flask/.env
+        echo "DB_NAME=${{ secrets.DB_NAME }}" >> ./trucking-app-flask/.env
+        echo "FLASK_DEBUG=$FLASK_DEBUG" >> ./trucking-app-flask/.env
+        echo "OPERATOR_AUTH_TOKEN_SECRET=${OPERATOR_AUTH_TOKEN_SECRET}" >> ./trucking-app-flask/.env
+        echo "SEND_OPERATOR_RFO_TOKEN_SECRET=${SEND_OPERATOR_RFO_TOKEN_SECRET}" >> ./trucking-app-flask/.env
+        echo "OPERATOR_ACCESS_TOKEN_SECRET=${OPERATOR_ACCESS_TOKEN_SECRET}" >> ./trucking-app-flask/.env
+        echo "RESET_PASSWORD_SECRET=${RESET_PASSWORD_SECRET}" >> ./trucking-app-flask/.env
+        echo "RESET_PASSWORD_SALT=${RESET_PASSWORD_SALT}" >> ./trucking-app-flask/.env
+        echo "RESET_PASSWORD_CODE_EXPIRY=$RESET_PASSWORD_CODE_EXPIRY" >> ./trucking-app-flask/.env
+        echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> ./trucking-app-flask/.env
+        echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> ./trucking-app-flask/.env
+        echo "S3_REGION=${{ secrets.S3_REGION }}" >> ./trucking-app-flask/.env
+        echo "S3_BUCKET_NAME=${{ secrets.S3_BUCKET_NAME }}" >> ./trucking-app-flask/.env
+        echo "SES_MAIL_SERVER=${{ secrets.SES_MAIL_SERVER }}" >> ./trucking-app-flask/.env
+        echo "SES_MAIL_PORT=${{ secrets.SES_MAIL_PORT }}" >> ./trucking-app-flask/.env
+        echo "SES_MAIL_USERNAME=${{ secrets.SES_MAIL_USERNAME }}" >> ./trucking-app-flask/.env
+        echo "SES_MAIL_PASSWORD=${{ secrets.SES_MAIL_PASSWORD }}" >> ./trucking-app-flask/.env
+        echo "MAX_CONTENT_SIZE=$MAX_CONTENT_SIZE" >> ./trucking-app-flask/.env
+        echo "AUTHORIZATION_HEADER=$AUTHORIZATION_HEADER" >> ./trucking-app-flask/.env
+        echo "WEB_URL=$WEB_URL" >> ./trucking-app-flask/.env
 
     - name: Build Docker images
       run: docker-compose build
@@ -85,7 +79,7 @@ jobs:
         host: ${{ secrets.EC2_HOST }}
         username: ec2-user
         key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
-        source: "docker-compose.yaml,.env,./nginx.conf"
+        source: "docker-compose.yaml,./trucking-app-flask/.env,./trucking-app-web/.env,./nginx.conf"
         target: "./"
 
 
