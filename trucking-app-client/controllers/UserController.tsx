@@ -72,4 +72,14 @@ export default class UserController {
             throw new Error("Error sending code")
         }
     }
+
+    static async checkEmailValidation(): Promise<boolean> {
+        try {
+            return true
+        } catch (error: any) {
+            return false
+        }
+    }
+
+    static async sendEmailValidationEmail(): Promise<void> { }
 }
