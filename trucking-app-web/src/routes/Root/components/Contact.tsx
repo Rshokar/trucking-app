@@ -77,7 +77,6 @@ const Contact: React.FC = () => {
     email: string
   ): Promise<void> => {
     try {
-      console.log("SENDING");
       const res = await fetch(
         `${process.env.REACT_APP_API_URL}/v1/contact-us/`,
         {
