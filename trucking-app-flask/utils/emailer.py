@@ -213,7 +213,7 @@ def send_user_forgot_password_code(mail, email, code):
 
 def send_contact_form_email(mail, body, name, sender_email):
     msg = Message(f'''Contact Us - {name} - {sender_email}''',
-                sender='ravindershokar@gmail.com', recipients=["eleeday1@gmail.com"])
+                sender='ravindershokar@gmail.com', recipients=["restarttechnologiesinc@gmail.com"])
     msg.body = f'''
     {body}
     '''
