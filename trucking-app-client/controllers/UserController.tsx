@@ -75,11 +75,19 @@ export default class UserController {
 
     static async checkEmailValidation(): Promise<boolean> {
         try {
-            return true
+            return false
         } catch (error: any) {
             return false
         }
     }
 
-    static async sendEmailValidationEmail(): Promise<void> { }
+    static async sendEmailValidationEmail(): Promise<void> {
+        try {
+            throw Error("BLAH");
+        } catch (err: any) {
+            if (isAxiosError(err))
+                throw new Error(err.response?.data)
+            throw new Error("Error sending verification email")
+        }
+    }
 }
