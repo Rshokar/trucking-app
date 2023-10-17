@@ -75,10 +75,11 @@ To get started with the project, make sure you have the following:
 3. Type: `cd trucking-app-flask`
 4. Type: `.venv\Scripts\activate`
    - on Mac: `source .venv/Scripts/activate`
-6. (.venv) should appear on the left side command line line.
-7. Type: `pip3 install -r requirements.txt`
+5. (.venv) should appear on the left side command line line.
+6. Type: `pip3 install -r requirements.txt`
    - You should have python 3+ installed
-8. packages should be installed
+7. packages should be installed
+8. Ask someone for the .env file needed.
 9. Type: `python -m flask run`
 
 #### 3.Running The Client
