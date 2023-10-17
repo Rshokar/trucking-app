@@ -1,15 +1,10 @@
 import styled from "styled-components";
 import { Container } from "../../../components/shared";
-import {
-  Typography,
-  Button,
-  Input,
-  TextareaAutosize,
-  useTheme,
-} from "@mui/material";
+import { Typography, Button, Input, TextareaAutosize } from "@mui/material";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import * as Yup from "yup";
 import toast from "react-hot-toast";
+import { useState } from "react";
 
 const ContactContainer = styled(Container)`
   background-color: white;
@@ -42,13 +37,6 @@ const TextAreaBox = styled(TextareaAutosize)`
   }
 `;
 
-const PrimaryButton = styled(Button)({
-  width: "100%",
-  "&:hover": {
-    opacity: 0.75,
-  },
-});
-
 const ButtonText = styled(Typography)`
   display: flex;
   align-items: center;
@@ -61,7 +49,7 @@ const ErrorMsg = styled(ErrorMessage)({
 });
 
 const Contact: React.FC = () => {
-  const theme = useTheme();
+  const [submitting, setSubmitting] = useState(false);
   const initialValues = {
     name: "",
     email: "",
@@ -76,15 +64,43 @@ const Contact: React.FC = () => {
     message: Yup.string().required("Message is required"),
   });
 
-  const handleSubmit = (values: any, { resetForm }: any) => {
-    // You can handle the form submission here (e.g., send the data to a server).
-    // For now, let's log the form data to the console.
-    console.log(values);
+  const handleSubmit = async (values: any, { resetForm }: any) => {
+    setSubmitting(true);
+    await sendContactUsForm(values.message, values.name, values.email);
     resetForm();
+    setSubmitting(false);
+  };
 
-    toast.success("Succesfully submitted, we will contact you shortly.", {
-      position: "bottom-center",
-    });
+  const sendContactUsForm = async (
+    body: string,
+    name: string,
+    email: string
+  ): Promise<void> => {
+    try {
+      console.log("SENDING");
+      const res = await fetch(
+        `${process.env.REACT_APP_API_URL}/v1/contact-us/`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            body: body,
+            name: name,
+            email: email,
+          }),
+        }
+      );
+      toast.success(await res.text(), {
+        position: "bottom-center",
+      });
+    } catch (err: any) {
+      console.error("ERROR: ", err);
+      toast.error(await err.text(), {
+        position: "bottom-center",
+      });
+    }
   };
   return (
     <ContactContainer>
@@ -142,14 +158,17 @@ const Contact: React.FC = () => {
               <ErrorMsg name="message" component="div" className="error" />
             </div>
 
-            <PrimaryButton
+            <Button
               type="submit"
-              style={{ backgroundColor: theme.palette.primary.main }}
+              disabled={submitting}
+              variant="contained"
+              color="primary"
+              fullWidth
             >
               <ButtonText variant="button" color="white" fontWeight="bold">
-                Submit
+                {submitting ? "Submitting" : "Submit"}{" "}
               </ButtonText>
-            </PrimaryButton>
+            </Button>
           </Form>
         </Formik>
       </div>

@@ -4,6 +4,6 @@ from flask import Blueprint, Response
 
 contact = Blueprint("contact", __name__)
 
-@contact.route('/contact-us', methods=["POST"])
+@contact.route('/', methods=["POST"])
 def send_contact_us_form() -> Response:
     return ContactUsController.create_contact_us_email(request)
