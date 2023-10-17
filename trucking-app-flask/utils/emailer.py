@@ -210,3 +210,12 @@ def send_user_forgot_password_code(mail, email, code):
 
     # Sending the email
     mail.send(msg)
+
+def send_contact_form_email(mail, body, name, sender_email):
+    msg = Message(f'''Contact Us - {name} - {sender_email}''',
+                sender='ravindershokar@gmail.com', recipients=["eleeday1@gmail.com"])
+    msg.body = f'''
+    {body}
+    '''
+
+    mail.send(msg)
