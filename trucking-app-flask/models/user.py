@@ -1,5 +1,5 @@
 import re
-from sqlalchemy import Column, String, Integer, DateTime
+from sqlalchemy import Column, String, DateTime, Boolean
 from sqlalchemy.orm import validates, relationship
 from models.model import Base
 from config import db
@@ -18,6 +18,7 @@ class User(Base):
     __tablename__ = 'users'
     id = Column("id", String(50), primary_key=True)
     role = Column("role", String(20))
+    email_validated = Column('email_validated', Boolean, default=False)
     reset_code = Column("reset_code", String(6), nullable=True)  # 6-digit code
     recovery_token = Column("recovery_token", String(
         255), nullable=True)  # Token sent to client

@@ -36,6 +36,16 @@ app.config['MAX_CONTENT_LENGTH'] = int(MAX_CONTENT_SIZE)  # 16 megabytes
 app.secret_key = 'fzV2T57K8JmQJ@C'
 
 
+if (IS_PRODUCTION == "development" or IS_PRODUCTION == "test"):
+    # # If development clear all database
+    Base.metadata.drop_all(engine)
+    print("--|--Creating Tables--|--")
+    # Create all tables if not already there
+    Base.metadata.create_all(engine)
+    # if (IS_PRODUCTION == "development"):
+    #     print("--|--Loading Test Data--|--")
+    #     loadDB(int(1))
+
 # Register all endpoints
 app.register_blueprint(v1, url_prefix="/v1")
 app.route('/')

@@ -26,7 +26,6 @@ const ValidateEmail = (props: Props) => {
 
 
     const checkAgain = async () => {
-        console.log('CHECK AGAIN');
         if (await UserController.checkEmailValidation()) {
             props.onCompletion();
         } else {
@@ -39,7 +38,6 @@ const ValidateEmail = (props: Props) => {
     }
 
     const sendValidationEmail = async () => {
-        console.log('SEND VERIFCATION EMAIL');
         try {
             await UserController.sendEmailValidationEmail();
             showSnackbar({
