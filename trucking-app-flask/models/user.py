@@ -1,5 +1,5 @@
 import re
-from sqlalchemy import Column, String, DateTime, Boolean
+from sqlalchemy import Column, String, DateTime, Boolean, CheckConstraint
 from sqlalchemy.orm import validates, relationship
 from models.model import Base
 from config import db
@@ -23,6 +23,12 @@ class User(Base):
     recovery_token = Column("recovery_token", String(
         255), nullable=True)  # Token sent to client
     code_created_at = Column("token_created_at", DateTime, nullable=True)
+    email_validation_token = Column("email_validation_token", String(6), CheckConstraint(
+        'LENGTH(email_validation_token) = 6'), nullable=True)
+    email_validation_token_date = Column(
+        "email_validation_token_date", DateTime, nullable=True)
+    email_validation_token_consumed = Column(
+        'email_validation_token_cosumed', Boolean, default=True)
 
     @validates("role")
     def validate_role(self, key, role):

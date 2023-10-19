@@ -3,7 +3,7 @@ import { FIREBASE_APP } from "./firebaseConfig";
 import { getAuth, getIdToken } from "firebase/auth";
 import { navigate } from "../utils/NavigationService";
 import { AuthController } from "../controllers/AuthController";
-const API_URL = "http://34.216.125.64/v1";
+const API_URL = "http://10.0.0.132:5000/v1";
 
 // Create an instance with default settings
 const myAxios = axios.create({

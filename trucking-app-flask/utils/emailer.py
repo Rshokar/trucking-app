@@ -210,3 +210,15 @@ def send_user_forgot_password_code(mail, email, code):
 
     # Sending the email
     mail.send(msg)
+
+
+def send_email_verification(mail, email, token):
+    """_summary_
+
+    Args:
+        mail (_type_): _description_
+        email (_type_): _description_
+        token (_type_): _description_
+    """
+
+    ...
