@@ -59,3 +59,16 @@ def update_profile():
     except jsonschema.ValidationError as e:
         print(e)
         return make_response({"error": e.message}, 400)
+
+
+@user.route('/validate_email/<string:token>', methods=["POST"])
+def validate_email(token):
+    session = g.session
+    return UserController.validate_email(session, token)
+
+
+@user.route('/send_validation_email', methods=["POST"])
+@firebase_required
+def send_validation_email():
+    session = g.session
+    return UserController.send_validation_email(session)

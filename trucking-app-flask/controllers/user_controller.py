@@ -2,6 +2,7 @@ from itsdangerous import BadTimeSignature, SignatureExpired, URLSafeTimedSeriali
 from models import User, Company
 from utils import make_response
 from sqlalchemy.exc import IntegrityError, OperationalError
+from sqlalchemy import and_
 from flask import g, current_app as app
 from firebase_admin import auth, exceptions
 from flask_mail import Mail
@@ -11,12 +12,15 @@ from firebase_admin import auth
 from random import randint
 from utils import send_user_forgot_password_code
 from datetime import datetime
+from utils import emailer
+from random import randint
 
 
 RESET_PASSWORD_SECRET = os.environ.get(
     "RESET_PASSWORD_SECRET")
 
 RESET_PASSWORD_SALT = os.environ.get('RESET_PASSWORD_SALT')
+VALIDATE_EMAIL_SECRET = os.environ.get('VALIDATE_EMAIL_SECRET')
 
 
 class UserController:
@@ -107,6 +111,81 @@ class UserController:
                 return make_response("There was an errors", 500)
 
         return make_response("Account updated successfully.", 200)
+
+    @staticmethod
+    def validate_email(session, token):
+        """_summary_
+            This function will check to see if the token is found in our 
+            db and has not expired. 
+
+            Token will be valid for only ten minuetes
+        Args:
+            session (_type_): _description_
+            token (_type_): _description_
+
+        Returns:
+            _type_: _description_
+        """
+
+        if token is None:
+            return make_response('Token is required', 404)
+        s = URLSafeTimedSerializer(VALIDATE_EMAIL_SECRET)
+
+        try:
+            data = s.loads(token)
+        except SignatureExpired as e:
+            print(e)
+            return make_response('Token expired.', 400)
+        except BadTimeSignature as e:
+            print(e)
+            return make_response('Invalid token.', 400)
+
+    @staticmethod
+    def send_validation_email(session):
+        """
+        Send a validation email to the currently authenticated user.
+
+        Steps:
+        - If the user is already validated, return 200.
+        - If the email is sent successfully, return a 202 status.
+        - In case the token is missing, return a 404.
+        - Generates a random token, saves it in the database, and includes it in the email.
+        - Ensures that the token's consumed state is set to False.
+
+        Args:
+            session (Session): SQLAlchemy session object.
+
+        Returns:
+            Response: Flask response object with an appropriate status and message.
+        """
+
+        # Query to check if the user is already validated
+        user = session.query(User)\
+            .filter(and_(User.id == g.user['uid'], User.email_validated == False)).first()
+
+        if user:
+            return make_response("User already validated", 200)
+
+        # Generate email validation token with random code
+        random_code = ''.join([str(randint(0, 9)) for _ in range(6)])
+        s = URLSafeTimedSerializer(VALIDATE_EMAIL_SECRET)
+        token = s.dumps({'user_id': g.user["uid"], 'code': random_code})
+
+        # Send email verification
+        mail = Mail(app)
+        try:
+            emailer.send_email_verification(mail, g.user['email'], token)
+        except Exception as e:
+            # Using Flask's logger to log errors
+            app.logger.error(f"Error sending email: {e}")
+            return make_response("Error sending email", 500)
+
+        # Update user information with the generated token and set its consumed state
+        user.email_validation_token = random_code
+        user.email_validation_token_consumed = False
+        session.commit()
+
+        return make_response("Email sent", 202)
 
     @staticmethod
     def send_forgot_password_code(session, request):

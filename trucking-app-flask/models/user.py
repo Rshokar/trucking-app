@@ -25,8 +25,6 @@ class User(Base):
     code_created_at = Column("token_created_at", DateTime, nullable=True)
     email_validation_token = Column("email_validation_token", String(6), CheckConstraint(
         'LENGTH(email_validation_token) = 6'), nullable=True)
-    email_validation_token_date = Column(
-        "email_validation_token_date", DateTime, nullable=True)
     email_validation_token_consumed = Column(
         'email_validation_token_cosumed', Boolean, default=True)
 
