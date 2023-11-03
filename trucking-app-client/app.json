@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "trucking-app-client",
-    "slug": "trucking-app-client",
+    "slug": "tare-ticketing",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -41,8 +41,9 @@
     "extra": {
       "API_URL": "http://10.0.0.134:2000/v1",
       "eas": {
-        "projectId": "5175fbfb-ee84-4d46-9fc4-f9ba276a5114"
+        "projectId": "a9bb8b37-abdb-4dc6-9051-8814a7c3340b"
       }
-    }
+    },
+    "owner": "reflex"
   }
 }
