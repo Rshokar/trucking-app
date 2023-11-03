@@ -21,7 +21,11 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "permissions": [
+        "android.permission.RECORD_AUDIO"
+      ],
+      "package": "com.reflex.tareticketing"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -35,7 +39,10 @@
       ]
     ],
     "extra": {
-      "API_URL": "http://10.0.0.134:2000/v1"
+      "API_URL": "http://10.0.0.134:2000/v1",
+      "eas": {
+        "projectId": "5175fbfb-ee84-4d46-9fc4-f9ba276a5114"
+      }
     }
   }
 }
