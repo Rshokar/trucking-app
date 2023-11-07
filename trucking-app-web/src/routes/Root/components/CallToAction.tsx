@@ -4,6 +4,7 @@ import { Container } from "../../../components/shared";
 import { Typography, Button, useTheme } from "@mui/material";
 import AppStoreSVG from "../../../components/SVGS/AppStoreSVG";
 import PlayStoreSVG from "../../../components/SVGS/PlayStoreSVG";
+import { BaseProps } from "../../types";
 
 const CallToActionContainer = styled(Container)`
   background-color: white;
@@ -39,14 +40,14 @@ const ButtonText = styled(Typography)`
   justify-content: center;
 `;
 
-const CallToAction = () => {
+const CallToAction = ({ id }: BaseProps) => {
   const theme = useTheme();
 
   return (
-    <CallToActionContainer>
+    <CallToActionContainer id={id}>
       <CallToActionMessage>
         <Typography variant="h4" textAlign="center" fontWeight="bold">
-          Your time is precious, start getting it back!
+          Your time is precious, start getting it back
         </Typography>
         <Typography variant="subtitle2" fontWeight="bold">
           DOWNLOAD

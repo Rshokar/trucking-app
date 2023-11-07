@@ -11,12 +11,13 @@ import DispatchBookSVG from "../../../../components/SVGS/DispatchBookSVG";
 import RelaxSVG from "../../../../components/SVGS/RelaxSVG";
 import { useMediaQuery } from "react-responsive";
 import { device } from "../../../../components/devices";
+import { BaseProps } from "../../../types";
 
 const StepsContainer = styled(Container)`
   flex-direction: column;
 `;
 
-const Steps = () => {
+const Steps = ({ id }: BaseProps) => {
   const theme = useTheme();
   const isLaptop = useMediaQuery({ query: device.laptop });
   const isDesktop = useMediaQuery({ query: device.desktop });
@@ -26,7 +27,7 @@ const Steps = () => {
   if (isDesktop) svgSize = "400px";
 
   return (
-    <StepsContainer>
+    <StepsContainer id={id}>
       <Step
         color={theme.palette.primary.main}
         breakColor={theme.palette.secondary.main}
