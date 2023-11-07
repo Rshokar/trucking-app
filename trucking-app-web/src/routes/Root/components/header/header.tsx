@@ -1,32 +1,52 @@
 import { useState } from "react";
 import styled from "styled-components";
+import { Typography, useTheme } from "@mui/material";
+import { useMediaQuery } from "react-responsive";
+import { device } from "../../../../components/devices";
 
 export const FEATURES_ID = "features";
 export const GET_STARTED_ID = "get_started";
 export const PRICING_ID = "pricing";
 export const DOWNLOAD_ID = "download";
 
+type Props = {
+  id: string;
+  text: string;
+};
+const MenuItem = ({ id, text }: Props) => {
+  const isDesktop = useMediaQuery({ query: device.laptopL });
+  const theme = useTheme();
+
+  return (
+    <span>
+      <a href={id}>
+        <Typography
+          variant={isDesktop ? "h4" : "subtitle1"}
+          fontWeight={"bold"}
+          color={theme.palette.primary.main}
+        >
+          {text}
+        </Typography>
+      </a>
+    </span>
+  );
+};
+
 const Header = () => {
   const [bar, setBar] = useState(false);
+
   return (
     <Container bar={bar}>
       <Logo>
         <span className="green">LOGO</span>
       </Logo>
       <Nav bar={bar}>
-        <span>
-          <a href={`#${FEATURES_ID}`}>Features</a>
-        </span>
-        <span>
-          <a href={`#${GET_STARTED_ID}`}>Get Started</a>
-        </span>
-        <span>
-          <a href={`#${PRICING_ID}`}>Pricing</a>
-        </span>
-        <span>
-          <a href={`#${DOWNLOAD_ID}`}>Download</a>
-        </span>
+        <MenuItem id={`#${FEATURES_ID}`} text={"Features"} />
+        <MenuItem id={`#${GET_STARTED_ID}`} text={"Get Started"} />
+        <MenuItem id={`#${PRICING_ID}`} text={"Pricing"} />
+        <MenuItem id={`#${DOWNLOAD_ID}`} text={"Download"} />
       </Nav>
+
       <div onClick={() => setBar(!bar)} className="bars">
         <div className="bar"></div>
       </div>
@@ -104,6 +124,8 @@ const Logo = styled.div`
   }
 `;
 const Nav = styled.div<{ bar: boolean }>`
+  display: flex;
+
   @media (max-width: 640px) {
     position: fixed;
     display: flex;
