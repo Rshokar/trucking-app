@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { Typography, useTheme } from "@mui/material";
 import { useMediaQuery } from "react-responsive";
 import { device } from "../../../../components/devices";
+import { Divide as Hamburger } from "hamburger-react";
 
 export const FEATURES_ID = "features";
 export const GET_STARTED_ID = "get_started";
@@ -18,8 +19,11 @@ const MenuItem = ({ id, text }: Props) => {
   const theme = useTheme();
 
   return (
-    <span>
-      <a href={id}>
+    <NavbarLink>
+      <a
+        href={id}
+        style={{ textDecoration: "none", color: theme.palette.primary.main }}
+      >
         <Typography
           variant={isDesktop ? "h4" : "subtitle1"}
           fontWeight={"bold"}
@@ -28,147 +32,158 @@ const MenuItem = ({ id, text }: Props) => {
           {text}
         </Typography>
       </a>
-    </span>
+    </NavbarLink>
+  );
+};
+const MenuItemExtended = ({ id, text }: Props) => {
+  const isDesktop = useMediaQuery({ query: device.laptopL });
+  const theme = useTheme();
+
+  return (
+    <NavbarLinkExtended>
+      <a
+        href={id}
+        style={{ textDecoration: "none", color: theme.palette.primary.main }}
+      >
+        <Typography
+          variant={isDesktop ? "h4" : "subtitle1"}
+          fontWeight={"bold"}
+          color={theme.palette.primary.main}
+        >
+          {text}
+        </Typography>
+      </a>
+    </NavbarLinkExtended>
   );
 };
 
 const Header = () => {
-  const [bar, setBar] = useState(false);
-
+  const [extendNavbar, setExtendNavbar] = useState<boolean>(false);
   return (
-    <Container bar={bar}>
-      <Logo>
-        <span className="green">LOGO</span>
-      </Logo>
-      <Nav bar={bar}>
-        <MenuItem id={`#${FEATURES_ID}`} text={"Features"} />
-        <MenuItem id={`#${GET_STARTED_ID}`} text={"Get Started"} />
-        <MenuItem id={`#${PRICING_ID}`} text={"Pricing"} />
-        <MenuItem id={`#${DOWNLOAD_ID}`} text={"Download"} />
-      </Nav>
+    <NavbarContainer extendNavbar={extendNavbar}>
+      <NavbarInnerContainer>
+        <LeftContainer>
+          {/* <Logo src={LogoImg}></Logo> */}
+          <div
+            style={{
+              color: "white",
+              backgroundColor: "red",
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            LOGO
+          </div>
+        </LeftContainer>
+        <RightContainer>
+          <NavbarLinkContainer>
+            <MenuItem id={`#${FEATURES_ID}`} text={"Features"} />
+            <MenuItem id={`#${GET_STARTED_ID}`} text={"Get Started"} />
+            <MenuItem id={`#${PRICING_ID}`} text={"Pricing"} />
+            <MenuItem id={`#${DOWNLOAD_ID}`} text={"Download"} />
+            <OpenLinksButton>
+              <Hamburger toggled={extendNavbar} onToggle={setExtendNavbar} />
+            </OpenLinksButton>
+          </NavbarLinkContainer>
+        </RightContainer>
+      </NavbarInnerContainer>
 
-      <div onClick={() => setBar(!bar)} className="bars">
-        <div className="bar"></div>
-      </div>
-    </Container>
+      {extendNavbar && (
+        <NavbarExtendedContainer>
+          <MenuItemExtended id={`#${FEATURES_ID}`} text={"Features"} />
+          <MenuItemExtended id={`#${GET_STARTED_ID}`} text={"Get Started"} />
+          <MenuItemExtended id={`#${PRICING_ID}`} text={"Pricing"} />
+          <MenuItemExtended id={`#${DOWNLOAD_ID}`} text={"Download"} />
+        </NavbarExtendedContainer>
+      )}
+    </NavbarContainer>
   );
 };
 
-const Container = styled.div<{ bar: boolean }>`
+export const NavbarContainer = styled.nav<{ extendNavbar: boolean }>`
+  width: 100%;
+  height: ${(props) => (props.extendNavbar ? "100vh" : "80px")};
+  background-color: transparent;
+  display: flex;
+  flex-direction: column;
+
+  @media (min-width: 700px) {
+    height: 80px;
+  }
+`;
+
+export const LeftContainer = styled.div`
+  flex: 70%;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  max-width: 1280px;
-  width: 80%;
-  margin: 0 auto;
-  padding: 1.5rem 0;
-  position: relative;
-  animation: header 500ms ease-in-out;
-  @media (max-width: 840px) {
-    width: 90%;
-  }
-  .bars {
+  padding-left: 5%;
+`;
+
+export const RightContainer = styled.div`
+  flex: 100%;
+  display: flex;
+  justify-content: flex-end;
+  padding-right: 50px;
+`;
+
+export const NavbarInnerContainer = styled.div`
+  width: 100%;
+  height: 80px;
+  display: flex;
+`;
+
+export const NavbarLinkContainer = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+export const NavbarLink = styled.span`
+  color: white;
+  font-size: x-large;
+  font-family: Arial, Helvetica, sans-serif;
+  text-decoration: none;
+  margin: 10px;
+
+  @media (max-width: 700px) {
     display: none;
   }
-  @media (max-width: 640px) {
-    .bars {
-      width: 40px;
-      height: 40px;
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0.5rem;
-      z-index: 100;
-      .bar {
-        position: absolute;
-        width: 100%;
-        height: 2px;
-        background-color: ${(props) => (props.bar ? "transparent" : "#fff")};
-        transition: all 400ms ease-in-out;
-        :before,
-        :after {
-          content: "";
-          width: 100%;
-          height: 2px;
-          background-color: #fff;
-          position: absolute;
-        }
+`;
 
-        :before {
-          transform: ${(props) =>
-            props.bar ? "rotate(45deg)" : "translateY(10px)"};
-          transition: all 400ms ease-in-out;
-        }
+export const NavbarLinkExtended = styled.span`
+  color: white;
+  font-size: x-large;
+  font-family: Arial, Helvetica, sans-serif;
+  text-decoration: none;
+  margin: 10px;
+`;
 
-        :after {
-          transform: ${(props) =>
-            props.bar ? "rotate(-45deg)" : "translateY(-10px)"};
-          transition: all 400ms ease-in-out;
-        }
-      }
-    }
+export const Logo = styled.img`
+  margin: 10px;
+  max-width: 180px;
+  height: auto;
+`;
+
+export const OpenLinksButton = styled.button`
+  width: 70px;
+  height: 50px;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 45px;
+  cursor: pointer;
+
+  @media (min-width: 700px) {
+    display: none;
   }
 `;
-const Logo = styled.div`
+
+export const NavbarExtendedContainer = styled.div`
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
-  span {
-    font-size: 1.8rem;
-  }
 
-  h1 {
-    font-weight: 600;
-    font-size: 1.2rem;
-  }
-`;
-const Nav = styled.div<{ bar: boolean }>`
-  display: flex;
-
-  @media (max-width: 640px) {
-    position: fixed;
-    display: flex;
-    flex-direction: column;
-    background-color: #01be96;
-    inset: 0;
-    justify-content: center;
-    align-items: center;
-    font-size: 2rem;
-    gap: 2rem;
-    font-weight: 700;
-    height: ${(props) => (props.bar ? "100vh" : 0)};
-    transition: height 400ms ease-in-out;
-    overflow: hidden;
-    z-index: 100;
-  }
-  span {
-    margin-left: 1rem;
-    a {
-      color: #fff;
-      text-decoration: none;
-      font-weight: 400;
-      position: relative;
-      :before {
-        content: "";
-        position: absolute;
-        left: 0;
-        right: 0;
-        bottom: -5px;
-        height: 2px;
-        background-color: #fff;
-        transform: scale(0);
-        transform-origin: right;
-        transition: transform 400ms ease-in-out;
-      }
-      :hover:before {
-        transform: scale(1);
-        transform-origin: left;
-      }
-      :hover {
-        opacity: 0.7;
-      }
-    }
+  @media (min-width: 700px) {
+    display: none;
   }
 `;
 
