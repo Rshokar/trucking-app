@@ -4,6 +4,7 @@ import { Typography, useTheme } from "@mui/material";
 import { useMediaQuery } from "react-responsive";
 import { device } from "../../../../components/devices";
 import { Divide as Hamburger } from "hamburger-react";
+import { colors } from "../../../../index";
 
 export const FEATURES_ID = "features";
 export const GET_STARTED_ID = "get_started";
@@ -27,7 +28,7 @@ const MenuItem = ({ id, text }: Props) => {
         <Typography
           variant={isDesktop ? "h4" : "subtitle1"}
           fontWeight={"bold"}
-          color={theme.palette.primary.main}
+          color={colors.graylight}
         >
           {text}
         </Typography>
@@ -48,7 +49,7 @@ const MenuItemExtended = ({ id, text }: Props) => {
         <Typography
           variant={isDesktop ? "h4" : "subtitle1"}
           fontWeight={"bold"}
-          color={theme.palette.primary.main}
+          color={colors.graylight}
         >
           {text}
         </Typography>
@@ -60,7 +61,10 @@ const MenuItemExtended = ({ id, text }: Props) => {
 const Header = () => {
   const [extendNavbar, setExtendNavbar] = useState<boolean>(false);
   return (
-    <NavbarContainer extendNavbar={extendNavbar}>
+    <NavbarContainer
+      extendNavbar={extendNavbar}
+      style={{ backgroundColor: colors.graydark }}
+    >
       <NavbarInnerContainer>
         <LeftContainer>
           {/* <Logo src={LogoImg}></Logo> */}
@@ -103,7 +107,7 @@ const Header = () => {
 export const NavbarContainer = styled.nav<{ extendNavbar: boolean }>`
   width: 100%;
   height: ${(props) => (props.extendNavbar ? "100vh" : "80px")};
-  background-color: transparent;
+
   display: flex;
   flex-direction: column;
 
