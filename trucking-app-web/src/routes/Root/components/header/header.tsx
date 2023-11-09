@@ -26,7 +26,7 @@ const MenuItem = ({ id, text }: Props) => {
         style={{ textDecoration: "none", color: theme.palette.primary.main }}
       >
         <Typography
-          variant={isDesktop ? "h4" : "subtitle1"}
+          variant={isDesktop ? "h6" : "subtitle1"}
           fontWeight={"bold"}
           color={colors.graylight}
         >
@@ -47,7 +47,7 @@ const MenuItemExtended = ({ id, text }: Props) => {
         style={{ textDecoration: "none", color: theme.palette.primary.main }}
       >
         <Typography
-          variant={isDesktop ? "h4" : "subtitle1"}
+          variant={isDesktop ? "h6" : "subtitle1"}
           fontWeight={"bold"}
           color={colors.graylight}
         >
@@ -67,17 +67,7 @@ const Header = () => {
     >
       <NavbarInnerContainer>
         <LeftContainer>
-          {/* <Logo src={LogoImg}></Logo> */}
-          <div
-            style={{
-              color: "white",
-              backgroundColor: "red",
-              display: "flex",
-              alignItems: "center",
-            }}
-          >
-            LOGO
-          </div>
+          <Logo src={"/tare-ticketing-icon.png"} />
         </LeftContainer>
         <RightContainer>
           <NavbarLinkContainer>
@@ -162,9 +152,7 @@ export const NavbarLinkExtended = styled.span`
 `;
 
 export const Logo = styled.img`
-  margin: 10px;
-  max-width: 180px;
-  height: auto;
+  max-width: 60px;
 `;
 
 export const OpenLinksButton = styled.button`
