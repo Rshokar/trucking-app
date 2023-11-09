@@ -12,7 +12,7 @@ from firebase_admin import auth
 from random import randint
 from utils import send_user_forgot_password_code
 from datetime import datetime
-from utils import emailer
+from utils import send_email_verification
 from random import randint
 
 
@@ -158,25 +158,25 @@ class UserController:
         Returns:
             Response: Flask response object with an appropriate status and message.
         """
-
         # Query to check if the user is already validated
+
         user = session.query(User)\
             .filter(and_(User.id == g.user['uid'], User.email_validated == False)).first()
 
-        if user:
-            return make_response("User already validated", 200)
-
+        if user is None:
+            return make_response("User not found validated", 404)
+        
         # Generate email validation token with random code
         random_code = ''.join([str(randint(0, 9)) for _ in range(6)])
         s = URLSafeTimedSerializer(VALIDATE_EMAIL_SECRET)
         token = s.dumps({'user_id': g.user["uid"], 'code': random_code})
 
         # Send email verification
+
         mail = Mail(app)
         try:
-            emailer.send_email_verification(mail, g.user['email'], token)
+            send_email_verification(mail, g.user['email'], token)
         except Exception as e:
-            # Using Flask's logger to log errors
             app.logger.error(f"Error sending email: {e}")
             return make_response("Error sending email", 500)
 

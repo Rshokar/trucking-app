@@ -221,21 +221,19 @@ def send_email_verification(mail, email, token):
         token (_type_): _description_
     """
 
+    print("EMAILER")
     msg = Message('Password Reset Code - Trucking App',
                   sender='ravindershokar@gmail.com', recipients=[email])
 
+    
     msg.body = f'''
     Hello,
 
-    You requested to reset your password for the Trucking App.
-
-    Here's your password reset code: {token}
-
-    Enter this code to continue with the password reset process.
-
-    Note: This code will expire in 10 minutes. If it expires, please request another one.
-
-    If you didn't request this, please ignore this email.
+    Thank you creating an account with tare ticketing, and verifying you email. 
+    
+    Click the link bellow to validate your email. 
+    
+    link: {WEB_URL}/validate_email/{token}
 
     Regards,
     Trucking App Support
