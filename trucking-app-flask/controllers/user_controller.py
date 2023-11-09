@@ -320,3 +320,17 @@ class UserController:
         session.commit()
 
         return make_response("Password reset successfully", 200)
+
+    @staticmethod
+    def is_email_verified(session):
+        """
+        Checks to see if the currently logged in email is validated
+        """
+        
+        user = session.query(User).filter(User.id == g.user['uid']).first()
+        
+        if user.email_validated:
+            return make_response("validated", 200) 
+        
+        return make_response("not validated", 200)
+        

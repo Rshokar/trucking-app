@@ -72,3 +72,10 @@ def validate_email(token):
 def send_validation_email():
     session = g.session
     return UserController.send_validation_email(session)
+
+
+@user.route('/validated', methods=['GET'])
+@firebase_required
+def is_email_validated(): 
+    session = g.session
+    return UserController.is_email_verified(session)

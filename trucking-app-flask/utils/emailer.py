@@ -19,7 +19,7 @@ def send_verification_email(mail, email, token, name, company_name):
                   sender='ravindershokar@gmail.com', recipients=[email])
 
     # Ideally, you should use url_for function of Flask to create verify URL
-    verify_url = f"{WEB_URL}/validate_email/{token}"
+    verify_url = f"{WEB_URL}/validate_email/{token}/operator"
 
     msg.body = f'''
     Hello {name},

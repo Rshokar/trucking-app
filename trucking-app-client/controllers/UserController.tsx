@@ -74,11 +74,9 @@ export default class UserController {
     }
 
     static async checkEmailValidation(): Promise<boolean> {
-        try {
-            return false
-        } catch (error: any) {
-            return false
-        }
+        const res = await myAxios.get('/user/validated')
+        const responseText = res.data;
+        return responseText === 'validated';
     }
 
     static async sendEmailValidationEmail(): Promise<'sent' | 'verified'> {
