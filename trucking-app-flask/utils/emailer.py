@@ -19,7 +19,7 @@ def send_verification_email(mail, email, token, name, company_name):
                   sender='ravindershokar@gmail.com', recipients=[email])
 
     # Ideally, you should use url_for function of Flask to create verify URL
-    verify_url = f"{WEB_URL}/validate_operator_email/{token}"
+    verify_url = f"{WEB_URL}/validate_email/{token}"
 
     msg.body = f'''
     Hello {name},
@@ -131,7 +131,7 @@ def send_operator_rfo_update(mail, email, rfo, operator, company, customer, Disp
 
     Please click on the link below to view more details and accept the job:
 
-    {WEB_URL}/operator_auth/{token}
+    {WEB_URL}/operator_auth/{token}/operator
 
     If you have any questions, please contact your dispatcher.
 
@@ -233,7 +233,7 @@ def send_email_verification(mail, email, token):
     
     Click the link bellow to validate your email. 
     
-    link: {WEB_URL}/validate_email/{token}
+    link: {WEB_URL}/validate_email/{token}/dispatcher
 
     Regards,
     Trucking App Support

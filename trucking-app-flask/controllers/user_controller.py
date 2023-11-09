@@ -126,19 +126,34 @@ class UserController:
         Returns:
             _type_: _description_
         """
-
         if token is None:
             return make_response('Token is required', 404)
         s = URLSafeTimedSerializer(VALIDATE_EMAIL_SECRET)
 
         try:
-            data = s.loads(token)
+            data = s.loads(token, 300)
         except SignatureExpired as e:
             print(e)
-            return make_response('Token expired.', 400)
+            return make_response('Token expired.', 403)
         except BadTimeSignature as e:
             print(e)
-            return make_response('Invalid token.', 400)
+            return make_response('Invalid token.', 403)       
+        
+        user = session.query(User).filter(User.id==data['user_id'], User.email_validation_token==data['code']).first()
+        
+        if user is None: 
+            return make_response("User not found", 404)
+
+        user.email_validation_token = None
+        user.email_validation_token_consumed = True
+        user.email_validated = True
+        
+        
+        try:
+            session.commit()
+        except Exception as e:
+            print(e)
+        return make_response("Email validate. Welcome to the Tare Team", 200)
 
     @staticmethod
     def send_validation_email(session):
