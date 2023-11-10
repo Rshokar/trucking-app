@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "trucking-app-client",
-    "slug": "trucking-app-client",
+    "slug": "tare-ticketing",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -21,7 +21,11 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "permissions": [
+        "android.permission.RECORD_AUDIO"
+      ],
+      "package": "com.reflex.tareticketing"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -35,7 +39,11 @@
       ]
     ],
     "extra": {
-      "API_URL": "http://10.0.0.134:2000/v1"
-    }
+      "API_URL": "http://10.0.0.134:2000/v1",
+      "eas": {
+        "projectId": "a9bb8b37-abdb-4dc6-9051-8814a7c3340b"
+      }
+    },
+    "owner": "reflex"
   }
 }

@@ -37,7 +37,7 @@ const BillCard: React.FC<BillCardProps> = (props) => {
     const getImage = async () => {
         try {
 
-            const res = await fetch(`http://127.0.0.1:5000/v1/billing_ticket/operator/image/${props.bill_id}`, {
+            const res = await fetch(`${process.env.REACT_APP_API_URL}/v1/billing_ticket/operator/image/${props.bill_id}`, {
                 method: 'GET',
                 headers: {
                     "Authorization-Fake-X": `Bearer ${props.accessToken}`

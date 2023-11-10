@@ -241,3 +241,11 @@ def send_email_verification(mail, email, token):
 
     # Sending the email
     mail.send(msg)
+def send_contact_form_email(mail, body, name, sender_email):
+    msg = Message(f'''Contact Us - {name} - {sender_email}''',
+                sender='ravindershokar@gmail.com', recipients=["restarttechnologiesinc@gmail.com"])
+    msg.body = f'''
+    {body}
+    '''
+
+    mail.send(msg)
