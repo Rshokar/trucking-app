@@ -12,11 +12,22 @@ import DispatchSection from '../../components/TicketSections/DispatchSection'
 import OperatorSection from '../../components/TicketSections/OperatorSection'
 import CustomerSection from '../../components/TicketSections/CustomerSection'
 import Cache from '../../utils/Cache'
+import { View, Text } from 'react-native';
+import ValidateEmail from './components/ValidateEmail';
 
 const HomeContainer = styled.View`
     width: 100%; 
     flex: 1;
 `
+
+/*
+VALIDATED: User has validated there email
+NOT_VALIDATED: User haa not valdated there email
+LOADING: App is currently in the process of checking if the email is validatedF
+*/
+enum USER_STATE {
+    VALIDATED, NOT_VALIDATED, LOADING
+}
 
 export type Props = StackScreenProps<RoofStackParamList, "Home">
 
@@ -24,7 +35,7 @@ const Home: FunctionComponent<Props> = ({ navigation, route }) => {
     const [customers, setCustomers] = useState<Customer[]>([])
     const [filterCustomers, setFilteredCustomers] = useState<Set<Customer>>(new Set<Customer>());
     const [customerCacheId] = useState<string>(uuid.v4() as string)
-
+    const [userState, setUserState] = useState<USER_STATE>(USER_STATE.LOADING);
 
     useEffect(() => {
         const customerCache = Cache.getInstance(Customer);
@@ -46,26 +57,36 @@ const Home: FunctionComponent<Props> = ({ navigation, route }) => {
 
     return (
         <HomeContainer>
-            <Tabs>
-                <TabScreen label={""} icon={'book'}>
-                    <DispatchSection
-                        removeCustomerFilter={handleCustomerFilter}
-                        filteringCustomers={filterCustomers}
-                        customers={customers}
-                        navigateToTickets={(dispId: string): void => navigation.navigate("Tickets", { dispId: parseFloat(dispId) })}
-                    />
-                </TabScreen>
-                <TabScreen label="" icon="excavator">
-                    <CustomerSection
-                        navigateToTicket={handleCustomerFilter} />
-                </TabScreen>
-                <TabScreen label="" icon={'account-hard-hat'} >
+            {
+                route.params?.user.emailValidated ?
 
-                    <OperatorSection
-                        navigate={navigation.navigate}
-                        navigateToTicket={ticketId => console.log("HELLO WORLD", ticketId)} />
-                </TabScreen>
-            </Tabs>
+                    <Tabs>
+                        <TabScreen label={""} icon={'book'}>
+                            <DispatchSection
+                                removeCustomerFilter={handleCustomerFilter}
+                                filteringCustomers={filterCustomers}
+                                customers={customers}
+                                navigateToTickets={(dispId: string): void => navigation.navigate("Tickets", { dispId: parseFloat(dispId) })}
+                            />
+                        </TabScreen>
+                        <TabScreen label="" icon="excavator">
+                            <CustomerSection
+                                navigateToTicket={handleCustomerFilter} />
+                        </TabScreen>
+                        <TabScreen label="" icon={'account-hard-hat'} >
+
+                            <OperatorSection
+                                navigate={navigation.navigate}
+                                navigateToTicket={ticketId => console.log("HELLO WORLD", ticketId)} />
+                        </TabScreen>
+                    </Tabs>
+                    :
+                    <ValidateEmail onCompletion={function (): void {
+                        const user = route.params.user;
+                        user.emailValidated = true;
+                        navigation.navigate('Home', { company: route.params?.company, user: user })
+                    }} />
+            }
         </HomeContainer>
     )
 }

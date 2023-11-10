@@ -79,6 +79,10 @@ class AuthController:
             user = session.query(User).filter_by(id=uid).first()
             company = session.query(Company).filter_by(owner_id=uid).first()
 
+            print(uid)
+            print(user)
+            print(company)
+
             if not user or not company:
                 return make_response("User not found in our records", 404)
 

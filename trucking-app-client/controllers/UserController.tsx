@@ -1,4 +1,4 @@
-import { isAxiosError } from "axios";
+import { HttpStatusCode, isAxiosError } from "axios";
 import myAxios from "../config/myAxios"; // Import your custom myAxios instance
 import { AuthController } from "./AuthController";
 import { Company } from "../models/Company";
@@ -70,6 +70,25 @@ export default class UserController {
             if (isAxiosError(err))
                 throw new Error(err.response?.data)
             throw new Error("Error sending code")
+        }
+    }
+
+    static async checkEmailValidation(): Promise<boolean> {
+        const res = await myAxios.get('/user/validated')
+        const responseText = res.data;
+        return responseText === 'validated';
+    }
+
+    static async sendEmailValidationEmail(): Promise<'sent' | 'verified'> {
+        try {
+            const res = await myAxios.post('/user/send_validation_email')
+            if (res.status === HttpStatusCode.Ok) return 'verified'
+            if (res.status === HttpStatusCode.Accepted) return 'sent';
+            throw Error("Unexpected return status");
+        } catch (err: any) {
+            if (isAxiosError(err))
+                throw new Error(err.response?.data)
+            throw new Error("Error sending verification email")
         }
     }
 }

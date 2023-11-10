@@ -10,6 +10,7 @@ import EngineSVG from '../../components/SVGS/EngineSVG';
 import NothingFoundSVG from '../../components/SVGS/NothingFoundSVG';
 import ExpiredSVG from '../../components/SVGS/ExpiredSVG';
 import EmailConfirmedSVG from '../../components/SVGS/EmailConfirmedSVG';
+import ValidateEmailController from '../../controllers/ValidateEmailController';
 
 const View = styled(Container)`
     height: 100vh;
@@ -18,56 +19,50 @@ const View = styled(Container)`
     justify-content: center;
 `
 
-const MessageView = styled(Box)`
-    display: flex; 
-    flex-direction: column;
-    justify-content: space-evenly;
-    align-items: center; 
-    max-width: 90%; 
-    height: 350px; 
-    width: 400px;  
-    border-radius: 10px;
-    box-sizing: border-box;
-    padding: 30px;   
-    box-shadow: 2px 2px 2px 2px grey;
-`
+export enum EMAIL_VALIDATION_TYPE { DISPATCHER = 'dispatcher', OPERATOR = 'operator' }
 
 
-const ValidateOperatorEmailPage = () => {
+const ValidateEmail = () => {
     const [message, setMessage] = useState<{ title: string, subTitle: string, svg: ReactNode, }>({
         title: "Validating Email....",
         subTitle: "Thanks for clicking the link. We are currently validating your email",
         svg: <EngineSVG width={100} height={100} />,
     });
-    const { token } = useParams();
+    const { token = '', type = 'dispatcher' } = useParams();
+
+
+    const runValidation = async () => {
+        switch (type) {
+            case (EMAIL_VALIDATION_TYPE.DISPATCHER):
+                return ValidateEmailController.validateDispatcherEmail(token)
+            case (EMAIL_VALIDATION_TYPE.OPERATOR):
+                return ValidateEmailController.validateOperatorEmail(token)
+            default:
+                throw Error("Email validation type not found");
+        }
+    }
 
     const validateEmail = async () => {
-        const res = await fetch(`${process.env.REACT_APP_API_URL}/v1/company/operators/validate`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ token: token + '' })
-        })
+        const res = await runValidation()
         const response = await res.text();
         if (res.status === 404)
             setMessage({
                 title: response,
-                subTitle: "The operators to be validated could not be found. Contact your dispatcher.",
+                subTitle: `The ${type === EMAIL_VALIDATION_TYPE.DISPATCHER ? "dispatcher" : "operator"} could not be found.`,
                 svg: <NothingFoundSVG width={100} height={100} />
             })
 
         if (res.status === 403)
             setMessage({
                 title: response,
-                subTitle: "It looks like the link you were given is expired or invalid. Contact your dispatcher to send a new link.",
+                subTitle: "It looks like the link you were given is expired or invalid",
                 svg: <ExpiredSVG width={100} height={100} />
             })
 
         if (res.status === 200)
             setMessage({
                 title: response,
-                subTitle: "Welcome to the crew. Your dispatcher will be in contact soon with RFO'S (Request For Operator).",
+                subTitle: `Welcome to the crew. ${type === EMAIL_VALIDATION_TYPE.DISPATCHER ? "Go back to the app and press check again" : "Your dispatcher will be in contact soon with RFO'S (Request For Operator)"}.`,
                 svg: <EmailConfirmedSVG width={100} height={100} stroke='black' />
             })
     }
@@ -82,4 +77,4 @@ const ValidateOperatorEmailPage = () => {
     </View>
 
 }
-export default ValidateOperatorEmailPage
+export default ValidateEmail

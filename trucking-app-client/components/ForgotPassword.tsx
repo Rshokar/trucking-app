@@ -65,8 +65,6 @@ const ForgotPassword: FC<ForgotPasswordProps> = ({ done }) => {
         }
     }
 
-    console.log(email, resetPasswordToken);
-
     if (step === STEPS.EMAIL) {
         // Enter Email
         return <>

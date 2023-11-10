@@ -88,12 +88,12 @@ const Welcome: FunctionComponent<Props> = ({ navigation }) => {
     const handleLogin = async (formRes: LoginFormResult): Promise<any> => {
         try {
             const res = await signInWithEmailAndPassword(FIREBASE_AUTH, formRes.email, formRes.password);
-            const { company } = await AuthController.login(await res.user.getIdToken(), formRes.email);
+            const { company, user } = await AuthController.login(await res.user.getIdToken(), formRes.email);
             showSnackbar({
                 message: 'Loged in successfully',
                 color: theme.colors.primary
             })
-            navigation.navigate("Home", { company })
+            navigation.navigate("Home", { company, user })
         } catch (e: any) {
             console.log(e);
             let error: string = e.message
@@ -113,17 +113,14 @@ const Welcome: FunctionComponent<Props> = ({ navigation }) => {
     const handleRegister = async (formResult: RegisterFormResult): Promise<any> => {
         console.log(formResult);
         try {
-            console.log("HELLO WORLD")
             const res = await createUserWithEmailAndPassword(FIREBASE_AUTH, formResult.email, formResult.password);
-            console.log("HELLO WORLD")
-
-            const { company } = await AuthController.register(await res.user.getIdToken(), formResult.company, formResult.email)
+            const { company, user } = await AuthController.register(await res.user.getIdToken(), formResult.company, formResult.email)
             showSnackbar({
                 message: 'Registered in successfully',
                 color: theme.colors.primary,
                 onClickText: 'Ok'
             })
-            navigation.navigate("Home", { company })
+            navigation.navigate("Home", { company, user })
         } catch (e: any) {
             console.log("ERROR", e);
             let error: string = "Error registering in."
