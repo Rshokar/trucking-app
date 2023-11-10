@@ -6,7 +6,7 @@ import "./index.css";
 import { createTheme, ThemeProvider } from "@mui/material";
 import RootPage from "./routes/Root/RootPage";
 import ErrorPage from "./routes/Error/ErrorPage";
-import ValidateOperatorEmailPage from "./routes/ValidateOperatorEmail/ValidateOperatorEmail";
+import ValidateEmail from "./routes/ValidateEmail/ValidateEmail";
 import TicketPage from "./routes/Ticket/TicketPage";
 import "intersection-observer";
 import { Toaster } from "react-hot-toast";
@@ -41,9 +41,9 @@ const router = createBrowserRouter([
     errorElement: <ErrorPage />,
   },
   {
-    path: "/validate_operator_email/:token",
-    element: <ValidateOperatorEmailPage />,
-    errorElement: <ErrorPage />,
+    path: '/validate_email/:token/:type',
+    element: <ValidateEmail />,
+    errorElement: <ErrorPage />
   },
   {
     path: "/ticket/:token",

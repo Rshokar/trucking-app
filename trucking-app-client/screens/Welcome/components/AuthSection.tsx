@@ -136,7 +136,11 @@ const AuthSection: FC<Props> = ({ handleLogin, handleRegister, toggleLogin }) =>
                 titleColor={theme.colors.primary}
                 subTitleColor={theme.colors.secondary}
             />
-            <RegisterForm onSubmit={handleRegister} />
+            <RegisterForm onSubmit={async (formResult: RegisterFormResult) => {
+                await handleRegister(formResult);
+                showLogin();
+            }
+            } />
             <Action
                 message='Already have an account?'
                 actionMessage='Register.'

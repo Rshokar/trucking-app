@@ -19,7 +19,7 @@ def send_verification_email(mail, email, token, name, company_name):
                   sender='ravindershokar@gmail.com', recipients=[email])
 
     # Ideally, you should use url_for function of Flask to create verify URL
-    verify_url = f"{WEB_URL}/validate_operator_email/{token}"
+    verify_url = f"{WEB_URL}/validate_email/{token}/operator"
 
     msg.body = f'''
     Hello {name},
@@ -131,7 +131,7 @@ def send_operator_rfo_update(mail, email, rfo, operator, company, customer, Disp
 
     Please click on the link below to view more details and accept the job:
 
-    {WEB_URL}/operator_auth/{token}
+    {WEB_URL}/operator_auth/{token}/operator
 
     If you have any questions, please contact your dispatcher.
 
@@ -211,6 +211,36 @@ def send_user_forgot_password_code(mail, email, code):
     # Sending the email
     mail.send(msg)
 
+
+def send_email_verification(mail, email, token):
+    """_summary_
+
+    Args:
+        mail (_type_): _description_
+        email (_type_): _description_
+        token (_type_): _description_
+    """
+
+    print("EMAILER")
+    msg = Message('Password Reset Code - Trucking App',
+                  sender='ravindershokar@gmail.com', recipients=[email])
+
+    
+    msg.body = f'''
+    Hello,
+
+    Thank you creating an account with tare ticketing, and verifying you email. 
+    
+    Click the link bellow to validate your email. 
+    
+    link: {WEB_URL}/validate_email/{token}/dispatcher
+
+    Regards,
+    Trucking App Support
+    '''
+
+    # Sending the email
+    mail.send(msg)
 def send_contact_form_email(mail, body, name, sender_email):
     msg = Message(f'''Contact Us - {name} - {sender_email}''',
                 sender='ravindershokar@gmail.com', recipients=["restarttechnologiesinc@gmail.com"])

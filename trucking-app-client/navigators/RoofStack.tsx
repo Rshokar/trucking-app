@@ -18,12 +18,14 @@ import { IconButton, useTheme } from 'react-native-paper'
 import Account from '../screens/Account/Account'
 import { AuthController } from '../controllers/AuthController'
 import { navigationRef } from '../utils/NavigationService'
+import { User } from '../models/User'
 
 
 export type RoofStackParamList = {
     Welcome: undefined
     Home: {
-        company: Company
+        company: Company,
+        user: User,
     }
     Tickets: {
         dispId: number,
