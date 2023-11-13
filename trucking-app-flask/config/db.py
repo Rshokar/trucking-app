@@ -4,7 +4,7 @@ from sqlalchemy.orm import sessionmaker
 from models.model import Base
 import os
 
-IS_PRODUCTION = os.environ.get("STATE")
+IS_PRODUCTION = os.environ.get("STATE") == 'production'
 TEST_DATA_NUM_USERS = os.environ.get("TEST_DATA_NUM_USERS")
 
 
@@ -23,6 +23,14 @@ engine = create_engine(connection_string)
 # Connect to database
 connection = engine.connect()
 print("--|--Connection to the database is successful--|--")
+
+if not IS_PRODUCTION:
+    print("Dropping and rebuilding the database...")
+    Base.metadata.drop_all(engine)  # Drop all tables
+    Base.metadata.create_all(engine)  # Create all tables
+    print("Database has been reset.")
+else:
+    print("Skipped database reset in production environment.")
 
 
 # Create a session
