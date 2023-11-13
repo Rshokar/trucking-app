@@ -17,7 +17,11 @@ session = Session()
 fake = F()
 
 
+<<<<<<< HEAD
 def loadDB(num_users, num_operators, num_customers, num_dispatches):
+=======
+def loadDB(num_users):
+>>>>>>> 83979cb (Updated loader to create stripe customers and new Users. The whole reason of this was to be able to test the stripe_subscription test, and the test passed.)
     print("LOADING DATABASE WITH RANDOM DATA")
 
     # Calculate the date for the middle day, 7 days ago
@@ -36,6 +40,7 @@ def loadDB(num_users, num_operators, num_customers, num_dispatches):
     
     for date in dates: 
         for i in range(users_per_day):
+<<<<<<< HEAD
             company = fake.company()
             email = fake.unique.email()  # Generates a unique email
             stripe_customer = stripe.Customer.create(name=company, email=email)
@@ -71,6 +76,10 @@ def loadDB(num_users, num_operators, num_customers, num_dispatches):
             
             
             
+=======
+            UserFactory.create(created_at=date)
+        
+>>>>>>> 83979cb (Updated loader to create stripe customers and new Users. The whole reason of this was to be able to test the stripe_subscription test, and the test passed.)
     
 
 

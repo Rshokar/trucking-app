@@ -56,12 +56,14 @@ class User(Base):
     company = relationship("Company", backref="owner",
                            lazy=True, cascade="delete", uselist=False)
 
-    def __init__(self, id, stripe_id, role=UserRole.DISPATCHER.value, reset_code=None, recovery_token=None):
+    def __init__(self, id, stripe_id, role=UserRole.DISPATCHER.value, reset_code=None, recovery_token=None, email=None, created_at=datetime.now()):
         self.role = role
         self.id = id
         self.reset_code = reset_code
         self.recovery_token = recovery_token
         self.stripe_id = stripe_id
+        self.email = email
+        self.created_at = created_at 
 
     def __repr__(self):
         return f"USER: ({self.id}) {self.role}, {self.reset_code}, {self.recovery_token}, {self.stripe_id}"
