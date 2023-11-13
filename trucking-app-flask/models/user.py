@@ -1,5 +1,5 @@
 import re
-from sqlalchemy import Column, String, DateTime, Boolean, CheckConstraint
+from sqlalchemy import Column, String, DateTime, func, Boolean, CheckConstraint
 from sqlalchemy.orm import validates, relationship
 from models.model import Base
 from config import db
@@ -28,6 +28,9 @@ class User(Base):
     email_validation_token_consumed = Column(
         'email_validation_token_cosumed', Boolean, default=True)
     stripe_id = Column("stripe_id", String(18), nullable=False)
+    stripe_subscribed = Column(Boolean, default=False)
+    created_at = Column(DateTime, default=func.now())
+    updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
     
     @validates("stripe_id")
     def validate_stripe_id(self, key, stripe_id):
