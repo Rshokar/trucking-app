@@ -12,10 +12,12 @@ import { Text, useTheme } from "react-native-paper";
 
 const Container = styled.View`
   display: flex;
-  flex-directio: column;
+  flex-direction: column;
   justify-content: flex-start;
-  padding-horizontal: 5%;
-  padding-vertical: 10%;
+  padding-right: 5%;
+  padding-left: 5%;
+  padding-top: 10%;
+  padding-bottom: 10%;
   align-items: center;
   width: 100%;
   gap: 20px;
@@ -133,7 +135,7 @@ const AuthSection: FC<Props> = ({
       <Container>
         <Head
           title="Welcome Back"
-          subTitle="Welcome to the trucking app, enter you credentials and lets get started"
+          subTitle="Welcome to Tare Ticketing, enter your credentials and let's get started"
           titleColor={theme.colors.primary}
           subTitleColor={theme.colors.secondary}
         />
@@ -157,7 +159,7 @@ const AuthSection: FC<Props> = ({
       <Container>
         <Head
           title="Create an Account"
-          subTitle="Welcome to the trucking app, register and lets get started"
+          subTitle="Welcome to Tare Ticketing, register to get started!"
           titleColor={theme.colors.primary}
           subTitleColor={theme.colors.secondary}
         />
