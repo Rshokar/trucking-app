@@ -146,7 +146,7 @@ const AuthSection: FC<Props> = ({
         />
         <Action
           message={""}
-          actionMessage={"Forgot you password?"}
+          actionMessage={"Forgot your password?"}
           action={showForgotPassword}
           color={theme.colors.tertiary}
         />
