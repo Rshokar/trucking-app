@@ -62,24 +62,6 @@ def loadDB(num_users, num_operators, num_customers, num_dispatches):
                         dispatch_id=disp.dispatch_id, 
                         operator_id=operators[i].operator_id
                     ))
-                
-                
-            
-                
-                
-            
-            
-            
-            
-<<<<<<< HEAD
-=======
-            UserFactory.create(created_at=date)
-        
->>>>>>> 83979cb (Updated loader to create stripe customers and new Users. The whole reason of this was to be able to test the stripe_subscription test, and the test passed.)
-=======
->>>>>>> 5be40c2 (Tested loader)
-    
-
 
 class UserFactory(SQLAlchemyModelFactory):
 
