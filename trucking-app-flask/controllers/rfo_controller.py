@@ -1,4 +1,5 @@
 from flask import current_app as app, g
+from controllers import StripeController
 from models import RFO, Dispatch, Operator, Company, Customer
 from sqlalchemy import and_
 from sqlalchemy.exc import IntegrityError
@@ -102,6 +103,33 @@ class RfoController:
             dump_location=data['dump_location'],
             load_location=data['load_location'],
         )
+        
+        # Create product usage. 
+        """
+        So what do we need to do here?
+We want a way to monetize out application, we are going to be that by adding product usage to our users, strip account. 
+
+# Special Cases. 
+If the users account is less than seven days old, we will not count the usage
+If the user is reaching the next tier of usage, then we will return a warning and not copmlete the operation. 
+If a user is passing a tier and has a special flag then the product usage is created. 
+
+When a RFO is deleted and has been opened by operator or has had a bill attached to it then its prod_usage and rfo are not deleted instead the rfo is given a deleted flag.
+
+Otherwise the rfo and prod_usage is deleted. 
+
+In addition to this we need a new account section dedicated to there subscription. 
+
+What im thinking is that the account page will open and the a image + profile info is displayed. 
+- the account page will have a couple drop downs
+-- Subscriptions
+--- In this section the sub status, current usage, projected bill, edit subscription, sub history
+-- Account Info
+- To make navigation easy we will have a back button. 
+
+        """
+        product_usage_id = StripeController.add_usage(oper,1)
+        
         session.add(rfo)
         session.commit()
 

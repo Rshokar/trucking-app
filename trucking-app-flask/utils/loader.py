@@ -4,60 +4,64 @@ from factory import Sequence, SubFactory, Faker, LazyAttribute
 from faker import Faker as F
 from factory.fuzzy import FuzzyChoice, FuzzyText
 from factory.alchemy import SQLAlchemyModelFactory
+from datetime import datetime, timedelta
+import math
 import random
-from config.db import Session
+import stripe
+import os
 
+STRIPE_API_KEY = os.getenv("STRIPE_SECRET_API_KEY")
+stripe.api_key = STRIPE_API_KEY
 session = Session()
 
 fake = F()
 
 
-def loadDB(num_users):
-    print("LOADING DATABSE WITH RANDOM DATA")
+def loadDB(num_users, num_operators, num_customers, num_dispatches):
+    print("LOADING DATABASE WITH RANDOM DATA")
 
-    for index in range(num_users):
-        user = UserFactory.create(
-            id=f"{index}",
-            role="dispatcher")
+    # Calculate the date for the middle day, 7 days ago
+    middle_date = datetime.utcnow().date() - timedelta(days=7)
 
-        print(f"USER --|--: \n: {user}")
+    # Calculate the dates for the day before and after the middle day
+    dates = [
+        middle_date - timedelta(days=1),
+        middle_date,
+        middle_date + timedelta(days=1)
+    ]
 
-        company = CompanyFactory(owner_id=user.id)
-
-        # print(f"COMPANY --|--: \n {company}")
-
-        customers = CustomerFactory.create_batch(
-            10, company_id=company.company_id)
-
-        # print(f"CUSTOMERS --|--: \n {customers}")
-
-        operators = OperatorFactory.create_batch(
-            5, company_id=company.company_id)
-
-        # print(f"OPERATORS --|--: \n {operators}")
-        dispatches = []
-        rfos = []
-        billing_tickets = []
-        for customer in customers:
-            d = DispatchFactory.create_batch(
-                5, company_id=company.company_id, customer_id=customer.customer_id, date=fake.date_time_this_year(before_now=True, after_now=False, tzinfo=None))
-
-            for dispatch in d:
-                numRfos = random.randint(0, len(operators))
-                for i in range(numRfos):
-                    rfo = RFOFactory.create(
-                        dispatch_id=dispatch.dispatch_id, operator_id=operators[i].operator_id)
-                    # billing_ticket = BillingTicketFactory.create(
-                    #     rfo_id=rfo.rfo_id)
-                    # billing_tickets.append(billing_ticket)
-                    rfos.append(rfo)
-
-            dispatches.append(d)
-
-        # print(f"DISPATCHES --|--: \n {dispatches}")
-        # print(f"RFO --|--: \n {rfos}")
-        # print(f"BILLING TICETS --|--: \n {billing_tickets}")
-
+    # Calculate the number of users to create each day
+    users_per_day = math.ceil(num_users / len(dates))
+    
+    
+    for date in dates: 
+        for i in range(users_per_day):
+            company = fake.company()
+            email = fake.unique.email()  # Generates a unique email
+            stripe_customer = stripe.Customer.create(name=company, email=email)
+            user = UserFactory.create(created_at=date, email=email, stripe_id=stripe_customer['id'])
+            company = CompanyFactory.create(owner_id=user.id, name=company)
+            
+            
+            operators = []
+            for i in range(num_operators):
+                operators.append(OperatorFactory.create(company_id=company.company_id))
+                
+            customers = []
+            for i in range(num_customers):
+                customers.append(CustomerFactory.create(company_id=company.company_id))
+            
+            rfos = []
+            for i in range(num_dispatches):
+                disp = DispatchFactory(
+                    company_id=company.company_id, 
+                    customer_id=customers[random.randint(0, len(customers) - 1)].customer_id
+                )    
+                for i in range(len(operators)):
+                    rfos.append(RFOFactory.create(
+                        dispatch_id=disp.dispatch_id, 
+                        operator_id=operators[i].operator_id
+                    ))
 
 class UserFactory(SQLAlchemyModelFactory):
 
@@ -67,6 +71,18 @@ class UserFactory(SQLAlchemyModelFactory):
         sqlalchemy_session_persistence = 'commit'
 
     role = FuzzyChoice([UserRole.DISPATCHER.value])
+    email = LazyAttribute(lambda o: fake.unique.email())  # Generates a unique email
+    id = FuzzyText(length=50)
+
+    @classmethod
+    def _create(cls, model_class, *args, **kwargs):
+        # assuming 'email' and 'company_name' are required for the add_customer method
+        company_name = fake.company()  # Generate a random company name
+        email = kwargs.get('email')
+        customer = stripe.Customer.create(name=company_name, email=email)
+        kwargs['stripe_id'] = customer.id
+        return super()._create(model_class, *args, **kwargs)
+
 
 
 class CompanyFactory(SQLAlchemyModelFactory):

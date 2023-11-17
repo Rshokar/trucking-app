@@ -1,5 +1,5 @@
 import re
-from sqlalchemy import Column, String, DateTime, Boolean, CheckConstraint
+from sqlalchemy import Column, String, DateTime, func, Boolean, CheckConstraint
 from sqlalchemy.orm import validates, relationship
 from models.model import Base
 from config import db
@@ -27,11 +27,23 @@ class User(Base):
         'LENGTH(email_validation_token) = 6'), nullable=True)
     email_validation_token_consumed = Column(
         'email_validation_token_cosumed', Boolean, default=True)
+    stripe_id = Column("stripe_id", String(18), nullable=False)
+    stripe_subscribed = Column(Boolean, default=False)
+    created_at = Column(DateTime, default=func.now())
+    updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
+    
+    @validates("stripe_id")
+    def validate_stripe_id(self, key, stripe_id):
+        LENGTH = 18
+        if len(stripe_id) != LENGTH:
+             raise ValueError("Invalid stripe id")
+         
+        return stripe_id
 
     @validates("role")
     def validate_role(self, key, role):
         if role != UserRole.DISPATCHER.value:
-            raise ValueError("Invalid Role")
+            raise ValueError("Invalid r ole")
         return role
 
     @validates("reset_code")
@@ -44,14 +56,17 @@ class User(Base):
     company = relationship("Company", backref="owner",
                            lazy=True, cascade="delete", uselist=False)
 
-    def __init__(self, id, role=UserRole.DISPATCHER.value, reset_code=None, recovery_token=None):
+    def __init__(self, id, stripe_id, role=UserRole.DISPATCHER.value, reset_code=None, recovery_token=None, email=None, created_at=datetime.now()):
         self.role = role
         self.id = id
         self.reset_code = reset_code
         self.recovery_token = recovery_token
+        self.stripe_id = stripe_id
+        self.email = email
+        self.created_at = created_at 
 
     def __repr__(self):
-        return f"USER: ({self.id}) {self.role}, {self.reset_code}, {self.recovery_token}"
+        return f"USER: ({self.id}) {self.role}, {self.reset_code}, {self.recovery_token}, {self.stripe_id}"
 
     def to_dict(self):
         return {
