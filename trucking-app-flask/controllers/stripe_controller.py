@@ -7,7 +7,7 @@ class StripeController:
     def add_customer(company_name, email):
         try:
             customer = stripe.Customer.create(
-                name=company_name, email=email
+                name=company_name, email=email, 
             )
             
             return customer.id
