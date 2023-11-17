@@ -32,12 +32,9 @@ class AuthController:
 
         try:
             # Decode and verify Firebase JWT
-            # decoded_token = auth.verify_id_token(token)
-            # uid = decoded_token.get("uid")
-            # email = decoded_token.get("email")
-
-            uid = 'EW62nTXp8YchemFhJ2Q0Nl2re5Y2'
-            email = 'ravinder@demo.com'
+            decoded_token = auth.verify_id_token(token)
+            uid = decoded_token.get("uid")
+            email = decoded_token.get("email")
             
             # At this point we want to see if that user is already in the system
             user = session.query(User).filter_by(id=uid).first()
