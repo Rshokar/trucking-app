@@ -39,7 +39,7 @@ def main():
     query = text("""
     SELECT id, stripe_id
     FROM users
-    WHERE DATE(created_at) = CURDATE() - INTERVAL 7 DAY AND stripe_subscribed = 0;
+    WHERE DATE(created_at) = CURDATE() - INTERVAL 7 DAY AND stripe_subscribed_id IS NULL;
     """)
     
     # Execute the query
@@ -47,6 +47,8 @@ def main():
 
     # Fetch all results
     users = result.fetchall()
+    
+    print(f"Users: {users}")
 
     # Process each user
     for user in users:
@@ -56,7 +58,7 @@ def main():
         
         try:
             # Create the subscription
-            stripe.Subscription.create(
+            sub = stripe.Subscription.create(
                 customer=stripe_customer_id,
                 items=[
                     {"price": STRIPE_PRICE_ID},
@@ -64,13 +66,15 @@ def main():
                 # Add other subscription parameters if needed
             )
             
+            id = sub["id"]
+            
             # Update your database to mark the user as subscribed
             update_query = text("""
                 UPDATE users
-                SET stripe_subscribed = True
+                SET stripe_subscribed_id = :id
                 WHERE id = :user_id;
             """)
-            connection.execute(update_query, {"user_id": user_id})
+            connection.execute(update_query, {"user_id": user_id, "id": id})
             connection.commit()
             print(f"Subscribed user {user_id} to Stripe")
 

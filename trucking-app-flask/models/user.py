@@ -28,7 +28,7 @@ class User(Base):
     email_validation_token_consumed = Column(
         'email_validation_token_cosumed', Boolean, default=True)
     stripe_id = Column("stripe_id", String(18), nullable=False)
-    stripe_subscribed = Column(Boolean, default=False)
+    stripe_subscribed_id = Column(String(28), nullable=True)
     created_at = Column(DateTime, default=func.now())
     updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
     

@@ -23,13 +23,13 @@ class RFO(Base):
         500), CheckConstraint('LENGTH(dump_location) >= 3'))
     load_location = Column("load_location", String(
         500), CheckConstraint('LENGTH(load_location) >= 3'))
-
     # This is used to store six digit validation token
     token = Column("token", String(6), CheckConstraint(
         'LENGTH(token) = 6'), nullable=True)
     token_date = Column("token_date", DateTime, nullable=True)
     token_consumed = Column('token_cosumed', Boolean, default=True)
-
+    product_usage = Column(String(28), CheckConstraint('LENGTH(product_usage) = 3'))
+    
     def __init__(self, dispatch_id, operator_id, trailer, truck, start_location, start_time, dump_location, load_location) -> None:
         self.dispatch_id = dispatch_id
         self.operator_id = operator_id
