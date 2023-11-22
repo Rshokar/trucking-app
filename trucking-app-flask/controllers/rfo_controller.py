@@ -136,7 +136,7 @@ class RfoController:
         
         if user.stripe_subscribed_id is not None:
             rfo.product_usage = StripeController.add_usage(user.stripe_id)
-                
+        
         session.add(rfo)
         session.commit()
 

@@ -22,11 +22,7 @@ import AuthSection from './components/AuthSection'
 
 type Props = StackScreenProps<RoofStackParamList, "Welcome">
 
-
-
 const Welcome: FunctionComponent<Props> = ({ navigation }) => {
-
-
     const [showLogin, setShowLogin] = useState<boolean>(true)
     const [showAuth, setShowAuth] = useState<boolean>(false)
     const { showSnackbar } = useSnackbar();

@@ -51,12 +51,19 @@ class StripeController:
             ammout (_type_): Number of RFOs consumed
         """
         
+        if ammout == 0: 
+            return False
+        print("\nADD USAGE\n")        
         try:
-            customer = stripe.Customer.create(
-                name=company_name, email=email, 
+            
+            product_usage = stripe.SubscriptionItem.create_usage_record(
+            "si_P3AimwwGjeekoj",
+            quantity=100,
+            timestamp=1571252444,
             )
             
-            return customer.id
+            return product_usage["id"]
+        
         except stripe.error.CardError as e:
             # Since it's a decline, stripe.error.CardError will be caught
 
