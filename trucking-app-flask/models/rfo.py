@@ -33,7 +33,7 @@ class RFO(Base):
     product_usage = Column(String(29), CheckConstraint('LENGTH(product_usage) = 29'))
     created_at = Column(Integer, default=lambda: int(time.time()))
     
-    def __init__(self, dispatch_id, operator_id, trailer, truck, start_location, start_time, dump_location, load_location) -> None:
+    def __init__(self, dispatch_id, operator_id, trailer, truck, start_location, start_time, dump_location, load_location, created_at=None) -> None:
         self.dispatch_id = dispatch_id
         self.operator_id = operator_id
         self.trailer = trailer
@@ -42,6 +42,7 @@ class RFO(Base):
         self.start_time = start_time
         self.dump_location = dump_location
         self.load_location = load_location
+        self.created_at = created_at
 
     def __repr__(self):
         return f"RFO: ({self.rfo_id}) Dispatch: {self.dispatch_id} Equipment: {self.truck} {self.trailer} Start: {self.start_location} Load: {self.load_location} Dump: {self.dump_location} {self.start_time} Stripe: {self.product_usage}"

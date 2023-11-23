@@ -57,6 +57,9 @@ class User(Base):
     company = relationship("Company", backref="owner",
                            lazy=True, cascade="delete", uselist=False)
 
+    usage = relationship("Usage", back_populates="user", uselist=False)
+    usage_archive = relationship("UsageArchive", back_populates="user")
+    
     def __init__(self, id, stripe_id, role=UserRole.DISPATCHER.value, reset_code=None, recovery_token=None, email=None, created_at=datetime.now()):
         self.role = role
         self.id = id

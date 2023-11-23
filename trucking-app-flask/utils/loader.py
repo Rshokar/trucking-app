@@ -14,40 +14,17 @@ STRIPE_API_KEY = os.getenv("STRIPE_SECRET_API_KEY")
 stripe.api_key = STRIPE_API_KEY
 session = Session()
 
+# Global date range for when RFOS are made
+START_DATE = datetime(2023, 10, 1)  # Example start date
+END_DATE = datetime(2023, 12, 31)    # Example end date
+
+def random_timestamp(start, end):
+    """Return a random Unix timestamp between two datetime objects."""
+    random_date = start + timedelta(
+        seconds=random.randint(0, int((end - start).total_seconds())))
+    return int(random_date.timestamp())
+
 fake = F()
-
-
-def loadDB(num_users, num_operators, num_customers, num_dispatches):
-    print("LOADING DATABASE WITH RANDOM DATA")
-    
-
-    for i in range(num_users):
-        company = fake.company()
-        email = fake.unique.email()  # Generates a unique email
-        stripe_customer = stripe.Customer.create(name=company, email=email)
-        user = UserFactory.create(id='XT6JmAPRALQaGfgWEnjn9RySWAW2', created_at=datetime.now(), email=email, stripe_id=stripe_customer['id'])
-        company = CompanyFactory.create(owner_id=user.id, name=company)
-        
-        
-        operators = []
-        for i in range(num_operators):
-            operators.append(OperatorFactory.create(company_id=company.company_id))
-            
-        customers = []
-        for i in range(num_customers):
-            customers.append(CustomerFactory.create(company_id=company.company_id))
-        
-        rfos = []
-        for i in range(num_dispatches):
-            disp = DispatchFactory(
-                company_id=company.company_id, 
-                customer_id=customers[random.randint(0, len(customers) - 1)].customer_id
-            )    
-            for i in range(len(operators)):
-                rfos.append(RFOFactory.create(
-                    dispatch_id=disp.dispatch_id, 
-                    operator_id=operators[i].operator_id
-                ))
 
 class UserFactory(SQLAlchemyModelFactory):
 
@@ -135,6 +112,7 @@ class RFOFactory(SQLAlchemyModelFactory):
     dump_location = Faker("street_address")
     load_location = Faker("street_address")
     start_time = fake.date_of_birth()
+    created_at = LazyAttribute(lambda _: random_timestamp(START_DATE, END_DATE))
 
 
 class BillingTicketFactory(SQLAlchemyModelFactory):
@@ -157,3 +135,39 @@ class BillingTicketFactory(SQLAlchemyModelFactory):
     ticket_number = Sequence(lambda n: n + 1)
     image_id = LazyAttribute(
         lambda obj: BillingTicketFactory.generate_random_image_id())
+
+
+
+def loadDB(num_users, num_operators, num_customers, num_dispatches):
+    print("LOADING DATABASE WITH RANDOM DATA")
+    
+
+    for i in range(num_users):
+        company = fake.company()
+        email = fake.unique.email()  # Generates a unique email
+        stripe_customer = stripe.Customer.create(name=company, email=email)
+        # user = UserFactory.create(id='XT6JmAPRALQaGfgWEnjn9RySWAW2', created_at=datetime.now(), email=email, stripe_id=stripe_customer['id'])
+        user = UserFactory.create(created_at=datetime.now(), email=email, stripe_id=stripe_customer['id'])
+        company = CompanyFactory.create(owner_id=user.id, name=company)
+        
+        
+        operators = []
+        for i in range(num_operators):
+            operators.append(OperatorFactory.create(company_id=company.company_id))
+            
+        customers = []
+        for i in range(num_customers):
+            customers.append(CustomerFactory.create(company_id=company.company_id))
+        
+        rfos = []
+        for i in range(num_dispatches):
+            disp = DispatchFactory(
+                company_id=company.company_id, 
+                customer_id=customers[random.randint(0, len(customers) - 1)].customer_id
+            )    
+            for i in range(len(operators)):
+                rfos.append(RFOFactory.create(
+                    dispatch_id=disp.dispatch_id, 
+                    operator_id=operators[i].operator_id
+                ))
+
