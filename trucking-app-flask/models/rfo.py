@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, CheckConstraint, Boolean
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, CheckConstraint, Boolean, func
 from models.model import Base
 from models.dispatch import Dispatch
 from models.operator import Operator
@@ -30,6 +30,7 @@ class RFO(Base):
     token_date = Column("token_date", DateTime, nullable=True)
     token_consumed = Column('token_cosumed', Boolean, default=True)
     product_usage = Column(String(29), CheckConstraint('LENGTH(product_usage) = 29'))
+    created_at = Column(DateTime, default=func.now())
     
     def __init__(self, dispatch_id, operator_id, trailer, truck, start_location, start_time, dump_location, load_location) -> None:
         self.dispatch_id = dispatch_id

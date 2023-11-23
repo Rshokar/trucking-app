@@ -37,10 +37,13 @@ print("Database connection and session made.")
 def main():
     # SQL query
     query = text("""
-    SELECT id, stripe_id
+    SELECT id, stripe_id, stripe_subscribed_id, stripe_subscribed_item
     FROM users
-    WHERE DATE(created_at) <= CURDATE() - INTERVAL 7 DAY AND stripe_subscribed_id IS NULL;
+    WHERE DATE(created_at) <= CURDATE() - INTERVAL 7 DAY AND stripe_subscribed_id IS NOT NULL;
     """)
+    
+    
+    print(query)
     
     # Execute the query
     result = connection.execute(query)
@@ -50,51 +53,39 @@ def main():
     
     print(f"Users: {users}")
 
-    # Process each user
+    # # Process each user
     for user in users:
-        # Assuming 'stripe_id' is the customer ID in Stripe
-        user_id = user[0]
-        stripe_customer_id = user[1]
-        
+       # Fetch subscription details from Stripe
         try:
-            # Create the subscription
-            sub = stripe.Subscription.create(
-                customer=stripe_customer_id,
-                items=[
-                    {"price": STRIPE_PRICE_ID},
-                ],
-                # Add other subscription parameters if needed
-            )
-            print(sub)
-            id = sub["id"]
-            
-            item_id = sub["items"]["data"][0]["id"]
-            
-            
-            print(sub)
-            print(f"ID: {id}, {item_id}")
-            print()
-            
-            
-            
-            # Update your database to mark the user as subscribed
-            update_query = text("""
-                UPDATE users
-                SET stripe_subscribed_id = :id, stripe_subscribed_item = :item
-                WHERE id = :user_id;
-            """)
-            connection.execute(update_query, {"id": id, "user_id": user_id, "item": item_id})
-            connection.commit()
-            print(f"Subscribed user {user_id} to Stripe")
+            subscription = stripe.Subscription.retrieve(user.stripe_subscribed_id)
+            print(subscription)
+            # Extract billing period
+            billing_period_start = subscription['current_period_start']
+            billing_period_end = subscription['current_period_end']
+
+            # Calculate usage for the user within the billing period
+            # You need to implement this part based on your usage tracking mechanism
+            usage_sql = f"""
+                SELECT COUNT(*) FROM rfos as r  
+                LEFT JOIN dispatch as d ON d.dispatch_id = r.rfo_id
+                LEFT JOIN company as c ON d.company_id = c.company_id
+                LEFT JOIN user as u on c.owner_id = u.id
+                WHERE u.id = '{user.id}' AND r.created_at > {billing_period_start} AND r.created_at < {billing_period_end};
+            """
+
+            print(usage_sql)
+            # # Process usage data (e.g., billing, notifications, etc.)
+            # # Implement this based on your application's requirements
+            # process_usage_data(user['id'], user_usage)
 
         except stripe.error.StripeError as e:
-            # Handle Stripe exceptions
-            print(f"Stripe Error: {e.user_message}")
-        except Exception as e:
-            print(f"An error occurred: {e}")
+            print(f"Stripe Error: {e}")
 
 if __name__ == "__main__":
     main()
 
 
 print("Finish")
+
+
+
