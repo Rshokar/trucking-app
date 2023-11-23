@@ -29,6 +29,7 @@ class User(Base):
         'email_validation_token_cosumed', Boolean, default=True)
     stripe_id = Column("stripe_id", String(18), nullable=False)
     stripe_subscribed_id = Column(String(28), nullable=True)
+    stripe_subscribed_item = Column(String(28),nullable=True)
     created_at = Column(DateTime, default=func.now())
     updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
     
@@ -66,7 +67,7 @@ class User(Base):
         self.created_at = created_at 
 
     def __repr__(self):
-        return f"USER: ({self.id}) {self.role}, {self.reset_code}, {self.recovery_token}, {self.stripe_id}"
+        return f"USER: ({self.id}) {self.role}, {self.reset_code}, {self.recovery_token}, {self.stripe_id}, {self.stripe_subscribed_id}"
 
     def to_dict(self):
         return {

@@ -103,40 +103,7 @@ class RfoController:
             dump_location=data['dump_location'],
             load_location=data['load_location'],
         )
-        
-        # Create product usage. 
-        """
-        So what do we need to do here?
-            We want a way to monetize out application, we are going to be that by adding product usage to our users, strip account. 
 
-            # Special Cases. 
-            If the users account is less than seven days old, we will not count the usage
-            If the user is reaching the next tier of usage, then we will return a warning and not copmlete the operation. 
-            If a user is passing a tier and has a special flag then the product usage is created. 
-
-            When a RFO is deleted and has been opened by operator or has had a bill attached to it then its prod_usage and rfo are not deleted instead the rfo is given a deleted flag.
-
-            Otherwise the rfo and prod_usage is deleted. 
-
-            In addition to this we need a new account section dedicated to there subscription. 
-
-            What im thinking is that the account page will open and the a image + profile info is displayed. 
-            - the account page will have a couple drop downs
-            -- Subscriptions
-            --- In this section the sub status, current usage, projected bill, edit subscription, sub history
-            -- Account Info
-            - To make navigation easy we will have a back button. 
-        """
-        
-        
-        user = session.query(User).filter_by(id=g.user["uid"]).first()
-        
-        if user is None:
-            return make_response("User not found", 404)
-        
-        if user.stripe_subscribed_id is not None:
-            rfo.product_usage = StripeController.add_usage(user.stripe_id)
-        
         session.add(rfo)
         session.commit()
 
@@ -241,18 +208,27 @@ class RfoController:
         rfo = session.query(RFO)\
             .join(Dispatch, RFO.dispatch_id == Dispatch.dispatch_id)\
             .join(Company, Dispatch.company_id == Company.company_id)\
-            .filter(and_(RFO.rfo_id == rfo_id, Company.owner_id == g.user["uid"]))\
+            .filter(and_(RFO.rfo_id == rfo_id, Company.owner_id == g.user["uid"]), RFO.deleted == False)\
             .first()
 
         if rfo is None:
             return make_response('RFO not found', 404)
         try:
+            # NOTE:If the RFO has any associated bills, an IntegrityError will be 
+            # thrown due to referential integrity constraints.
+            # In such a case, the deletion operation is rolled back, the rfo deleted flag is 
+            # set to true.
             session.delete(rfo)
             session.commit()
             return make_response('RFO deleted', 200)
         except IntegrityError:
             session.rollback()
-            return make_response("RFO has tickets refrencing it, cannot be deleted", 400)
+            
+            
+            rfo.deleted = True
+            session.commit()
+            
+            return make_response("RFO has tickets refrencing it, flaged as deleted", 200)
 
     def operator_get_rfo(session, token):
         '''

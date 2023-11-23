@@ -19,49 +19,35 @@ fake = F()
 
 def loadDB(num_users, num_operators, num_customers, num_dispatches):
     print("LOADING DATABASE WITH RANDOM DATA")
-
-    # Calculate the date for the middle day, 7 days ago
-    middle_date = datetime.utcnow().date() - timedelta(days=7)
-
-    # Calculate the dates for the day before and after the middle day
-    dates = [
-        middle_date - timedelta(days=1),
-        middle_date,
-        middle_date + timedelta(days=1)
-    ]
-
-    # Calculate the number of users to create each day
-    users_per_day = math.ceil(num_users / len(dates))
     
-    
-    for date in dates: 
-        for i in range(users_per_day):
-            company = fake.company()
-            email = fake.unique.email()  # Generates a unique email
-            stripe_customer = stripe.Customer.create(name=company, email=email)
-            user = UserFactory.create(created_at=date, email=email, stripe_id=stripe_customer['id'])
-            company = CompanyFactory.create(owner_id=user.id, name=company)
+
+    for i in range(num_users):
+        company = fake.company()
+        email = fake.unique.email()  # Generates a unique email
+        stripe_customer = stripe.Customer.create(name=company, email=email)
+        user = UserFactory.create(created_at=datetime.now(), email=email, stripe_id=stripe_customer['id'])
+        company = CompanyFactory.create(owner_id=user.id, name=company)
+        
+        
+        operators = []
+        for i in range(num_operators):
+            operators.append(OperatorFactory.create(company_id=company.company_id))
             
-            
-            operators = []
-            for i in range(num_operators):
-                operators.append(OperatorFactory.create(company_id=company.company_id))
-                
-            customers = []
-            for i in range(num_customers):
-                customers.append(CustomerFactory.create(company_id=company.company_id))
-            
-            rfos = []
-            for i in range(num_dispatches):
-                disp = DispatchFactory(
-                    company_id=company.company_id, 
-                    customer_id=customers[random.randint(0, len(customers) - 1)].customer_id
-                )    
-                for i in range(len(operators)):
-                    rfos.append(RFOFactory.create(
-                        dispatch_id=disp.dispatch_id, 
-                        operator_id=operators[i].operator_id
-                    ))
+        customers = []
+        for i in range(num_customers):
+            customers.append(CustomerFactory.create(company_id=company.company_id))
+        
+        rfos = []
+        for i in range(num_dispatches):
+            disp = DispatchFactory(
+                company_id=company.company_id, 
+                customer_id=customers[random.randint(0, len(customers) - 1)].customer_id
+            )    
+            for i in range(len(operators)):
+                rfos.append(RFOFactory.create(
+                    dispatch_id=disp.dispatch_id, 
+                    operator_id=operators[i].operator_id
+                ))
 
 class UserFactory(SQLAlchemyModelFactory):
 

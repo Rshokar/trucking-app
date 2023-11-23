@@ -69,7 +69,7 @@ def close_session(error):
 #     print("Dropping and rebuilding the database...")
 #     Base.metadata.drop_all(engine)  # Drop all tables
 #     Base.metadata.create_all(engine)  # Create all tables
-#     loadDB(3, 2, 2, 2)
+#     loadDB(1, 5, 5, 10)
 #     print("Database has been reset.")
 # else:
 #     print("Skipped database reset in production environment.")

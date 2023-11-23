@@ -23,12 +23,14 @@ class RFO(Base):
         500), CheckConstraint('LENGTH(dump_location) >= 3'))
     load_location = Column("load_location", String(
         500), CheckConstraint('LENGTH(load_location) >= 3'))
+    deleted = Column(Boolean, default=False)
     # This is used to store six digit validation token
     token = Column("token", String(6), CheckConstraint(
         'LENGTH(token) = 6'), nullable=True)
     token_date = Column("token_date", DateTime, nullable=True)
     token_consumed = Column('token_cosumed', Boolean, default=True)
-    product_usage = Column(String(28), CheckConstraint('LENGTH(product_usage) = 3'))
+    product_usage = Column(String(29), CheckConstraint('LENGTH(product_usage) = 29'))
+    delete_product_usage = Column(String(29), CheckConstraint('LENGTH(delete_product_usage) = 29'))
     
     def __init__(self, dispatch_id, operator_id, trailer, truck, start_location, start_time, dump_location, load_location) -> None:
         self.dispatch_id = dispatch_id
@@ -41,7 +43,7 @@ class RFO(Base):
         self.load_location = load_location
 
     def __repr__(self):
-        return f"RFO: ({self.rfo_id}) Dispatch: {self.dispatch_id} Equipment: {self.truck} {self.trailer} Start: {self.start_location} Load: {self.load_location} Dump: {self.dump_location} {self.start_time}"
+        return f"RFO: ({self.rfo_id}) Dispatch: {self.dispatch_id} Equipment: {self.truck} {self.trailer} Start: {self.start_location} Load: {self.load_location} Dump: {self.dump_location} {self.start_time} Stripe: (+) {self.product_usage} (-) {self.delete_product_usage}"
 
     def to_dict(self):
         return {
