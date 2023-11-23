@@ -42,9 +42,6 @@ def main():
     WHERE DATE(created_at) <= CURDATE() - INTERVAL 7 DAY AND stripe_subscribed_id IS NOT NULL;
     """)
     
-    
-    print(query)
-    
     # Execute the query
     result = connection.execute(query)
 
@@ -65,21 +62,70 @@ def main():
 
             # Calculate usage for the user within the billing period
             # You need to implement this part based on your usage tracking mechanism
-            usage_sql = f"""
-                SELECT COUNT(*) FROM rfos as r  
-                LEFT JOIN dispatch as d ON d.dispatch_id = r.rfo_id
+            usage_sql = text(f"""
+                SELECT COUNT(*) FROM rfos as r
+                LEFT JOIN dispatch as d ON d.dispatch_id = r.dispatch_id
                 LEFT JOIN company as c ON d.company_id = c.company_id
-                LEFT JOIN user as u on c.owner_id = u.id
-                WHERE u.id = '{user.id}' AND r.created_at > {billing_period_start} AND r.created_at < {billing_period_end};
-            """
+                LEFT JOIN users as u on c.owner_id = u.id
+                WHERE u.id = '{user.id}' AND r.created_at >= {billing_period_start} AND r.created_at < {billing_period_end};
+            """)
 
             print(usage_sql)
-            # # Process usage data (e.g., billing, notifications, etc.)
-            # # Implement this based on your application's requirements
-            # process_usage_data(user['id'], user_usage)
-
+            
+            result = connection.execute(usage_sql)
+            connection.commit()
+            
+            usage = result.fetchone()[0]
+            
+            if usage == 0: 
+                print(f"SKIP: No usage recorded for {user.id}")
+                continue
+            
+            # We have the usage, now we have to create the product usage records in stripe
+            try:
+                product_usage = stripe.SubscriptionItem.create_usage_record(user.stripe_subscribed_item, quantity=usage)
+                usage_id = product_usage["id"] 
+            except stripe.error.CardError as e:
+                print(f"STRIPE CARD ERROR: Error when creating customer usage for: {user.id}")
+                continue
+            except stripe.error.RateLimitError as e:
+                print(f"STRIPE RATE LIMIT ERROR: Error when creating customer usage for: {user.id}")
+                continue
+            except stripe.error.InvalidRequestError as e:
+                print(f"STRIPE INVALID REQUEST ERROR: Error when creating customer usage for: {user.id}")
+                continue
+            except stripe.error.AuthenticationError as e:
+                print(f"STRIPE AUTHENTICATION ERROR: Error when creating customer usage for: {user.id}")
+                continue
+            except stripe.error.APIConnectionError as e:
+                print(f"STRIPE API CONNECTION ERROR: Error when creating customer usage for: {user.id}")
+                continue
+            except stripe.error.StripeError as e:
+                print(f"STRIPE ERROR: Error when creating customer usage for: {user.id}")
+                continue
+            except Exception as e:
+                print(f"ERROR: Error when creating customer usage for: {user.id}")
+                continue
+            
+            
+            update_sql = text(f"""
+                UPDATE rfos as r
+                LEFT JOIN dispatch as d ON d.dispatch_id = r.dispatch_id
+                LEFT JOIN company as c ON d.company_id = c.company_id
+                LEFT JOIN users as u on c.owner_id = u.id
+                SET product_usage = '{usage_id}'
+                WHERE u.id = '{user.id}' AND r.created_at >= {billing_period_start} AND r.created_at < {billing_period_end};
+            """)
+            
+            print(update_sql)
+            
+            result = connection.execute(update_sql)
+            connection.commit()
+            
         except stripe.error.StripeError as e:
             print(f"Stripe Error: {e}")
+        except Exception as e:
+            print(f"Error: {e}")
 
 if __name__ == "__main__":
     main()

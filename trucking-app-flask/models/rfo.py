@@ -2,6 +2,7 @@ from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, CheckConst
 from models.model import Base
 from models.dispatch import Dispatch
 from models.operator import Operator
+import time
 
 
 class RFO(Base):
@@ -30,7 +31,7 @@ class RFO(Base):
     token_date = Column("token_date", DateTime, nullable=True)
     token_consumed = Column('token_cosumed', Boolean, default=True)
     product_usage = Column(String(29), CheckConstraint('LENGTH(product_usage) = 29'))
-    created_at = Column(DateTime, default=func.now())
+    created_at = Column(Integer, default=lambda: int(time.time()))
     
     def __init__(self, dispatch_id, operator_id, trailer, truck, start_location, start_time, dump_location, load_location) -> None:
         self.dispatch_id = dispatch_id
@@ -43,7 +44,7 @@ class RFO(Base):
         self.load_location = load_location
 
     def __repr__(self):
-        return f"RFO: ({self.rfo_id}) Dispatch: {self.dispatch_id} Equipment: {self.truck} {self.trailer} Start: {self.start_location} Load: {self.load_location} Dump: {self.dump_location} {self.start_time} Stripe: (+) {self.product_usage} (-) {self.delete_product_usage}"
+        return f"RFO: ({self.rfo_id}) Dispatch: {self.dispatch_id} Equipment: {self.truck} {self.trailer} Start: {self.start_location} Load: {self.load_location} Dump: {self.dump_location} {self.start_time} Stripe: {self.product_usage}"
 
     def to_dict(self):
         return {
@@ -56,4 +57,5 @@ class RFO(Base):
             "start_location": self.start_location,
             "dump_location": self.dump_location,
             "start_time": self.start_time,
+            "created_at": self.created_at,
         }
