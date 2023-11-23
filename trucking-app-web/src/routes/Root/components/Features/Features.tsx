@@ -8,6 +8,7 @@ import InternetSVG from "../../../../components/SVGS/InternetSVG";
 import SmileyFaceSVG from "../../../../components/SVGS/SmileyFaceSVG";
 import { useTheme, Typography } from "@mui/material";
 import { device } from "../../../../components/devices";
+import { BaseProps } from "../../../types";
 
 const FeaturesContainer = styled(Container)`
   background-color: #ffffff;
@@ -21,11 +22,12 @@ const FeaturesContainer = styled(Container)`
   }
 `;
 
-const Features = () => {
+const Features = ({ id }: BaseProps) => {
   const theme = useTheme();
   return (
     <>
       <Typography
+        id={id}
         variant="h3"
         style={{
           backgroundColor: "#FFFFFF",
