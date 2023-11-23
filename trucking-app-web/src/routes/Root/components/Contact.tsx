@@ -5,6 +5,7 @@ import { ErrorMessage, Field, Form, Formik } from "formik";
 import * as Yup from "yup";
 import toast from "react-hot-toast";
 import { useState } from "react";
+import { BaseProps } from "../../types";
 
 const ContactContainer = styled(Container)`
   background-color: white;
@@ -48,7 +49,7 @@ const ErrorMsg = styled(ErrorMessage)({
   fontSize: "10pt",
 });
 
-const Contact: React.FC = () => {
+const Contact = ({ id }: BaseProps) => {
   const [submitting, setSubmitting] = useState(false);
   const initialValues = {
     name: "",
@@ -102,7 +103,7 @@ const Contact: React.FC = () => {
     }
   };
   return (
-    <ContactContainer>
+    <ContactContainer id={id}>
       <Typography variant="h4" textAlign="center" fontWeight="bold">
         Contact Us!
       </Typography>

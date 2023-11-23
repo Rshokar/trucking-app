@@ -9,6 +9,7 @@ import Header, {
   FEATURES_ID,
   GET_STARTED_ID,
   PRICING_ID,
+  CONTACT_ID,
 } from "./components/header/header";
 
 const RootPage = () => (
@@ -19,7 +20,7 @@ const RootPage = () => (
     <Steps id={`${GET_STARTED_ID}`} />
     <Pricing id={`${PRICING_ID}`} />
     <CallToAction id={`${DOWNLOAD_ID}`} />
-    <Contact />
+    <Contact id={`${CONTACT_ID}`} />
   </>
 );
 
