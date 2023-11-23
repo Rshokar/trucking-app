@@ -3,6 +3,7 @@ import { Typography, useTheme } from "@mui/material";
 import styled from "styled-components";
 import { Container } from "../../../../components/shared";
 import Package from "./components/Package";
+import { BaseProps } from "../../../types";
 
 const PricingContainer = styled(Container)`
   background-color: white;
@@ -22,18 +23,18 @@ const Message = styled(Container)`
   gap: 20px;
 `;
 
-const Pricing = () => {
+const Pricing = ({ id }: BaseProps) => {
   const theme = useTheme();
 
   return (
-    <PricingContainer>
+    <PricingContainer id={id}>
       <Message>
         <Typography variant="h3" fontWeight="bold">
-          Tiered Pricing
+          Teared Pricing
         </Typography>
         <Typography textAlign="center" maxWidth="400px" variant="h6">
-          With tiered pricing, get charged for how much you use. Because one
-          consistency is the inconsistency of logistics.
+          With teared pricing get charged for how much you use. Because one
+          consistency is the inconsistency of logistics
         </Typography>
       </Message>
       <PackageContainer>

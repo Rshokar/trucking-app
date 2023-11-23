@@ -18,6 +18,7 @@
     "@types/styled-components": "^5.1.26",
     "firebase": "^10.3.0",
     "formik": "^2.4.3",
+    "hamburger-react": "^2.5.0",
     "intersection-observer": "^0.12.2",
     "moment": "^2.29.4",
     "mui-file-input": "^3.0.0",
