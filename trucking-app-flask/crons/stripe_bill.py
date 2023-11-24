@@ -3,6 +3,9 @@ import stripe
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
 from dotenv import load_dotenv
+from dateutil.relativedelta import relativedelta
+import datetime
+import time
 
 # Load environment variables
 load_dotenv(dotenv_path="../.env")
@@ -47,15 +50,13 @@ def main():
 
     # Fetch all results
     users = result.fetchall()
-    
-    print(f"Users: {users}")
 
     # # Process each user
     for user in users:
        # Fetch subscription details from Stripe
         try:
+            print(f"CURR USER: {user}")
             subscription = stripe.Subscription.retrieve(user.stripe_subscribed_id)
-            print(subscription)
             # Extract billing period
             billing_period_start = subscription['current_period_start']
             billing_period_end = subscription['current_period_end']
@@ -63,27 +64,27 @@ def main():
             # Calculate usage for the user within the billing period
             # You need to implement this part based on your usage tracking mechanism
             usage_sql = text(f"""
-                SELECT COUNT(*) FROM rfos as r
-                LEFT JOIN dispatch as d ON d.dispatch_id = r.dispatch_id
-                LEFT JOIN company as c ON d.company_id = c.company_id
-                LEFT JOIN users as u on c.owner_id = u.id
-                WHERE u.id = '{user.id}' AND r.created_at >= {billing_period_start} AND r.created_at < {billing_period_end};
+                SELECT * FROM `usage` WHERE user_id = :user_id 
             """)
-
-            print(usage_sql)
             
-            result = connection.execute(usage_sql)
+            result = connection.execute(usage_sql, {"user_id": user.id })
             connection.commit()
             
-            usage = result.fetchone()[0]
+            usage = result.fetchone()
             
-            if usage == 0: 
+            usage_amount = usage[4]
+            
+            print(usage_amount)
+            if usage_amount == 0: 
                 print(f"SKIP: No usage recorded for {user.id}")
                 continue
             
+            if usage_amount < 0: 
+                print(f"ERROR: No usage amount can be less than zero. Occured for user.id: {user.id}")
+            
             # We have the usage, now we have to create the product usage records in stripe
             try:
-                product_usage = stripe.SubscriptionItem.create_usage_record(user.stripe_subscribed_item, quantity=usage)
+                product_usage = stripe.SubscriptionItem.create_usage_record(user.stripe_subscribed_item, quantity=usage_amount)
                 usage_id = product_usage["id"] 
             except stripe.error.CardError as e:
                 print(f"STRIPE CARD ERROR: Error when creating customer usage for: {user.id}")
@@ -105,8 +106,27 @@ def main():
                 continue
             except Exception as e:
                 print(f"ERROR: Error when creating customer usage for: {user.id}")
+                print(e)
                 continue
             
+            ## Once we made the usage we want to archive the data. After we will then set rfo prod usage
+            usage_archive_sql = text(f"""
+                INSERT INTO usage_archive (user_id, billing_start_period, billing_end_period, amount)
+                VALUES (:user_id, :billing_start, :billing_end, :amount);
+            """)
+            
+            connection.execute(usage_archive_sql, { "user_id" : user.id, "billing_start" : usage[2], "billing_end" : usage[3], "amount" : usage[4]})
+            
+            reset_usage_sql = text(f"""
+                UPDATE `usage` 
+                SET billing_start_period = :billing_start_period, billing_end_period = :billing_end_period, amount = 0
+                WHERE user_id = :user_id 
+            """)
+            
+            # Create the new billing period
+            new_billing_start = usage[3]
+            new_billing_end = time.mktime((datetime.datetime.utcfromtimestamp(usage[3]) + relativedelta(months=1)).timetuple()) # Increment billing period for a month
+            connection.execute(reset_usage_sql, {"user_id": user.id, "billing_start_period": new_billing_start, "billing_end_period": new_billing_end})
             
             update_sql = text(f"""
                 UPDATE rfos as r
@@ -114,12 +134,12 @@ def main():
                 LEFT JOIN company as c ON d.company_id = c.company_id
                 LEFT JOIN users as u on c.owner_id = u.id
                 SET product_usage = '{usage_id}'
-                WHERE u.id = '{user.id}' AND r.created_at >= {billing_period_start} AND r.created_at < {billing_period_end};
+                WHERE u.id = '{user.id}' AND r.created_at >= {billing_period_start} AND r.created_at < {billing_period_end} AND product_usage IS NULL;
             """)
             
             print(update_sql)
-            
             result = connection.execute(update_sql)
+            
             connection.commit()
             
         except stripe.error.StripeError as e:

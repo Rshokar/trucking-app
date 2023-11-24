@@ -37,14 +37,14 @@ class UserFactory(SQLAlchemyModelFactory):
     email = LazyAttribute(lambda o: fake.unique.email())  # Generates a unique email
     id = FuzzyText(length=50)
 
-    @classmethod
-    def _create(cls, model_class, *args, **kwargs):
-        # assuming 'email' and 'company_name' are required for the add_customer method
-        company_name = fake.company()  # Generate a random company name
-        email = kwargs.get('email')
-        customer = stripe.Customer.create(name=company_name, email=email)
-        kwargs['stripe_id'] = customer.id
-        return super()._create(model_class, *args, **kwargs)
+    # @classmethod
+    # def _create(cls, model_class, *args, **kwargs):
+    #     # assuming 'email' and 'company_name' are required for the add_customer method
+    #     company_name = fake.company()  # Generate a random company name
+    #     email = kwargs.get('email')
+    #     customer = stripe.Customer.create(name=company_name, email=email)
+    #     kwargs['stripe_id'] = customer.id
+    #     return super()._create(model_class, *args, **kwargs)
 
 
 
@@ -145,7 +145,7 @@ def loadDB(num_users, num_operators, num_customers, num_dispatches):
         email = fake.unique.email()  # Generates a unique email
         stripe_customer = stripe.Customer.create(name=company, email=email)
         # user = UserFactory.create(id='XT6JmAPRALQaGfgWEnjn9RySWAW2', created_at=datetime.now(), email=email, stripe_id=stripe_customer['id'])
-        user = UserFactory.create(id="XT6JmAPRALQaGfgWEnjn9RySWAW2", created_at=datetime.now(), email=email, stripe_id=stripe_customer['id'])
+        user = UserFactory.create(id="gW4BrD3sxPVvHjjPmZRD4fkNPUA3", created_at=datetime.now(), email=email, stripe_id=stripe_customer['id'])
         company = CompanyFactory.create(owner_id=user.id, name=company)
         
         
@@ -153,19 +153,19 @@ def loadDB(num_users, num_operators, num_customers, num_dispatches):
         for i in range(num_operators):
             operators.append(OperatorFactory.create(company_id=company.company_id))
             
-        customers = []
-        for i in range(num_customers):
-            customers.append(CustomerFactory.create(company_id=company.company_id))
+        # customers = []
+        # for i in range(num_customers):
+        #     customers.append(CustomerFactory.create(company_id=company.company_id))
         
-        rfos = []
-        for i in range(num_dispatches):
-            disp = DispatchFactory(
-                company_id=company.company_id, 
-                customer_id=customers[random.randint(0, len(customers) - 1)].customer_id
-            )    
-            for i in range(len(operators)):
-                rfos.append(RFOFactory.create(
-                    dispatch_id=disp.dispatch_id, 
-                    operator_id=operators[i].operator_id
-                ))
+        # rfos = []
+        # for i in range(num_dispatches):
+        #     disp = DispatchFactory(
+        #         company_id=company.company_id, 
+        #         customer_id=customers[random.randint(0, len(customers) - 1)].customer_id
+        #     )    
+        #     for i in range(len(operators)):
+        #         rfos.append(RFOFactory.create(
+        #             dispatch_id=disp.dispatch_id, 
+        #             operator_id=operators[i].operator_id
+        #         ))
 
