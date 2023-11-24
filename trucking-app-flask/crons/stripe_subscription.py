@@ -89,7 +89,7 @@ def main():
             
             add_usage_query = text("""
                 INSERT INTO `usage` (user_id, billing_start_period, billing_end_period, amount)
-                VALUES (:user_id, :billing_start, :billing_end, 0);
+                VALUES (:user_id, :billing_start, :billing_end, 721);
             """)
             connection.execute(add_usage_query, {
                 "user_id": user_id, 

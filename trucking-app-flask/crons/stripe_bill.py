@@ -64,13 +64,19 @@ def main():
             # Calculate usage for the user within the billing period
             # You need to implement this part based on your usage tracking mechanism
             usage_sql = text(f"""
-                SELECT * FROM `usage` WHERE user_id = :user_id 
+                SELECT * FROM `usage` WHERE user_id = :user_id  AND billing_start_period = {billing_period_start} AND billing_end_period = {billing_period_end}
             """)
+            
             
             result = connection.execute(usage_sql, {"user_id": user.id })
             connection.commit()
             
             usage = result.fetchone()
+
+            
+            if usage is None: 
+                print(f"Usage table not found for user: {user.id}")
+                continue
             
             usage_amount = usage[4]
             
