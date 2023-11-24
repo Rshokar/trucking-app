@@ -58,9 +58,13 @@ export class RFOController {
         }
     }
 
-    async create(model: RFO): Promise<RFO> {
+    async create(model: RFO, confirm_upgrade: boolean = false): Promise<RFO> {
         try {
-            const response = await myAxios.post<RFO>(`/rfo`, model);
+
+            let mod: any = model;
+            if (confirm_upgrade)
+                mod["confirmed"] = true;
+            const response = await myAxios.post<RFO>(`/rfo`, mod);
             return response.data;
         } catch (error) {
             if (isAxiosError(error)) {

@@ -18,6 +18,10 @@ OPERATOR_ACCESS_TOKEN_SECRET = os.environ.get(
 
 
 class RfoController:
+    
+    # 0 - 120, 121 - 360, 361 - 720, 
+    PAYMENT_TIERS = [120, 360, 720]
+    PAYMENT_TIER_ERROR_CODE = 1234
 
     def get_rfo(session, rfo_id):
         try:
@@ -65,6 +69,15 @@ class RfoController:
         return make_response(result, 200)
 
     def create_rfo(request, session):
+        """_summary_
+
+        Args:
+            request (_type_): _description_
+            session (_type_): _description_
+
+        Returns:
+            404: Your payment tier is about to increase. Please confirm if you wish to proceed
+        """
         data = request.json
 
         disp_id = data['dispatch_id']
@@ -107,7 +120,21 @@ class RfoController:
         
         usage = session.query(Usage).filter_by(user_id=g.user["uid"]).first()
         
-        # is the usage is found we will increment it
+        
+        
+        print(f"DATA: {data}")
+        # is the usage is found we will increment it if amount is breaking a tier and 
+        # confired is true or data is not breaking a tier
+        
+        if usage is not None and usage.amount in RfoController.PAYMENT_TIERS:
+            print(f"\n\nCONFIRMED :{data.get('confirmed')}\n\n")
+            if data.get("confirmed") == False or data.get("confirmed") == None:  # Assuming data is a dictionary containing your JSON fields
+                return make_response({
+                    "code": RfoController.PAYMENT_TIER_ERROR_CODE,
+                    "message": "Your payment tier is about to increase. Please confirm if you wish to proceed"
+                }, 400)
+                
+            
         if usage is not None:
             usage.amount = usage.amount + 1
         

@@ -1,12 +1,10 @@
 import re
-from sqlalchemy import Column, String, DateTime, Integer, func, Boolean, CheckConstraint, ForeignKey
+from sqlalchemy import Column, String, Integer, Boolean, CheckConstraint, ForeignKey
 from sqlalchemy.orm import validates, relationship
 from models.model import Base
 from config import db
 from enum import Enum
-from datetime import timedelta, datetime
 import os
-import time
 
 RESET_PASSWORD_CODE_EXPIRY = os.environ.get("RESET_PASSWORD_CODE_EXPIRY")
 
