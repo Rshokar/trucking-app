@@ -3,6 +3,7 @@ import stripe
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
 from dotenv import load_dotenv
+import datetime
 
 # Load environment variables
 load_dotenv(dotenv_path="../.env")
@@ -84,6 +85,18 @@ def main():
                 WHERE id = :user_id;
             """)
             connection.execute(update_query, {"id": id, "user_id": user_id, "item": item_id})
+            connection.commit()
+            
+            add_usage_query = text("""
+                INSERT INTO `usage` (user_id, billing_start_period, billing_end_period, amount)
+                VALUES (:user_id, :billing_start, :billing_end, 0);
+            """)
+            connection.execute(add_usage_query, {
+                "user_id": user_id, 
+                "billing_start": sub["current_period_start"], 
+                "billing_end": sub["current_period_end"]
+            })
+            
             connection.commit()
             print(f"Subscribed user {user_id} to Stripe")
 

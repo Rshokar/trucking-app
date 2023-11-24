@@ -7,10 +7,10 @@ from config import db
 class UsageArchive(Base):
     __tablename__ = 'usage_archive'
     user_id = Column(String(50), ForeignKey('users.id'), primary_key=True, unique=True) # Ensures a 1 - 1 relationship
-    billing_start_period = Column(DateTime, primary_key=True, nullable=False)
-    billing_end_period = Column(DateTime, nullable=False)
+    billing_start_period = Column(Integer,  nullable=False, primary_key=True)
+    billing_end_period = Column(Integer,  nullable=False)
     amount = Column(Integer, CheckConstraint("amount >= 0"))
     
     
-    user = relationship("User", back_populates="usage")
+    user = relationship("User", back_populates="usage_archive")
     

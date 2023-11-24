@@ -1,6 +1,6 @@
 from flask import current_app as app, g
 from controllers import StripeController
-from models import RFO, Dispatch, Operator, Company, Customer, User
+from models import RFO, Dispatch, Operator, Company, Customer, Usage, BillingTickets, UsageArchive
 from sqlalchemy import and_
 from sqlalchemy.exc import IntegrityError
 from utils import make_response, send_operator_rfo, send_operator_rfo_update
@@ -83,6 +83,7 @@ class RfoController:
             return make_response("Dispatch not found", 404)
 
         oper_id = data['operator_id']
+        
         # Check if operator exist
         oper = session.query(Operator).filter_by(
             operator_id=oper_id, company_id=comp.company_id).first()
@@ -103,7 +104,14 @@ class RfoController:
             dump_location=data['dump_location'],
             load_location=data['load_location'],
         )
-
+        
+        usage = session.query(Usage).filter_by(user_id=g.user["uid"]).first()
+        
+        # is the usage is found we will increment it
+        if usage is not None:
+            usage.amount = usage.amount + 1
+        
+             
         session.add(rfo)
         session.commit()
 
@@ -204,6 +212,15 @@ class RfoController:
         return make_response(res, 200)
 
     def delete_rfo(session, rfo_id):
+        
+        
+        bill = session.query(BillingTickets)\
+            .filter(BillingTickets.rfo_id == rfo_id)\
+            .first()
+        
+        if bill is not None: 
+            return make_response("RFO has tickets refrencing it cannot delete", 403)
+        
         # Check if rfo exist
         rfo = session.query(RFO)\
             .join(Dispatch, RFO.dispatch_id == Dispatch.dispatch_id)\
@@ -213,22 +230,27 @@ class RfoController:
 
         if rfo is None:
             return make_response('RFO not found', 404)
-        try:
-            # NOTE:If the RFO has any associated bills, an IntegrityError will be 
-            # thrown due to referential integrity constraints.
-            # In such a case, the deletion operation is rolled back, the rfo deleted flag is 
-            # set to true.
-            session.delete(rfo)
-            session.commit()
-            return make_response('RFO deleted', 200)
-        except IntegrityError:
-            session.rollback()
+        
+        usage = session.query(Usage)\
+            .filter(
+                and_(
+                    Usage.user_id == g.user["uid"], 
+                    Usage.billing_start_period <= rfo.created_at, 
+                    Usage.billing_end_period > rfo.created_at
+                )
+            )\
+            .first()
             
+        if usage is not None:
+            usage.amount = usage.amount - 1
             
-            rfo.deleted = True
-            session.commit()
-            
-            return make_response("RFO has tickets refrencing it, flaged as deleted", 200)
+        # NOTE:If the RFO has any associated bills, an IntegrityError will be 
+        # thrown due to referential integrity constraints.
+        # In such a case, the deletion operation is rolled back, the rfo deleted flag is 
+        # set to true.
+        session.delete(rfo)
+        session.commit()
+        return make_response('RFO deleted', 200)
 
     def operator_get_rfo(session, token):
         '''

@@ -8,7 +8,7 @@ import { API_URL } from "@env";
 console.log("AAPI", API_URL);
 // Create an instance with default settings
 const myAxios = axios.create({
-  baseURL: `http://10.0.0.182:5000/v1`,
+  baseURL: `http://172.20.10.6:5000/v1`,
 });
 
 // // Add a request interceptor
