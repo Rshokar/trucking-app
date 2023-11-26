@@ -81,6 +81,7 @@ To get started with the project, make sure you have the following:
 7. packages should be installed
 8. Ask someone for the .env file needed.
 9. Type: `python -m flask run`
+   - if the above cmd give Network Error, try `python -m flask run --host=0.0.0.0`
 
 #### 3.Running The Client
 
