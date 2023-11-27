@@ -169,6 +169,7 @@ const RFOSection: FC<Props> = ({ navigateToTicket, dispId, operId, operators }) 
                 color: theme.colors.primary,
                 onClickText: 'Ok'
             })
+            setShowConfirmUpgradePaymentTier(false)
             return true;
         } catch (err: any) {
             console.log(err);
