@@ -55,10 +55,7 @@ const MenuItem = ({ id, text }: Props) => {
         <span>
           {text}
         </span>
-
-        <div>
-
-        </div>
+        <div></div>
       </a>
     </NavbarLink>
   );

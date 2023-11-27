@@ -49,7 +49,8 @@ export const MenuItemsDrawer = styled.div<{ show: boolean, color: string }>`
     gap: 20px;
     align-items: end;
     transform: ${props => props.show ? 'translateX(0)' : 'translateX(150%)'};
-    transition: transform 0.2s ease-in-out;
+    opacity: ${props => props.show ? '1' : '0'};
+    transition: transform 0.4s ease-in-out, opacity 0.4s ease-in-out;
     background-color: ${props => props.color};
     padding: 20px;
     border-radius: 10px; 
@@ -95,7 +96,7 @@ export const NavbarLink = styled.span<{ inView: boolean, inViewColor: string, ou
             color: white; 
             background-color: black;
             padding: 5px 10px 5px 10px;
-            font-size: 1.25rem;
+            font-size: 1.15rem;
             border-radius: 5px;
         }
 
