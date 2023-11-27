@@ -13,7 +13,7 @@ const ContactContainer = styled(Container)`
   flex-direction: column;
   gap: 30px;
   padding-bottom: 5rem;
-  width: 100vw;
+
 `;
 
 const InputBox = styled(Input)``;
