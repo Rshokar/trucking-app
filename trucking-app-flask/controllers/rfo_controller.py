@@ -127,7 +127,6 @@ class RfoController:
         # confired is true or data is not breaking a tier
         
         if usage is not None and usage.amount in RfoController.PAYMENT_TIERS:
-            print(f"\n\nCONFIRMED :{data.get('confirmed')}\n\n")
             if data.get("confirmed") == False or data.get("confirmed") == None:  # Assuming data is a dictionary containing your JSON fields
                 return make_response({
                     "code": RfoController.PAYMENT_TIER_ERROR_CODE,

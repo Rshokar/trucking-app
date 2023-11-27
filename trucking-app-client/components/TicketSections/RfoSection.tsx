@@ -37,6 +37,7 @@ const RFOSection: FC<Props> = ({ navigateToTicket, dispId, operId, operators }) 
     const [focusedRFO, setFocusedRFO] = useState<RFO>();
     const [search, setSearch] = useState<string>("");
     const [loading, setLoading] = useState<boolean>(false);
+    const [showConfirmUpgradePaymentTier, setShowConfirmUpgradePaymentTier] = useState<boolean>(false);
     const showModal = () => setVisible(true);
     const hideModal = () => setVisible(false);
     const [showRFOCard, setShowRFOCards] = useState<boolean>(false)
@@ -69,10 +70,10 @@ const RFOSection: FC<Props> = ({ navigateToTicket, dispId, operId, operators }) 
         }
     };
 
-    const handleAddRFO = async (data: RFO): Promise<boolean> => {
+    const handleAddRFO = async (data: RFO, confirmUpgradePayment: boolean = false): Promise<boolean> => {
         try {
             const rC = new RFOController();
-            const res: RFO = await rC.create(data as RFO);
+            const res: RFO = await rC.create(data as RFO, confirmUpgradePayment);
             setRFOs([...rfos, res]);
             hideModal();
             showSnackbar({
@@ -80,10 +81,30 @@ const RFOSection: FC<Props> = ({ navigateToTicket, dispId, operId, operators }) 
                 color: theme.colors.primary,
                 onClickText: 'Ok'
             })
+            setShowConfirmUpgradePaymentTier(false)
             return true;
         } catch (err: any) {
+            let message = err.message;
+            console.log("ERROR", err.message);
+
+            try {
+                const errorObj = JSON.parse(err.message);
+                if (errorObj && errorObj.message) {
+                    message = errorObj.message;
+                }
+
+                // If payment tier is being broken, then we show the confirm 
+                // step checkbox
+                if (errorObj && errorObj.code === 1234) {
+                    setShowConfirmUpgradePaymentTier(true)
+                }
+
+            } catch (parseError) {
+                // If JSON parsing fails, retain the default message
+            }
+
             showSnackbar({
-                message: err.message,
+                message: message,
                 color: theme.colors.error,
                 onClickText: 'Ok'
             })
@@ -134,7 +155,7 @@ const RFOSection: FC<Props> = ({ navigateToTicket, dispId, operId, operators }) 
         if (focusedRFO) {
             return await handleEditRFO(rfo, focusedRFO.rfo_id + "");
         } else {
-            return await handleAddRFO(rfo);
+            return await handleAddRFO(rfo, formData.confirmUpgradePayment);
         }
     };
 
@@ -194,8 +215,6 @@ const RFOSection: FC<Props> = ({ navigateToTicket, dispId, operId, operators }) 
         setQuery(rQ);
     }
 
-    console.log('RFO SECTION', dispId, operId)
-
     return (
         <StyledSection>
             <TicketSection
@@ -246,7 +265,9 @@ const RFOSection: FC<Props> = ({ navigateToTicket, dispId, operId, operators }) 
                 <RFOForm
                     onSubmit={handleFormSubmit}
                     defaultValues={(rfos.length > 0 && !focusedRFO) ? rfos[rfos.length - 1] : focusedRFO as RFOFormResult}
-                    operators={operators} />
+                    operators={operators}
+                    showConfirmUpgradePaymentTier={showConfirmUpgradePaymentTier}
+                />
             </MyModal>
             <Portal>
                 <Modal

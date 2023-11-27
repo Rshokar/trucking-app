@@ -67,10 +67,12 @@ export class RFOController {
             const response = await myAxios.post<RFO>(`/rfo`, mod);
             return response.data;
         } catch (error) {
-            if (isAxiosError(error)) {
-                throw new Error(error.response?.data);
+            if (isAxiosError(error) && error.response) {
+                const errorMessage = JSON.stringify(error.response.data);
+                throw new Error(errorMessage);
+            } else {
+                throw new Error("Error creating RFO");
             }
-            throw new Error("Error creating RFO");
         }
     }
 
