@@ -8,7 +8,7 @@ import { API_URL } from "@env";
 console.log("AAPI", API_URL);
 // Create an instance with default settings
 const myAxios = axios.create({
-  baseURL: `http://192.168.0.29:5000/v1`,
+  baseURL: `http://tareticketing.com/v1`,
 });
 
 // // Add a request interceptor
