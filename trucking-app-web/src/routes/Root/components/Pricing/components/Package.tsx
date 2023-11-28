@@ -25,21 +25,24 @@ interface Props {
   dayRange: string;
   color: string;
   breakColor: string;
+  pricePerRFO: string;
+  totalPrice: number
 }
 
-const Package: FC<Props> = ({ title, monthRange, dayRange, color, breakColor }) => (
+const Package: FC<Props> = ({ title, monthRange, dayRange, color, breakColor, pricePerRFO, totalPrice }) => (
   <PackageContainer color={color}>
     <Typography variant='h5' color='white' textAlign='left' width='100%' fontWeight='bold'>
-      {title}
+      {monthRange}
     </Typography>
     <Typography variant='h4' color='white' fontWeight='bold' textAlign='left'>
-      {monthRange}
+      ${pricePerRFO}/RFO  <br />  ${totalPrice}/month
+
     </Typography>
     <Typography color='white' width='100%' fontWeight='bold'>
       {dayRange}
     </Typography>
     <Break style={{ width: '100%', backgroundColor: breakColor }} />
-  </PackageContainer>
+  </PackageContainer >
 )
 
 

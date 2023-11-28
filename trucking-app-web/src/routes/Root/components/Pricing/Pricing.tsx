@@ -33,15 +33,21 @@ const Pricing = ({ id }: BaseProps) => {
           Tiered Pricing
         </Typography>
         <Typography textAlign="center" maxWidth="400px" variant="h6">
-          With tiered pricing get charged for how much you use. Because one
+          With tiered pricing, get charged for how much you use. Because one
           consistency is the inconsistency of logistics
+        </Typography>
+
+        <Typography textAlign="center" maxWidth="90%" variant="subtitle1">
+          An <strong>RFO</strong> stands for Request For Operator. This is a digital ticket you create that stores all your billing information
         </Typography>
       </Message>
       <PackageContainer>
         <Package
           title="BEGINNER"
-          monthRange="70-120 RFO'S PER MONTH"
+          monthRange="0-120 RFO'S PER MONTH"
           dayRange="On average of 0-5 RFO's per day"
+          pricePerRFO={'0.25'}
+          totalPrice={15}
           color={theme.palette.secondary.main}
           breakColor={theme.palette.primary.main}
         />
@@ -49,6 +55,8 @@ const Pricing = ({ id }: BaseProps) => {
           title="STANDARD"
           monthRange="120-360 RFO'S PER MONTH"
           dayRange="On average of 6-15 RFO's per day"
+          pricePerRFO={'0.22'}
+          totalPrice={50}
           color={theme.palette.primary.main}
           breakColor={theme.palette.secondary.main}
         />
@@ -56,6 +64,8 @@ const Pricing = ({ id }: BaseProps) => {
           title="PROFESSIONAL"
           monthRange="360-720 RFO'S PER MONTH"
           dayRange="On average of 15-30 RFO's per day"
+          pricePerRFO={'0.20'}
+          totalPrice={100}
           color={theme.palette.secondary.main}
           breakColor={theme.palette.primary.main}
         />
@@ -63,6 +73,8 @@ const Pricing = ({ id }: BaseProps) => {
           title="ENTERPRISE"
           monthRange="720+ RFO'S PER MONTH"
           dayRange="On average of 30+ RFO's per day"
+          pricePerRFO={'0.17'}
+          totalPrice={125}
           color={theme.palette.primary.main}
           breakColor={theme.palette.secondary.main}
         />
