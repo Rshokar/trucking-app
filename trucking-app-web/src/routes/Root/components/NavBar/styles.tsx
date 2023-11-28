@@ -33,7 +33,7 @@ export const NavBarLogoContainer = styled.div<{ color: string; hoverColor: strin
     aspect-ratio: 1;
 
     cursor: pointer;
-
+    z-index: 2;
     &:hover {
         background-color: ${props => props.hoverColor}
     }
@@ -48,9 +48,9 @@ export const MenuItemsDrawer = styled.div<{ show: boolean, color: string }>`
     flex-direction: column;
     gap: 20px;
     align-items: end;
-    transform: ${props => props.show ? 'translateX(0)' : 'translateX(150%)'};
+    transform: ${props => props.show ? 'translate(0)' : 'translate(150%)'};
     opacity: ${props => props.show ? '1' : '0'};
-    transition: transform 0.4s ease-in-out, opacity 0.4s ease-in-out;
+    transition: transform 0.4s ease-in-out, opacity 0.2s ease-in-out;
     background-color: ${props => props.color};
     padding: 20px;
     border-radius: 10px; 
