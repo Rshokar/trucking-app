@@ -30,10 +30,10 @@ const Pricing = ({ id }: BaseProps) => {
     <PricingContainer id={id}>
       <Message>
         <Typography variant="h3" fontWeight="bold">
-          Teared Pricing
+          Tiered Pricing
         </Typography>
         <Typography textAlign="center" maxWidth="400px" variant="h6">
-          With teared pricing get charged for how much you use. Because one
+          With tiered pricing get charged for how much you use. Because one
           consistency is the inconsistency of logistics
         </Typography>
       </Message>

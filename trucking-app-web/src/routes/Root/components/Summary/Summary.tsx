@@ -53,10 +53,7 @@ const Summary = ({ id }: Props) => {
             >
                 How it works
             </Typography>
-            <Typography
-                variant={"h4"}
-                textAlign="center"
-            >
+            <Typography textAlign="center" maxWidth="400px" variant="h6">
                 Drops the books and pickup the future
             </Typography>
             <Break style={{ marginBottom: '20px' }} />
