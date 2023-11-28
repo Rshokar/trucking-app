@@ -25,9 +25,8 @@ const FeaturesContainer = styled(Container)`
 const Features = ({ id }: BaseProps) => {
   const theme = useTheme();
   return (
-    <>
+    <div id={id}>
       <Typography
-        id={id}
         variant="h3"
         style={{
           backgroundColor: "#FFFFFF",
@@ -128,7 +127,7 @@ const Features = ({ id }: BaseProps) => {
           ]}
         />
       </FeaturesContainer>
-    </>
+    </div>
   );
 };
 
