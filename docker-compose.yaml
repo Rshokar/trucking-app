@@ -24,9 +24,9 @@ services:
   nginx:
     image: nginx:alpine
     volumes:
+      - /etc/letsencrypt:/etc/letsencrypt
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
-      - cert_data:/etc/letsencrypt
-      - webroot:/var/www/html
+      - /var/www/html:/var/www/html
     ports:
       - "80:80"
       - "443:443"
@@ -37,12 +37,11 @@ services:
   certbot:
     image: certbot/certbot
     volumes:
-      - cert_data:/etc/letsencrypt
-      - webroot:/var/www/html
+      - /etc/letsencrypt:/etc/letsencrypt
+      - /var/www/html:/var/www/html
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
     depends_on:
       - nginx
 
 volumes:
-  cert_data:
   webroot:
