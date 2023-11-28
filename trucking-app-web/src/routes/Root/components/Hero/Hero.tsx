@@ -8,15 +8,15 @@ import DownloadApp from "../../../../components/DownloadApp/DownloadApp";
 import { useMediaQuery } from "react-responsive";
 const HeroContainer = styled(Container)`
   background-color: white;
-  height: 100vh;
+  height: 90vh;
   width: 100%;
 
   @media (${device.tablet}) {
-    height: 90vh;
+    height: 80vh;
   }
 
   @media (${device.laptop}) {
-    height: 80vh;
+    height: 70vh;
   }
 `;
 
@@ -43,7 +43,7 @@ const Hero = () => {
       <ContentWrapper>
         <HeroSection>
           <Typography
-            variant={isDesktop ? "h1" : "h3"}
+            variant={isDesktop ? "h1" : "h2"}
             style={{ fontWeight: "bold" }}
             textAlign={"center"}
           >
@@ -51,30 +51,23 @@ const Hero = () => {
           </Typography>
           <Break />
           <Typography
-            variant={isDesktop ? "h4" : "subtitle1"}
-            fontWeight={"bold"}
+            variant={isDesktop ? "h6" : "subtitle1"}
             textAlign="center"
+            padding={"10px"}
+            maxWidth={"450px"}
           >
-            Drop the books and pick up the future
+            SIMPLE AND EASY TICKET AND DISPATCH MANAGEMENT FOR AGGREGATE
+            LOGISTICS DISPATCHERS
           </Typography>
         </HeroSection>
         <HeroSection>
           <HeroSection>
             <DumpTruckSvg
-              height={isDesktop ? "30rem" : "200px"}
-              width={isDesktop ? "30rem" : "300px"}
+              height={isDesktop ? "30rem" : "350px"}
+              width={isDesktop ? "30rem" : "450px"}
             />
           </HeroSection>
           <HeroSection>
-            <Typography
-              variant={isDesktop ? "h6" : "subtitle2"}
-              textAlign="center"
-              padding={"10px"}
-              maxWidth={"450px"}
-            >
-              SIMPLE AND EASY TICKET AND DISPATCH MANAGEMENT FOR AGGREGATE
-              LOGISTICS DISPATCHERS
-            </Typography>
             <DownloadApp />
             <Typography variant="caption" fontWeight="bold">
               DOWNLOAD

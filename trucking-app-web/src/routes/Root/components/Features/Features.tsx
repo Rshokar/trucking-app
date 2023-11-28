@@ -25,7 +25,7 @@ const FeaturesContainer = styled(Container)`
 const Features = ({ id }: BaseProps) => {
   const theme = useTheme();
   return (
-    <div id={id}>
+    <div id={id} style={{ paddingTop: '40px', backgroundColor: 'white' }}>
       <Typography
         variant="h3"
         style={{

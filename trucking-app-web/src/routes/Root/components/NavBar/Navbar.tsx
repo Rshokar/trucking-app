@@ -12,6 +12,7 @@ export const GET_STARTED_ID = "get_started";
 export const PRICING_ID = "pricing";
 export const DOWNLOAD_ID = "download";
 export const CONTACT_ID = "contact";
+export const SUMMARY_ID = 'summary';
 
 type Props = {
   id: string;
@@ -29,7 +30,7 @@ const MenuItem = ({ id, text }: Props) => {
       ([entry]) => {
         setIsActive(entry.isIntersecting);
       },
-      { threshold: 0.1 } // Adjust the threshold as needed
+      { threshold: 0.2 } // Adjust the threshold as needed
     );
 
     observer.observe(section);
@@ -111,8 +112,9 @@ const NavBar = () => {
     >
       <MainButton onClick={() => setShowItems(!showItems)} />
       <MenuItemsDrawer show={showItems} color={theme.palette.action.active}>
-        <MenuItem id={`#${FEATURES_ID}`} text={"Features"} />
+        <MenuItem id={`#${SUMMARY_ID}`} text={"How it works"} />
         <MenuItem id={`#${GET_STARTED_ID}`} text={"Get Started"} />
+        <MenuItem id={`#${FEATURES_ID}`} text={"Features"} />
         <MenuItem id={`#${PRICING_ID}`} text={"Pricing"} />
         <MenuItem id={`#${DOWNLOAD_ID}`} text={"Download"} />
         <MenuItem id={`#${CONTACT_ID}`} text={"Contact"} />
