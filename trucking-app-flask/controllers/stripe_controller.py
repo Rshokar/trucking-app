@@ -39,7 +39,3 @@ class StripeController:
         except Exception as e:
             # Something else happened, completely unrelated to Stripe
             pass
-                
-    @staticmethod
-    def add_usage(customer, ammout):
-        ...     
