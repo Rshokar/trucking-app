@@ -25,8 +25,24 @@ services:
     image: nginx:alpine
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - cert_data:/etc/letsencrypt
+      - webroot:/var/www/html
     ports:
       - "80:80"
+      - "443:443"
     depends_on:
       - web-client
       - flask-api
+
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - cert_data:/etc/letsencrypt
+      - webroot:/var/www/html
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+    depends_on:
+      - nginx
+
+volumes:
+  cert_data:
+  webroot:
