@@ -28,7 +28,8 @@ class User(Base):
     email_validation_token_consumed = Column(
         'email_validation_token_cosumed', Boolean, default=True)
     stripe_id = Column("stripe_id", String(18), nullable=False)
-    stripe_subscribed = Column(Boolean, default=False)
+    stripe_subscribed_id = Column(String(28), nullable=True)
+    stripe_subscribed_item = Column(String(28),nullable=True)
     created_at = Column(DateTime, default=func.now())
     updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
     
@@ -56,6 +57,9 @@ class User(Base):
     company = relationship("Company", backref="owner",
                            lazy=True, cascade="delete", uselist=False)
 
+    usage = relationship("Usage", back_populates="user", uselist=False)
+    usage_archive = relationship("UsageArchive", back_populates="user")
+    
     def __init__(self, id, stripe_id, role=UserRole.DISPATCHER.value, reset_code=None, recovery_token=None, email=None, created_at=datetime.now()):
         self.role = role
         self.id = id
@@ -66,7 +70,7 @@ class User(Base):
         self.created_at = created_at 
 
     def __repr__(self):
-        return f"USER: ({self.id}) {self.role}, {self.reset_code}, {self.recovery_token}, {self.stripe_id}"
+        return f"USER: ({self.id}) {self.role}, {self.reset_code}, {self.recovery_token}, {self.stripe_id}, {self.stripe_subscribed_id}"
 
     def to_dict(self):
         return {
