@@ -36,6 +36,10 @@ rfo_validation = {
             "type": "string",
             "maxLength": 500,
             "minLength": 2,
+        },
+        "confirmed": {
+            "type": "boolean",
+            "default": False
         }
     },
     "required": ["dispatch_id", "operator_id", "trailer", "truck", "start_location", "start_time", "dump_location", "load_location"],

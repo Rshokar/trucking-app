@@ -3,6 +3,7 @@ import stripe
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
 from dotenv import load_dotenv
+import datetime
 
 # Load environment variables
 load_dotenv(dotenv_path="../.env")
@@ -39,7 +40,7 @@ def main():
     query = text("""
     SELECT id, stripe_id
     FROM users
-    WHERE DATE(created_at) = CURDATE() - INTERVAL 7 DAY AND stripe_subscribed = 0;
+    WHERE DATE(created_at) <= CURDATE() - INTERVAL 7 DAY AND stripe_subscribed_id IS NULL;
     """)
     
     # Execute the query
@@ -47,6 +48,8 @@ def main():
 
     # Fetch all results
     users = result.fetchall()
+    
+    print(f"Users: {users}")
 
     # Process each user
     for user in users:
@@ -56,21 +59,44 @@ def main():
         
         try:
             # Create the subscription
-            stripe.Subscription.create(
+            sub = stripe.Subscription.create(
                 customer=stripe_customer_id,
                 items=[
                     {"price": STRIPE_PRICE_ID},
                 ],
                 # Add other subscription parameters if needed
             )
+            print(sub)
+            id = sub["id"]
+            
+            item_id = sub["items"]["data"][0]["id"]
+            
+            
+            print(sub)
+            print(f"ID: {id}, {item_id}")
+            print()
+            
+            
             
             # Update your database to mark the user as subscribed
             update_query = text("""
                 UPDATE users
-                SET stripe_subscribed = True
+                SET stripe_subscribed_id = :id, stripe_subscribed_item = :item
                 WHERE id = :user_id;
             """)
-            connection.execute(update_query, {"user_id": user_id})
+            connection.execute(update_query, {"id": id, "user_id": user_id, "item": item_id})
+            connection.commit()
+            
+            add_usage_query = text("""
+                INSERT INTO `usage` (user_id, billing_start_period, billing_end_period, amount)
+                VALUES (:user_id, :billing_start, :billing_end, 120);
+            """)
+            connection.execute(add_usage_query, {
+                "user_id": user_id, 
+                "billing_start": sub["current_period_start"], 
+                "billing_end": sub["current_period_end"]
+            })
+            
             connection.commit()
             print(f"Subscribed user {user_id} to Stripe")
 
