@@ -1,12 +1,14 @@
 import React, { FC, useState } from 'react';
 import { Formik } from 'formik';
-import { TextInput, Button, useTheme, Divider, Text } from 'react-native-paper';
+import { View } from "react-native"
+import { TextInput, Button, useTheme, Divider, Text, Checkbox } from 'react-native-paper';
 import * as Yup from 'yup';
 import { DatePickerModal, TimePickerModal } from 'react-native-paper-dates';
 import moment from 'moment';
 import DropDown from 'react-native-paper-dropdown';
 import { Operator } from '../../models/Operator';
 import { RFO } from '../../models/RFO';
+import styled from 'styled-components/native';
 import { DualInput, ErrorText, FormContainer, InputBox } from './styles';
 import { err } from 'react-native-svg/lib/typescript/xml';
 
@@ -19,7 +21,23 @@ export type RFOFormResult = {
     load_location: string;
     start_date: string;
     start_time: string;
+    confirmUpgradePayment: boolean;
 };
+
+const ConfirmPaymentTierUpgradeContainer = styled.View`
+    flex-direction: row;  // Align children in a row
+    align-items: center;  // Center-align children vertically
+    background-color: green;
+    padding: 10px;  // Optional for some padding
+`
+
+const CheckboxWrapper = styled.View`
+    border-width: 1px;
+    border-color: #000; // You can change this to your desired border color
+    border-radius: 4px; // Optional, for rounded corners
+    padding: 2px; // Optional, to give some space between the checkbox and the border
+`;
+
 
 const truckOptions = [
     { label: 'Tandem', value: 'Tandem' },
@@ -39,6 +57,7 @@ type Props = {
     onSubmit: (values: RFOFormResult, id?: string) => Promise<boolean>;
     defaultValues?: RFO;
     operators: Operator[];
+    showConfirmUpgradePaymentTier: boolean
 };
 
 const RFOFormSchema = Yup.object().shape({
@@ -52,9 +71,10 @@ const RFOFormSchema = Yup.object().shape({
     load_location: Yup.string().required('Required'),
     start_date: Yup.string().required('Required'),
     start_time: Yup.string().required('Required'),
+    confirmUpgradePayment: Yup.boolean().default(false)
 });
 
-const RFOForm: FC<Props> = ({ onSubmit, defaultValues, operators }) => {
+const RFOForm: FC<Props> = ({ onSubmit, defaultValues, operators, showConfirmUpgradePaymentTier }) => {
     const theme = useTheme();
     const [step, setStep] = useState(1);
     const [dateVisible, setDateVisible] = useState(false);
@@ -66,7 +86,7 @@ const RFOForm: FC<Props> = ({ onSubmit, defaultValues, operators }) => {
         .map(operator => ({ label: operator.operator_name + "", value: operator.operator_id ?? 0 }));
 
 
-    const iv: any = { ...defaultValues };
+    const iv: any = { ...defaultValues, confirmUpgradePayment: false };
 
     if (defaultValues?.start_time) {
         const [date, time] = moment(defaultValues.start_time).format("YYYY-MM-DD HH:mm:ss").split(" ");
@@ -227,6 +247,20 @@ const RFOForm: FC<Props> = ({ onSubmit, defaultValues, operators }) => {
                                     error={errors.load_location ? true : false}
                                 />
                             </InputBox>
+                            {
+                                showConfirmUpgradePaymentTier &&
+                                <ConfirmPaymentTierUpgradeContainer>
+                                    <View style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', paddingRight: 20 }}>
+                                        <Text style={{ color: theme.colors.primary, fontWeight: 'bold' }}>Allow Tier Upgrade</Text>
+                                    </View>
+                                    <CheckboxWrapper>
+                                        <Checkbox
+                                            status={values.confirmUpgradePayment ? 'checked' : 'unchecked'}
+                                            onPress={(e) => setFieldValue("confirmUpgradePayment", !values.confirmUpgradePayment)}
+                                        />
+                                    </CheckboxWrapper>
+                                </ConfirmPaymentTierUpgradeContainer>
+                            }
                             <Button
                                 mode="contained"
                                 onPress={() => handleSubmit()}

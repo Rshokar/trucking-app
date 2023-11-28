@@ -10,6 +10,7 @@ export const FEATURES_ID = "features";
 export const GET_STARTED_ID = "get_started";
 export const PRICING_ID = "pricing";
 export const DOWNLOAD_ID = "download";
+export const CONTACT_ID = "contact";
 
 type Props = {
   id: string;
@@ -75,6 +76,7 @@ const Header = () => {
             <MenuItem id={`#${GET_STARTED_ID}`} text={"Get Started"} />
             <MenuItem id={`#${PRICING_ID}`} text={"Pricing"} />
             <MenuItem id={`#${DOWNLOAD_ID}`} text={"Download"} />
+            <MenuItem id={`#${CONTACT_ID}`} text={"Contact"} />
             <OpenLinksButton>
               <Hamburger toggled={extendNavbar} onToggle={setExtendNavbar} />
             </OpenLinksButton>
@@ -88,6 +90,7 @@ const Header = () => {
           <MenuItemExtended id={`#${GET_STARTED_ID}`} text={"Get Started"} />
           <MenuItemExtended id={`#${PRICING_ID}`} text={"Pricing"} />
           <MenuItemExtended id={`#${DOWNLOAD_ID}`} text={"Download"} />
+          <MenuItemExtended id={`#${CONTACT_ID}`} text={"Contact"} />
         </NavbarExtendedContainer>
       )}
     </NavbarContainer>

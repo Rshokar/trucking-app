@@ -1,17 +1,18 @@
 import os
-from config.db import Session, Base, engine
-from utils import loadDB
+from config.stripe import stripe
 from routes import v1
+from config.db import Session, Base, engine
 from flask import Flask, g
 from flask_cors import CORS
 from dotenv import load_dotenv
 from models import User
+from utils import loadDB
 
 # Load env variables
 load_dotenv()
 
-IS_PRODUCTION = os.environ.get("STATE")
 MAX_CONTENT_SIZE = os.environ.get("MAX_CONTENT_SIZE")
+IS_PRODUCTION = os.environ.get("STATE") == 'production'
 
 # Register static web endpoint
 # STATIC_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static')
@@ -35,16 +36,6 @@ app.config['MAX_CONTENT_LENGTH'] = int(MAX_CONTENT_SIZE)  # 16 megabytes
 # Set secret key for auth session
 app.secret_key = 'fzV2T57K8JmQJ@C'
 
-
-# if (IS_PRODUCTION == "development" or IS_PRODUCTION == "test"):
-#     # # If development clear all database
-#     Base.metadata.drop_all(engine)
-#     print("--|--Creating Tables--|--")
-#     # Create all tables if not already there
-#     Base.metadata.create_all(engine)
-#     # if (IS_PRODUCTION == "development"):
-#     #     print("--|--Loading Test Data--|--")
-#     #     loadDB(int(1))
 
 # Register all endpoints
 app.register_blueprint(v1, url_prefix="/v1")
@@ -78,7 +69,8 @@ def close_session(error):
 #     print("Dropping and rebuilding the database...")
 #     Base.metadata.drop_all(engine)  # Drop all tables
 #     Base.metadata.create_all(engine)  # Create all tables
-#     loadDB(3, 2, 2, 2)
+#     loadDB(1, 10, 5, 12)
 #     print("Database has been reset.")
 # else:
 #     print("Skipped database reset in production environment.")
+    

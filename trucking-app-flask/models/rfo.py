@@ -1,7 +1,8 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, CheckConstraint, Boolean
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, CheckConstraint, Boolean, func
 from models.model import Base
 from models.dispatch import Dispatch
 from models.operator import Operator
+import time
 
 
 class RFO(Base):
@@ -23,14 +24,16 @@ class RFO(Base):
         500), CheckConstraint('LENGTH(dump_location) >= 3'))
     load_location = Column("load_location", String(
         500), CheckConstraint('LENGTH(load_location) >= 3'))
-
+    deleted = Column(Boolean, default=False)
     # This is used to store six digit validation token
     token = Column("token", String(6), CheckConstraint(
         'LENGTH(token) = 6'), nullable=True)
     token_date = Column("token_date", DateTime, nullable=True)
     token_consumed = Column('token_cosumed', Boolean, default=True)
-
-    def __init__(self, dispatch_id, operator_id, trailer, truck, start_location, start_time, dump_location, load_location) -> None:
+    product_usage = Column(String(29), CheckConstraint('LENGTH(product_usage) = 29'))
+    created_at = Column(Integer, default=lambda: int(time.time()))
+    
+    def __init__(self, dispatch_id, operator_id, trailer, truck, start_location, start_time, dump_location, load_location, created_at=None) -> None:
         self.dispatch_id = dispatch_id
         self.operator_id = operator_id
         self.trailer = trailer
@@ -39,9 +42,10 @@ class RFO(Base):
         self.start_time = start_time
         self.dump_location = dump_location
         self.load_location = load_location
+        self.created_at = created_at
 
     def __repr__(self):
-        return f"RFO: ({self.rfo_id}) Dispatch: {self.dispatch_id} Equipment: {self.truck} {self.trailer} Start: {self.start_location} Load: {self.load_location} Dump: {self.dump_location} {self.start_time}"
+        return f"RFO: ({self.rfo_id}) Dispatch: {self.dispatch_id} Equipment: {self.truck} {self.trailer} Start: {self.start_location} Load: {self.load_location} Dump: {self.dump_location} {self.start_time} Stripe: {self.product_usage}"
 
     def to_dict(self):
         return {
@@ -54,4 +58,5 @@ class RFO(Base):
             "start_location": self.start_location,
             "dump_location": self.dump_location,
             "start_time": self.start_time,
+            "created_at": self.created_at,
         }

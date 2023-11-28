@@ -1,6 +1,7 @@
 from flask import g, make_response
 from models import User, Company
 from firebase_admin import auth
+from .stripe_controller import StripeController
 
 
 class AuthController:
@@ -33,9 +34,21 @@ class AuthController:
             # Decode and verify Firebase JWT
             decoded_token = auth.verify_id_token(token)
             uid = decoded_token.get("uid")
-
-            # Create user and company in local DB
-            user = User(id=uid)
+            email = decoded_token.get("email")
+            
+            # At this point we want to see if that user is already in the system
+            user = session.query(User).filter_by(id=uid).first()
+            
+            if user is not None: 
+                return make_response("User already exist", 403)
+            
+            # Once we now the user does not exist in our system
+            # we can create a stripe user and then add them to the db. 
+            customer_id = StripeController.add_customer(company_name=company_name, email=email)
+            print(customer_id)
+            # Create user and company DB
+            
+            user = User(id=uid, stripe_id=customer_id)
             session.add(user)
             company = Company(name=company_name, owner_id=uid)
             session.add(company)
@@ -49,7 +62,7 @@ class AuthController:
 
             # Set the JWT in HttpOnly cookie for added security
             response.set_cookie('access_token', token, httponly=True)
-
+            
             return response
 
         except Exception as e:

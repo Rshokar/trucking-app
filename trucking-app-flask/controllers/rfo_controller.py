@@ -1,9 +1,10 @@
 from flask import current_app as app, g
-from models import RFO, Dispatch, Operator, Company, Customer
+from controllers import StripeController
+from models import RFO, Dispatch, Operator, Company, Customer, Usage, BillingTickets, UsageArchive
 from sqlalchemy import and_
 from sqlalchemy.exc import IntegrityError
 from utils import make_response, send_operator_rfo, send_operator_rfo_update
-from datetime import datetime
+from datetime import datetime, timedelta
 from itsdangerous import BadTimeSignature, SignatureExpired, URLSafeTimedSerializer
 from flask_mail import Mail
 import os
@@ -17,6 +18,10 @@ OPERATOR_ACCESS_TOKEN_SECRET = os.environ.get(
 
 
 class RfoController:
+    
+    # 0 - 120, 121 - 360, 361 - 720, 
+    PAYMENT_TIERS = [120, 360, 720]
+    PAYMENT_TIER_ERROR_CODE = 1234
 
     def get_rfo(session, rfo_id):
         try:
@@ -64,6 +69,15 @@ class RfoController:
         return make_response(result, 200)
 
     def create_rfo(request, session):
+        """_summary_
+
+        Args:
+            request (_type_): _description_
+            session (_type_): _description_
+
+        Returns:
+            404: Your payment tier is about to increase. Please confirm if you wish to proceed
+        """
         data = request.json
 
         disp_id = data['dispatch_id']
@@ -82,6 +96,7 @@ class RfoController:
             return make_response("Dispatch not found", 404)
 
         oper_id = data['operator_id']
+        
         # Check if operator exist
         oper = session.query(Operator).filter_by(
             operator_id=oper_id, company_id=comp.company_id).first()
@@ -102,6 +117,27 @@ class RfoController:
             dump_location=data['dump_location'],
             load_location=data['load_location'],
         )
+        
+        usage = session.query(Usage).filter_by(user_id=g.user["uid"]).first()
+        
+        
+        
+        print(f"DATA: {data}")
+        # is the usage is found we will increment it if amount is breaking a tier and 
+        # confired is true or data is not breaking a tier
+        
+        if usage is not None and usage.amount in RfoController.PAYMENT_TIERS:
+            if data.get("confirmed") == False or data.get("confirmed") == None:  # Assuming data is a dictionary containing your JSON fields
+                return make_response({
+                    "code": RfoController.PAYMENT_TIER_ERROR_CODE,
+                    "message": "Your payment tier is about to increase. Please confirm if you wish to proceed"
+                }, 400)
+                
+            
+        if usage is not None:
+            usage.amount = usage.amount + 1
+        
+             
         session.add(rfo)
         session.commit()
 
@@ -202,22 +238,45 @@ class RfoController:
         return make_response(res, 200)
 
     def delete_rfo(session, rfo_id):
+        
+        
+        bill = session.query(BillingTickets)\
+            .filter(BillingTickets.rfo_id == rfo_id)\
+            .first()
+        
+        if bill is not None: 
+            return make_response("RFO has tickets refrencing it cannot delete", 403)
+        
         # Check if rfo exist
         rfo = session.query(RFO)\
             .join(Dispatch, RFO.dispatch_id == Dispatch.dispatch_id)\
             .join(Company, Dispatch.company_id == Company.company_id)\
-            .filter(and_(RFO.rfo_id == rfo_id, Company.owner_id == g.user["uid"]))\
+            .filter(and_(RFO.rfo_id == rfo_id, Company.owner_id == g.user["uid"]), RFO.deleted == False)\
             .first()
 
         if rfo is None:
             return make_response('RFO not found', 404)
-        try:
-            session.delete(rfo)
-            session.commit()
-            return make_response('RFO deleted', 200)
-        except IntegrityError:
-            session.rollback()
-            return make_response("RFO has tickets refrencing it, cannot be deleted", 400)
+        
+        usage = session.query(Usage)\
+            .filter(
+                and_(
+                    Usage.user_id == g.user["uid"], 
+                    Usage.billing_start_period <= rfo.created_at, 
+                    Usage.billing_end_period > rfo.created_at
+                )
+            )\
+            .first()
+            
+        if usage is not None:
+            usage.amount = usage.amount - 1
+            
+        # NOTE:If the RFO has any associated bills, an IntegrityError will be 
+        # thrown due to referential integrity constraints.
+        # In such a case, the deletion operation is rolled back, the rfo deleted flag is 
+        # set to true.
+        session.delete(rfo)
+        session.commit()
+        return make_response('RFO deleted', 200)
 
     def operator_get_rfo(session, token):
         '''

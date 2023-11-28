@@ -120,8 +120,6 @@ const Tickets: FunctionComponent<Props> = ({ route }) => {
         run();
     }, [])
 
-    console.log(operators)
-
     return (
         <BalanceContainer>
             <DispatchCard {...dispatch} />

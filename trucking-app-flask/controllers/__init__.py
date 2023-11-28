@@ -4,3 +4,4 @@ from .company_controller import CompanyController
 from .auth_controller import AuthController
 from .customer_controller import CustomerController
 from .contact_us_controller import ContactUsController
+from .stripe_controller import StripeController
