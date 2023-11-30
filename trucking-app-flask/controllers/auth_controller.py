@@ -2,6 +2,7 @@ from flask import g, make_response
 from models import User, Company
 from firebase_admin import auth
 from .stripe_controller import StripeController
+from .user_controller import UserController
 
 
 class AuthController:
@@ -45,7 +46,6 @@ class AuthController:
             # Once we now the user does not exist in our system
             # we can create a stripe user and then add them to the db. 
             customer_id = StripeController.add_customer(company_name=company_name, email=email)
-            print(customer_id)
             # Create user and company DB
             
             user = User(id=uid, stripe_id=customer_id)
@@ -62,11 +62,13 @@ class AuthController:
 
             # Set the JWT in HttpOnly cookie for added security
             response.set_cookie('access_token', token, httponly=True)
+            print(decoded_token)
+            g.user = decoded_token
+            UserController.send_validation_email(session)
             
             return response
 
         except Exception as e:
-            print(e)
             return make_response(str(e), 500)
 
     @staticmethod

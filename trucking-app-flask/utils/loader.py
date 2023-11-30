@@ -15,7 +15,7 @@ stripe.api_key = STRIPE_API_KEY
 session = Session()
 
 # Global date range for when RFOS are made
-START_DATE = datetime(2023, 10, 1)  # Example start date
+START_DATE = datetime(2023, 9, 1)  # Example start date
 END_DATE = datetime(2023, 12, 31)    # Example end date
 
 def random_timestamp(start, end):
@@ -94,7 +94,7 @@ class DispatchFactory(SQLAlchemyModelFactory):
     company_id = SubFactory(CompanyFactory)
     customer_id = SubFactory(CustomerFactory)
     notes = Faker("text", max_nb_chars=200)
-    date = Faker("date_time")
+    date = LazyAttribute(lambda _: datetime.fromtimestamp(random_timestamp(START_DATE, END_DATE)))
 
 
 class RFOFactory(SQLAlchemyModelFactory):
@@ -145,7 +145,7 @@ def loadDB(num_users, num_operators, num_customers, num_dispatches):
         email = fake.unique.email()  # Generates a unique email
         stripe_customer = stripe.Customer.create(name=company, email=email)
         # user = UserFactory.create(id='XT6JmAPRALQaGfgWEnjn9RySWAW2', created_at=datetime.now(), email=email, stripe_id=stripe_customer['id'])
-        user = UserFactory.create(id="gW4BrD3sxPVvHjjPmZRD4fkNPUA3", created_at=datetime.now(), email=email, stripe_id=stripe_customer['id'])
+        user = UserFactory.create(id="0PZygSnVS2ZE3QRlMSYNzhIsT3y2", created_at=datetime.now(), email=email, stripe_id=stripe_customer['id'])
         company = CompanyFactory.create(owner_id=user.id, name=company)
         
         
@@ -153,19 +153,19 @@ def loadDB(num_users, num_operators, num_customers, num_dispatches):
         for i in range(num_operators):
             operators.append(OperatorFactory.create(company_id=company.company_id))
             
-        # customers = []
-        # for i in range(num_customers):
-        #     customers.append(CustomerFactory.create(company_id=company.company_id))
+        customers = []
+        for i in range(num_customers):
+            customers.append(CustomerFactory.create(company_id=company.company_id))
         
-        # rfos = []
-        # for i in range(num_dispatches):
-        #     disp = DispatchFactory(
-        #         company_id=company.company_id, 
-        #         customer_id=customers[random.randint(0, len(customers) - 1)].customer_id
-        #     )    
-        #     for i in range(len(operators)):
-        #         rfos.append(RFOFactory.create(
-        #             dispatch_id=disp.dispatch_id, 
-        #             operator_id=operators[i].operator_id
-        #         ))
+        rfos = []
+        for i in range(num_dispatches):
+            disp = DispatchFactory(
+                company_id=company.company_id, 
+                customer_id=customers[random.randint(0, len(customers) - 1)].customer_id
+            )    
+            for i in range(len(operators)):
+                rfos.append(RFOFactory.create(
+                    dispatch_id=disp.dispatch_id, 
+                    operator_id=operators[i].operator_id
+                ))
 
