@@ -1,5 +1,5 @@
 import React, { useState, FC } from 'react';
-import { View } from 'react-native';
+import { View, Keyboard } from 'react-native';
 import { Button, TextInput, Divider, Text, useTheme, IconButton } from 'react-native-paper';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
@@ -42,8 +42,6 @@ const DispatchForm: FC<Props> = ({ onSubmit, defaultValues, customers }) => {
     const closeMenu = () => setVisible(false);
     const openCustomerModal = () => setCusModsl(true);
     const closeCustomerModal = () => setCusModsl(false);
-
-    console.log(defaultValues)
 
     const dv: any = defaultValues ? {
         ...defaultValues,
@@ -196,6 +194,7 @@ const DispatchForm: FC<Props> = ({ onSubmit, defaultValues, customers }) => {
                             onBlur={handleBlur('notes')}
                             value={values.notes}
                             multiline
+                            blurOnSubmit={true} // Add this line
                             error={!!errors.notes}
                         />
                         {errors.notes && <ErrorText>{errors.notes as string}</ErrorText>}
