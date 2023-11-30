@@ -62,6 +62,7 @@ class DispatchController:
             )
 
         dispatches = dispatch_query.group_by(Dispatch.dispatch_id)\
+            .order_by(Dispatch.date.desc())\
             .limit(limit).offset(page * limit).all()
 
         result = []
