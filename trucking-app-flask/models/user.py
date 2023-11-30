@@ -78,6 +78,7 @@ class User(Base):
             "role": self.role,
             "reset_code": self.reset_code,
             "recovery_token": self.recovery_token,
+            "email_validated": self.email_validated,
         }
 
     def check_token_expiration(self):

@@ -58,7 +58,7 @@ const Home: FunctionComponent<Props> = ({ navigation, route }) => {
     return (
         <HomeContainer>
             {
-                route.params?.user.emailValidated ?
+                route.params?.user.email_validated ?
 
                     <Tabs>
                         <TabScreen label={""} icon={'book'}>
@@ -83,7 +83,7 @@ const Home: FunctionComponent<Props> = ({ navigation, route }) => {
                     :
                     <ValidateEmail onCompletion={function (): void {
                         const user = route.params.user;
-                        user.emailValidated = true;
+                        user.email_validated = true;
                         navigation.navigate('Home', { company: route.params?.company, user: user })
                     }} />
             }

@@ -85,6 +85,7 @@ const Welcome: FunctionComponent<Props> = ({ navigation }) => {
         try {
             const res = await signInWithEmailAndPassword(FIREBASE_AUTH, formRes.email, formRes.password);
             const { company, user } = await AuthController.login(await res.user.getIdToken(), formRes.email);
+            console.log(user)
             showSnackbar({
                 message: 'Loged in successfully',
                 color: theme.colors.primary

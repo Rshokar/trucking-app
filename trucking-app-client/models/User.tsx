@@ -7,7 +7,7 @@ export class User {
     role?: string;
     password?: string;
     email?: string;
-    emailValidated: boolean = false;
+    email_validated: boolean = false;
 
     getId(): string {
         return (this.id || 0) + ''
