@@ -48,7 +48,6 @@ const BillCard: React.FC<BillCardProps> = (props) => {
 
             const { data } = await res.json();
 
-            console.log("RETURNED URL", data)
             images[0].url = data;
             setImages([...images]);
             setUrl(data);

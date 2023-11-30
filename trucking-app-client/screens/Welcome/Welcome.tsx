@@ -68,8 +68,8 @@ const Welcome: FunctionComponent<Props> = ({ navigation }) => {
         const operatorCache = Cache.getInstance(Operator);
         const cC = new CustomerController()
         const oC = new OperatorController();
-        const cQ = new CustomerQuery(100);
-        const oQ = new OperatorQuery(100);
+        const cQ = new CustomerQuery(Number.MAX_SAFE_INTEGER);
+        const oQ = new OperatorQuery(Number.MAX_SAFE_INTEGER);
 
         const cPromise = cC.getAll(cQ);
         const oPromise = oC.getAll(oQ);
@@ -85,11 +85,11 @@ const Welcome: FunctionComponent<Props> = ({ navigation }) => {
         try {
             const res = await signInWithEmailAndPassword(FIREBASE_AUTH, formRes.email, formRes.password);
             const { company, user } = await AuthController.login(await res.user.getIdToken(), formRes.email);
-            console.log(user)
             showSnackbar({
                 message: 'Loged in successfully',
                 color: theme.colors.primary
             })
+            loadCache();
             navigation.navigate("Home", { company, user })
         } catch (e: any) {
             console.log(e);

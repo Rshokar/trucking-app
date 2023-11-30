@@ -82,7 +82,6 @@ export class BillController {
 
         formData.append('ticket_number', model.ticket_number + '');
         formData.append('rfo_id', model.rfo_id + '');
-        console.log("SEND CREATE BILL REQUEST");
         try {
             const response = await myAxios.post<Bill>(`/billing_ticket/`, formData, {
                 headers: {

@@ -66,7 +66,6 @@ const BillCard: React.FC<BillCardProps> = (props) => {
         props.onClose();
     }
 
-    console.log(images)
 
     return (
         <View style={{

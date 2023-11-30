@@ -103,8 +103,6 @@ const NavBar = () => {
   const [extendNavbar, setExtendNavbar] = useState<boolean>(false);
   const [showItems, setShowItems] = useState<boolean>(false);
   const theme = useTheme()
-
-  console.log(showItems)
   return (
     <NavbarContainer
       extendNavbar={extendNavbar}

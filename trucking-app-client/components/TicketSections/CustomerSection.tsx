@@ -86,8 +86,6 @@ const CustomerSection: FC<Props> = ({ navigateToTicket }) => {
     const handleEditCustomer = async (data: Customer, id: string): Promise<boolean> => {
         try {
             const cC = new CustomerController();
-            const q = new CustomerQuery();
-            q.customer_id = parseFloat(id);
             const res: Customer = await cC.update(id, data as Customer);
             const index = customers.findIndex(cus => (cus.customer_id + "") === id);
             customers[index] = res;

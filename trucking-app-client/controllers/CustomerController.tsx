@@ -24,7 +24,6 @@ export class CustomerController {
 
         try {
             const response = await myAxios.get<Customer[]>(`/company/customers/?${qs.stringify(q)}`);
-            console.log("CUSTOMER QUERY RESPONSE", response);
             return response.data;
         } catch (error) {
             console.log("ERROR GETTING CUSTOMER", error);

@@ -4,8 +4,6 @@ import { getAuth, getIdToken } from "firebase/auth";
 import { navigate } from "../utils/NavigationService";
 import { AuthController } from "../controllers/AuthController";
 import { API_URL } from "@env";
-
-console.log("AAPI", API_URL);
 // Create an instance with default settings
 const myAxios = axios.create({
   baseURL: `http://10.0.0.197:5000/v1`,

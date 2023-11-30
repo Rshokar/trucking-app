@@ -93,14 +93,12 @@ const TicketItem: FunctionComponent<TicketItemProps> = (props) => {
             <RightView>
                 {(deleting && props.onDelete) && <>
                     <IconButton size="small" onClick={(e) => {
-                        console.log("CANCEL")
                         e.stopPropagation()
                         setDeleting(false)
                     }}>
                         <CancelIcon style={{ fontSize: '20pt', color: theme.palette.secondary.main, padding: '5px' }} />
                     </IconButton>
                     <IconButton size="small" onClick={(e) => {
-                        console.log("DELETE")
                         e.stopPropagation()
                         handleDelete()
                     }}>
