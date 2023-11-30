@@ -34,6 +34,7 @@ class OperatorController:
         operators = session.query(Operator)\
             .join(Company, Company.company_id == Operator.company_id)\
             .filter(Company.owner_id == g.user["uid"])\
+            .order_by(Operator.operator_name.asc())\
             .limit(limit).offset(page * limit).all()
 
         operators_dict = [operator.to_dict() for operator in operators]

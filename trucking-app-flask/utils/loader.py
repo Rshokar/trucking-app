@@ -111,7 +111,7 @@ class RFOFactory(SQLAlchemyModelFactory):
     start_location = Faker("street_address")
     dump_location = Faker("street_address")
     load_location = Faker("street_address")
-    start_time = fake.date_of_birth()
+    start_time = LazyAttribute(lambda _: datetime.fromtimestamp(random_timestamp(START_DATE, END_DATE)))
     created_at = LazyAttribute(lambda _: random_timestamp(START_DATE, END_DATE))
 
 

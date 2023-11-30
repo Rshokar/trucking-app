@@ -37,7 +37,7 @@ class CustomerController:
         customers = session.query(Customer)\
             .join(Company, Company.company_id == Customer.company_id)\
             .filter(Company.owner_id == g.user["uid"])\
-            .order_by(Customer.customer_id)\
+            .order_by(Customer.customer_name.asc())\
             .offset(offset).limit(limit).all()
 
         # Convert customers to dictionary

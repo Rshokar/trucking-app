@@ -48,6 +48,7 @@ class RfoController:
             .join(Operator, Operator.operator_id == RFO.operator_id)\
             .where(RFO.dispatch_id == dispatch_id if dispatch_id is not None else True)\
             .where(RFO.operator_id == operator_id if operator_id is not None else True)\
+            .order_by(RFO.start_time.asc())\
             .limit(limit).offset(page * limit).all()
 
         result = []
