@@ -29,5 +29,6 @@ class BillingTickets(Base):
             "bill_id": self.bill_id,
             "rfo_id": self.rfo_id,
             "ticket_number": self.ticket_number,
-            "image_id": self.image_id
+            "image_id": self.image_id,
+            "billed": self.billed
         }

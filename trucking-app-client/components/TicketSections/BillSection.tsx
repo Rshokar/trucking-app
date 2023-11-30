@@ -202,6 +202,7 @@ const BillSection: FC<Props> = ({ navigateToTicket, rfoId }) => {
                 noTicketFoundSVG={<BillSVG width={75} height={75} stroke={'black'} />}
                 noTicketFoundMessage={"No Billing Tickets Found!"}
                 render={({ item }: { item: Bill }) => {
+                    console.log(item)
                     if (item.ticket_number?.toString().includes(search)) {
                         return (
                             <TicketItem
