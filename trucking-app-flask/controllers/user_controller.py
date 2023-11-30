@@ -1,9 +1,8 @@
 from itsdangerous import BadTimeSignature, SignatureExpired, URLSafeTimedSerializer
 from models import User, Company
-from utils import make_response
 from sqlalchemy.exc import IntegrityError, OperationalError
 from sqlalchemy import and_
-from flask import g, current_app as app
+from flask import g, current_app as app, make_response
 from firebase_admin import auth, exceptions
 from flask_mail import Mail
 from models import User

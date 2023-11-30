@@ -45,6 +45,8 @@ const ValidateEmail = () => {
     const validateEmail = async () => {
         const res = await runValidation()
         const response = await res.text();
+
+        console.log("VALIDATE EMAIL", response)
         if (res.status === 404)
             setMessage({
                 title: response,
