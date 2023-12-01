@@ -15,7 +15,7 @@ def send_verification_email(mail, email, token, name, company_name):
     '''
 
     # Send email to operator with the token for verification
-    msg = Message('Confirm Email',
+    msg = Message(f'{company_name} - Tare Confirm Email',
                   sender='ravindershokar@gmail.com', recipients=[email])
 
     # Ideally, you should use url_for function of Flask to create verify URL
@@ -49,7 +49,7 @@ def send_operator_rfo(mail, email, rfo, operator, company, customer, Dispatch, t
     '''
 
     # Send email to operator with the token for verification
-    msg = Message(f'Trucking App - {company.company_name} - {customer.customer_name}',
+    msg = Message(f'{company.company_name} - {customer.customer_name} - Tare',
                   sender='ravindershokar@gmail.com', recipients=[email])
 
     # Provide default 'Null' value if location details are not available
@@ -102,7 +102,7 @@ def send_operator_rfo_update(mail, email, rfo, operator, company, customer, Disp
     '''
 
     # Send email to operator with the token for verification
-    msg = Message(f'Trucking App - {company.company_name} - {customer.customer_name}',
+    msg = Message(f'{company.company_name} - {customer.customer_name} - Tare',
                   sender='ravindershokar@gmail.com', recipients=[email])
 
     # Provide default 'Null' value if location details are not available
@@ -154,7 +154,7 @@ def send_operator_auth_token(mail, email, token, operator_name):
     '''
 
     # Send email to operator with the token for authentication
-    msg = Message(f'Trucking App - Authentication Token',
+    msg = Message(f'Authentication Token - Tare',
                   sender='ravindershokar@gmail.com', recipients=[email])
 
     msg.body = f'''
@@ -188,7 +188,7 @@ def send_user_forgot_password_code(mail, email, code):
     '''
 
     # Constructing the email message
-    msg = Message('Password Reset Code - Trucking App',
+    msg = Message('Password Reset Code - Tare',
                   sender='ravindershokar@gmail.com', recipients=[email])
 
     msg.body = f'''
@@ -222,7 +222,7 @@ def send_email_verification(mail, email, token):
     """
 
     print("EMAILER")
-    msg = Message('Password Reset Code - Trucking App',
+    msg = Message('Validate Email - Tare',
                   sender='ravindershokar@gmail.com', recipients=[email])
 
     
