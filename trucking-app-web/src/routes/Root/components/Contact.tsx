@@ -6,6 +6,7 @@ import * as Yup from "yup";
 import toast from "react-hot-toast";
 import { useState } from "react";
 import { BaseProps } from "../../types";
+import { FormView } from "../../../components/Forms/styles";
 
 const ContactContainer = styled(Container)`
   background-color: white;
@@ -13,7 +14,6 @@ const ContactContainer = styled(Container)`
   flex-direction: column;
   gap: 30px;
   padding-bottom: 5rem;
-
 `;
 
 const InputBox = styled(Input)``;
@@ -21,7 +21,7 @@ const InputBox = styled(Input)``;
 const InputBoxContainer = styled.div`
   display: flex;
   flex-direction: column;
-  width: 45%;
+  flex: 1;
 `;
 
 const TextAreaBox = styled(TextareaAutosize)`
@@ -44,6 +44,18 @@ const ButtonText = styled(Typography)`
   justify-content: center;
 `;
 
+const DualInput = styled.div`
+  display: flex;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
+
+  gap: 30px;
+  justifyContent: space-between;
+  width: 100%;
+  marginBottom: 30px;
+`
 const ErrorMsg = styled(ErrorMessage)({
   color: "red",
   fontSize: "10pt",
@@ -111,22 +123,14 @@ const Contact = ({ id }: BaseProps) => {
         Get in touch and let us know how we can help.
       </Typography>
 
-      <div style={{ width: "50vw" }}>
+      <FormView style={{ maxWidth: 'auto' }}>
         <Formik
           initialValues={initialValues}
           validationSchema={validationSchema}
           onSubmit={handleSubmit}
         >
-          <Form>
-            <div
-              style={{
-                display: "flex",
-                gap: "10px",
-                justifyContent: "space-between",
-                width: "100%",
-                marginBottom: "30px",
-              }}
-            >
+          <Form style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '30px' }}>
+            <DualInput>
               <InputBoxContainer>
                 <Field
                   as={InputBox}
@@ -147,7 +151,7 @@ const Contact = ({ id }: BaseProps) => {
                 />
                 <ErrorMsg name="email" component="div" className="error" />
               </InputBoxContainer>
-            </div>
+            </DualInput>
             <div style={{ marginBottom: "25px" }}>
               <Field
                 as={TextAreaBox}
@@ -171,7 +175,7 @@ const Contact = ({ id }: BaseProps) => {
             </Button>
           </Form>
         </Formik>
-      </div>
+      </FormView>
     </ContactContainer>
   );
 };
