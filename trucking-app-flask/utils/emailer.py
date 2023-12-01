@@ -171,7 +171,7 @@ def send_operator_auth_token(mail, email, token, operator_name):
     If you have any questions, please contact your dispatcher.
 
     Regards,
-    Trucking App
+    Tare Ticketing
     '''
 
     mail.send(msg)
@@ -194,7 +194,7 @@ def send_user_forgot_password_code(mail, email, code):
     msg.body = f'''
     Hello,
 
-    You requested to reset your password for the Trucking App.
+    You requested to reset your password for Tare.
 
     Here's your password reset code: {code}
 
@@ -205,7 +205,7 @@ def send_user_forgot_password_code(mail, email, code):
     If you didn't request this, please ignore this email.
 
     Regards,
-    Trucking App Support
+    Tare Ticketing Support
     '''
 
     # Sending the email
@@ -236,7 +236,7 @@ def send_email_verification(mail, email, token):
     link: {WEB_URL}/validate_email/{token}/dispatcher
 
     Regards,
-    Trucking App Support
+    Tare Ticketing Support
     '''
 
     # Sending the email
