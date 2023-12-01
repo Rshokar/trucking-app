@@ -17,7 +17,6 @@ export const NavbarContainer = styled.nav<{ extendNavbar: boolean, color: string
     overflow: hidden;
     z-index: 1000;
     padding: 10px;
-    min-width: 300px;
 `;
 
 export const NavBarLogoContainer = styled.div<{ color: string; hoverColor: string }>`
@@ -48,9 +47,9 @@ export const MenuItemsDrawer = styled.div<{ show: boolean, color: string }>`
     flex-direction: column;
     gap: 20px;
     align-items: end;
-    transform: ${props => props.show ? 'translate(0)' : 'translate(150%)'};
+    width: ${props => props.show ? '200px' : '0px'};
     opacity: ${props => props.show ? '1' : '0'};
-    transition: transform 0.4s ease-in-out, opacity 0.2s ease-in-out;
+    transition: width .4s ease-in-out, opacity 0.2s ease-in-out;
     background-color: ${props => props.color};
     padding: 20px;
     border-radius: 10px; 
