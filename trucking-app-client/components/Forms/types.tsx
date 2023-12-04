@@ -21,6 +21,8 @@ export interface CustomerFormResult extends FormResult {
 export interface OperatorFormResult extends FormResult {
     operator_name: string;
     operator_email: string;
+    operator_phone: string;
+    contact_method: string;
 }
 
 export interface RFOFormResult extends FormResult {
