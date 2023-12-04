@@ -268,7 +268,7 @@ const BillSection: FC<Props> = ({ navigateToTicket, rfoId }) => {
                 style={{
                     position: 'absolute',
                     margin: 16,
-                    right: 0,
+                    left: 0,
                     bottom: 0,
                 }}
                 icon="plus"

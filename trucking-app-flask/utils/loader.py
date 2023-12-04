@@ -145,7 +145,7 @@ def loadDB(num_users, num_operators, num_customers, num_dispatches):
         email = fake.unique.email()  # Generates a unique email
         stripe_customer = stripe.Customer.create(name=company, email=email)
         # user = UserFactory.create(id='XT6JmAPRALQaGfgWEnjn9RySWAW2', created_at=datetime.now(), email=email, stripe_id=stripe_customer['id'])
-        user = UserFactory.create(id="4NFVZO4k9nR7IJfM6URXbom8gjY2", created_at=datetime.now(), email=email, stripe_id=stripe_customer['id'])
+        user = UserFactory.create(id="MFmmlrmTQvaTWxAyUNAxfE9dxzk1", created_at=datetime.now(), email=email, stripe_id=stripe_customer['id'])
         company = CompanyFactory.create(owner_id=user.id, name=company)
         
         
@@ -163,7 +163,7 @@ def loadDB(num_users, num_operators, num_customers, num_dispatches):
                 company_id=company.company_id, 
                 customer_id=customers[random.randint(0, len(customers) - 1)].customer_id
             )    
-            for i in range(len(operators)):
+            for i in range(random.randint(1, len(operators))):
                 rfos.append(RFOFactory.create(
                     dispatch_id=disp.dispatch_id, 
                     operator_id=operators[i].operator_id

@@ -26,6 +26,7 @@ const TicketRow = styled.View`
 `
 
 const TicketList = styled.FlatList`
+    padding-bottom: 80px;
 `
 
 const LoadingIndicator = styled(ActivityIndicator)`
@@ -68,14 +69,20 @@ const TicketSection: FunctionComponent<TicketSectionProps> = (props) => {
                     showsVerticalScrollIndicator={false}
                     keyExtractor={(item: unknown, index: number) => index + ""}
                     renderItem={props.render}
-                    ListFooterComponent={props.more ? <Button mode="contained" onPress={() => {
-                        if (props.paginate) {
-                            props.paginate();
-                            setPaginating(true);
+                    ListFooterComponent={<>
+                        {props.more ??
+                            <Button mode="contained" onPress={() => {
+                                if (props.paginate) {
+                                    props.paginate();
+                                    setPaginating(true);
+                                }
+                            }}>
+                                Load More
+                            </Button>
                         }
-                    }}>
-                        Load More
-                    </Button> : undefined}
+                        <View style={{ height: 50 }} />
+                    </>
+                    }
                     refreshControl={
                         <RefreshControl
                             refreshing={refreshing}

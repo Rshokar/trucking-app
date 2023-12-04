@@ -33,6 +33,7 @@ const DispatchSection: FunctionComponent<Props> = ({ navigateToTickets, customer
     const [showDispatchCard, setShowDispatchCard] = useState<boolean>(false)
     const [loading, setLoading] = useState<boolean>(true);
     const theme = useTheme();
+    const [showFab, setShowFab] = useState<boolean>(true);
     const { showSnackbar } = useSnackbar();
 
     useEffect(() => {
@@ -233,11 +234,11 @@ const DispatchSection: FunctionComponent<Props> = ({ navigateToTickets, customer
                 />
             </MyModal>
             <TicketSection
-
                 more={enablePaginate}
                 data={dispatches}
                 onRefresh={handleRefresh}
                 loading={loading}
+                onEndReached={() => setShowFab(false)}
                 onNoTicketsFound={() => {
                     setFocusingDispatch(undefined)
                     setShowFormModal(true)
