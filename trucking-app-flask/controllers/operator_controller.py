@@ -1,5 +1,5 @@
 from itsdangerous import URLSafeTimedSerializer
-from models import Operator, Company, RFO, BillingTickets, Dispatch
+from models import Operator, Company, RFO, BillingTickets, Dispatch, ContactMethods
 from sqlalchemy.exc import IntegrityError
 from utils import send_verification_email, send_operator_auth_token
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadTimeSignature
@@ -78,38 +78,51 @@ class OperatorController:
         operator_phone = req.get("operator_phone")
         operator_phone_country_code = req.get("operator_phone_country_code")
         
+        # Validate Contact method exist
+        if contact_method == ContactMethods.email and (email is None or email == ''):
+            return make_response("If contact method is email, email must exist", 400)
+        
+        # Validate Contact method exist
+        if contact_method == ContactMethods.sms and ((operator_phone is None or operator_phone == '') or (operator_phone_country_code is None or operator_phone_country_code == '')): 
+            return make_response("If contact method is sms, phone and country code must exist", 400)
+             
         if email is not None: 
             email = email.lower()
-            
-        print(contact_method, operator_phone, operator_phone_country_code)
-        return
 
         company = session.query(Company).filter_by(
             company_id=company_id, owner_id=g.user["uid"]).first()
 
         if company is None:
             return make_response(f"Company with ID {company_id} not found", 404)
+        
+        if contact_method == ContactMethods.sms: 
+            operator_email = session.query(Operator).filter_by(
+                operator_phone=operator_phone, company_id=company_id).first()
 
-        operator_email = session.query(Operator).filter_by(
-            operator_email=email, company_id=company_id).first()
+            if operator_email is not None:
+                return make_response('Operator phone number already used', 400)
 
-        if operator_email is not None:
-            return make_response('Operator email already used', 400)
+            
+        if contact_method == ContactMethods.email: 
+            operator_email = session.query(Operator).filter_by(
+                operator_email=email, company_id=company_id).first()
+
+            if operator_email is not None:
+                return make_response('Operator email already used', 400)
 
         # Create operator
-        new_operator = Operator(company_id=company_id,
-                                operator_name=name, operator_email=email, confirmed=False)
+        new_operator = Operator(company_id, name, contact_method, email, operator_phone, operator_phone_country_code)
 
         session.add(new_operator)
         session.commit()
 
         # Generate unique token for the operator
         token = s.dumps({"operator_id": new_operator.operator_id}, salt=SALT)
-        notification_service = NotificationServiceFactory.get_notification_service()
+        service_factory = NotificationServiceFactory()
+        notifcation_service = service_factory.get_notification_service(contact_method) 
         try:
             # Send verification email to the new operator
-            send_verification_email(
-                mail, email, token, name, company.company_name)
+            notifcation_service.send_operator_verification(new_operator, token, company.company_name)
         except Exception as e:
             print(e)
 

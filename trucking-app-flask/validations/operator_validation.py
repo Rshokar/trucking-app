@@ -1,3 +1,5 @@
+from models import ContactMethods
+
 operator_validation = {
     "type": "object",
     "properties": {
@@ -9,8 +11,7 @@ operator_validation = {
         },
         "contact_method": {
             "type": "string",
-            "enum": ["sms", "email"], 
-
+            "enum": ["sms", "email"] 
         },
         "operator_phone": {
             "type": "string",
