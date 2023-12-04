@@ -4,7 +4,6 @@ import { ViewStyle, TextStyle, GestureResponderEvent } from 'react-native';
 import { IconSource } from "react-native-paper/lib/typescript/src/components/Icon";
 import { ReactNode } from "react";
 
-
 export interface TicketSectionProps {
     data: Array<Model>
     render: ({ item }: any) => any
@@ -16,7 +15,7 @@ export interface TicketSectionProps {
     onRefresh?: () => Promise<any>;
     onNoTicketsFound?: () => any;
     noTicketFoundMessage: string;
-    noTicketFoundSVG?: ReactNode
+    noTicketFoundSVG?: ReactNode;
 }
 
 export interface TicketAviProps {

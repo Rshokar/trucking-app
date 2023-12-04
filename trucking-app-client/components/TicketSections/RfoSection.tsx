@@ -302,7 +302,7 @@ const RFOSection: FC<Props> = ({ navigateToTicket, dispId, operId, operators }) 
                     style={{
                         position: 'absolute',
                         margin: 16,
-                        right: 0,
+                        left: 0,
                         bottom: 0,
                     }}
                 />
