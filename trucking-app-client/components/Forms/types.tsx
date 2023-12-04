@@ -22,6 +22,7 @@ export interface OperatorFormResult extends FormResult {
     operator_name: string;
     operator_email: string;
     operator_phone: string;
+    operator_phone_country_code: string;
     contact_method: string;
 }
 

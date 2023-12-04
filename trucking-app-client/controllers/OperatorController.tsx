@@ -70,9 +70,10 @@ export class OperatorController {
     }
 
     async create(data: Operator): Promise<Operator> {
-        console.log(`CREATE OPERATOR`)
-        console.log(data);
         try {
+
+            console.log("CREATE OPERATOR")
+            console.log(data);
             const company = await AuthController.getCompany();
             data.company_id = company.company_id;
 

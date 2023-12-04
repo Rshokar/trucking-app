@@ -13,10 +13,13 @@ const validationSchema = yup.object().shape({
     operator_name: yup.string().required('Operator name is required'),
     contact_method: yup.string().required('Contact method is required'),
     operator_email: yup.string().when('contact_method', (contact_method, schema: yup.StringSchema) => {
-        return contact_method[0] == 'email' ? schema.required("Operator email is required") : schema;
+        return contact_method[0] == 'email' ? schema.required("Email is required") : schema;
     }),
     operator_phone: yup.string().when('contact_method', (contact_method, schema: yup.StringSchema) => {
-        return contact_method[0] == 'sms' ? schema.required("Operator phone number is required") : schema;
+        return contact_method[0] == 'sms' ? schema.required("Phone number is required") : schema;
+    }),
+    operator_phone_country_code: yup.string().when('contact_method', (contact_method, schema: yup.StringSchema) => {
+        return contact_method[0] == 'sms' ? schema.required("Country code is required") : schema;
     }),
 });
 
@@ -67,6 +70,16 @@ const OperatorForm: FC<FormProps<OperatorFormResult>> = (props) => {
                             error={!!errors.operator_phone}
                         />
                         {errors.operator_phone && <ErrorText>{errors.operator_phone}</ErrorText>}
+                    </InputBox>
+                    <InputBox>
+                        <TextInput
+                            label="Country Code"
+                            onChangeText={handleChange('operator_phone_country_code')}
+                            onBlur={handleBlur('operator_phone_country_code')}
+                            value={values.operator_phone_country_code}
+                            error={!!errors.operator_phone_country_code}
+                        />
+                        {errors.operator_phone_country_code && <ErrorText>{errors.operator_phone_country_code}</ErrorText>}
                     </InputBox>
 
                     {/* Contact method dropdown */}
