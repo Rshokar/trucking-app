@@ -9,6 +9,7 @@ from flask import current_app as app, g, make_response
 from datetime import datetime, timedelta
 from flask_mail import Mail
 import os
+from services.notification_service import NotificationServiceFactory
 
 SEND_OPERATOR_RFO_TOKEN_SECRET = os.environ.get(
     "SEND_OPERATOR_RFO_TOKEN_SECRET")
@@ -69,11 +70,19 @@ class OperatorController:
         Returns:
             Responses: 201 Created
         '''
-        mail = Mail(app)
         req = request.get_json()
         company_id = req.get('company_id')
         name = req.get('operator_name')
-        email = req.get('operator_email').lower()
+        email = req.get('operator_email')
+        contact_method = req.get('contact_method')
+        operator_phone = req.get("operator_phone")
+        operator_phone_country_code = req.get("operator_phone_country_code")
+        
+        if email is not None: 
+            email = email.lower()
+            
+        print(contact_method, operator_phone, operator_phone_country_code)
+        return
 
         company = session.query(Company).filter_by(
             company_id=company_id, owner_id=g.user["uid"]).first()
@@ -96,7 +105,7 @@ class OperatorController:
 
         # Generate unique token for the operator
         token = s.dumps({"operator_id": new_operator.operator_id}, salt=SALT)
-
+        notification_service = NotificationServiceFactory.get_notification_service()
         try:
             # Send verification email to the new operator
             send_verification_email(

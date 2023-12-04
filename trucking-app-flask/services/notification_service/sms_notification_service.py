@@ -3,6 +3,6 @@
 from .inotification_service import INotificationService
 
 class SMSNotificationService(INotificationService):
-    def send_notification(self, message):
+    def send_operator_verification(self, operator, token, company_name):
         # Logic to send SMS
-        print(f"Sending SMS: {message}")
+        print(f"Sending SMS: HELLO WOROD")
