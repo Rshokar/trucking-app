@@ -13,13 +13,13 @@ const validationSchema = yup.object().shape({
     operator_name: yup.string().required('Operator name is required'),
     contact_method: yup.string().required('Contact method is required'),
     operator_email: yup.string().when('contact_method', (contact_method, schema: yup.StringSchema) => {
-        return contact_method[0] == 'email' ? schema.required("Email is required") : schema;
+        return contact_method[0] == 'email' ? schema.required("Email is required") : schema.nullable();
     }),
     operator_phone: yup.string().when('contact_method', (contact_method, schema: yup.StringSchema) => {
-        return contact_method[0] == 'sms' ? schema.required("Phone number is required") : schema;
+        return contact_method[0] == 'sms' ? schema.required("Phone number is required") : schema.nullable();
     }),
     operator_phone_country_code: yup.string().when('contact_method', (contact_method, schema: yup.StringSchema) => {
-        return contact_method[0] == 'sms' ? schema.required("Country code is required") : schema;
+        return contact_method[0] == 'sms' ? schema.required("Country code is required") : schema.nullable();
     }),
 });
 
@@ -31,6 +31,7 @@ const OperatorForm: FC<FormProps<OperatorFormResult>> = (props) => {
             initialValues={props.defaultValues || new Operator() as OperatorFormResult}
             validationSchema={validationSchema}
             onSubmit={async (data: OperatorFormResult, { setSubmitting }) => {
+                console.log("SUBMIT FORM")
                 await props.onSubmit(data);
                 setSubmitting(false);
             }}

@@ -42,7 +42,10 @@ class Operator(Base):
             "operator_name": self.operator_name,
             "operator_email": self.operator_email,
             "confirmed": self.confirmed,
-            "confirm_token": self.confirm_token
+            "confirm_token": self.confirm_token,
+            "operator_phone": self.operator_phone, 
+            "operator_phone_country_code": self.operator_phone_country_code, 
+            "contact_method": self.contact_method.value
         }
 
     def get_operator_by_id_and_owner(session, operator_id, owner_id):

@@ -48,6 +48,7 @@ export class OperatorController {
 
     async update(id: string, model: Operator): Promise<Operator> {
         try {
+            console.log(id, model)
             const response = await myAxios.put<Operator>(`/company/operators/${id}`, model);
             const oCache = Cache.getInstance(Operator);
             const index = oCache.getData().findIndex(o => ("" + o.operator_id) === id)
@@ -71,9 +72,6 @@ export class OperatorController {
 
     async create(data: Operator): Promise<Operator> {
         try {
-
-            console.log("CREATE OPERATOR")
-            console.log(data);
             const company = await AuthController.getCompany();
             data.company_id = company.company_id;
 

@@ -73,21 +73,18 @@ class OperatorController:
         req = request.get_json()
         company_id = req.get('company_id')
         name = req.get('operator_name')
-        email = req.get('operator_email')
+        email = req.get('operator_email').lower() if req.get('operator_email') else None
         contact_method = req.get('contact_method')
         operator_phone = req.get("operator_phone")
         operator_phone_country_code = req.get("operator_phone_country_code")
         
         # Validate Contact method exist
-        if contact_method == ContactMethods.email and (email is None or email == ''):
+        if contact_method == ContactMethods.email.value and (email is None or email == ''):
             return make_response("If contact method is email, email must exist", 400)
         
         # Validate Contact method exist
-        if contact_method == ContactMethods.sms and ((operator_phone is None or operator_phone == '') or (operator_phone_country_code is None or operator_phone_country_code == '')): 
+        if contact_method == ContactMethods.sms.value and ((operator_phone is None or operator_phone == '') or (operator_phone_country_code is None or operator_phone_country_code == '')): 
             return make_response("If contact method is sms, phone and country code must exist", 400)
-             
-        if email is not None: 
-            email = email.lower()
 
         company = session.query(Company).filter_by(
             company_id=company_id, owner_id=g.user["uid"]).first()
@@ -95,7 +92,7 @@ class OperatorController:
         if company is None:
             return make_response(f"Company with ID {company_id} not found", 404)
         
-        if contact_method == ContactMethods.sms: 
+        if contact_method == ContactMethods.sms.value: 
             operator_email = session.query(Operator).filter_by(
                 operator_phone=operator_phone, company_id=company_id).first()
 
@@ -103,7 +100,7 @@ class OperatorController:
                 return make_response('Operator phone number already used', 400)
 
             
-        if contact_method == ContactMethods.email: 
+        if contact_method == ContactMethods.email.value: 
             operator_email = session.query(Operator).filter_by(
                 operator_email=email, company_id=company_id).first()
 
@@ -121,7 +118,6 @@ class OperatorController:
         service_factory = NotificationServiceFactory()
         notifcation_service = service_factory.get_notification_service(contact_method) 
         try:
-            # Send verification email to the new operator
             notifcation_service.send_operator_verification(new_operator, token, company.company_name)
         except Exception as e:
             print(e)
@@ -187,57 +183,88 @@ class OperatorController:
             session.rollback()
             return make_response("Operator has tickets refrencing it, cannot be deleted", 400)
 
-    def update_operator(session, request, operator_id):
+    def update_operator(session, request, op_id):
         """
         Update an already existing operator in db (if found)
 
         Parameters:
             Session (session): SQLAlchemy database session
             Request (request): API Request
-            operator_id (int): ID that uniquely identifies operator in database
+            op_id (int): ID that uniquely identifies operator in database
 
         Return:
             Responses: 200 OK if successful, 404 if operator not found
         """
         req = request.get_json()
-        email = req.get('operator_email').lower()
-        name = req.get("operator_name")
+        company_id = req.get('company_id')
+        name = req.get('operator_name')
+        email = req.get('operator_email').lower() if req.get('operator_email') else None
+        contact_method = req.get('contact_method')
+        operator_phone = req.get("operator_phone")
+        country_code = req.get("operator_phone_country_code")
+        
+        # Validate Contact method exist
+        if contact_method == ContactMethods.email.value and (email is None or email == ''):
+            return make_response("If contact method is email, email must exist", 400)
+        
+        # Validate Contact method exist
+        if contact_method == ContactMethods.sms.value and ((operator_phone is None or operator_phone == '') or (country_code is None or country_code == '')): 
+            return make_response("If contact method is sms, phone and country code must exist", 400)
 
         operator = Operator.get_operator_by_id_and_owner(
-            session, operator_id, g.user["uid"])
+            session, op_id, g.user["uid"])
 
         # Return early if invalid operator id provided
         if operator is None:
             return make_response("Operator not found", 404)
+        
+        if contact_method == ContactMethods.sms.value: 
+            operator_email = session.query(Operator).filter(and_(
+                Operator.operator_phone == operator_phone,
+                Operator.operator_phone_country_code == country_code,
+                Operator.company_id == operator.company_id,
+                Operator.operator_id != operator.operator_id
+            )).first()
 
-        operator_email = session.query(Operator).filter(
-            and_(
+            if operator_email is not None:
+                return make_response('Operator phone number already used', 400)
+
+            
+        if contact_method == ContactMethods.email.value: 
+            operator_email = session.query(Operator).filter(and_(
                 Operator.operator_email == email,
                 Operator.company_id == operator.company_id,
                 Operator.operator_id != operator.operator_id
             )).first()
 
-        if operator_email is not None:
-            return make_response('Operator email already used', 400)
+            if operator_email is not None:
+                return make_response('Operator email already used', 400)
 
-        # The email is updated. We need to flag as unconfirmed
-        # Also need to send verification email
-        if operator.operator_email != email:
+        # If email, phone or phone country code is changed a notification to verify contact method is done
+        if (contact_method == ContactMethods.email.value and operator.operator_email != email) or (contact_method == ContactMethods.sms.value and (operator.operator_phone != operator_phone) or (operator.operator_phone_country_code != country_code)):
+            print("RE VERFIY")
+            operator.operator_email = email
+            operator.operator_name = name
+            operator.contact_method = contact_method
+            operator.operator_phone = operator_phone
+            operator.operator_phone_country_code = country_code
             operator.confirmed = False
             # Generate unique token for the operator
             token = s.dumps({"operator_id": operator.operator_id}, salt=SALT)
-            mail = Mail(app)
-
+            service_factory = NotificationServiceFactory()
+            notifcation_service = service_factory.get_notification_service(contact_method) 
             try:
-                # Send verification email to the new operator
-                send_verification_email(
-                    mail, email, token, name, operator.company.company_name)
+                notifcation_service.send_operator_verification(operator, token, operator.company.company_name)
             except Exception as e:
                 print(e)
 
         operator.operator_email = email
         operator.operator_name = name
+        operator.contact_method = contact_method
+        operator.operator_phone = operator_phone
+        operator.operator_phone_country_code = country_code
 
+        
         session.commit()
 
         return make_response(operator.to_dict(), 200)

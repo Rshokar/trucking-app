@@ -50,11 +50,11 @@ def send_validation_email(operator_id):
 @firebase_required
 def update_operator(operator_id):
     session = g.session
-    print(request.json)
     try:
         jsonschema.validate(request.json, operator_update)
-        return OperatorController.update_operator(session, request=request, operator_id=operator_id)
-    except jsonschema.ValidationError:
+        return OperatorController.update_operator(session, request=request, op_id=operator_id)
+    except jsonschema.ValidationError as e:
+        print(e)
         return make_response({"error": "Invalid Request Data"}, 400)
 
 
