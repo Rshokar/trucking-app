@@ -49,7 +49,7 @@ const OperatorCard: React.FC<OperatorCardProps> = (props) => {
                     onPress={() => resendVerificationEmail()}
                     disabled={sending}
                     style={{ backgroundColor: sending ? theme.colors.onSurfaceDisabled : theme.colors.primary, width: '100%' }}>
-                    {sending ? "Sendig...." : "Send validation email"}
+                    {sending ? "Sendig...." : `Send validation message`}
                 </Button>
             </Card.Content>
         </Card>

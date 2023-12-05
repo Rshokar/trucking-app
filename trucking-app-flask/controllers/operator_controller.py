@@ -147,11 +147,10 @@ class OperatorController:
 
             # Generate unique token for the operator
         token = s.dumps({"operator_id": operator.operator_id}, salt=SALT)
-
+        service_factory = NotificationServiceFactory()
+        notifcation_service = service_factory.get_notification_service(operator.contact_method.value) 
         try:
-            # Send verification email to the new operator
-            send_verification_email(
-                mail, operator.operator_email, token, operator.operator_name, operator.company.company_name)
+            notifcation_service.send_operator_verification(operator, token, operator.company.company_name)
         except Exception as e:
             return make_response("Error sending email", 500)
 
