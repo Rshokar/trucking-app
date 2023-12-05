@@ -59,7 +59,7 @@ const RFOCard: React.FC<RFOCardProps> = (props) => {
                     onPress={() => resendRFOEmail()}
                     disabled={sending}
                     style={{ backgroundColor: sending ? theme.colors.onSurfaceDisabled : theme.colors.primary, width: '100%' }}>
-                    {sending ? "Sendig...." : "Re-Send RFO email"}
+                    {sending ? "Sendig...." : "Re-Send RFO notification"}
                 </Button>
             }
         </Card.Content>

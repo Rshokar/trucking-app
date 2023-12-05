@@ -1,6 +1,7 @@
 from flask import current_app as app, g
 from controllers import StripeController
 from models import RFO, Dispatch, Operator, Company, Customer, Usage, BillingTickets, UsageArchive
+from services.notification_service import NotificationServiceFactory
 from sqlalchemy import and_
 from sqlalchemy.exc import IntegrityError
 from utils import make_response, send_operator_rfo, send_operator_rfo_update
@@ -105,7 +106,7 @@ class RfoController:
             return make_response('Operator not found', 404)
 
         if oper.confirmed == False:
-            return make_response("Operator email not verified", 400)
+            return make_response("Operator contact method not verified", 400)
 
         rfo = RFO(
             dispatch_id=disp_id,
@@ -122,8 +123,6 @@ class RfoController:
         usage = session.query(Usage).filter_by(user_id=g.user["uid"]).first()
         
         
-        
-        print(f"DATA: {data}")
         # is the usage is found we will increment it if amount is breaking a tier and 
         # confired is true or data is not breaking a tier
         
@@ -149,10 +148,12 @@ class RfoController:
         # This will give you a secure token with the operator_id and rfo_id
 
         token = s.dumps(token_data)
-
+        
+        
+        service_factory = NotificationServiceFactory()
+        notification_service = service_factory.get_notification_service(oper.contact_method.value)
         try:
-            send_operator_rfo(Mail(app), oper.operator_email,
-                              rfo, oper, comp, disp.customer, disp, token)
+            notification_service.send_operator_rfo(rfo, oper, disp, comp, token)
         except Exception as e:
             print(e)
 
