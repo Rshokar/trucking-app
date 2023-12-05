@@ -30,12 +30,19 @@ const OperatorCard: React.FC<OperatorCardProps> = (props) => {
             <Card.Title title={<Text style={{ fontWeight: 'bold' }} variant='titleLarge'>
                 {props.operator_name}
             </Text>}
-                subtitle={props.operator_email}
+                subtitle={props.contact_method == 'sms' ? props.operator_phone : props.operator_email}
                 left={LeftContent}
             />
             <Card.Content style={{ gap: 20 }}>
                 <Line>
-                    <Text variant='bodyLarge'>The operator need to validate their email. Click the button bellow and an email will be sent containing a validation url</Text>
+                    <Text variant='bodyLarge'>
+                        {props.contact_method == 'sms' ?
+                            'The operator needs to validate their phone number. Click the button bellow and an text message will be sent containing a validation url'
+                            :
+                            'The operator needs to validate their email. Click the button bellow and an email will be sent containing a validation url'
+                        }
+
+                    </Text>
                 </Line>
                 <Button
                     mode="contained"

@@ -1,6 +1,5 @@
 import { DateData } from 'react-native-calendars'
 import { Model, Query } from './Model'
-import { Dispatch } from './Dispatch';
 
 export class Operator implements Model {
 
@@ -12,6 +11,15 @@ export class Operator implements Model {
     operator_phone?: string;
     contact_method?: string;
     confirmed?: boolean;
+
+
+    getContactInfo() {
+        console.log(this.contact_method)
+        if (this.contact_method == 'sms')
+            return this.operator_phone
+
+        return this.operator_email
+    }
 
     getId?(): number {
         return this.operator_id ?? 0;
