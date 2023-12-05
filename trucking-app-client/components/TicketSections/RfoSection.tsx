@@ -192,7 +192,7 @@ const RFOSection: FC<Props> = ({ navigateToTicket, dispId, operId, operators }) 
             const rC = new RFOController();
             await rC.sendRFOEmail(focusedRFO?.rfo_id + '');
             showSnackbar({
-                message: 'Email sent',
+                message: 'Notification sent',
                 color: theme.colors.primary,
                 onClickText: 'Ok',
             })

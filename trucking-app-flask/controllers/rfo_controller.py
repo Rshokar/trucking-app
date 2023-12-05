@@ -186,11 +186,7 @@ class RfoController:
         if comp is None:
             return make_response('Company not found', 404)
 
-        disp = session.query(Dispatch).filter_by(
-            dispatch_id=rfo.dispatch_id, company_id=comp.company_id).first()
-
-        if disp is None:
-            return make_response('Dispatch not found', 404)
+        disp = rfo.dispatch
 
         newOp = False
         if operator_id != rfo.operator_id:
@@ -221,17 +217,16 @@ class RfoController:
         # This will give you a secure token with the operator_id and rfo_id
 
         token = s.dumps(token_data)
+        service_factory = NotificationServiceFactory()
+    
+        if newOp:
+            notification_service = service_factory.get_notification_service(oper.contact_method.value)
+            notification_service.send_operator_rfo(rfo, oper, disp, comp, token)
+        else:
+            notification_service = service_factory.get_notification_service(rfo.operator.contact_method.value)
+            notification_service.send_operator_rfo_update(rfo, rfo.operator, disp, comp, token)
 
-        try:
-            if newOp:
-                send_operator_rfo(Mail(app), rfo.operator.operator_email,
-                                  rfo, rfo.operator, comp, disp.customer, disp, token)
-            else:
-                send_operator_rfo_update(Mail(
-                    app), rfo.operator.operator_email, rfo, rfo.operator, comp, disp.customer, disp, token)
-
-        except Exception as e:
-            print(e)
+  
 
         res = rfo.to_dict()
         # Conversion is done here instead.
@@ -342,20 +337,11 @@ class RfoController:
         if operator is None:
             return make_response('Operator not found', 404)
 
-        company = session.query(Company).filter_by(
-            company_id=operator.company_id, owner_id=g.user["uid"]).first()
-        if company is None:
-            return make_response('Company not found', 404)
-
         dispatch = session.query(Dispatch).filter_by(
             dispatch_id=rfo.dispatch_id).first()
         if dispatch is None:
             return make_response('Dispatch not found', 404)
 
-        customer = session.query(Customer).filter_by(
-            customer_id=dispatch.customer_id).first()
-        if customer is None:
-            return make_response('Customer not found', 404)
         s = URLSafeTimedSerializer(SEND_OPERATOR_RFO_TOKEN_SECRET)
         token_data = {"operator_id": operator.operator_id,
                       "rfo_id": rfo.rfo_id}
@@ -363,9 +349,11 @@ class RfoController:
 
         token = s.dumps(token_data)
 
+
+        service_factory = NotificationServiceFactory()
+        notification_service = service_factory.get_notification_service(operator.contact_method.value)
         try:
-            send_operator_rfo(Mail(app), operator.operator_email,
-                              rfo, operator, company, customer, dispatch, token)
+            notification_service.send_operator_rfo(rfo, operator, dispatch, operator.company, token)
         except Exception as e:
             return make_response('Failed to send email. ' + str(e), 500)
 

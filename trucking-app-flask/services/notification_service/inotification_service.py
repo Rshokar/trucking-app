@@ -8,6 +8,9 @@ class INotificationService:
         raise NotImplementedError("This method should be overridden in subclasses.")
     
     
-    def send_operator_rfo(rfo, operator, dispatch, company, token):
+    def send_operator_rfo(self, rfo, operator, dispatch, company, token):
+        raise NotImplementedError("This method should be overridden in subclasses.")
+    
+    def send_operator_rfo_update(self, rfo, operator, dispatch, company, token):
         raise NotImplementedError("This method should be overridden in subclasses.")
         
