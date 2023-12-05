@@ -202,11 +202,11 @@ class OperatorController:
         operator_phone = req.get("operator_phone")
         country_code = req.get("operator_phone_country_code")
         
-        # Validate Contact method exist
+        # Validate Contact method and then to see if appropriate attributes exist
         if contact_method == ContactMethods.email.value and (email is None or email == ''):
             return make_response("If contact method is email, email must exist", 400)
         
-        # Validate Contact method exist
+        # Validate Contact method and then to see if appropriate attributes exist
         if contact_method == ContactMethods.sms.value and ((operator_phone is None or operator_phone == '') or (country_code is None or country_code == '')): 
             return make_response("If contact method is sms, phone and country code must exist", 400)
 
@@ -239,8 +239,17 @@ class OperatorController:
             if operator_email is not None:
                 return make_response('Operator email already used', 400)
 
-        # If email, phone or phone country code is changed a notification to verify contact method is done
-        if (contact_method == ContactMethods.email.value and operator.operator_email != email) or (contact_method == ContactMethods.sms.value and (operator.operator_phone != operator_phone) or (operator.operator_phone_country_code != country_code)):
+
+        email_changed = contact_method == ContactMethods.email.value and operator.operator_email != email
+        phone_changed = contact_method == ContactMethods.sms.value and (operator.operator_phone != operator_phone) or (operator.operator_phone_country_code != country_code)
+        contact_method_changed = operator.contact_method.value != contact_method
+        
+        # print("##########")
+        # print(email_changed)
+        # print(phone_changed)
+        # print(contact_method_changed)
+        # print("##########")
+        if email_changed or phone_changed or contact_method_changed:
             operator.operator_email = email
             operator.operator_name = name
             operator.contact_method = contact_method
@@ -252,7 +261,7 @@ class OperatorController:
             service_factory = NotificationServiceFactory()
             notifcation_service = service_factory.get_notification_service(contact_method) 
             try:
-                notifcation_service.send_operator_verification(operator, token, operator.company.company_name)
+                notifcation_service.send_operator_verification_update_contact_method(operator, token, operator.company.company_name)
             except Exception as e:
                 print(e)
 
