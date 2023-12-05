@@ -196,7 +196,6 @@ class OperatorController:
             Responses: 200 OK if successful, 404 if operator not found
         """
         req = request.get_json()
-        company_id = req.get('company_id')
         name = req.get('operator_name')
         email = req.get('operator_email').lower() if req.get('operator_email') else None
         contact_method = req.get('contact_method')
@@ -242,7 +241,6 @@ class OperatorController:
 
         # If email, phone or phone country code is changed a notification to verify contact method is done
         if (contact_method == ContactMethods.email.value and operator.operator_email != email) or (contact_method == ContactMethods.sms.value and (operator.operator_phone != operator_phone) or (operator.operator_phone_country_code != country_code)):
-            print("RE VERFIY")
             operator.operator_email = email
             operator.operator_name = name
             operator.contact_method = contact_method
@@ -263,7 +261,6 @@ class OperatorController:
         operator.contact_method = contact_method
         operator.operator_phone = operator_phone
         operator.operator_phone_country_code = country_code
-
         
         session.commit()
 

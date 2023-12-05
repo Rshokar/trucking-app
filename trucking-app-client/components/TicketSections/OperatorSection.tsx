@@ -185,7 +185,7 @@ const OperatorSection: FC<Props> = ({ navigate }) => {
                                 title={item.operator_name || ''}
                                 subtitle={<Text style={{ color: item.confirmed ? '' : theme.colors.error }}>
                                     {
-                                        item.confirmed ? item.operator_email : "Email not validated"
+                                        item.contact_method == 'email' ? item.operator_email : item.operator_phone
                                     }
                                 </Text>}
                                 avatar={item.operator_name?.charAt(0).toLocaleUpperCase() || 'A'}
