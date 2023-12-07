@@ -58,9 +58,7 @@ const TicketSection: FunctionComponent<TicketSectionProps> = (props) => {
                     {props.title ?? "Dispatches"}
                 </RegularText>
                 <SmallText textStyle={{ color: colors.secondary }}>
-                    <Ionicons name="refresh-outline" size={20} color={colors.graydark} onPress={handleRefresh} style={{
-                        borderRadius: 5
-                    }} />
+                    <Ionicons name="refresh-outline" size={20} color={colors.graydark} onPress={handleRefresh} />
                 </SmallText>
             </TicketRow>
             {props.loading && <LoadingIndicator size="large" color={colors.tertiary} />}
