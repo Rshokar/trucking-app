@@ -30,9 +30,7 @@ const Features = ({ id }: BaseProps) => {
         variant="h3"
         style={{
           backgroundColor: "#FFFFFF",
-          textAlign: "center",
           paddingBottom: "40px",
-          fontWeight: "bold",
         }}
       >
         FEATURES

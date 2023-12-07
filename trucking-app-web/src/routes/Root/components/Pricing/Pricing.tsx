@@ -29,15 +29,15 @@ const Pricing = ({ id }: BaseProps) => {
   return (
     <PricingContainer id={id}>
       <Message>
-        <Typography variant="h3" fontWeight="bold">
+        <Typography variant="h3">
           Tiered Pricing
         </Typography>
-        <Typography textAlign="center" maxWidth="400px" variant="h6">
+        <Typography maxWidth="400px" variant="h6" fontWeight={"none"}>
           With tiered pricing, get charged for how much you use. Because one
           consistency is the inconsistency of logistics
         </Typography>
 
-        <Typography textAlign="center" maxWidth="90%" variant="subtitle1">
+        <Typography maxWidth="90%" variant="subtitle1" fontWeight={'none'}>
           An <strong>RFO</strong> stands for Request For Operator. This is a digital ticket you create that stores all your billing information
         </Typography>
       </Message>
