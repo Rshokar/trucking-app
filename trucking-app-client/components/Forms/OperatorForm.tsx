@@ -5,7 +5,7 @@ import { TextInput, Button, Text, useTheme } from 'react-native-paper';
 import { Picker } from '@react-native-picker/picker'; // import Picker
 import { OperatorFormResult, FormProps } from './types';
 import { Operator } from '../../models/Operator';
-import { ErrorText, FormContainer, InputBox } from './styles';
+import { ErrorText, FormContainer, InputBox, DualInput } from './styles';
 import { err } from 'react-native-svg/lib/typescript/xml';
 
 // Define validation schema with Yup
@@ -41,7 +41,7 @@ const OperatorForm: FC<FormProps<OperatorFormResult>> = (props) => {
                 <FormContainer>
                     <InputBox>
                         <TextInput
-                            label="Operator Name"
+                            label="Name"
                             onChangeText={handleChange('operator_name')}
                             onBlur={handleBlur('operator_name')}
                             value={values.operator_name}
@@ -52,7 +52,7 @@ const OperatorForm: FC<FormProps<OperatorFormResult>> = (props) => {
 
                     <InputBox>
                         <TextInput
-                            label="Operator Email"
+                            label="Email"
                             onChangeText={handleChange('operator_email')}
                             onBlur={handleBlur('operator_email')}
                             value={values.operator_email}
@@ -62,26 +62,27 @@ const OperatorForm: FC<FormProps<OperatorFormResult>> = (props) => {
                     </InputBox>
 
                     {/* Phone number input */}
-                    <InputBox>
-                        <TextInput
-                            label="Operator Phone"
-                            onChangeText={handleChange('operator_phone')}
-                            onBlur={handleBlur('operator_phone')}
-                            value={values.operator_phone}
-                            error={!!errors.operator_phone}
-                        />
-                        {errors.operator_phone && <ErrorText>{errors.operator_phone}</ErrorText>}
-                    </InputBox>
-                    <InputBox>
-                        <TextInput
-                            label="Country Code"
-                            onChangeText={handleChange('operator_phone_country_code')}
-                            onBlur={handleBlur('operator_phone_country_code')}
-                            value={values.operator_phone_country_code}
-                            error={!!errors.operator_phone_country_code}
-                        />
-                        {errors.operator_phone_country_code && <ErrorText>{errors.operator_phone_country_code}</ErrorText>}
-                    </InputBox>
+                    <DualInput>
+                        <InputBox style={{ flex: 1 }}>
+                            <TextInput
+                                onChangeText={handleChange('operator_phone_country_code')}
+                                onBlur={handleBlur('operator_phone_country_code')}
+                                value={values.operator_phone_country_code}
+                                error={!!errors.operator_phone_country_code}
+                            />
+                            {errors.operator_phone_country_code && <ErrorText>{errors.operator_phone_country_code}</ErrorText>}
+                        </InputBox>
+                        <InputBox style={{ flex: 3 }}>
+                            <TextInput
+                                label="Phone"
+                                onChangeText={handleChange('operator_phone')}
+                                onBlur={handleBlur('operator_phone')}
+                                value={values.operator_phone}
+                                error={!!errors.operator_phone}
+                            />
+                            {errors.operator_phone && <ErrorText>{errors.operator_phone}</ErrorText>}
+                        </InputBox>
+                    </DualInput>
 
                     {/* Contact method dropdown */}
                     <InputBox>

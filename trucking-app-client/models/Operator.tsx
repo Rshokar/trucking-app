@@ -7,7 +7,7 @@ export class Operator implements Model {
     company_id?: number;
     operator_name?: string;
     operator_email?: string;
-    operator_phone_country_code?: string;
+    operator_phone_country_code?: string = '+1';
     operator_phone?: string;
     contact_method?: string;
     confirmed?: boolean;
