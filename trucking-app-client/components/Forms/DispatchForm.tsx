@@ -80,9 +80,6 @@ const DispatchForm: FC<Props> = ({ onSubmit, defaultValues, customers }) => {
             }}
         >
             {({ handleChange, handleBlur, handleSubmit, values, errors, isSubmitting, setFieldValue }) => {
-
-                console.log(errors, values)
-
                 const handleAddCustomer = async (customer: Customer) => {
                     try {
                         const cC = new CustomerController();

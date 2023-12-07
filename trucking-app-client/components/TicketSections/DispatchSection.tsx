@@ -107,6 +107,7 @@ const DispatchSection: FunctionComponent<Props> = ({ navigateToTickets, customer
                 onClickText: 'Ok'
             })
             setShowFormModal(false)
+            navigateToTickets(res.dispatch_id + "");
             return true;
         } catch (err: any) {
             showSnackbar({
