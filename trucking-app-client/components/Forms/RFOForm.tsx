@@ -109,13 +109,13 @@ const RFOForm: FC<Props> = ({ onSubmit, defaultValues, operators, showConfirmUpg
                         <>
                             <InputBox>
                                 <DropDown
-                                    label={'Operator'}
+                                    label={'Select Operator'}
                                     mode={'outlined'}
                                     value={values.operator_id}
                                     setValue={(value) => {
                                         setFieldValue('operator_id', value)
                                     }}
-                                    list={operatorList}
+                                    list={operatorList.length > 0 ? operatorList : [{ label: 'No Operators Found', value: '-1' }]}
                                     visible={operatorDropdownVisible}
                                     showDropDown={() => setOperatorDropdownVisible(true)}
                                     onDismiss={() => setOperatorDropdownVisible(false)}

@@ -46,10 +46,10 @@ const CallToAction = ({ id }: BaseProps) => {
   return (
     <CallToActionContainer id={id}>
       <CallToActionMessage>
-        <Typography variant="h4" textAlign="center" fontWeight="bold">
+        <Typography variant="h4">
           Your time is precious, start getting it back
         </Typography>
-        <Typography variant="subtitle2" fontWeight="bold">
+        <Typography variant="subtitle2">
           DOWNLOAD
         </Typography>
       </CallToActionMessage>
@@ -57,7 +57,7 @@ const CallToAction = ({ id }: BaseProps) => {
         <CallToActionButton
           style={{ backgroundColor: theme.palette.primary.main }}
         >
-          <ButtonText variant="button" color="white" fontWeight="bold">
+          <ButtonText variant="button">
             APP STORE
           </ButtonText>
           <AppStoreSVG height="45px" width="45px" fill="white" />
@@ -65,7 +65,7 @@ const CallToAction = ({ id }: BaseProps) => {
         <CallToActionButton
           style={{ backgroundColor: theme.palette.secondary.main }}
         >
-          <ButtonText variant="button" color="white" fontWeight="bold">
+          <ButtonText variant="button">
             APP STORE
           </ButtonText>
           <PlayStoreSVG height="45px" width="45px" fill="white" />

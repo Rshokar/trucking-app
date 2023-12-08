@@ -23,6 +23,8 @@ const TicketRow = styled.View`
     justify-content: space-between; 
     align-items: center;
     width: 100%;
+    margin-bottom: 15;
+    margin-top: 15;
 `
 
 const TicketList = styled.FlatList`
@@ -51,13 +53,12 @@ const TicketSection: FunctionComponent<TicketSectionProps> = (props) => {
 
     return (
         <TicketSectionBackground style={props.style}>
-            <TicketRow style={{ marginBottom: 10 }}>
+            <TicketRow>
                 <RegularText textStyle={{ fontSize: 19, color: colors.secondary }}>
                     {props.title ?? "Dispatches"}
                 </RegularText>
                 <SmallText textStyle={{ color: colors.secondary }}>
-                    Recent
-                    <Ionicons name="caret-down" size={13} color={colors.graydark} />
+                    <Ionicons name="refresh-outline" size={20} color={colors.graydark} onPress={handleRefresh} />
                 </SmallText>
             </TicketRow>
             {props.loading && <LoadingIndicator size="large" color={colors.tertiary} />}

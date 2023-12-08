@@ -136,10 +136,10 @@ const Feature = (props: Props) => {
                 {
                     props.breakDown.map((dP: BreakDown, index: number) => (
                         <FeatureBreakDownLine data-breakdown-item key={index}>
-                            <Typography color={'white'} variant='subtitle1' fontWeight={'bold'}>
+                            <Typography color={'white'} variant='subtitle1'>
                                 {dP.title}
                             </Typography>
-                            <Typography color={'white'} variant='body2'>
+                            <Typography variant='body2'>
                                 {dP.blurb}
                             </Typography>
                         </FeatureBreakDownLine>

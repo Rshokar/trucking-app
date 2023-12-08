@@ -19,6 +19,42 @@ const theme = createTheme({
     background: { default: "#FFFFFF" },
     text: { primary: "#000000" },
   },
+  typography: {
+    h1: {
+      fontWeight: 'bold',
+      textAlign: 'center',
+    },
+    h2: {
+      fontWeight: 'bold',
+      textAlign: 'center',
+    },
+    h3: {
+      fontWeight: 'bold',
+      textAlign: 'center',
+    },
+    h4: {
+      fontWeight: 'bold',
+      textAlign: 'center',
+    },
+    h6: {
+      padding: '10px',
+      textAlign: 'center',
+    },
+    subtitle1: {
+      fontWeight: 'bold',
+      textAlign: 'center',
+    },
+    subtitle2: {
+      fontWeight: 'bold'
+    },
+    body2: {
+      color: 'white'
+    },
+    button: {
+      color: 'white',
+      fontWeight: 'bold',
+    }
+  }
 });
 
 export const colors = {

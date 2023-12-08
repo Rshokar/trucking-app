@@ -47,10 +47,10 @@ const Step = (props: Props) => (
     >
         <ContentContainer>
             <div>
-                <Typography variant='h4' style={{ fontWeight: 'bold', color: 'white' }}>
+                <Typography variant='h4' style={{ color: 'white' }}>
                     {props.step.title}
                 </Typography>
-                <Typography variant='h6' style={{ fontWeight: 'bold', color: 'white', textAlign: 'center' }}>
+                <Typography variant='h6' style={{ color: 'white' }}>
                     {props.step.stepName}
                 </Typography>
             </div>
@@ -63,7 +63,7 @@ const Step = (props: Props) => (
                 flexDirection: 'column'
             }}>
                 {props.step.callToActionButtons}
-                <Typography variant='subtitle1' fontWeight='bold' textAlign='center' color='white' maxWidth='75%'>
+                <Typography variant='subtitle1' color='white' maxWidth='75%'>
                     {props.step.callToAction}
                 </Typography>
                 <Break style={{ height: '3px', backgroundColor: props.breakColor }} />

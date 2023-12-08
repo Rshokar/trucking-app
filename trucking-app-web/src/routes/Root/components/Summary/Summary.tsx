@@ -48,12 +48,10 @@ const Summary = ({ id }: Props) => {
         <SummaryContainer id={`${id}`}>
             <Typography
                 variant={"h2"}
-                fontWeight={"bold"}
-                textAlign="center"
             >
                 How it works
             </Typography>
-            <Typography textAlign="center" maxWidth="400px" variant="h6">
+            <Typography variant="h6">
                 Drops the books and pickup the future
             </Typography>
             <Break style={{ marginBottom: '20px' }} />

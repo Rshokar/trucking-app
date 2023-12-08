@@ -69,6 +69,14 @@ const DispatchForm: FC<Props> = ({ onSubmit, defaultValues, customers }) => {
     });
 
 
+    console.log(customers.length > 0 ? customers.map(c => {
+        return {
+            label: c.customer_name + "",
+            value: c.customer_id
+        }
+    }) : [{ label: "No customers found", value: '-1' }])
+
+
     return (
         <Formik
             initialValues={dv ?? new Dispatch()}
@@ -81,7 +89,7 @@ const DispatchForm: FC<Props> = ({ onSubmit, defaultValues, customers }) => {
         >
             {({ handleChange, handleBlur, handleSubmit, values, errors, isSubmitting, setFieldValue }) => {
 
-                console.log(errors, values)
+                console.log(values)
 
                 const handleAddCustomer = async (customer: Customer) => {
                     try {
@@ -116,22 +124,23 @@ const DispatchForm: FC<Props> = ({ onSubmit, defaultValues, customers }) => {
                         }}>
                             <View style={{ flex: 1 }}>
                                 <DropDown
-                                    label='Customer'
+                                    label='Select Customer'
                                     visible={visible}
                                     onDismiss={closeMenu}
                                     showDropDown={openMenu}
                                     value={customers.find(c => {
                                         return c.customer_id == values.customer_id
                                     })?.customer_id}
+
                                     setValue={function (_value: any): void {
-                                        setFieldValue("customer_id", _value, false);
+                                        setFieldValue("customer_id", _value);
                                     }}
-                                    list={customers.map(c => {
+                                    list={customers.length > 0 ? customers.map(c => {
                                         return {
                                             label: c.customer_name + "",
                                             value: c.customer_id
                                         }
-                                    })} />
+                                    }) : [{ label: "No customers found", value: '-1' }]} />
                             </View>
                             <IconButton
                                 icon={'plus'}
