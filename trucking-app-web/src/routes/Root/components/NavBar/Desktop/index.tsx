@@ -1,6 +1,4 @@
-import React from 'react'
 import { DesktopNavBarSection, DesktopNavBarSectionContents } from './styles'
-import WhiteLogoSVG from '../../../../../components/SVGS/WhiteLogoSVG'
 import WhiteLogo from '../../../../../assets/tare-ticketing-icon.png'
 import { Typography } from '@mui/material';
 import { NavBarProps } from '..';

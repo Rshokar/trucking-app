@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { Container, Section, SectionContents } from "../../../../components/shared";
 import { device } from "../../../../components/devices";
-import { Typography, useTheme } from "@mui/material";
+import { Typography } from "@mui/material";
 import DownloadApp from "../../../../components/DownloadApp/DownloadApp";
 import LogoSVG from "../../../../components/SVGS/LogoSVG";
 import RedTruckSVG from "../../../../components/SVGS/trucks/RedTruckSVG";

@@ -32,6 +32,8 @@ const theme = createTheme({
     h3: {
       fontWeight: 'bold',
       textAlign: 'center',
+      fontSize: '35px',
+      color: 'white'
     },
     h4: {
       fontSize: '20px',
@@ -49,7 +51,8 @@ const theme = createTheme({
       color: 'white'
     },
     subtitle2: {
-      fontWeight: 'bold'
+      fontWeight: 'bold',
+      textAlign: 'center'
     },
     body2: {
       color: 'white'

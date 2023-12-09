@@ -8,26 +8,14 @@ import Break from '../../../../../components/Break/Break'
 import { device } from '../../../../../components/devices'
 
 const StepContainer = styled(Container)`
-    height: 90vh;
-    width: 100%; 
-
-    @media(${device.tablet}) {
-        height: 70vh;
-    }
-`
-
-const ContentContainer = styled(Container)`
-    height: 90vh; 
-    max-width: 500px;
+    width: 300px;
+    padding: 20px;
+    box-sizing: border-box;
     flex-direction: column;
     justify-content: space-evenly;
     gap: 20px;
-
-    
-    @media(${device.tablet}) {
-        height: 50vh;
-        }
 `
+
 type Props = {
     color: string;
     breakColor: string
@@ -45,30 +33,35 @@ const Step = (props: Props) => (
     <StepContainer
         style={{ backgroundColor: props.color, ...props.style }}
     >
-        <ContentContainer>
-            <div>
-                <Typography variant='h4' style={{ color: 'white' }}>
-                    {props.step.title}
-                </Typography>
-                <Typography variant='h6' style={{ color: 'white' }}>
-                    {props.step.stepName}
-                </Typography>
-            </div>
-            {props.step.SVG}
-            <div style={{
+        <div
+            style={{
                 display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                gap: '10px',
-                flexDirection: 'column'
-            }}>
-                {props.step.callToActionButtons}
-                <Typography variant='subtitle1' color='white' maxWidth='75%'>
-                    {props.step.callToAction}
-                </Typography>
-                <Break style={{ height: '3px', backgroundColor: props.breakColor }} />
-            </div>
-        </ContentContainer>
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+                minHeight: '25%',
+            }}
+        >
+            <Typography variant='h3' style={{ textAlign: 'center' }}>
+                {props.step.title}
+            </Typography>
+            <Typography variant='subtitle1' style={{ textAlign: 'center' }}>
+                {props.step.stepName}
+            </Typography>
+        </div>
+        {props.step.SVG}
+        <div style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            gap: '10px',
+            flexDirection: 'column'
+        }}>
+            {props.step.callToActionButtons}
+            <Typography variant='subtitle2' color='white' maxWidth='75%'>
+                {props.step.callToAction}
+            </Typography>
+            <Break style={{ height: '3px', backgroundColor: props.breakColor }} />
+        </div>
     </StepContainer>
 )
 

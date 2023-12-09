@@ -1,7 +1,7 @@
 import Hero from "./components/Hero/Hero";
 import Features from "./components/Features/Features";
 import Pricing from "./components/Pricing/Pricing";
-import Steps from "./components/Steps/Steps";
+import HowItWorks from "./components/Steps/HowItWorks";
 import CallToAction from "./components/CallToAction";
 import Contact from "./components/Contact";
 import Summary from "./components/Summary/Summary";
@@ -18,8 +18,7 @@ const RootPage = () => (
   <>
     <Header />
     <Hero />
-    <Summary id={`${SUMMARY_ID}`} />
-    <Steps id={`${GET_STARTED_ID}`} />
+    <HowItWorks id={`${GET_STARTED_ID}`} />
     <Features id={`${FEATURES_ID}`} />
     <Pricing id={`${PRICING_ID}`} />
     <CallToAction id={`${DOWNLOAD_ID}`} />
