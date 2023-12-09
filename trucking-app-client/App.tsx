@@ -30,7 +30,6 @@ const theme = {
     },
     bodyLarge: {
       fontSize: 20,
-      lineHeight: 38,
       letterSpacing: 1.1
     },
     bodySmall: {

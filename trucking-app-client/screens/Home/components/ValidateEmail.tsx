@@ -63,22 +63,22 @@ const ValidateEmail = (props: Props) => {
                 <View style={{ display: 'flex', flexDirection: 'column', gap: 20, alignItems: 'center' }}>
                     <EngineSVG />
                     <View>
-                        <Text variant='titleMedium' style={{ textAlign: 'center' }}>Validate Email</Text>
-                        <Text variant='bodyLarge' style={{ textAlign: 'center' }}>We’ve sent a verification link to your email. Click on the link to proceed</Text>
+                        <Text variant='titleMedium' style={{ textAlign: 'center', marginBottom: 20 }}>Validate Email</Text>
+                        <Text variant='bodySmall' style={{ textAlign: 'center' }}>We’ve sent a verification link to your email. Click on the link to proceed</Text>
                     </View>
                 </View>
                 <View style={{ display: 'flex', flexDirection: 'column', gap: 20, alignItems: 'center' }}>
-                    <Button mode='contained' style={{ minWidth: '80%' }} onPress={checkAgain}>
-                        <Text variant='labelLarge' style={{ color: theme.colors.white }}>
+                    <Button mode='contained' onPress={checkAgain} style={{ minWidth: '100%' }}>
+                        <Text variant='labelSmall' style={{ color: theme.colors.white }}>
                             Check Again
                         </Text>
                     </Button>
                     <Button
-                        mode='contained'
-                        style={{ minWidth: 200, backgroundColor: theme.colors.secondary }}
+                        mode='outlined'
+                        style={{ minWidth: '100%' }}
                         onPress={sendValidationEmail}
                     >
-                        <Text variant='labelSmall' style={{ color: theme.colors.white }}>
+                        <Text variant='labelSmall'>
                             Resend Email
                         </Text>
                     </Button>
