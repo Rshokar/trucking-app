@@ -84,7 +84,7 @@ const RTruckSVG = styled(RedTruckSVG)`
 const GTruckSVG = styled(GreenTruckSVG)`
   position: absolute;
   left: -5%; 
-  top: 5%;
+  top: 10%;
 
 `
 

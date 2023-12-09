@@ -1,44 +1,25 @@
 import styled from "styled-components";
 
-export const NavbarContainer = styled.nav<{ extendNavbar: boolean, color: string }>`
-    position: fixed;
-    bottom: 10%;
-    right: 10%;
+export const NavbarContainer = styled.nav<{ extendNavbar: boolean }>`
+  position: fixed;
+  top: 0; 
+  left: 0; 
+  width: 100%;
+  padding: 40px 10% 40px 10%;
+  box-sizing: border-box;
+  display: flex; 
+  justify-content: flex-start;
 
-    @media (max-width: 700px) {
-        bottom: 5%;
-        right: 5%;
-    }
 
+
+  > div:first-child {
     display: flex;
-    flex-direction: column-reverse;
-    align-items: end;
-    gap: 30px;
-    overflow: hidden;
-    z-index: 1000;
-    padding: 10px;
-`;
-
-export const NavBarLogoContainer = styled.div<{ color: string; hoverColor: string }>`
-    background-color: ${props => props.color};
-    border: 1px solid black;
-    flex-basis: 70px;  // initial size
-    flex-grow: 0;      // prevent growing
-    flex-shrink: 0;    // prevent shrinking
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
+    gap: 20px; 
+    justify-content: center; 
     align-items: center;
-    aspect-ratio: 1;
-
-    cursor: pointer;
-    z-index: 2;
-    &:hover {
-        background-color: ${props => props.hoverColor}
-    }
-
-    transition: background-color 0.2s ease-in-out;
+  }
 `;
+
 
 
 export const MenuItemsDrawer = styled.div<{ show: boolean, color: string }>`

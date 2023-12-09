@@ -12,7 +12,7 @@ import Header, {
   PRICING_ID,
   CONTACT_ID,
   SUMMARY_ID
-} from "./components/NavBar/Navbar";
+} from "./components/NavBar";
 
 const RootPage = () => (
   <>

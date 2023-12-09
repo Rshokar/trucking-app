@@ -46,6 +46,7 @@ const theme = createTheme({
     subtitle1: {
       fontWeight: 'bold',
       textAlign: 'center',
+      color: 'white'
     },
     subtitle2: {
       fontWeight: 'bold'
