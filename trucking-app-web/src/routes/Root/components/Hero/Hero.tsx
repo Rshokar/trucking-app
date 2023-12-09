@@ -1,81 +1,111 @@
 import styled from "styled-components";
-import { Container } from "../../../../components/shared";
+import { Container, Section, SectionContents } from "../../../../components/shared";
 import { device } from "../../../../components/devices";
 import { Typography, useTheme } from "@mui/material";
-import Break from "../../../../components/Break/Break";
-import DumpTruckSvg from "../../../../components/SVGS/DumpTruckSvg";
 import DownloadApp from "../../../../components/DownloadApp/DownloadApp";
+import LogoSVG from "../../../../components/SVGS/LogoSVG";
+import RedTruckSVG from "../../../../components/SVGS/trucks/RedTruckSVG";
+import GreenTruckSVG from "../../../../components/SVGS/trucks/GreenTruckSVG";
 import { useMediaQuery } from "react-responsive";
-const HeroContainer = styled(Container)`
-  background-color: white;
-  height: 90vh;
+
+const HeroSection = styled(Section)`
+  position: relative;
+  height: 100vh;
   width: 100%;
-
   @media (${device.tablet}) {
-    height: 80vh;
+    height: 90vh;
+    > svg {
+      scale: 0.5;
+    }
   }
 
   @media (${device.laptop}) {
-    height: 70vh;
-  }
-`;
-
-const ContentWrapper = styled(Container)`
-  flex-direction: column;
-
-  @media (${device.laptop}) {
-    flex-direction: row;
     height: 90vh;
   }
+
+
+  
 `;
 
-const HeroSection = styled(Container)`
-  flex: 1;
+const HeroContents = styled(SectionContents)`
+  gap: 40px;
+  @media(${device.tablet}) {
+    flex-direction: column;
+    gap: 80px;
+  }
+`
+
+
+const LeftContainer = styled(Container)`
   flex-direction: column;
-  gap: 10px;
+  align-items: flex-start ;
+  gap: 40px;
+
+  
+  @media(${device.laptop}) {
+    h1 {
+      font-size: 2.75rem;
+    }
+  
+    h4 {
+      font-size: 1rem;
+    }
+  }
+
+  @media(${device.laptopS}) {
+    align-items: center; 
+
+    h1, h4 {
+      text-align: center;
+    }
+  }
 `;
+
+const RightContainer = styled(Container)`
+
+  @media(${device.laptop}) {
+    svg{
+      scale: .80;
+    }   
+  }
+
+  @media(${device.laptopS}) {
+    display:none;
+  }
+
+`
+
+const RTruckSVG = styled(RedTruckSVG)`
+  position: absolute;
+  bottom: 10%; 
+  right: 5%;
+`
+
+const GTruckSVG = styled(GreenTruckSVG)`
+  position: absolute;
+  left: -5%; 
+  top: 5%;
+
+`
 
 const Hero = () => {
-  const isDesktop = useMediaQuery({ query: device.laptopL });
 
+  const isLaptop = useMediaQuery({ query: device.laptop })
   return (
-    <HeroContainer>
-      <ContentWrapper>
-        <HeroSection>
-          <Typography
-            variant={isDesktop ? "h1" : "h2"}
-            style={{ fontWeight: "bold" }}
-            textAlign={"center"}
-          >
-            TARE TICKETING
-          </Typography>
-          <Break />
-          <Typography
-            variant={isDesktop ? "h6" : "subtitle1"}
-            textAlign="center"
-            padding={"10px"}
-            maxWidth={"450px"}
-          >
-            SIMPLE AND EASY TICKET AND DISPATCH MANAGEMENT FOR AGGREGATE
-            LOGISTICS DISPATCHERS
-          </Typography>
-        </HeroSection>
-        <HeroSection>
-          <HeroSection>
-            <DumpTruckSvg
-              height={isDesktop ? "30rem" : "350px"}
-              width={isDesktop ? "30rem" : "450px"}
-            />
-          </HeroSection>
-          <HeroSection>
-            <DownloadApp />
-            <Typography variant="caption" fontWeight="bold">
-              DOWNLOAD
-            </Typography>
-          </HeroSection>
-        </HeroSection>
-      </ContentWrapper>
-    </HeroContainer>
+    <HeroSection>
+      <HeroContents>
+        <LeftContainer>
+          <Typography variant="h1">Simplify Your Logistics</Typography>
+          <Typography variant="h4">SIMPLE AND EASY TICKET AND DISPATCH MANAGEMENT FOR AGGREGATE LOGISTICS DISPATCHERS</Typography>
+          <DownloadApp />
+        </LeftContainer>
+        <RightContainer>
+          <LogoSVG />
+        </RightContainer>
+      </HeroContents>
+      <RTruckSVG />
+      <GTruckSVG />
+    </HeroSection>
   );
 };
 export default Hero;

@@ -16,13 +16,14 @@ const theme = createTheme({
     primary: { main: "#2c365a" },
     secondary: { main: "#ef835d" },
     error: { main: "#C73E1D" },
-    background: { default: "#FFFFFF" },
+    background: { default: "#111629" },
     text: { primary: "#000000" },
   },
   typography: {
     h1: {
       fontWeight: 'bold',
-      textAlign: 'center',
+      fontSize: '50px',
+      color: 'white',
     },
     h2: {
       fontWeight: 'bold',
@@ -33,8 +34,10 @@ const theme = createTheme({
       textAlign: 'center',
     },
     h4: {
-      fontWeight: 'bold',
-      textAlign: 'center',
+      fontSize: '20px',
+      color: 'white',
+      lineHeight: 1.3,
+      letterSpacing: 12
     },
     h6: {
       padding: '10px',

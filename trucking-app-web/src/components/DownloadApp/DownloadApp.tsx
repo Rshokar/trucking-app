@@ -15,16 +15,16 @@ const DownloadApp = (props: Props) => {
     return (
         <ButtonGroup style={{ gap: '10px ' }}>
             <IconButton style={{
+                backgroundColor: 'white',
+                ...props.iosButtonStyle
+            }}>
+                <AppStoreSVG height={'40px'} width={'40px'} fill={theme.palette.primary.main} />
+            </IconButton>
+            <IconButton style={{
                 backgroundColor: theme.palette.secondary.main,
                 ...props.playStoreButtonStyle
             }}>
                 <PlayStoreSVG height={'40px'} width={'40px'} fill='white' />
-            </IconButton>
-            <IconButton style={{
-                backgroundColor: theme.palette.primary.main,
-                ...props.iosButtonStyle
-            }}>
-                <AppStoreSVG height={'40px'} width={'40px'} fill='white' />
             </IconButton>
         </ButtonGroup>
     )

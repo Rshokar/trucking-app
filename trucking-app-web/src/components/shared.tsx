@@ -5,3 +5,12 @@ export const Container = styled.div`
     align-items: center; 
     justify-content: center;
 `
+
+export const Section = styled(Container)`
+    box-sizing: border-box; 
+    padding: 40px 5% 40px 5%;
+`
+
+export const SectionContents = styled(Container)`
+    max-width: 1400px;
+`
