@@ -21,13 +21,35 @@ const theme = {
     success: "#01A971",
     red: 'red',
   },
+  fonts: {
+    ...DefaultTheme.fonts,
+    titleMedium: {
+      fontSize: 30,
+      fontWeight: 'bold',
+      fontFamily: 'Lato-Regular',
+    },
+    bodyLarge: {
+      fontSize: 20,
+      lineHeight: 38,
+      letterSpacing: 1.1
+    },
+    bodySmall: {
+      fontSize: 14,
+      letterSpacing: .8,
+    },
+    labelLarge: {
+      fontSize: 20,
+      fontWeight: 'bold'
+    },
+    labelSmall: {
+      fontSize: 15,
+      fontWeight: 'bold'
+    }
+  }
 }
 
 export default function App() {
-
-
   let [fontsLoaded] = useFonts({
-
     "Lato-Bold": require("./assets/fonts/Lato-Black.ttf"),
     "Lato-Regular": require("./assets/fonts/Lato-Regular.ttf"),
   })

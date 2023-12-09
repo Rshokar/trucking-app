@@ -44,7 +44,8 @@ const Hero = () => {
         <HeroSection>
           <Typography
             variant={isDesktop ? "h1" : "h2"}
-            textAlign={'center'}
+            style={{ fontWeight: "bold" }}
+            textAlign={"center"}
           >
             TARE TICKETING
           </Typography>
@@ -52,6 +53,7 @@ const Hero = () => {
           <Typography
             variant={isDesktop ? "h6" : "subtitle1"}
             textAlign="center"
+            padding={"10px"}
             maxWidth={"450px"}
           >
             SIMPLE AND EASY TICKET AND DISPATCH MANAGEMENT FOR AGGREGATE
