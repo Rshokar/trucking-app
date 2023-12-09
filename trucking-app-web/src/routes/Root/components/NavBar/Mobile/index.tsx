@@ -1,11 +1,13 @@
 import { useState, ReactNode, useEffect } from "react";
 import { useTheme } from "@mui/material";
-import { NavbarContainer, NavbarLink, MenuItemsDrawer, Logo } from './styles';
+import { MobileNavBarSection, MobileNavBarSectionContents, NavbarLink, MenuItemsDrawer, Logo } from './styles';
 import { Typography } from '@mui/material'
-import { CONTACT_ID, DOWNLOAD_ID, FEATURES_ID, GET_STARTED_ID, PRICING_ID, SUMMARY_ID } from "..";
-import LogoSVG from "../../../../../components/SVGS/LogoSVG";
+import WhiteLogo from '../../../../../assets/tare-ticketing-icon.png'
+import { NavBarProps } from "..";
+import { useMediaQuery } from "react-responsive";
+import { device } from "../../../../../components/devices";
 import SmallLogoSVG from "../../../../../components/SVGS/SmallLogoSVG";
-import WhiteLogoSVG from "../../../../../components/SVGS/WhiteLogoSVG";
+
 
 type Props = {
   id: string;
@@ -56,17 +58,17 @@ const MenuItem = ({ id, text }: Props) => {
 };
 
 
-const MobileNavBar = () => {
+const MobileNavBar = (props: NavBarProps) => {
+  const isTablet = useMediaQuery({ query: device.tablet })
   const [extendNavbar, setExtendNavbar] = useState<boolean>(false);
   const [showItems, setShowItems] = useState<boolean>(false);
-  const theme = useTheme()
   return (
-    <NavbarContainer extendNavbar={extendNavbar}>
-      <div>
-        <SmallLogoSVG onClick={() => setShowItems(!showItems)} />
+    <MobileNavBarSection>
+      <MobileNavBarSectionContents>
+        {isTablet ? <SmallLogoSVG /> : <img src={WhiteLogo} height={50} width={50} />}
         <Typography variant="subtitle1">Tare Ticketing</Typography>
-      </div>
-    </NavbarContainer>
+      </MobileNavBarSectionContents>
+    </MobileNavBarSection>
 
   );
 };

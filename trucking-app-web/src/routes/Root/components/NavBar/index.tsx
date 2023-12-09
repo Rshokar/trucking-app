@@ -1,5 +1,6 @@
 import React from 'react'
 import MobileNavBar from './Mobile'
+import DesktopNavbar from './Desktop'
 import { useMediaQuery } from 'react-responsive'
 import { device } from '../../../../components/devices'
 export const FEATURES_ID = "features";
@@ -9,12 +10,28 @@ export const DOWNLOAD_ID = "download";
 export const CONTACT_ID = "contact";
 export const SUMMARY_ID = 'summary';
 
+export interface MenuItem {
+    label: string;
+    url: string;
+}
+
+export interface NavBarProps {
+    menuItems: MenuItem[]
+}
+
 type Props = {}
 
-const NavBar = (props: Props) => {
-    const isTablet = useMediaQuery({ query: device.tablet });
+const NavBar = () => {
+
+    const MenuItems: MenuItem[] = [
+        { label: 'How It Works', url: GET_STARTED_ID },
+        { label: 'Get Started', url: GET_STARTED_ID },
+        { label: 'Features', url: FEATURES_ID },
+        { label: 'Contact', url: CONTACT_ID },
+    ]
+    const isTablet = useMediaQuery({ query: device.laptop });
     return <>
-        {isTablet ? <MobileNavBar /> : <div>NavBar</div>}
+        {isTablet ? <MobileNavBar menuItems={MenuItems} /> : <DesktopNavbar menuItems={MenuItems} />}
     </>
 }
 

@@ -13,18 +13,11 @@ const HeroSection = styled(Section)`
   height: 100vh;
   width: 100%;
   @media (${device.tablet}) {
-    height: 90vh;
     > svg {
       scale: 0.5;
     }
   }
 
-  @media (${device.laptop}) {
-    height: 90vh;
-  }
-
-
-  
 `;
 
 const HeroContents = styled(SectionContents)`

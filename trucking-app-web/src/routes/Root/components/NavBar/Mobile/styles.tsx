@@ -1,16 +1,15 @@
 import styled from "styled-components";
+import { Section, SectionContents } from "../../../../../components/shared";
 
-export const NavbarContainer = styled.nav<{ extendNavbar: boolean }>`
+
+export const MobileNavBarSection = styled(Section)`
   position: fixed;
   top: 0; 
   left: 0; 
   width: 100%;
-  padding: 40px 10% 40px 10%;
   box-sizing: border-box;
   display: flex; 
   justify-content: flex-start;
-
-
 
   > div:first-child {
     display: flex;
@@ -19,6 +18,11 @@ export const NavbarContainer = styled.nav<{ extendNavbar: boolean }>`
     align-items: center;
   }
 `;
+
+
+export const MobileNavBarSectionContents = styled(SectionContents)`
+
+`
 
 
 
