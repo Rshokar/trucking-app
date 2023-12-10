@@ -38,8 +38,8 @@ const theme = createTheme({
     h4: {
       fontSize: '20px',
       color: 'white',
-      lineHeight: 1.3,
-      letterSpacing: 8
+      lineHeight: 1.6,
+      letterSpacing: 5
     },
     h6: {
       padding: '10px',

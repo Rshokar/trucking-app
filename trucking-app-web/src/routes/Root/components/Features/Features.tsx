@@ -23,7 +23,7 @@ const Features = ({ id }: BaseProps) => {
           >
             What Do We Provide
           </Typography>
-          <Typography variant="h6" maxWidth={'700px'} textAlign={'left'}>
+          <Typography variant="h4" maxWidth={'700px'} textAlign={'left'}>
             We see ourselves as a lightweight, non-intrusive application that enables companies to manage their trucks and accounting in an easy and scale able format. Our goal is to alleviate the many pain points of transportation.
           </Typography>
         </div>

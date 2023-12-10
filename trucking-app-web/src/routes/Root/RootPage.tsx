@@ -3,7 +3,7 @@ import Features from "./components/Features/Features";
 import Pricing from "./components/Pricing/Pricing";
 import HowItWorks from "./components/Steps/HowItWorks";
 import CallToAction from "./components/CallToAction";
-import Contact from "./components/Contact";
+import Contact from "./components/Contact/Contact";
 import Summary from "./components/Summary/Summary";
 import Header, {
   DOWNLOAD_ID,
@@ -20,8 +20,6 @@ const RootPage = () => (
     <Hero />
     <HowItWorks id={`${GET_STARTED_ID}`} />
     <Features id={`${FEATURES_ID}`} />
-    <Pricing id={`${PRICING_ID}`} />
-    <CallToAction id={`${DOWNLOAD_ID}`} />
     <Contact id={`${CONTACT_ID}`} />
   </>
 );
