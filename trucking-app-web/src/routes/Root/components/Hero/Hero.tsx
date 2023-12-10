@@ -9,6 +9,7 @@ import GreenTruckSVG from "../../../../components/SVGS/trucks/GreenTruckSVG";
 import { useMediaQuery } from "react-responsive";
 
 const HeroSection = styled(Section)`
+  margin-top: 0px;
   position: relative;
   height: 100vh;
   width: 100%;

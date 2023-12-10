@@ -7,6 +7,7 @@ export const Container = styled.div`
 `
 
 export const Section = styled(Container)`
+    margin-top: 10%;
     box-sizing: border-box; 
     padding: 40px 5% 40px 5%;
 `

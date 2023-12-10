@@ -13,7 +13,7 @@ import { Toaster } from "react-hot-toast";
 
 const theme = createTheme({
   palette: {
-    primary: { main: "#2c365a" },
+    primary: { main: "#2c365a", light: '#42485D' },
     secondary: { main: "#ef835d" },
     error: { main: "#C73E1D" },
     background: { default: "#111629" },
@@ -39,11 +39,12 @@ const theme = createTheme({
       fontSize: '20px',
       color: 'white',
       lineHeight: 1.3,
-      letterSpacing: 12
+      letterSpacing: 8
     },
     h6: {
       padding: '10px',
-      textAlign: 'center',
+      textAlign: 'left',
+      color: 'white',
     },
     subtitle1: {
       fontWeight: 'bold',
@@ -53,6 +54,9 @@ const theme = createTheme({
     subtitle2: {
       fontWeight: 'bold',
       textAlign: 'center'
+    },
+    body1: {
+      color: 'white'
     },
     body2: {
       color: 'white'

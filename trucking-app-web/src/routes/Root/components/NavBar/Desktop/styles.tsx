@@ -6,6 +6,7 @@ export const DesktopNavBarSection = styled(Section)`
     top: 0; 
     left: 0; 
     width: 100%;
+    margin-top: 0px;
 `
 export const DesktopNavBarSectionContents = styled(SectionContents) <{ menuItemColor: string }>`
     display: flex; 

@@ -5,8 +5,6 @@ export const StepsSection = styled(Section)`
 `;
 
 export const StepsSectionContents = styled(SectionContents)`
-
-
     >div:first-child {
         display: flex;
         flex-direction: row;

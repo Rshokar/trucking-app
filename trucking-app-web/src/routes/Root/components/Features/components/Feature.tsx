@@ -4,69 +4,8 @@ import { Container } from '../../../../../components/shared'
 import { Typography } from '@mui/material'
 import { device } from '../../../../../components/devices'
 import { useMediaQuery } from 'react-responsive';
-
-const FeatureHeader = styled(Container)`
-    justify-content: space-between;
-    width: 100%;
-    padding-bottom: 30px;
-    gap: 10px;
-`
-
-// const FeatureSummary = styled(Container) <{ show: boolean }>`
-//     opacity: ${props => props.show ? '1' : '0'};
-//     max-height: ${props => props.show ? '1000px' : '0px'};
-//     overflow: hidden;
-//     transition: max-height .75s ease-in-out, opacity .75s ease-in-out;
-// `;
-
-const FeatureBreakDown = styled(Container)`
-    overflow: hidden;
-    transition: max-height .75s ease-in-out, opacity .75s ease-in-out;
-    flex-direction: column; 
-    gap: 20px;
-    padding-bottom: 20px;
-`;
-
-const FeatureBreakDownLine = styled(Container)`
-    flex-direction: column; 
-    align-items: flex-start;
-    opacity: 0;
-    transform: translateY(30px);
-    transition: opacity 0.5s, transform 0.5s;
-    will-change: opacity, transform;
-`
-
-
-
-// Move this outside the Feature component
-const FeatureContainer = styled(Container) <{ color: string, inView: boolean }>`
-    width: 90%; 
-    max-width: 500px;
-    min-height: 350px;
-    background-color: ${props => props.color}; 
-    flex-direction: column;
-    transition: background-color 0.5s ease-in-out; // added transition for color change
-    padding: 15px; 
-    box-sizing: border-box;
-    transform: ${props => props.inView ? 'translateX(0vw)' : 'translateX(-20vw)'};
-    opacity: ${props => props.inView ? '1' : '0'};
-    transition: opacity 0.5s, transform 0.5s;
-    will-change: opacity, transform;
-`;
-
-const TwoLineTitle = styled(Typography)`
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    color: white; 
-    width: 100%;
-
-    @media(${device.tablet}) {
-        width: 75%
-    }
-`;
-
-
+import { FeatureContainer, FeatureArguments, FeatureArgument, FeatureHeader, TwoLineTitle } from './styles'
+import { useTheme } from '@mui/material';
 interface BreakDown {
     title: string, blurb: string
 }
@@ -79,6 +18,7 @@ type Props = {
 }
 
 const Feature = (props: Props) => {
+    const theme = useTheme()
     const [inView, setInView] = useState(false);
     const featureRef = useRef<any>(null);
     const isLaptop = useMediaQuery({ query: device.laptop });
@@ -91,7 +31,7 @@ const Feature = (props: Props) => {
             {
                 root: null,
                 rootMargin: '0px',
-                threshold: 0.1
+                threshold: 0.01
             }
         );
 
@@ -112,40 +52,38 @@ const Feature = (props: Props) => {
             const children = Array.from(featureRef.current.querySelectorAll('[data-breakdown-item]'));
 
             children.forEach((child: any) => {
-                setTimeout(() => {
-                    child.style.opacity = inView ? "1" : "0";
-                    child.style.transform = inView ? "translateY(0)" : "translateY(-30)";
-                }, delay);
-                delay += 450; // Adjust this delay as necessary.
+                child.style.opacity = inView ? "1" : "0";
+                child.style.transform = inView ? "translateY(0)" : "translateY(-30)";
+
             });
         }
     }, [inView]);
 
     return (
-        <FeatureContainer color={props.color} ref={featureRef} inView={inView}>
-            <FeatureHeader>
-                <TwoLineTitle variant='h5' textAlign='left' fontWeight='bold'>
-                    {props.title}
-                </TwoLineTitle>
-                <div>
-                    {props.svg}
-                </div>
-            </FeatureHeader>
-
-            <FeatureBreakDown>
+        <FeatureContainer ref={featureRef}>
+            <Typography variant='h3' textAlign='left'>
+                {props.title}
+            </Typography>
+            <FeatureArguments>
                 {
                     props.breakDown.map((dP: BreakDown, index: number) => (
-                        <FeatureBreakDownLine data-breakdown-item key={index}>
-                            <Typography color={'white'} variant='subtitle1'>
+                        <FeatureArgument
+                            data-breakdown-item
+                            key={index}
+                            color={theme.palette.primary.main}
+                            titleBorder={theme.palette.secondary.main}
+                            borderColor={theme.palette.primary.light}
+                        >
+                            <Typography variant='h6'>
                                 {dP.title}
                             </Typography>
-                            <Typography variant='body2'>
+                            <Typography variant='body1'>
                                 {dP.blurb}
                             </Typography>
-                        </FeatureBreakDownLine>
+                        </FeatureArgument>
                     ))
                 }
-            </FeatureBreakDown>
+            </FeatureArguments>
         </FeatureContainer>
     )
 }

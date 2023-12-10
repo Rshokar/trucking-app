@@ -9,33 +9,25 @@ import SmileyFaceSVG from "../../../../components/SVGS/SmileyFaceSVG";
 import { useTheme, Typography } from "@mui/material";
 import { device } from "../../../../components/devices";
 import { BaseProps } from "../../../types";
-
-const FeaturesContainer = styled(Container)`
-  background-color: #ffffff;
-  display: flex;
-  flex-direction: column;
-  gap: 50px;
-  padding-bottom: 40px;
-
-  @media (${device.tablet}) {
-    gap: 100px;
-  }
-`;
+import { FeaturesSection, FeaturesSectionContents } from "./styles";
+import { useMediaQuery } from "react-responsive";
 
 const Features = ({ id }: BaseProps) => {
   const theme = useTheme();
   return (
-    <div id={id} style={{ paddingTop: '40px', backgroundColor: 'white' }}>
-      <Typography
-        variant="h3"
-        style={{
-          backgroundColor: "#FFFFFF",
-          paddingBottom: "40px",
-        }}
-      >
-        FEATURES
-      </Typography>
-      <FeaturesContainer>
+    <FeaturesSection id={id}>
+      <FeaturesSectionContents>
+        <div>
+          <Typography
+            variant="h1"
+          >
+            What Do We Provide
+          </Typography>
+          <Typography variant="h6" maxWidth={'700px'} textAlign={'left'}>
+            We see ourselves as a lightweight, non-intrusive application that enables companies to manage their trucks and accounting in an easy and scale able format. Our goal is to alleviate the many pain points of transportation.
+          </Typography>
+        </div>
+
         <Feature
           color={theme.palette.primary.main}
           title={"Advanced Ticket Managment"}
@@ -124,8 +116,8 @@ const Features = ({ id }: BaseProps) => {
             },
           ]}
         />
-      </FeaturesContainer>
-    </div>
+      </FeaturesSectionContents>
+    </FeaturesSection>
   );
 };
 

@@ -10,7 +10,7 @@ export const MobileNavBarSection = styled(Section)`
   box-sizing: border-box;
   display: flex; 
   justify-content: flex-start;
-
+  margin-top: 0px;
   > div:first-child {
     display: flex;
     gap: 20px; 
