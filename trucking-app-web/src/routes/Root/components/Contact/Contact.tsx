@@ -80,7 +80,7 @@ const Contact = ({ id }: BaseProps) => {
             At this moment we are still in development, but we still want to hear from you and want to know what you think.
           </Typography>
         </div>
-        <Break style={{ width: '800px' }} />
+        <Break style={{ maxWidth: '700px', width: '80%' }} />
         <FormView style={{ maxWidth: 'auto', backgroundColor: 'transparent' }}>
           <Formik
             initialValues={initialValues}

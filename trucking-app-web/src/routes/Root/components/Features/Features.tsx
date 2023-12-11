@@ -1,16 +1,11 @@
-import React, { useState } from "react";
-import styled from "styled-components";
-import { Container } from "../../../../components/shared";
 import Feature from "./components/Feature";
 import ManageSVG from "../../../../components/SVGS/ManageSVG";
 import BillSVG from "../../../../components/SVGS/BillSVG";
 import InternetSVG from "../../../../components/SVGS/InternetSVG";
 import SmileyFaceSVG from "../../../../components/SVGS/SmileyFaceSVG";
 import { useTheme, Typography } from "@mui/material";
-import { device } from "../../../../components/devices";
 import { BaseProps } from "../../../types";
-import { FeaturesSection, FeaturesSectionContents } from "./styles";
-import { useMediaQuery } from "react-responsive";
+import { FeaturesSection, FeaturesSectionContents, YTruckSVG } from "./styles";
 
 const Features = ({ id }: BaseProps) => {
   const theme = useTheme();
@@ -117,6 +112,7 @@ const Features = ({ id }: BaseProps) => {
           ]}
         />
       </FeaturesSectionContents>
+      <YTruckSVG />
     </FeaturesSection>
   );
 };

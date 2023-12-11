@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { Container, Section, SectionContents } from "../../../../components/shared";
+import { Section, SectionContents } from "../../../../components/shared";
 import { Input, TextareaAutosize, Typography } from '@mui/material';
 import { device } from "../../../../components/devices";
 
@@ -17,15 +17,16 @@ export const ContactSectionContent = styled(SectionContents)`
             display: flex; 
             flex-direction: column; 
             gap: 40px;
-    @media(${device.laptop}) {
-        h1 {
-          font-size: 2.75rem;
+
+            @media(${device.laptop}) {
+            h1 {
+            font-size: 2.75rem;
+            }
+        
+            h4 {
+            font-size: 1rem;
+            }
         }
-      
-        h4 {
-          font-size: 1rem;
-        }
-      }
     }
 `
 
