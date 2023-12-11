@@ -28,7 +28,7 @@ const NavBar = () => {
         { label: 'Features', url: "#" + FEATURES_ID },
         { label: 'Contact', url: "#" + CONTACT_ID },
     ]
-    const isTablet = useMediaQuery({ query: device.laptop });
+    const isTablet = useMediaQuery({ query: device.tablet });
     return <>
         {isTablet ? <MobileNavBar menuItems={MenuItems} /> : <DesktopNavbar menuItems={MenuItems} />}
     </>

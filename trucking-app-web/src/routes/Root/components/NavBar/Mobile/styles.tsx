@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import { Section, SectionContents } from "../../../../../components/shared";
+import { IconButton } from "@mui/material";
 
 
 export const MobileNavBarSection = styled(Section)`
@@ -11,13 +12,7 @@ export const MobileNavBarSection = styled(Section)`
   display: flex; 
   justify-content: flex-start;
   margin-top: 0px;
-  > div:first-child {
-    display: flex;
-    gap: 20px; 
-    justify-content: center; 
-    align-items: center;
-  }
-
+  z-index: 100;
   span {
     font-size: 1.1rem; 
   }
@@ -25,111 +20,59 @@ export const MobileNavBarSection = styled(Section)`
 
 
 export const MobileNavBarSectionContents = styled(SectionContents)`
+  width: 100%;  
+  justify-content: space-between;
 
+  >div:first-child {
+    position: relative;
+  }
+
+  >div:last-child {
+    display: flex;
+    justify-content: center; 
+    align-items: center;
+    gap: 20px;
+  }
 `
 
-
-
-export const MenuItemsDrawer = styled.div<{ show: boolean, color: string }>`
-    height: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    align-items: end;
-    width: ${props => props.show ? '200px' : '0px'};
-    opacity: ${props => props.show ? '1' : '0'};
-    transition: width .4s ease-in-out, opacity 0.2s ease-in-out;
-    background-color: ${props => props.color};
-    padding: 20px;
-    border-radius: 10px; 
+export const NavIconButton = styled(IconButton) <{ show: boolean }>`
+  background-color: ${props => props.show ? 'white' : '#2D2D2D'} !important;
+  color: ${props => props.show ? '#2D2D2D' : 'white'} !important;
+  height: 48px;
+  width: 48px;
+  transform: ${props => props.show ? 'rotate(90deg)' : 'rotate(0deg)'};
+  transition: transform .5s ease-in-out, color .5s ease-in-out !important; /* Add this line to animate the rotation */
 `;
 
 
-export const LeftContainer = styled.div`
-  flex: 70%;
-  display: flex;
-  align-items: center;
-  padding-left: 5%;
-`;
-
-export const RightContainer = styled.div`
-  flex: 100%;
-  display: flex;
-  justify-content: flex-end;
-  padding-right: 50px;
-`;
-
-export const NavbarInnerContainer = styled.div`
-  width: 100%;
-  height: 80px;
-  display: flex;
-`;
-
-export const NavbarLinkContainer = styled.div`
-  display: flex;
-  align-items: center;
-`;
-
-export const NavbarLink = styled.span<{ inView: boolean, inViewColor: string, outOfViewColor: string }>`
-    a {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 30px;
-        font-family: Arial, Helvetica, sans-serif;
-        // transform: ${props => props.inView ? 'translateX(-20%)' : 'translateX(0)'}
-        padding-right: ${props => props.inView ? '40px' : '0px'};
-        transition: all 0.2s ease-in-out;
-        span {
-            color: white; 
-            background-color: black;
-            padding: 5px 10px 5px 10px;
-            font-size: 1.15rem;
-            border-radius: 5px;
-        }
-
-        div {
-            height: 40px;
-            aspect-ratio: 1; 
-            background-color: ${props => props.inView ? props.inViewColor : props.outOfViewColor};
-            border-radius: ${props => props.inView ? '50%' : '0%'};
-            transition: all 0.2s ease-in-out;
-        }
-    }
-`;
-
-export const NavbarLinkExtended = styled.span`
-  color: white;
-  font-size: x-large;
-  font-family: Arial, Helvetica, sans-serif;
-  text-decoration: none;
-  margin: 10px;
-`;
-
-export const Logo = styled.img`
-  max-width: 60px;
-`;
-
-export const OpenLinksButton = styled.button`
-  width: 70px;
-  height: 50px;
-  background: none;
-  border: none;
-  color: white;
-  font-size: 45px;
-  cursor: pointer;
-
-  @media (min-width: 700px) {
-    display: none;
-  }
-`;
-
-export const NavbarExtendedContainer = styled.div`
+export const Drawer = styled.div<{ show: boolean, backgroundColor: string }>`
+  position: absolute; /* Changed from relative to absolute */
+  top: 80px; /* Assuming your NavIconButton is 48px high */
+  left: 0;
+  width: 172px; /* You can adjust this if you want the drawer to be less than full width */
   display: flex;
   flex-direction: column;
-  align-items: center;
+  gap: 20px;
+  align-items: start;
+  // background-color: ${props => props.backgroundColor};
+  border-radius: 10px;
+  transition: transform 0.3s ease; /* Add a transition for a sliding effect */
+  transform: ${props => (props.show ? 'translateX(0)' : 'translateX(-400%)')};
+  z-index: 101; /* Ensure it's above the NavBarSection */
+`;
 
-  @media (min-width: 700px) {
-    display: none;
+
+export const NavbarLink = styled.a<{ inView: boolean, inViewColor: string, outOfViewColor: string }>`
+  text-decoration: none;
+
+  span {
+      color: ${props => props.inView ? 'black' : 'white'}; 
+      background-color: ${props => props.inView ? props.inViewColor : props.outOfViewColor};
+      padding: 5px 10px 5px 10px;
+      font-size: 1.15rem;
+      border-radius: 5px;
+      border: .5px solid white;
   }
 `;
+
+

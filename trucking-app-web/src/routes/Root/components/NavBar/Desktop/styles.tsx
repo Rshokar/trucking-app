@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import { SectionContents, Section } from "../../../../../components/shared";
+import { device } from "../../../../../components/devices";
 
 export const DesktopNavBarSection = styled(Section)`
     position: fixed;
@@ -11,6 +12,12 @@ export const DesktopNavBarSection = styled(Section)`
 
     span {
         font-size: 1.1rem; 
+    }
+
+    @media (${device.laptop}) {
+        span {
+            font-size: .75rem;
+        }
     }
 `
 export const DesktopNavBarSectionContents = styled(SectionContents) <{ menuItemColor: string, showBackground: boolean }>`
