@@ -20,9 +20,6 @@ const HowItWorks = ({ id }: BaseProps) => {
   const isDesktop = useMediaQuery({ query: device.desktop });
   let svgSize = "10rem";
 
-  // if (isLaptop) svgSize = "300px";
-  // if (isDesktop) svgSize = "400px";
-
   return (
     <StepsSection id={id}>
       <StepsSectionContents>

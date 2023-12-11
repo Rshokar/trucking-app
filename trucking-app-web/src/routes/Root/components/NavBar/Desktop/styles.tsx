@@ -7,11 +7,16 @@ export const DesktopNavBarSection = styled(Section)`
     left: 0; 
     width: 100%;
     margin-top: 0px;
+    z-index: 10;
 `
-export const DesktopNavBarSectionContents = styled(SectionContents) <{ menuItemColor: string }>`
+export const DesktopNavBarSectionContents = styled(SectionContents) <{ menuItemColor: string, showBackground: boolean }>`
     display: flex; 
     justify-content: space-between;
     flex: 1;
+    // background-color: ${props => props.showBackground ? '#252D4D' : 'transparent'};
+    padding: 5px 20px 5px 20px;
+    border-radius: 5px; 
+    transition: background-color 1s ease-in-out;
 
     >div:first-child {
         display: flex;
@@ -29,7 +34,7 @@ export const DesktopNavBarSectionContents = styled(SectionContents) <{ menuItemC
             background-color: ${props => props.menuItemColor};
             padding: 5px 20px 5px 20px;
             border-radius: 5px;
-
+            transition: background-color 0.4s ease-in-out, color 0.2s ease-in-out;
             a {
                 text-decoration: none;
                 color: white;
@@ -37,10 +42,10 @@ export const DesktopNavBarSectionContents = styled(SectionContents) <{ menuItemC
         }
 
 
-        .target {
+        .active {
             background-color: white;
 
-            a {
+            a span {
                 color: black;
             }
         }

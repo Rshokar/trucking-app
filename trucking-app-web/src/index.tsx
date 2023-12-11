@@ -41,6 +41,9 @@ const theme = createTheme({
       lineHeight: 1.6,
       letterSpacing: 5
     },
+    h5: {
+      color: 'white'
+    },
     h6: {
       padding: '10px',
       textAlign: 'left',

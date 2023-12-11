@@ -8,7 +8,7 @@ import Summary from "./components/Summary/Summary";
 import Header, {
   DOWNLOAD_ID,
   FEATURES_ID,
-  GET_STARTED_ID,
+  HOW_IT_WORKS,
   PRICING_ID,
   CONTACT_ID,
   SUMMARY_ID
@@ -18,7 +18,7 @@ const RootPage = () => (
   <>
     <Header />
     <Hero />
-    <HowItWorks id={`${GET_STARTED_ID}`} />
+    <HowItWorks id={`${HOW_IT_WORKS}`} />
     <Features id={`${FEATURES_ID}`} />
     <Contact id={`${CONTACT_ID}`} />
   </>

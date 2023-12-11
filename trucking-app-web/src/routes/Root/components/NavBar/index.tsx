@@ -4,7 +4,7 @@ import DesktopNavbar from './Desktop'
 import { useMediaQuery } from 'react-responsive'
 import { device } from '../../../../components/devices'
 export const FEATURES_ID = "features";
-export const GET_STARTED_ID = "get_started";
+export const HOW_IT_WORKS = "how_it_works";
 export const PRICING_ID = "pricing";
 export const DOWNLOAD_ID = "download";
 export const CONTACT_ID = "contact";
@@ -24,10 +24,9 @@ type Props = {}
 const NavBar = () => {
 
     const MenuItems: MenuItem[] = [
-        { label: 'How It Works', url: GET_STARTED_ID },
-        { label: 'Get Started', url: GET_STARTED_ID },
-        { label: 'Features', url: FEATURES_ID },
-        { label: 'Contact', url: CONTACT_ID },
+        { label: 'How It Works', url: "#" + HOW_IT_WORKS },
+        { label: 'Features', url: "#" + FEATURES_ID },
+        { label: 'Contact', url: "#" + CONTACT_ID },
     ]
     const isTablet = useMediaQuery({ query: device.laptop });
     return <>
