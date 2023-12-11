@@ -8,6 +8,10 @@ export const DesktopNavBarSection = styled(Section)`
     width: 100%;
     margin-top: 0px;
     z-index: 10;
+
+    span {
+        font-size: 1.1rem; 
+    }
 `
 export const DesktopNavBarSectionContents = styled(SectionContents) <{ menuItemColor: string, showBackground: boolean }>`
     display: flex; 
@@ -37,8 +41,7 @@ export const DesktopNavBarSectionContents = styled(SectionContents) <{ menuItemC
             transition: background-color 0.4s ease-in-out, color 0.2s ease-in-out;
             a {
                 text-decoration: none;
-                color: white;
-            }
+            } 
         }
 
 

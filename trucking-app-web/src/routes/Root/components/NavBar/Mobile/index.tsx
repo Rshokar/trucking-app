@@ -65,8 +65,8 @@ const MobileNavBar = (props: NavBarProps) => {
   return (
     <MobileNavBarSection>
       <MobileNavBarSectionContents>
-        {isTablet ? <SmallLogoSVG /> : <img src={WhiteLogo} height={50} width={50} />}
-        <Typography variant="subtitle1">Tare Ticketing</Typography>
+        <SmallLogoSVG />
+        <Typography variant="button">Tare Ticketing</Typography>
       </MobileNavBarSectionContents>
     </MobileNavBarSection>
 

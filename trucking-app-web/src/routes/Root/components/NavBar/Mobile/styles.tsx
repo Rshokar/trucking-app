@@ -17,6 +17,10 @@ export const MobileNavBarSection = styled(Section)`
     justify-content: center; 
     align-items: center;
   }
+
+  span {
+    font-size: 1.1rem; 
+  }
 `;
 
 

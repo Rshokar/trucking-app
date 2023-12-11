@@ -23,7 +23,7 @@ const HeroSection = styled(Section)`
 
 const HeroContents = styled(SectionContents)`
   gap: 40px;
-  @media(${device.tablet}) {
+  @media(${device.laptop}) {
     flex-direction: column;
     gap: 80px;
   }
@@ -46,7 +46,7 @@ const LeftContainer = styled(Container)`
     }
   }
 
-  @media(${device.laptopS}) {
+  @media(${device.laptop}) {
     align-items: center; 
 
     h1, h4 {
@@ -58,12 +58,6 @@ const LeftContainer = styled(Container)`
 const RightContainer = styled(Container)`
 
   @media(${device.laptop}) {
-    svg{
-      scale: .80;
-    }   
-  }
-
-  @media(${device.laptopS}) {
     display:none;
   }
 
